@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ViewportScroller } from '@angular/common'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { RouterOutlet } from '@angular/router'
 
 @Component({
@@ -7,4 +8,9 @@ import { RouterOutlet } from '@angular/router'
   template: '<router-outlet />',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class App {}
+export class App {
+  constructor() {
+    // Anchor links stop below the sticky header (Angular ignores CSS scroll-margin).
+    inject(ViewportScroller).setOffset([0, 80])
+  }
+}

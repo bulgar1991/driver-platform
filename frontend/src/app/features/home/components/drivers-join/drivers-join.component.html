@@ -1,0 +1,224 @@
+<section id="drivers" class="drivers-join" aria-labelledby="drivers-title">
+  <div class="drivers-join__inner page page__section">
+    <div class="drivers-join__intro">
+      <p class="eyebrow" appReveal>For Drivers</p>
+      <h2 id="drivers-title" class="drivers-join__title" appReveal [delay]="80">
+        Do you want to <span class="drivers-join__accent">earn with us?</span>
+      </h2>
+      <p class="drivers-join__lead" appReveal [delay]="160">
+        We work with licensed NCC and taxi drivers across Italy, with or without
+        their own car. Tell us about you; we answer within a few days.
+      </p>
+      <ul class="drivers-join__benefits">
+        @for (b of benefits; track b.title; let i = $index) {
+          <li
+            class="drivers-join__benefit"
+            appReveal="left"
+            [delay]="220 + i * 90">
+            <span class="drivers-join__benefit-icon"
+              ><app-icon [name]="b.icon"
+            /></span>
+            <span>
+              <strong class="drivers-join__benefit-title">{{ b.title }}</strong>
+              <span class="drivers-join__benefit-text">{{ b.text }}</span>
+            </span>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <div class="drivers-join__panel" appReveal="right" [delay]="120">
+      @if (sent()) {
+        <div class="drivers-join__done" role="status">
+          <span class="drivers-join__done-badge"
+            ><app-icon name="check"
+          /></span>
+          <h3 class="drivers-join__panel-title"
+            >Thank you, {{ form.controls.firstName.value }}!</h3
+          >
+          <p class="drivers-join__muted"
+            >We received your application and will contact you at
+            {{ form.controls.phone.value }}.</p
+          >
+        </div>
+      } @else {
+        <form
+          class="drivers-join__form"
+          [formGroup]="form"
+          (ngSubmit)="submit()"
+          novalidate>
+          <h3 class="drivers-join__panel-title">Apply in two minutes</h3>
+          @if (error(); as message) {
+            <p class="alert alert--error" role="alert">{{ message }}</p>
+          }
+
+          <div class="drivers-join__row">
+            <app-form-field
+              label="First name"
+              for="djFirst"
+              [error]="invalid('firstName') ? 'Required' : null">
+              <input
+                id="djFirst"
+                class="input"
+                autocomplete="given-name"
+                formControlName="firstName" />
+            </app-form-field>
+            <app-form-field
+              label="Last name"
+              for="djLast"
+              [error]="invalid('lastName') ? 'Required' : null">
+              <input
+                id="djLast"
+                class="input"
+                autocomplete="family-name"
+                formControlName="lastName" />
+            </app-form-field>
+          </div>
+          <div class="drivers-join__row">
+            <app-form-field
+              label="Mobile (WhatsApp)"
+              for="djPhone"
+              [error]="
+                invalid('phone') ? 'With country code, e.g. +39 …' : null
+              ">
+              <input
+                id="djPhone"
+                class="input"
+                type="tel"
+                autocomplete="tel"
+                formControlName="phone" />
+            </app-form-field>
+            <app-form-field
+              label="Email"
+              for="djEmail"
+              [error]="invalid('email') ? 'Enter a valid email' : null">
+              <input
+                id="djEmail"
+                class="input"
+                type="email"
+                autocomplete="email"
+                formControlName="email" />
+            </app-form-field>
+          </div>
+          <app-form-field
+            label="City where you drive"
+            for="djCity"
+            [error]="invalid('city') ? 'Required' : null">
+            <input
+              id="djCity"
+              class="input"
+              placeholder="Venezia, Roma, Milano…"
+              formControlName="city" />
+          </app-form-field>
+
+          <fieldset class="drivers-join__fieldset">
+            <legend class="drivers-join__legend">Licence</legend>
+            <div class="drivers-join__options">
+              @for (l of licences; track l.value) {
+                <label
+                  class="drivers-join__option"
+                  [class.drivers-join__option--on]="
+                    form.controls.licence.value === l.value
+                  ">
+                  <input
+                    class="drivers-join__radio"
+                    type="radio"
+                    [value]="l.value"
+                    formControlName="licence" />
+                  <span class="drivers-join__option-label">{{ l.label }}</span>
+                  <span class="drivers-join__option-hint">{{ l.hint }}</span>
+                </label>
+              }
+            </div>
+          </fieldset>
+
+          <app-counter
+            label="Years as a professional driver"
+            [min]="0"
+            [max]="60"
+            formControlName="yearsExperience" />
+
+          <label class="drivers-join__switch">
+            <input
+              class="drivers-join__switch-input"
+              type="checkbox"
+              formControlName="hasOwnVehicle" />
+            <span class="drivers-join__switch-track" aria-hidden="true"></span>
+            I have my own car
+          </label>
+          @if (form.controls.hasOwnVehicle.value) {
+            <app-form-field label="Car (make, model, year)" for="djVehicle">
+              <input
+                id="djVehicle"
+                class="input drivers-join__appear"
+                placeholder="Mercedes E-Class 2023"
+                formControlName="vehicle" />
+            </app-form-field>
+          }
+
+          <fieldset class="drivers-join__fieldset">
+            <legend class="drivers-join__legend">Languages you speak</legend>
+            <div class="drivers-join__chips">
+              @for (lang of languages; track lang.code) {
+                <button
+                  type="button"
+                  class="drivers-join__chip"
+                  [class.drivers-join__chip--on]="
+                    form.controls.languages.value.includes(lang.code)
+                  "
+                  [attr.aria-pressed]="
+                    form.controls.languages.value.includes(lang.code)
+                  "
+                  (click)="toggleLanguage(lang.code)">
+                  {{ lang.label }}
+                </button>
+              }
+            </div>
+          </fieldset>
+
+          <app-form-field label="Anything else? (optional)" for="djMessage">
+            <textarea
+              id="djMessage"
+              class="input"
+              rows="3"
+              formControlName="message"></textarea>
+          </app-form-field>
+
+          <!-- Honeypot: hidden from people, filled by bots. -->
+          <input
+            class="drivers-join__honeypot"
+            tabindex="-1"
+            autocomplete="off"
+            aria-hidden="true"
+            formControlName="website" />
+
+          <label class="drivers-join__consent">
+            <input
+              class="drivers-join__checkbox"
+              type="checkbox"
+              formControlName="privacyConsent" />
+            <span
+              >I agree that my details are kept to evaluate my application, as
+              described in the
+              <a
+                class="drivers-join__link"
+                routerLink="/privacy"
+                target="_blank"
+                >privacy policy</a
+              >.</span
+            >
+          </label>
+          @if (invalid('privacyConsent')) {
+            <p class="drivers-join__error" role="alert"
+              >Please accept to continue.</p
+            >
+          }
+
+          <button appButton type="submit" [block]="true" [disabled]="sending()">
+            {{ sending() ? 'Sending…' : 'Send my application' }}
+          </button>
+        </form>
+      }
+    </div>
+  </div>
+</section>

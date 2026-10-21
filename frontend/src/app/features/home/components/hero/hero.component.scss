@@ -1,31 +1,146 @@
+// Block: hero — the banner. Entrance runs once on load; ambient motion is slow and GPU-only.
 .hero {
-  @apply relative overflow-hidden;
-  background:
-    linear-gradient(
-      180deg,
-      rgb(11 11 12 / 0.55) 0%,
-      theme('colors.ink.DEFAULT') 95%
-    ),
-    radial-gradient(
-      ellipse at 50% 35%,
-      rgb(201 164 92 / 0.18),
-      transparent 60%
-    ),
-    url('/assets/images/hero.jpg') center / cover no-repeat;
+  @apply relative isolate flex min-h-[calc(100svh-4.5rem)] flex-col overflow-hidden;
+
+  &__backdrop {
+    @apply absolute inset-0 -z-20;
+    background: url('/assets/images/hero.jpg') center / cover no-repeat;
+    animation: slow-zoom 24s ease-in-out infinite alternate;
+    will-change: transform;
+
+    &::after {
+      content: '';
+      @apply absolute inset-0;
+      background:
+        radial-gradient(
+          ellipse at 50% 30%,
+          rgb(201 164 92 / 0.16),
+          transparent 60%
+        ),
+        linear-gradient(
+          180deg,
+          rgb(11 11 12 / 0.55) 0%,
+          rgb(11 11 12 / 0.75) 60%,
+          theme('colors.ink.DEFAULT') 100%
+        );
+    }
+  }
+
+  &__glow {
+    @apply pointer-events-none absolute -z-10 rounded-full;
+    filter: blur(60px);
+    animation: float 9s ease-in-out infinite;
+
+    &--one {
+      @apply left-[8%] top-[18%] h-48 w-48 bg-gold/20;
+    }
+
+    &--two {
+      @apply bottom-[22%] right-[6%] h-64 w-64 bg-gold/10;
+      animation-delay: -4s;
+      animation-duration: 12s;
+    }
+  }
 
   &__content {
-    @apply relative mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-24 text-center sm:py-32;
+    @apply relative mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center gap-6 px-4 py-20 text-center;
+
+    > * {
+      animation: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    > :nth-child(2) {
+      animation-delay: 0.12s;
+    }
+
+    > :nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    > :nth-child(4) {
+      animation-delay: 0.42s;
+    }
+
+    > :nth-child(5) {
+      animation-delay: 0.56s;
+    }
+  }
+
+  &__eyebrow {
+    @apply text-xs uppercase tracking-luxe text-ivory-200;
   }
 
   &__title {
-    @apply -mt-2;
+    @apply font-display text-5xl uppercase tracking-[0.12em] text-ivory sm:text-7xl;
+  }
+
+  &__accent {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      100deg,
+      theme('colors.gold.700') 0%,
+      theme('colors.gold.300') 25%,
+      theme('colors.gold.50') 50%,
+      theme('colors.gold.300') 75%,
+      theme('colors.gold.700') 100%
+    );
+    background-size: 200% 100%;
+    animation:
+      fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both,
+      shimmer 6s linear 1.2s infinite;
+  }
+
+  &__line {
+    @apply block h-px w-40 origin-center bg-gold-line;
+    animation: draw-x 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both !important;
   }
 
   &__lead {
-    @apply max-w-xl text-ivory-200;
+    @apply max-w-xl text-base leading-relaxed text-ivory-200 sm:text-lg;
   }
 
   &__actions {
-    @apply mt-4 flex flex-wrap justify-center gap-4;
+    @apply mt-2 flex flex-wrap justify-center gap-4;
+  }
+
+  &__cta {
+    @apply relative;
+
+    &::after {
+      content: '';
+      @apply pointer-events-none absolute inset-0 rounded-sm border border-gold;
+      animation: pulse-ring 2.4s ease-out 1.6s infinite;
+    }
+  }
+
+  &__scroll {
+    @apply absolute bottom-32 left-1/2 hidden h-10 w-6 -translate-x-1/2 justify-center rounded-full border border-ivory-300/50 pt-2 sm:flex;
+  }
+
+  &__scroll-dot {
+    @apply block h-2 w-1 rounded-full bg-gold;
+    animation: bounce-down 1.6s ease-in-out infinite;
+  }
+
+  &__trust {
+    @apply relative mx-auto grid w-full max-w-6xl grid-cols-2 gap-px overflow-hidden rounded-t-md border border-b-0 border-ink-600 bg-ink-600 lg:grid-cols-4;
+  }
+
+  &__trust-item {
+    @apply flex items-start gap-3 bg-ink/85 p-4 backdrop-blur sm:p-5;
+    animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(0.7s + var(--i) * 0.1s);
+  }
+
+  &__trust-icon {
+    @apply h-6 w-6 text-gold;
+  }
+
+  &__trust-title {
+    @apply block text-xs uppercase tracking-widest text-ivory;
+  }
+
+  &__trust-text {
+    @apply mt-1 block text-xs text-ivory-400;
   }
 }

@@ -6,6 +6,7 @@ export const ADMIN_NAVIGATION: NavItem[] = [
   { label: 'Shifts', path: '/admin/shifts', icon: 'route' },
   { label: 'Drivers', path: '/admin/drivers', icon: 'users' },
   { label: 'Vehicles', path: '/admin/vehicles', icon: 'car' },
+  { label: 'Applications', path: '/admin/applications', icon: 'mail' },
   { label: 'Reviews', path: '/admin/reviews', icon: 'star' },
   { label: 'Zones', path: '/admin/zones', icon: 'map', roles: ['Admin'] },
   { label: 'Pricing', path: '/admin/pricing', icon: 'tag', roles: ['Admin'] },

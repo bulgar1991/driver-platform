@@ -1,8 +1,46 @@
-<header class="site-header">
+<header class="site-header__bar">
   <div class="site-header__inner">
     <a class="site-header__brand" routerLink="/" aria-label="Magnus Drive home">
       <app-logo />
     </a>
-    <a appButton variant="outline" size="sm" routerLink="/book">Book a ride</a>
+
+    <nav class="site-header__nav" aria-label="Sections">
+      @for (s of sections; track s.fragment) {
+        <a class="site-header__link" routerLink="/" [fragment]="s.fragment">{{
+          s.label
+        }}</a>
+      }
+    </nav>
+
+    <div class="site-header__actions">
+      <a appButton size="sm" class="site-header__book" routerLink="/book"
+        >Book a ride</a
+      >
+      <button
+        type="button"
+        class="site-header__toggle"
+        [attr.aria-expanded]="open()"
+        aria-controls="site-menu"
+        [attr.aria-label]="open() ? 'Close menu' : 'Open menu'"
+        (click)="open.set(!open())">
+        <app-icon [name]="open() ? 'close' : 'menu'" />
+      </button>
+    </div>
   </div>
+
+  @if (open()) {
+    <nav id="site-menu" class="site-header__menu" aria-label="Sections">
+      @for (s of sections; track s.fragment; let i = $index) {
+        <a
+          class="site-header__menu-link"
+          [style.--i]="i"
+          routerLink="/"
+          [fragment]="s.fragment"
+          (click)="open.set(false)"
+          >{{ s.label }}</a
+        >
+      }
+      <a appButton [block]="true" routerLink="/book">Book a ride</a>
+    </nav>
+  }
 </header>

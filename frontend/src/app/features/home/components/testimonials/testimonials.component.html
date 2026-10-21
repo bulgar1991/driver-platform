@@ -1,0 +1,121 @@
+<section
+  id="reviews"
+  class="testimonials page page__section"
+  aria-label="Testimonials">
+  <app-section-heading eyebrow="Happy Clients" title="Testimonials" appReveal />
+
+  @if (items(); as list) {
+    @if (list.length) {
+      <div
+        class="testimonials__carousel"
+        role="region"
+        aria-roledescription="carousel"
+        aria-label="Client reviews"
+        tabindex="0"
+        appReveal
+        [delay]="100"
+        (mouseenter)="pause(true)"
+        (mouseleave)="pause(false)"
+        (focusin)="pause(true)"
+        (focusout)="pause(false)">
+        <div class="testimonials__viewport">
+          <ul
+            class="testimonials__track"
+            [class.testimonials__track--dragging]="dragging()"
+            [style.transform]="transform()"
+            (pointerdown)="pointerDown($event)"
+            (pointermove)="pointerMove($event)"
+            (pointerup)="pointerUp()"
+            (pointercancel)="pointerUp()">
+            @for (t of list; track $index; let i = $index) {
+              <li
+                class="testimonials__slide"
+                [style.flex-basis]="slideWidth()"
+                role="group"
+                aria-roledescription="slide"
+                [attr.aria-label]="i + 1 + ' of ' + list.length">
+                <figure
+                  class="testimonials__card"
+                  [class.testimonials__card--active]="
+                    i >= index() && i < index() + perView()
+                  ">
+                  <app-icon class="testimonials__quote" name="quote" />
+                  <div
+                    class="testimonials__stars"
+                    [attr.aria-label]="t.rating + ' out of 5'">
+                    @for (s of stars; track s) {
+                      <app-icon
+                        class="testimonials__star"
+                        [class.testimonials__star--on]="s <= t.rating"
+                        name="star" />
+                    }
+                  </div>
+                  <blockquote class="testimonials__text"
+                    >“{{ t.comment }}”</blockquote
+                  >
+                  <figcaption class="testimonials__author">
+                    <span class="testimonials__avatar" aria-hidden="true">{{
+                      t.author.charAt(0)
+                    }}</span>
+                    <span>
+                      <strong class="testimonials__name">{{ t.author }}</strong>
+                      <span class="testimonials__meta"
+                        >{{ t.vehicleCategory }} ·
+                        {{ t.date | date: 'MMMM y' }}</span
+                      >
+                    </span>
+                  </figcaption>
+                </figure>
+              </li>
+            }
+          </ul>
+        </div>
+
+        @if (pages().length > 1) {
+          <div class="testimonials__controls">
+            <button
+              type="button"
+              class="testimonials__arrow"
+              aria-label="Previous review"
+              (click)="go(-1)">
+              <app-icon name="arrow-left" />
+            </button>
+            <div class="testimonials__dots">
+              @for (p of pages(); track p) {
+                <button
+                  type="button"
+                  class="testimonials__dot"
+                  [class.testimonials__dot--on]="p === index()"
+                  [attr.aria-label]="'Show review ' + (p + 1)"
+                  [attr.aria-current]="p === index() ? 'true' : null"
+                  (click)="index.set(p)"></button>
+              }
+            </div>
+            <button
+              type="button"
+              class="testimonials__arrow"
+              aria-label="Next review"
+              (click)="go(1)">
+              <app-icon name="arrow-right" />
+            </button>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- No published reviews yet: an honest invitation instead of made-up quotes. -->
+      <div class="testimonials__empty" appReveal [delay]="100">
+        <app-icon class="testimonials__empty-icon" name="star" />
+        <p class="testimonials__empty-title"
+          >Your review could be the first here</p
+        >
+        <p class="testimonials__empty-text"
+          >After every ride we ask our clients how it went. With their
+          permission, their words appear on this page.</p
+        >
+        <a appButton variant="outline" routerLink="/book"
+          >Book your first ride</a
+        >
+      </div>
+    }
+  }
+</section>

@@ -1,0 +1,120 @@
+.testimonials {
+  &__carousel {
+    @apply relative outline-none;
+  }
+
+  &__viewport {
+    @apply -mx-3 overflow-hidden px-0;
+  }
+
+  &__track {
+    @apply flex touch-pan-y select-none;
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+
+    &--dragging {
+      @apply cursor-grabbing;
+      transition: none;
+    }
+  }
+
+  &__slide {
+    @apply shrink-0 grow-0 list-none px-3;
+  }
+
+  &__card {
+    @apply relative flex h-full flex-col gap-4 overflow-hidden rounded-md border border-ink-600 bg-ink-900 p-7;
+    opacity: 0.55;
+    transform: scale(0.97);
+    transition:
+      opacity 0.6s,
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.6s;
+
+    &--active {
+      @apply border-gold/40;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  &__quote {
+    @apply absolute right-5 top-5 h-12 w-12 text-gold/15;
+  }
+
+  &__stars {
+    @apply flex gap-1;
+  }
+
+  &__star {
+    @apply h-4 w-4 text-ink-500;
+
+    &--on {
+      @apply text-gold;
+
+      ::ng-deep path {
+        fill: currentColor;
+      }
+    }
+  }
+
+  &__text {
+    @apply flex-1 text-sm leading-relaxed text-ivory-100;
+  }
+
+  &__author {
+    @apply flex items-center gap-3 border-t border-ink-700 pt-4;
+  }
+
+  &__avatar {
+    @apply flex h-10 w-10 items-center justify-center rounded-full bg-gold-gradient font-display text-ink;
+  }
+
+  &__name {
+    @apply block text-sm text-ivory;
+  }
+
+  &__meta {
+    @apply block text-xs text-ivory-400;
+  }
+
+  &__controls {
+    @apply mt-8 flex items-center justify-center gap-6;
+  }
+
+  &__arrow {
+    @apply flex h-11 w-11 items-center justify-center rounded-full border border-ink-500 text-ivory transition-colors duration-300 hover:border-gold hover:text-gold;
+  }
+
+  &__dots {
+    @apply flex items-center gap-2;
+  }
+
+  &__dot {
+    @apply h-2 w-2 rounded-full bg-ink-500;
+    transition:
+      width 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 0.4s;
+
+    &--on {
+      @apply w-8 bg-gold;
+    }
+  }
+
+  &__empty {
+    @apply mx-auto flex max-w-xl flex-col items-center gap-4 rounded-md border border-dashed border-gold/40 p-10 text-center;
+  }
+
+  &__empty-icon {
+    @apply h-10 w-10 text-gold;
+    animation: float 4s ease-in-out infinite;
+  }
+
+  &__empty-title {
+    @apply font-display text-xl text-ivory;
+  }
+
+  &__empty-text {
+    @apply text-sm leading-relaxed text-ivory-300;
+  }
+}

@@ -43,7 +43,11 @@ describe('ReviewComponent', () => {
     send.click()
 
     const request = http.expectOne({ method: 'POST', url: '/api/reviews/rev' })
-    expect(request.request.body).toEqual({ rating: 4, comment: '' })
+    expect(request.request.body).toEqual({
+      rating: 4,
+      comment: '',
+      publishConsent: false,
+    })
     request.flush(null, { status: 204, statusText: 'No Content' })
     fixture.detectChanges()
     expect(fixture.nativeElement.textContent).toContain('Thank you')

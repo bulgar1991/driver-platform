@@ -1,0 +1,129 @@
+.tariffs {
+  &__intro {
+    @apply mx-auto -mt-4 mb-12 max-w-2xl text-center leading-relaxed text-ivory-300;
+  }
+
+  &__grid {
+    @apply grid grid-cols-1 gap-6 md:grid-cols-3;
+  }
+
+  &__card {
+    @apply relative flex list-none flex-col gap-3 rounded-md border border-ink-600 bg-ink-900 p-7;
+    transition:
+      transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.4s,
+      box-shadow 0.4s;
+
+    &:hover {
+      @apply border-gold/50 shadow-gold;
+      transform: translate3d(0, -6px, 0);
+    }
+
+    &--featured {
+      @apply border-gold/60 md:-my-3 md:py-10;
+      background:
+        radial-gradient(
+          ellipse at 50% 0%,
+          rgb(201 164 92 / 0.14),
+          transparent 70%
+        ),
+        theme('colors.ink.900');
+    }
+
+    &--skeleton {
+      @apply h-[30rem] border-ink-700;
+      background: linear-gradient(
+        100deg,
+        theme('colors.ink.900') 30%,
+        theme('colors.ink.800') 50%,
+        theme('colors.ink.900') 70%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.6s linear infinite;
+    }
+  }
+
+  &__badge {
+    @apply absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-gold-gradient px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-ink;
+  }
+
+  &__icon {
+    @apply h-10 w-10 text-gold;
+  }
+
+  &__name {
+    @apply font-display text-2xl text-ivory;
+  }
+
+  &__models {
+    @apply -mt-2 text-xs text-ivory-400;
+  }
+
+  &__price {
+    @apply mt-3 flex items-baseline gap-1;
+  }
+
+  &__amount {
+    @apply font-display text-4xl text-gold;
+  }
+
+  &__unit {
+    @apply text-sm text-ivory-300;
+  }
+
+  &__base {
+    @apply -mt-2 text-sm text-ivory-300;
+  }
+
+  &__specs {
+    @apply my-2 flex flex-col gap-2 border-y border-ink-700 py-4;
+  }
+
+  &__spec {
+    @apply flex items-center gap-2 text-sm text-ivory-200;
+  }
+
+  &__spec-icon {
+    @apply h-4 w-4 text-gold;
+  }
+
+  &__example {
+    @apply mb-2 text-xs text-ivory-400;
+  }
+
+  &__example-price {
+    @apply ml-1 text-base text-ivory;
+  }
+
+  &__notes {
+    @apply mt-10 grid grid-cols-1 gap-6 md:grid-cols-2;
+  }
+
+  &__note {
+    @apply flex flex-col gap-3 rounded-md border border-ink-700 p-5;
+  }
+
+  &__note-title {
+    @apply text-xs uppercase tracking-widest text-ivory-200;
+  }
+
+  &__chips {
+    @apply flex flex-wrap gap-2;
+  }
+
+  &__chip {
+    @apply flex items-center gap-2 rounded-full border border-ink-500 px-3 py-1 text-xs text-ivory-200;
+
+    strong {
+      @apply text-gold;
+    }
+
+    &--gold {
+      @apply border-gold/60 text-gold;
+    }
+  }
+
+  &__muted {
+    @apply text-center text-sm text-ivory-400;
+  }
+}

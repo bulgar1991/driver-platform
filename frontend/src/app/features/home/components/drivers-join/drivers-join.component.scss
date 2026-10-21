@@ -1,0 +1,178 @@
+.drivers-join {
+  @apply relative overflow-hidden border-y border-ink-700;
+  background:
+    radial-gradient(circle at 85% 20%, rgb(201 164 92 / 0.12), transparent 45%),
+    radial-gradient(circle at 10% 90%, rgb(201 164 92 / 0.08), transparent 40%),
+    theme('colors.ink.900');
+
+  &__inner {
+    @apply grid grid-cols-1 items-start gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,32rem)];
+  }
+
+  &__intro {
+    @apply flex flex-col gap-5 lg:sticky lg:top-28;
+  }
+
+  &__title {
+    @apply font-display text-3xl leading-tight text-ivory sm:text-5xl;
+  }
+
+  &__accent {
+    @apply bg-gold-gradient bg-clip-text text-transparent;
+  }
+
+  &__lead {
+    @apply max-w-lg leading-relaxed text-ivory-200;
+  }
+
+  &__benefits {
+    @apply mt-2 flex flex-col gap-4;
+  }
+
+  &__benefit {
+    @apply flex items-start gap-4;
+  }
+
+  &__benefit-icon {
+    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-gold/60 text-gold;
+  }
+
+  &__benefit-title {
+    @apply block text-sm text-ivory;
+  }
+
+  &__benefit-text {
+    @apply block text-sm text-ivory-400;
+  }
+
+  &__panel {
+    @apply rounded-md border border-gold/30 bg-ink/80 p-6 shadow-gold backdrop-blur sm:p-8;
+  }
+
+  &__panel-title {
+    @apply font-display text-xl text-ivory;
+  }
+
+  &__form {
+    @apply flex flex-col gap-4;
+  }
+
+  &__row {
+    @apply grid grid-cols-1 gap-4 xm:grid-cols-2;
+  }
+
+  &__fieldset {
+    @apply flex flex-col gap-2;
+  }
+
+  &__legend {
+    @apply mb-2 text-xs uppercase tracking-widest text-ivory-200;
+  }
+
+  &__options {
+    @apply grid grid-cols-1 gap-2 xm:grid-cols-3;
+  }
+
+  &__option {
+    @apply relative flex cursor-pointer flex-col gap-0.5 rounded-sm border border-ink-500 bg-ink-800 p-3 transition-colors duration-300 hover:border-ink-400;
+
+    &--on {
+      @apply border-gold bg-gold/10;
+    }
+  }
+
+  &__radio {
+    @apply sr-only;
+  }
+
+  &__option-label {
+    @apply text-sm text-ivory;
+  }
+
+  &__option-hint {
+    @apply text-[11px] text-ivory-400;
+  }
+
+  // Block element: switch — a CSS toggle around a real checkbox.
+  &__switch {
+    @apply flex cursor-pointer items-center gap-3 text-sm text-ivory;
+  }
+
+  &__switch-input {
+    @apply sr-only;
+  }
+
+  &__switch-track {
+    @apply relative h-6 w-11 shrink-0 rounded-full border border-ink-400 bg-ink-800 transition-colors duration-300;
+
+    &::after {
+      content: '';
+      @apply absolute left-0.5 top-0.5 h-[1.125rem] w-[1.125rem] rounded-full bg-ivory-300;
+      transition:
+        transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 0.3s;
+    }
+  }
+
+  &__switch-input:checked + &__switch-track {
+    @apply border-gold bg-gold/30;
+
+    &::after {
+      @apply bg-gold;
+      transform: translateX(1.25rem);
+    }
+  }
+
+  &__switch-input:focus-visible + &__switch-track {
+    @apply outline outline-2 outline-offset-2 outline-gold;
+  }
+
+  &__appear {
+    animation: fade-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  &__chips {
+    @apply flex flex-wrap gap-2;
+  }
+
+  &__chip {
+    @apply rounded-full border border-ink-500 px-3 py-1.5 text-xs text-ivory-200 transition-all duration-300 hover:border-gold/60;
+
+    &--on {
+      @apply border-gold bg-gold text-ink;
+    }
+  }
+
+  &__honeypot {
+    @apply absolute -left-[9999px] h-px w-px opacity-0;
+  }
+
+  &__consent {
+    @apply flex cursor-pointer items-start gap-3 text-xs leading-relaxed text-ivory-300;
+  }
+
+  &__checkbox {
+    @apply mt-0.5 h-4 w-4 shrink-0 accent-gold;
+  }
+
+  &__link {
+    @apply text-gold underline;
+  }
+
+  &__error {
+    @apply -mt-2 text-xs text-danger;
+  }
+
+  &__done {
+    @apply flex flex-col items-center gap-4 py-10 text-center;
+  }
+
+  &__done-badge {
+    @apply flex h-16 w-16 items-center justify-center rounded-full bg-gold-gradient text-ink;
+    animation: pop-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  &__muted {
+    @apply text-sm text-ivory-300;
+  }
+}

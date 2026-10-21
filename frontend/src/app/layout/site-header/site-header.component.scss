@@ -1,11 +1,77 @@
+:host {
+  @apply sticky top-0 z-30 block;
+}
+
 .site-header {
-  @apply sticky top-0 z-20 border-b border-ink-600 bg-ink/90 backdrop-blur;
+  &__bar {
+    @apply border-b border-transparent bg-ink/60 backdrop-blur;
+    transition:
+      background-color 0.4s,
+      border-color 0.4s,
+      box-shadow 0.4s;
+  }
 
   &__inner {
-    @apply mx-auto flex max-w-6xl items-center justify-between px-4 py-4;
+    @apply mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-4;
+    transition: padding 0.4s;
   }
 
   &__brand {
     @apply no-underline;
   }
+
+  &__nav {
+    @apply hidden items-center gap-7 lg:flex;
+  }
+
+  // Underline that grows from the centre.
+  &__link {
+    @apply relative py-1 text-xs uppercase tracking-widest text-ivory-200 transition-colors duration-300 hover:text-gold;
+
+    &::after {
+      content: '';
+      @apply absolute -bottom-0.5 left-0 h-px w-full scale-x-0 bg-gold transition-transform duration-300;
+    }
+
+    &:hover::after,
+    &:focus-visible::after {
+      @apply scale-x-100;
+    }
+  }
+
+  &__actions {
+    @apply flex items-center gap-3;
+  }
+
+  &__book {
+    @apply hidden xm:inline-flex;
+  }
+
+  &__toggle {
+    @apply flex h-10 w-10 items-center justify-center rounded-sm border border-ink-500 text-ivory lg:hidden;
+  }
+
+  &__menu {
+    @apply flex flex-col gap-1 border-t border-ink-600 bg-ink/95 px-4 pb-6 pt-2 lg:hidden;
+    animation: fade-up 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  &__menu-link {
+    @apply border-b border-ink-700 py-3 text-sm uppercase tracking-widest text-ivory;
+    animation: fade-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i) * 0.05s);
+
+    &:last-of-type {
+      @apply mb-4;
+    }
+  }
+}
+
+:host(.site-header--scrolled) .site-header__bar {
+  @apply border-ink-600 bg-ink/90;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.35);
+}
+
+:host(.site-header--scrolled) .site-header__inner {
+  @apply py-3;
 }

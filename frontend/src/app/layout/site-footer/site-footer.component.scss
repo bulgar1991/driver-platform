@@ -1,15 +1,86 @@
 .site-footer {
-  @apply border-t border-ink-600 py-8;
+  @apply relative border-t border-ink-700;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgb(201 164 92 / 0.08), transparent 55%),
+    theme('colors.ink.900');
 
-  &__text {
-    @apply text-center text-xs text-ivory-400;
+  // A slow gold light running along the top edge.
+  &__line {
+    @apply absolute left-0 right-0 top-0 h-px overflow-hidden;
+
+    &::after {
+      content: '';
+      @apply absolute inset-y-0 w-1/3 bg-gold-line;
+      animation: marquee-line 7s linear infinite;
+    }
   }
 
-  &__links {
-    @apply mt-2 flex justify-center gap-4;
+  &__inner {
+    @apply mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr];
+  }
+
+  &__brand {
+    @apply flex flex-col items-start gap-4;
+  }
+
+  &__tagline {
+    @apply max-w-xs text-sm leading-relaxed text-ivory-300;
+  }
+
+  &__book {
+    @apply mt-2 flex items-center gap-2 text-xs uppercase tracking-widest text-gold transition-[gap] duration-300 hover:gap-3;
+  }
+
+  &__column {
+    @apply flex flex-col gap-3;
+  }
+
+  &__title {
+    @apply mb-1 text-xs uppercase tracking-luxe text-ivory;
   }
 
   &__link {
+    @apply flex items-center gap-2 text-sm text-ivory-300 transition-[color,transform] duration-300 hover:translate-x-1 hover:text-gold;
+  }
+
+  &__item {
+    @apply flex items-center gap-2 text-sm text-ivory-300;
+  }
+
+  &__icon {
+    @apply h-4 w-4 text-gold;
+  }
+
+  &__payments {
+    @apply mt-2 flex flex-wrap gap-2;
+  }
+
+  &__payment {
+    @apply rounded-sm border border-ink-500 px-2 py-1 text-[10px] uppercase tracking-widest text-ivory-300;
+  }
+
+  &__bottom {
+    @apply mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 border-t border-ink-700 px-4 py-6 sm:flex-row;
+  }
+
+  &__text {
+    @apply text-xs text-ivory-400;
+  }
+
+  &__links {
+    @apply flex gap-5;
+  }
+
+  &__small-link {
     @apply text-xs text-ivory-400 hover:text-gold;
+  }
+}
+
+@keyframes marquee-line {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(300%);
   }
 }

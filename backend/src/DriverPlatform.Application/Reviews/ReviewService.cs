@@ -20,7 +20,12 @@ public sealed record SubmitReviewRequest
     public int Rating { get; init; }
     [MaxLength(2000)]
     public string? Comment { get; init; }
+    /// <summary>Opt-in: show this review on the website with the first name and last initial.</summary>
+    public bool PublishConsent { get; init; }
 }
+
+/// <summary>A published review: first name and last initial only, never contact details or the route.</summary>
+public sealed record Testimonial(string Author, int Rating, string Comment, DateOnly Date, string VehicleCategory);
 
 public sealed record ReviewDto(
     Guid Id,
@@ -42,6 +47,8 @@ public interface IReviewService
     Task<ReviewPage> GetAsync(string token, CancellationToken cancellationToken);
     Task SubmitAsync(string token, SubmitReviewRequest request, CancellationToken cancellationToken);
     Task<IReadOnlyList<ReviewDto>> ListAsync(Guid? driverId, int take, CancellationToken cancellationToken);
+    /// <summary>Good reviews whose authors agreed to publication, newest first.</summary>
+    Task<IReadOnlyList<Testimonial>> TestimonialsAsync(CancellationToken cancellationToken);
 }
 
 /// <summary>
@@ -114,6 +121,7 @@ public sealed class ReviewService(
         }
         review.Rating = request.Rating;
         review.Comment = string.IsNullOrWhiteSpace(request.Comment) ? null : request.Comment.Trim();
+        review.PublishConsent = request.PublishConsent && review.Comment is not null;
         review.SubmittedAt = clock.GetUtcNow();
         await db.SaveChangesAsync(cancellationToken);
     }
@@ -132,6 +140,24 @@ public sealed class ReviewService(
             $"{r.Driver.FirstName} {r.Driver.LastName}", $"{r.Booking.Client.FirstName} {r.Booking.Client.LastName}",
             r.Rating, r.Comment, r.Channel, r.SentAt, r.SubmittedAt)).ToList();
     }
+
+    public async Task<IReadOnlyList<Testimonial>> TestimonialsAsync(CancellationToken cancellationToken)
+    {
+        var reviews = await db.Reviews.AsNoTracking()
+            .Include(r => r.Booking).ThenInclude(b => b.Client)
+            .Where(r => r.PublishConsent && r.Rating >= 4 && r.Comment != null)
+            .OrderByDescending(r => r.SubmittedAt)
+            .Take(12)
+            .ToListAsync(cancellationToken);
+        return reviews.Select(r => new Testimonial(
+            $"{r.Booking.Client.FirstName} {Initial(r.Booking.Client.LastName)}".Trim(),
+            r.Rating!.Value,
+            r.Comment!,
+            DateOnly.FromDateTime(ItalyTime.ToLocal(r.SubmittedAt!.Value)),
+            r.Booking.VehicleCategory.ToString())).ToList();
+    }
+
+    private static string Initial(string lastName) => lastName.Length > 0 ? $"{char.ToUpperInvariant(lastName[0])}." : "";
 
     /// <summary>Unknown and expired links give the same answer.</summary>
     private async Task<Review> FindAsync(string token, CancellationToken cancellationToken)

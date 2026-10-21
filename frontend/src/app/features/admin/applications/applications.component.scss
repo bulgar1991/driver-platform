@@ -1,0 +1,59 @@
+.applications {
+  @apply flex flex-col gap-5;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__filters {
+    @apply flex flex-wrap gap-2;
+  }
+
+  &__filter {
+    @apply rounded-sm border border-ink-600 px-3 py-1.5 text-xs uppercase tracking-widest text-ivory-300 hover:border-ink-400;
+
+    &--on {
+      @apply border-gold text-gold;
+    }
+  }
+
+  &__list {
+    @apply flex flex-col gap-3;
+  }
+
+  &__card {
+    @apply flex flex-col gap-4 rounded-sm border border-ink-600 bg-ink-900 p-5 sm:flex-row sm:items-start sm:justify-between;
+  }
+
+  &__main {
+    @apply flex min-w-0 flex-col gap-1 text-sm text-ivory;
+  }
+
+  &__name {
+    @apply text-base;
+  }
+
+  &__facts {
+    @apply text-ivory-200;
+  }
+
+  &__message {
+    @apply mt-1 border-l-2 border-gold pl-3 text-xs text-ivory-300;
+  }
+
+  &__link {
+    @apply text-gold hover:underline;
+  }
+
+  &__status {
+    @apply flex shrink-0 flex-col gap-1;
+  }
+
+  &__select {
+    @apply w-40 py-2;
+  }
+
+  &__muted {
+    @apply text-xs text-ivory-400;
+  }
+}

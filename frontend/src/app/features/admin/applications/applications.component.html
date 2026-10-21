@@ -1,0 +1,92 @@
+<div class="applications">
+  <header class="applications__header">
+    <div>
+      <p class="eyebrow">Fleet</p>
+      <h1 class="heading heading--lg">Driver applications</h1>
+    </div>
+    <div
+      class="applications__filters"
+      role="group"
+      aria-label="Filter by status">
+      @for (s of statuses; track s) {
+        <button
+          type="button"
+          class="applications__filter"
+          [class.applications__filter--on]="filter() === s"
+          (click)="show(s)"
+          >{{ s }}</button
+        >
+      }
+      <button
+        type="button"
+        class="applications__filter"
+        [class.applications__filter--on]="filter() === null"
+        (click)="show(null)"
+        >All</button
+      >
+    </div>
+  </header>
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  <ul class="applications__list">
+    @for (a of items(); track a.id) {
+      <li class="applications__card">
+        <div class="applications__main">
+          <p class="applications__name"
+            >{{ a.firstName }} {{ a.lastName }}
+            <span class="applications__muted">· {{ a.city }}</span></p
+          >
+          <p class="applications__muted">
+            <a class="applications__link" [href]="'tel:' + a.phone">{{
+              a.phone
+            }}</a>
+            ·
+            <a class="applications__link" [href]="'mailto:' + a.email">{{
+              a.email
+            }}</a>
+          </p>
+          <p class="applications__facts">
+            {{
+              a.licence === 'ProfessionalOnly'
+                ? 'CAP/KB only'
+                : a.licence + ' licence'
+            }}
+            · {{ a.yearsExperience }} years ·
+            {{
+              a.hasOwnVehicle
+                ? 'own car' + (a.vehicle ? ': ' + a.vehicle : '')
+                : 'no own car'
+            }}
+            @if (a.languages.length) {
+              · {{ a.languages.join(', ').toUpperCase() }}
+            }
+          </p>
+          @if (a.message) {
+            <p class="applications__message">{{ a.message }}</p>
+          }
+          <p class="applications__muted"
+            >Received {{ a.createdAt | date: 'd MMM y, HH:mm' }}</p
+          >
+        </div>
+        <label class="applications__status">
+          <span class="applications__muted">Status</span>
+          <select
+            class="input applications__select"
+            [value]="a.status"
+            (change)="setStatus(a, $any($event.target).value)">
+            @for (s of statuses; track s) {
+              <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </label>
+      </li>
+    } @empty {
+      <li class="applications__muted">{{
+        loading() ? 'Loading…' : 'No applications here.'
+      }}</li>
+    }
+  </ul>
+</div>

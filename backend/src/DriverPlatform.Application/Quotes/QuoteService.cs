@@ -19,13 +19,25 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
         var settings = await db.LoadSettingsAsync(cancellationToken);
         var rates = (await db.VehicleRates.AsNoTracking().ToListAsync(cancellationToken)).OrderBy(r => r.Category);
         var extras = await db.ExtraFees.AsNoTracking().ToDictionaryAsync(f => f.Type, f => f.Amount, cancellationToken);
+        var rules = await db.SurchargeRules.AsNoTracking().Where(r => r.IsActive).ToListAsync(cancellationToken);
+
+        // Holidays are one rule per date; the public page shows them as a single line.
+        const string holiday = "Public holiday";
+        var surcharges = rules.Where(r => !r.Name.StartsWith(holiday, StringComparison.Ordinal))
+            .Select(r => new PublicSurcharge(r.Name, r.Percent))
+            .Concat(rules.Where(r => r.Name.StartsWith(holiday, StringComparison.Ordinal))
+                .GroupBy(r => r.Percent)
+                .Select(g => new PublicSurcharge("Public holidays", g.Key)))
+            .OrderBy(s => s.Percent).ThenBy(s => s.Name)
+            .ToList();
 
         return new BookingOptionsResponse(
-            rates.Select(r => new VehicleCapacity(r.Category, r.MaxPassengers, r.MaxLuggage)).ToList(),
+            rates.Select(r => new VehicleCapacity(r.Category, r.MaxPassengers, r.MaxLuggage, r.BaseFee, r.PricePerKm)).ToList(),
             extras,
             settings.ReturnDiscountPercent,
             settings.MinLeadTimeHours,
-            PricingDefaults.Currency);
+            PricingDefaults.Currency,
+            surcharges);
     }
 
     public async Task<QuoteResponse> QuoteAsync(QuoteRequest request, CancellationToken cancellationToken)

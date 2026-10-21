@@ -1,9 +1,0 @@
-.home {
-  &__services {
-    @apply grid grid-cols-1 gap-4 xm:grid-cols-2 lg:grid-cols-4;
-  }
-
-  &__service {
-    @apply list-none;
-  }
-}

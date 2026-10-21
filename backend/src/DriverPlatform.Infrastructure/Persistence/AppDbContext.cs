@@ -30,6 +30,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, TimePro
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<NotificationLog> NotificationLogs => Set<NotificationLog>();
     public DbSet<PartnerWebhook> PartnerWebhooks => Set<PartnerWebhook>();
+    public DbSet<DriverApplication> DriverApplications => Set<DriverApplication>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
@@ -59,6 +60,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, TimePro
         builder.Properties<NotificationKind>().HaveConversion<string>().HaveMaxLength(32);
         builder.Properties<NotificationStatus>().HaveConversion<string>().HaveMaxLength(32);
         builder.Properties<PartnerKind>().HaveConversion<string>().HaveMaxLength(32);
+        builder.Properties<DriverLicenceKind>().HaveConversion<string>().HaveMaxLength(32);
+        builder.Properties<DriverApplicationStatus>().HaveConversion<string>().HaveMaxLength(32);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

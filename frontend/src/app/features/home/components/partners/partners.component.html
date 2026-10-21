@@ -1,0 +1,62 @@
+<section id="partners" class="partners" aria-label="Our partners and clients">
+  <div class="page page__section partners__inner">
+    <app-section-heading eyebrow="Our partners" title="And clients" appReveal />
+    <p class="partners__lead" appReveal [delay]="80">
+      Hotels, agencies and cruise companies book for their guests through our
+      partner API or the panel, with agreed rates and monthly invoicing.
+    </p>
+  </div>
+
+  <div class="partners__marquee" appReveal [delay]="140">
+    <ul class="partners__track">
+      @if (hasLogos) {
+        @for (logo of logos; track $index; let i = $index) {
+          <li
+            class="partners__item partners__item--logo"
+            [attr.aria-hidden]="i >= logos.length / 2 ? 'true' : null">
+            <img
+              class="partners__logo"
+              [src]="logo.logo"
+              [alt]="logo.name"
+              loading="lazy"
+              decoding="async" />
+          </li>
+        }
+      } @else {
+        @for (s of segments; track $index; let i = $index) {
+          <li
+            class="partners__item"
+            [attr.aria-hidden]="i >= segments.length / 2 ? 'true' : null">
+            <span class="partners__icon"><app-icon [name]="s.icon" /></span>
+            <span>
+              <strong class="partners__name">{{ s.title }}</strong>
+              <span class="partners__text">{{ s.text }}</span>
+            </span>
+          </li>
+        }
+      }
+    </ul>
+  </div>
+
+  <div class="page partners__cta" appReveal [delay]="200">
+    <p class="partners__cta-text"
+      >Want to offer Magnus Drive to your guests or clients?</p
+    >
+    <div class="partners__cta-actions">
+      @if (contactEmail) {
+        <a
+          class="partners__cta-link"
+          [href]="'mailto:' + contactEmail + '?subject=Partnership'">
+          <app-icon name="mail" /> Become a partner
+        </a>
+      }
+      <a
+        class="partners__cta-link partners__cta-link--muted"
+        [href]="docsUrl"
+        target="_blank"
+        rel="noopener">
+        <app-icon name="link" /> Partner API description
+      </a>
+    </div>
+  </div>
+</section>

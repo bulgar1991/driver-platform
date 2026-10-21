@@ -1,5 +1,7 @@
 using DriverPlatform.Application.Auth;
 using DriverPlatform.Application.Dispatch;
+using DriverPlatform.Application.DriverPortal;
+using DriverPlatform.Domain.Enums;
 using DriverPlatform.Application.Reviews;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +18,8 @@ public sealed class DispatchController(
     IDriverAdminService drivers,
     IVehicleAdminService vehicles,
     IDashboardService dashboard,
-    IReviewService reviews) : ControllerBase
+    IReviewService reviews,
+    IDriverApplicationService applications) : ControllerBase
 {
     [HttpGet("dashboard")]
     public async Task<ActionResult<DashboardResponse>> Dashboard(CancellationToken cancellationToken) =>
@@ -106,6 +109,16 @@ public sealed class DispatchController(
         [FromQuery] Guid? driverId, [FromQuery] int take = 200, CancellationToken cancellationToken = default) =>
         Ok(await reviews.ListAsync(driverId, take, cancellationToken));
 
+    [HttpGet("driver-applications")]
+    public async Task<ActionResult<IReadOnlyList<DriverApplicationDto>>> DriverApplications(
+        [FromQuery] DriverApplicationStatus? status, CancellationToken cancellationToken) =>
+        Ok(await applications.ListAsync(status, cancellationToken));
+
+    [HttpPut("driver-applications/{id:guid}/status")]
+    public async Task<ActionResult<DriverApplicationDto>> DriverApplicationStatus(
+        Guid id, [FromBody] DriverApplicationStatusRequest request, CancellationToken cancellationToken) =>
+        Ok(await applications.SetStatusAsync(id, request.Status, cancellationToken));
+
     // Vehicles
 
     [HttpGet("vehicles")]
@@ -120,3 +133,5 @@ public sealed class DispatchController(
     public async Task<ActionResult<VehicleDto>> UpdateVehicle(Guid id, VehicleRequest request, CancellationToken cancellationToken) =>
         Ok(await vehicles.UpdateAsync(id, request, cancellationToken));
 }
+
+public sealed record DriverApplicationStatusRequest(DriverApplicationStatus Status);

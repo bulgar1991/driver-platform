@@ -232,6 +232,22 @@ Endpoints (`/api/partner/v1`, 120 requests/min per key), described in OpenAPI at
 `Booking`. Booking.com's own supplier integration follows their specification and approval
 process; once they provide it, an adapter translates their messages to these same calls.
 
+### Home page
+
+Sections, each a component in `frontend/src/app/features/home/components/`: banner, welcome,
+services, tariffs (live from the API), "For drivers" with an application form, testimonials
+swiper, partners and clients, footer. **Texts, contacts, partner logos and social links are in
+`features/home/home.content.ts`.**
+
+- Testimonials show only real reviews whose authors ticked "you may publish my review" on the
+  review page (first name and surname initial). With none yet, an invitation is shown instead.
+- Partner logos appear only once added to `PARTNER_LOGOS` (with each partner's permission);
+  until then the strip shows the kinds of partners the service is for.
+- Driver applications are saved (Admin → Applications) and emailed to `Company:Email`.
+- Animations use transform/opacity only (`styles/_motion.scss`, `RevealDirective`,
+  `CountUpDirective`) and stop for users who ask for reduced motion. Measured while scrolling
+  the whole page: 60 fps, no long tasks, no layout shift, on desktop and phone width.
+
 ### Launch (step 7)
 
 - **Deployment**: Docker Compose on one server: Caddy (HTTPS, site, `/api` proxy), API, PostgreSQL,

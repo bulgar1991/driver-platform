@@ -1,8 +1,48 @@
+// Block: service-card — lifts on hover, the icon ring glows and a gold sheen sweeps across.
 .service-card {
-  @apply flex h-full flex-col items-center gap-4 rounded-md border border-ink-500 bg-ink-800 p-6 text-center transition hover:border-gold/60 hover:shadow-gold;
+  @apply relative flex h-full flex-col items-center gap-4 overflow-hidden rounded-md border border-ink-500 bg-ink-800 p-7 text-center;
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.4s,
+    box-shadow 0.4s;
+
+  &::before {
+    content: '';
+    @apply pointer-events-none absolute inset-y-0 -left-full w-1/2;
+    background: linear-gradient(
+      100deg,
+      transparent,
+      rgb(201 164 92 / 0.12),
+      transparent
+    );
+    transform: skewX(-20deg);
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  &:hover {
+    @apply border-gold/60 shadow-gold;
+    transform: translate3d(0, -6px, 0);
+
+    &::before {
+      transform: translate3d(400%, 0, 0) skewX(-20deg);
+    }
+  }
 
   &__icon {
-    @apply flex h-14 w-14 items-center justify-center rounded-full border border-gold text-gold;
+    @apply relative flex h-16 w-16 items-center justify-center rounded-full border border-gold text-gold transition-transform duration-500;
+
+    &::after {
+      content: '';
+      @apply absolute inset-0 rounded-full border border-gold opacity-0;
+    }
+  }
+
+  &:hover &__icon {
+    transform: scale(1.08);
+
+    &::after {
+      animation: pulse-ring 1.4s ease-out infinite;
+    }
   }
 
   &__title {
@@ -10,6 +50,6 @@
   }
 
   &__text {
-    @apply text-sm text-ivory-200;
+    @apply text-sm leading-relaxed text-ivory-200;
   }
 }

@@ -1,0 +1,100 @@
+<section id="tariffs" class="tariffs page page__section" aria-label="Tariffs">
+  <app-section-heading eyebrow="See our" title="Tariffs" appReveal />
+  <p class="tariffs__intro" appReveal [delay]="80">
+    One fixed price per ride: a base fee plus a rate per kilometre for the car
+    you choose, VAT included. You see the exact total before you pay.
+  </p>
+
+  @if (loading()) {
+    <div class="tariffs__grid" aria-busy="true">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="tariffs__card tariffs__card--skeleton"></div>
+      }
+    </div>
+  } @else if (failed()) {
+    <p class="tariffs__muted"
+      >Tariffs are not available right now. You can still get an exact price
+      when you book.</p
+    >
+  } @else {
+    <ul class="tariffs__grid">
+      @for (card of cards(); track card.category; let i = $index) {
+        <li
+          class="tariffs__card"
+          [class.tariffs__card--featured]="card.featured"
+          appReveal
+          [delay]="i * 120">
+          @if (card.featured) {
+            <span class="tariffs__badge">Families & luggage</span>
+          }
+          <app-icon class="tariffs__icon" name="car" />
+          <h3 class="tariffs__name">{{ card.text?.title ?? card.category }}</h3>
+          <p class="tariffs__models">{{ card.text?.models }}</p>
+
+          <p class="tariffs__price">
+            <span class="tariffs__amount">{{ card.pricePerKm | money }}</span>
+            <span class="tariffs__unit">/ km</span>
+          </p>
+          <p class="tariffs__base">+ {{ card.baseFee | money }} base fee</p>
+
+          <ul class="tariffs__specs">
+            <li class="tariffs__spec"
+              ><app-icon class="tariffs__spec-icon" name="users" /> Up to
+              {{ card.maxPassengers }} passengers</li
+            >
+            <li class="tariffs__spec"
+              ><app-icon class="tariffs__spec-icon" name="luggage" />
+              {{ card.maxLuggage }} large bags</li
+            >
+            <li class="tariffs__spec"
+              ><app-icon class="tariffs__spec-icon" name="check" />
+              {{ card.text?.bestFor }}</li
+            >
+          </ul>
+
+          <p class="tariffs__example">
+            e.g. {{ exampleKm }} km on a weekday:
+            <strong class="tariffs__example-price">{{
+              card.example | money
+            }}</strong>
+          </p>
+          <a
+            appButton
+            [variant]="card.featured ? 'primary' : 'outline'"
+            [block]="true"
+            routerLink="/book"
+            >Book a {{ card.text?.title ?? card.category }}</a
+          >
+        </li>
+      }
+    </ul>
+
+    <div class="tariffs__notes">
+      <div class="tariffs__note" appReveal="left">
+        <h3 class="tariffs__note-title">Extras</h3>
+        <ul class="tariffs__chips">
+          @for (extra of extras(); track extra.label) {
+            <li class="tariffs__chip"
+              >{{ extra.label }} <strong>{{ extra.amount | money }}</strong></li
+            >
+          }
+          @if (returnDiscount() > 0) {
+            <li class="tariffs__chip tariffs__chip--gold"
+              >Return trip −{{ returnDiscount() }}%</li
+            >
+          }
+        </ul>
+      </div>
+      <div class="tariffs__note" appReveal="right">
+        <h3 class="tariffs__note-title">Surcharges, added to the fare</h3>
+        <ul class="tariffs__chips">
+          @for (s of surcharges(); track s.name) {
+            <li class="tariffs__chip"
+              >{{ s.name }} <strong>+{{ s.percent }}%</strong></li
+            >
+          }
+        </ul>
+      </div>
+    </div>
+  }
+</section>

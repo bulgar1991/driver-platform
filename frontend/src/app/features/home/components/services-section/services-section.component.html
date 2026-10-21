@@ -1,0 +1,17 @@
+<section id="services" class="services-section" aria-label="Our services">
+  <div class="page page__section">
+    <app-section-heading eyebrow="What we do" title="Our Services" appReveal />
+    <ul class="services-section__grid">
+      @for (service of services; track service.title; let i = $index) {
+        <li class="services-section__item" appReveal [delay]="i * 110">
+          <app-service-card [service]="service" />
+        </li>
+      }
+    </ul>
+    <p class="services-section__more" appReveal [delay]="450">
+      <a class="services-section__link" routerLink="/" fragment="tariffs"
+        >See our tariffs →</a
+      >
+    </p>
+  </div>
+</section>

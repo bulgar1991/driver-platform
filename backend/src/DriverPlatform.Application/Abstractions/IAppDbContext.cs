@@ -25,6 +25,7 @@ public interface IAppDbContext
     DbSet<AuditLog> AuditLogs { get; }
     DbSet<NotificationLog> NotificationLogs { get; }
     DbSet<PartnerWebhook> PartnerWebhooks { get; }
+    DbSet<DriverApplication> DriverApplications { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

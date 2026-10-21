@@ -1,0 +1,89 @@
+.partners {
+  @apply relative pb-20;
+
+  &__inner {
+    @apply pb-6;
+  }
+
+  &__lead {
+    @apply mx-auto -mt-4 max-w-2xl text-center leading-relaxed text-ivory-300;
+  }
+
+  // Edges fade out so items glide in and out of view.
+  &__marquee {
+    @apply relative overflow-hidden py-4;
+    mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 12%,
+      #000 88%,
+      transparent
+    );
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent,
+      #000 12%,
+      #000 88%,
+      transparent
+    );
+  }
+
+  &__track {
+    @apply flex w-max gap-4;
+    animation: marquee 45s linear infinite;
+    will-change: transform;
+  }
+
+  &__marquee:hover &__track,
+  &__marquee:focus-within &__track {
+    animation-play-state: paused;
+  }
+
+  &__item {
+    @apply flex w-72 shrink-0 items-center gap-4 rounded-md border border-ink-600 bg-ink-900 px-5 py-4 transition-colors duration-300 hover:border-gold/50;
+
+    &--logo {
+      @apply h-24 w-56 justify-center;
+    }
+  }
+
+  &__logo {
+    @apply max-h-12 max-w-full object-contain opacity-70 grayscale transition duration-300;
+  }
+
+  &__item:hover &__logo {
+    @apply opacity-100 grayscale-0;
+  }
+
+  &__icon {
+    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-gold/50 text-gold;
+  }
+
+  &__name {
+    @apply block text-sm text-ivory;
+  }
+
+  &__text {
+    @apply block text-xs text-ivory-400;
+  }
+
+  &__cta {
+    @apply mt-10 flex flex-col items-center gap-4 text-center;
+  }
+
+  &__cta-text {
+    @apply font-display text-xl text-ivory;
+  }
+
+  &__cta-actions {
+    @apply flex flex-wrap justify-center gap-6;
+  }
+
+  &__cta-link {
+    @apply flex items-center gap-2 text-xs uppercase tracking-widest text-gold hover:underline;
+
+    &--muted {
+      @apply text-ivory-300;
+    }
+  }
+}

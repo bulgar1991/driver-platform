@@ -1,37 +1,25 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { ServiceOffering } from '@/core/models'
-import { SectionHeadingComponent } from '@/shared/components/section-heading/section-heading.component'
-import { ServiceCardComponent } from '@/shared/components/service-card/service-card.component'
+import { DriversJoinComponent } from './components/drivers-join/drivers-join.component'
 import { HeroComponent } from './components/hero/hero.component'
+import { PartnersComponent } from './components/partners/partners.component'
+import { ServicesSectionComponent } from './components/services-section/services-section.component'
+import { TariffsComponent } from './components/tariffs/tariffs.component'
+import { TestimonialsComponent } from './components/testimonials/testimonials.component'
+import { WelcomeComponent } from './components/welcome/welcome.component'
 
+/** The public home page; each section is its own component, texts live in home.content.ts. */
 @Component({
   selector: 'app-home',
-  imports: [HeroComponent, SectionHeadingComponent, ServiceCardComponent],
+  imports: [
+    HeroComponent,
+    WelcomeComponent,
+    ServicesSectionComponent,
+    TariffsComponent,
+    DriversJoinComponent,
+    TestimonialsComponent,
+    PartnersComponent,
+  ],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomeComponent {
-  protected readonly services: ServiceOffering[] = [
-    {
-      title: 'Airport Transfers',
-      description: 'Meet & greet in arrivals, flight tracked, fixed price.',
-      icon: 'plane',
-    },
-    {
-      title: 'Business Travel',
-      description: 'Discreet chauffeurs and monthly invoicing for companies.',
-      icon: 'briefcase',
-    },
-    {
-      title: 'Stations & Ports',
-      description: 'Train stations and cruise terminals across Italy.',
-      icon: 'pin',
-    },
-    {
-      title: 'Premium Service',
-      description: 'Child seats, name sign and luggage space on request.',
-      icon: 'diamond',
-    },
-  ]
-}
+export class HomeComponent {}

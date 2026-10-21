@@ -169,3 +169,20 @@ public enum PartnerKind
     /// <summary>Booking.com: bookings get source "Booking".</summary>
     Booking,
 }
+
+public enum DriverLicenceKind
+{
+    /// <summary>Noleggio con conducente.</summary>
+    Ncc,
+    Taxi,
+    /// <summary>Professional licence (CAP/KB) but no NCC or taxi licence yet.</summary>
+    ProfessionalOnly,
+}
+
+public enum DriverApplicationStatus
+{
+    New,
+    Contacted,
+    Accepted,
+    Rejected,
+}

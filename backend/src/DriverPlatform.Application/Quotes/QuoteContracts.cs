@@ -104,7 +104,11 @@ public sealed record QuoteResponse(
     string Currency,
     decimal VatRatePercent);
 
-public sealed record VehicleCapacity(VehicleCategory Category, int MaxPassengers, int MaxLuggage);
+/// <summary>Capacity and public tariff of a vehicle class (price = base fee + km × price per km, before surcharges).</summary>
+public sealed record VehicleCapacity(VehicleCategory Category, int MaxPassengers, int MaxLuggage, decimal BaseFee, decimal PricePerKm);
+
+/// <summary>An active surcharge as shown on the public tariffs; public holidays are grouped into one line.</summary>
+public sealed record PublicSurcharge(string Name, decimal Percent);
 
 /// <summary>What the booking form needs before the first quote.</summary>
 public sealed record BookingOptionsResponse(
@@ -112,4 +116,5 @@ public sealed record BookingOptionsResponse(
     IReadOnlyDictionary<ExtraType, decimal> Extras,
     decimal ReturnDiscountPercent,
     int MinLeadTimeHours,
-    string Currency);
+    string Currency,
+    IReadOnlyList<PublicSurcharge> Surcharges);

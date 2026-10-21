@@ -153,7 +153,7 @@ public sealed class DriverPortalTests
         Assert.Equal("Marco", page!.DriverFirstName);
         Assert.False(page.Submitted);
 
-        var submit = await s.Public.PostAsJsonAsync($"/api/reviews/{reviewToken}", new SubmitReviewRequest { Rating = 5, Comment = "Perfect, on time." }, TestData.Json);
+        var submit = await s.Public.PostAsJsonAsync($"/api/reviews/{reviewToken}", new SubmitReviewRequest { Rating = 5, Comment = "Perfect, on time.", PublishConsent = true }, TestData.Json);
         var again = await s.Public.PostAsJsonAsync($"/api/reviews/{reviewToken}", new SubmitReviewRequest { Rating = 1 }, TestData.Json);
         Assert.Equal(HttpStatusCode.NoContent, submit.StatusCode);
         Assert.Equal(HttpStatusCode.Conflict, again.StatusCode);
@@ -164,6 +164,8 @@ public sealed class DriverPortalTests
         Assert.Equal(1, marco.CompletedRides);
         var reviews = await s.Staff.GetFromJsonAsync<List<ReviewDto>>("/api/admin/reviews", TestData.Json);
         Assert.Equal("Perfect, on time.", Assert.Single(reviews!).Comment);
+        var published = await s.Public.GetFromJsonAsync<List<Testimonial>>("/api/testimonials", TestData.Json);
+        Assert.Equal("Maria R.", Assert.Single(published!).Author);
 
         // The audit log names the driver, not "system" or whoever else is signed in.
         using var scope = s.Factory.Services.CreateScope();

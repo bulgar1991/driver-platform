@@ -1,0 +1,52 @@
+<section
+  id="welcome"
+  class="welcome page page__section"
+  aria-labelledby="welcome-title">
+  <div class="welcome__media" appReveal="left">
+    <div class="welcome__frame">
+      <img
+        class="welcome__image"
+        src="/assets/images/hero.jpg"
+        alt="Black Mercedes with a chauffeur in Italy"
+        loading="lazy"
+        decoding="async"
+        width="1254"
+        height="470" />
+    </div>
+    <span
+      class="welcome__corner welcome__corner--top"
+      aria-hidden="true"></span>
+    <span
+      class="welcome__corner welcome__corner--bottom"
+      aria-hidden="true"></span>
+  </div>
+
+  <div class="welcome__text">
+    <p class="eyebrow" appReveal>{{ content.eyebrow }}</p>
+    <h2 id="welcome-title" class="welcome__title" appReveal [delay]="80">{{
+      content.title
+    }}</h2>
+    <span
+      class="welcome__divider"
+      appReveal
+      [delay]="140"
+      aria-hidden="true"></span>
+    @for (paragraph of content.paragraphs; track $index) {
+      <p class="welcome__paragraph" appReveal [delay]="200 + $index * 80">{{
+        paragraph
+      }}</p>
+    }
+
+    <dl class="welcome__stats">
+      @for (stat of stats; track stat.label; let i = $index) {
+        <div class="welcome__stat" appReveal="zoom" [delay]="300 + i * 90">
+          <dt class="welcome__stat-label">{{ stat.label }}</dt>
+          <dd class="welcome__stat-value">
+            <span [appCountUp]="stat.value">{{ stat.value }}</span
+            >{{ stat.suffix }}
+          </dd>
+        </div>
+      }
+    </dl>
+  </div>
+</section>

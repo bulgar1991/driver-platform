@@ -54,6 +54,14 @@
       maxlength="2000"
       [(ngModel)]="comment"></textarea>
 
+    <label class="review__consent">
+      <input class="review__checkbox" type="checkbox" [(ngModel)]="publish" />
+      <span
+        >You may show my rating and comment on the website, with my first name
+        and the initial of my surname.</span
+      >
+    </label>
+
     <button
       appButton
       type="button"

@@ -34,6 +34,7 @@ export class ReviewComponent {
   protected readonly rating = signal(0)
   protected readonly hover = signal(0)
   protected comment = ''
+  protected publish = false
   protected readonly sending = signal(false)
   protected readonly done = signal(false)
   protected readonly error = signal<string | null>(null)
@@ -66,7 +67,12 @@ export class ReviewComponent {
     this.sending.set(true)
     this.error.set(null)
     this.api
-      .submitReview(this.token(), this.rating(), this.comment.trim())
+      .submitReview(
+        this.token(),
+        this.rating(),
+        this.comment.trim(),
+        this.publish
+      )
       .pipe(finalize(() => this.sending.set(false)))
       .subscribe({
         next: () => this.done.set(true),

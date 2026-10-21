@@ -14,6 +14,8 @@ public class Review : Entity
     public NotificationChannel Channel { get; set; }
     public int? Rating { get; set; }
     public string? Comment { get; set; }
+    /// <summary>The client agreed that the rating and comment appear on the website with their first name.</summary>
+    public bool PublishConsent { get; set; }
     public DateTimeOffset SentAt { get; set; }
     public DateTimeOffset ExpiresAt { get; set; }
     public DateTimeOffset? SubmittedAt { get; set; }

@@ -33,6 +33,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("Payments:Provider", "Fake");
         builder.UseSetting("Payments:FrontendBaseUrl", "https://magnus.test");
         builder.UseSetting("Company:Name", "Magnus Drive Test");
+        builder.UseSetting("Company:Email", "office@magnus.test");
         builder.UseSetting("WhatsApp:Provider", "Log");
         // Tests deliver webhooks explicitly through IPartnerWebhookDispatcher.
         builder.UseSetting("Webhooks:Enabled", "false");

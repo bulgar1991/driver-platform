@@ -527,6 +527,103 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("drivers", (string)null);
                 });
 
+            modelBuilder.Entity("DriverPlatform.Domain.Entities.DriverApplication", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("city");
+
+                    b.Property<string>("ClientIp")
+                        .HasMaxLength(45)
+                        .HasColumnType("character varying(45)")
+                        .HasColumnName("client_ip");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)")
+                        .HasColumnName("email");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("first_name");
+
+                    b.Property<bool>("HasOwnVehicle")
+                        .HasColumnType("boolean")
+                        .HasColumnName("has_own_vehicle");
+
+                    b.PrimitiveCollection<List<string>>("Languages")
+                        .IsRequired()
+                        .HasColumnType("text[]")
+                        .HasColumnName("languages");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("last_name");
+
+                    b.Property<string>("Licence")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("licence");
+
+                    b.Property<string>("Message")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("message");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("phone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("Vehicle")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("vehicle");
+
+                    b.Property<int>("YearsExperience")
+                        .HasColumnType("integer")
+                        .HasColumnName("years_experience");
+
+                    b.HasKey("Id")
+                        .HasName("pk_driver_applications");
+
+                    b.HasIndex("Phone")
+                        .HasDatabaseName("ix_driver_applications_phone");
+
+                    b.HasIndex("Status", "CreatedAt")
+                        .HasDatabaseName("ix_driver_applications_status_created_at");
+
+                    b.ToTable("driver_applications", (string)null);
+                });
+
             modelBuilder.Entity("DriverPlatform.Domain.Entities.DriverDocument", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1177,6 +1274,10 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset>("ExpiresAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("expires_at");
+
+                    b.Property<bool>("PublishConsent")
+                        .HasColumnType("boolean")
+                        .HasColumnName("publish_consent");
 
                     b.Property<int?>("Rating")
                         .HasColumnType("integer")

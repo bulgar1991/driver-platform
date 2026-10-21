@@ -44,11 +44,12 @@ export class DriverPortalService {
   submitReview(
     token: string,
     rating: number,
-    comment: string
+    comment: string,
+    publishConsent = false
   ): Observable<void> {
     return this.http.post<void>(
       `${this.apiUrl}/reviews/${encodeURIComponent(token)}`,
-      { rating, comment }
+      { rating, comment, publishConsent }
     )
   }
 

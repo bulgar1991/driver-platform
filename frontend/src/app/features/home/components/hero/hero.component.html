@@ -1,17 +1,45 @@
-<section class="hero">
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero__backdrop" aria-hidden="true"></div>
+  <div class="hero__glow hero__glow--one" aria-hidden="true"></div>
+  <div class="hero__glow hero__glow--two" aria-hidden="true"></div>
+
   <div class="hero__content">
-    <p class="eyebrow">Private Driver Services</p>
-    <h1 class="heading heading--xl hero__title">
-      MAGNUS <span class="heading__accent">DRIVE</span>
+    <p class="hero__eyebrow">Private Driver Services · Italy</p>
+    <h1 id="hero-title" class="hero__title">
+      Magnus <span class="hero__accent">Drive</span>
     </h1>
-    <div class="divider divider--short"></div>
+    <span class="hero__line" aria-hidden="true"></span>
     <p class="hero__lead">
-      Chauffeured transfers across Italy, from the airport to the Alps, in
-      comfort and on time.
+      Chauffeured transfers from airports, stations and ports to your door, at a
+      fixed price, with a driver who meets you.
     </p>
     <div class="hero__actions">
-      <a appButton routerLink="/book">Book now</a>
-      <a appButton variant="outline" href="#services">Our services</a>
+      <a appButton class="hero__cta" routerLink="/book">
+        Book your ride <app-icon name="arrow-right" />
+      </a>
+      <a appButton variant="outline" routerLink="/" fragment="tariffs"
+        >See our tariffs</a
+      >
     </div>
   </div>
+
+  <a
+    class="hero__scroll"
+    routerLink="/"
+    fragment="welcome"
+    aria-label="Scroll to the next section">
+    <span class="hero__scroll-dot"></span>
+  </a>
+
+  <ul class="hero__trust">
+    @for (point of trust; track point.title; let i = $index) {
+      <li class="hero__trust-item" [style.--i]="i">
+        <app-icon class="hero__trust-icon" [name]="point.icon" />
+        <span>
+          <strong class="hero__trust-title">{{ point.title }}</strong>
+          <span class="hero__trust-text">{{ point.text }}</span>
+        </span>
+      </li>
+    }
+  </ul>
 </section>

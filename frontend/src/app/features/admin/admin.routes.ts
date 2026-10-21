@@ -86,4 +86,12 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () =>
       import('./audit/audit.component').then(m => m.AuditComponent),
   },
+  {
+    path: 'applications',
+    title: 'Driver applications · Magnus Drive',
+    loadComponent: () =>
+      import('./applications/applications.component').then(
+        m => m.ApplicationsComponent
+      ),
+  },
 ]

@@ -1,12 +1,7 @@
 <app-hero />
-
-<section id="services" class="page page__section">
-  <app-section-heading eyebrow="What we do" title="Our Services" />
-  <ul class="home__services">
-    @for (service of services; track service.title) {
-      <li class="home__service">
-        <app-service-card [service]="service" />
-      </li>
-    }
-  </ul>
-</section>
+<app-welcome />
+<app-services-section />
+<app-tariffs />
+<app-drivers-join />
+<app-testimonials />
+<app-partners />

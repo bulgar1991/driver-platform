@@ -85,12 +85,18 @@ export interface Quote {
   vatRatePercent: number
 }
 
+export interface VehicleTariff {
+  category: VehicleCategory
+  maxPassengers: number
+  maxLuggage: number
+  baseFee: number
+  pricePerKm: number
+}
+
 export interface BookingOptions {
-  vehicles: {
-    category: VehicleCategory
-    maxPassengers: number
-    maxLuggage: number
-  }[]
+  vehicles: VehicleTariff[]
+  /** Active surcharges as shown publicly; public holidays grouped into one line. */
+  surcharges: { name: string; percent: number }[]
   extras: Partial<Record<ExtraType, number>>
   returnDiscountPercent: number
   minLeadTimeHours: number

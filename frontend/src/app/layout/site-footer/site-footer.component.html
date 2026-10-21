@@ -1,9 +1,89 @@
 <footer class="site-footer">
-  <p class="site-footer__text">
-    © {{ year }} Magnus Drive · Private Driver Services
-  </p>
-  <nav class="site-footer__links" aria-label="Legal">
-    <a class="site-footer__link" routerLink="/privacy">Privacy</a>
-    <a class="site-footer__link" routerLink="/terms">Terms</a>
-  </nav>
+  <span class="site-footer__line" aria-hidden="true"></span>
+  <div class="site-footer__inner">
+    <div class="site-footer__brand">
+      <app-logo size="lg" />
+      <p class="site-footer__tagline"
+        >Private transfers with driver across Italy. Fixed price, booked in a
+        minute.</p
+      >
+      <a class="site-footer__book" routerLink="/book"
+        >Book a ride <app-icon name="arrow-right"
+      /></a>
+    </div>
+
+    <nav class="site-footer__column" aria-label="Site">
+      <h2 class="site-footer__title">Explore</h2>
+      @for (s of sections; track s.fragment) {
+        <a class="site-footer__link" routerLink="/" [fragment]="s.fragment">{{
+          s.label
+        }}</a>
+      }
+    </nav>
+
+    <div class="site-footer__column">
+      <h2 class="site-footer__title">Services</h2>
+      @for (s of services; track s.title) {
+        <span class="site-footer__item">{{ s.title }}</span>
+      }
+    </div>
+
+    <div class="site-footer__column">
+      <h2 class="site-footer__title">Contact</h2>
+      @if (contact.phone) {
+        <a class="site-footer__link" [href]="'tel:' + contact.phone"
+          ><app-icon class="site-footer__icon" name="phone" />
+          {{ contact.phone }}</a
+        >
+      }
+      @if (whatsAppUrl) {
+        <a
+          class="site-footer__link"
+          [href]="whatsAppUrl"
+          target="_blank"
+          rel="noopener"
+          ><app-icon class="site-footer__icon" name="chat" /> WhatsApp</a
+        >
+      }
+      @if (contact.email) {
+        <a class="site-footer__link" [href]="'mailto:' + contact.email"
+          ><app-icon class="site-footer__icon" name="mail" />
+          {{ contact.email }}</a
+        >
+      }
+      @if (contact.address) {
+        <span class="site-footer__item"
+          ><app-icon class="site-footer__icon" name="pin" />
+          {{ contact.address }}</span
+        >
+      }
+      <a class="site-footer__link" routerLink="/book"
+        ><app-icon class="site-footer__icon" name="clock" /> Book online 24/7</a
+      >
+      <ul class="site-footer__payments" aria-label="Payment methods">
+        <li class="site-footer__payment">Visa</li>
+        <li class="site-footer__payment">Mastercard</li>
+        <li class="site-footer__payment">PayPal</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="site-footer__bottom">
+    <p class="site-footer__text"
+      >© {{ year }} Magnus Drive · Private Driver Services</p
+    >
+    <nav class="site-footer__links" aria-label="Legal">
+      <a class="site-footer__small-link" routerLink="/privacy">Privacy</a>
+      <a class="site-footer__small-link" routerLink="/terms">Terms</a>
+      @for (s of social; track s.url) {
+        <a
+          class="site-footer__small-link"
+          [href]="s.url"
+          target="_blank"
+          rel="noopener"
+          >{{ s.label }}</a
+        >
+      }
+    </nav>
+  </div>
 </footer>
