@@ -63,7 +63,11 @@
     </div>
   </div>
 
-  <app-map class="driver-ride__map" [markers]="markers()" [fitPoints]="fit()" />
+  <app-map
+    class="driver-ride__map"
+    [locked]="true"
+    [markers]="markers()"
+    [fitPoints]="fit()" />
   <p class="driver-ride__muted"
     >{{ ride().distanceKm }} km · about
     {{ ride().durationMinutes | duration }}</p
