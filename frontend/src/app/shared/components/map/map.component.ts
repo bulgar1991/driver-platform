@@ -76,8 +76,18 @@ export class MapComponent {
         maxZoom: 19,
       }).addTo(this.map)
       this.layers.addTo(this.map)
+      // Without dragging, Leaflet reports the release of a drag as a click: only a press and release
+      // at (nearly) the same spot counts.
+      let pressedAt: L.Point | null = null
+      this.map.on(
+        'mousedown',
+        (e: L.LeafletMouseEvent) => (pressedAt = e.containerPoint)
+      )
       this.map.on('click', (e: L.LeafletMouseEvent) => {
-        if (this.clickable()) {
+        const moved = pressedAt
+          ? pressedAt.distanceTo(e.containerPoint) > 5
+          : false
+        if (this.clickable() && !moved) {
           this.mapClick.emit([e.latlng.lat, e.latlng.lng])
         }
       })

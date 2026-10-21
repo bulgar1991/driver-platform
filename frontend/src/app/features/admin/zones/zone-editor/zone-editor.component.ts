@@ -37,6 +37,7 @@ import { FormFieldComponent } from '@/shared/components/form-field/form-field.co
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { MapComponent } from '@/shared/components/map/map.component'
 import { ZONE_TYPES } from '../zone-labels'
+import { zonePoints } from '../zone-points'
 
 type MeetingPointForm = FormGroup<{
   name: FormControl<string>
@@ -316,27 +317,4 @@ export class ZoneEditorComponent {
 
 function round(value: number): number {
   return Math.round(value * 1e5) / 1e5
-}
-
-function zonePoints(zone: Zone): LatLng[] {
-  const points: LatLng[] = zone.meetingPoints.map(m => [
-    m.latitude,
-    m.longitude,
-  ])
-  if (zone.shape === 'Polygon') {
-    points.push(...zone.polygon.map(p => [p.latitude, p.longitude] as LatLng))
-  } else if (
-    zone.centerLatitude !== null &&
-    zone.centerLongitude !== null &&
-    zone.radiusMeters
-  ) {
-    // Roughly the circle's bounding box.
-    const dLat = zone.radiusMeters / 111_000
-    const dLng = dLat / Math.cos((zone.centerLatitude * Math.PI) / 180)
-    points.push(
-      [zone.centerLatitude - dLat, zone.centerLongitude - dLng],
-      [zone.centerLatitude + dLat, zone.centerLongitude + dLng]
-    )
-  }
-  return points
 }

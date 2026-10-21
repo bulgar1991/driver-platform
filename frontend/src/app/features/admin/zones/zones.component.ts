@@ -7,7 +7,7 @@ import {
   signal,
 } from '@angular/core'
 import { finalize } from 'rxjs'
-import { MapZone, Zone } from '@/core/models'
+import { LatLng, MapZone, Zone } from '@/core/models'
 import { AdminZonesService } from '@/core/services/admin-zones.service'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
@@ -16,6 +16,7 @@ import { MapComponent } from '@/shared/components/map/map.component'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { ZoneEditorComponent } from './zone-editor/zone-editor.component'
 import { ZONE_TYPE_LABEL } from './zone-labels'
+import { zonePoints } from './zone-points'
 
 /** Business plan §5: circles and polygons with local rules, configured without code. */
 @Component({
@@ -43,6 +44,10 @@ export class ZonesComponent implements OnInit {
 
   protected readonly mapZones = computed<MapZone[]>(() =>
     this.zones().map(zone => ({ zone }))
+  )
+  /** The map can't be moved by hand, so it frames every zone. */
+  protected readonly fitPoints = computed<LatLng[]>(() =>
+    this.zones().flatMap(zonePoints)
   )
 
   ngOnInit(): void {

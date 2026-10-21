@@ -67,7 +67,11 @@
           (deleted)="onDeleted($event)"
           (closed)="selected.set(undefined)" />
       } @else {
-        <app-map class="zones__map" [zones]="mapZones()" />
+        <app-map
+          class="zones__map"
+          [locked]="true"
+          [zones]="mapZones()"
+          [fitPoints]="fitPoints()" />
         <p class="zones__muted">
           Red: no car access · amber: limited traffic (ZTL) · blue: airports,
           stations and ports. Select a zone to edit it.
