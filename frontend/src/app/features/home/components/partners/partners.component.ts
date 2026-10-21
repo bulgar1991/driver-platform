@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { SectionHeadingComponent } from '@/shared/components/section-heading/section-heading.component'
 import { RevealDirective } from '@/shared/directives/reveal.directive'
@@ -16,6 +16,8 @@ import { CONTACT, PARTNER_LOGOS, PARTNER_SEGMENTS } from '../../home.content'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PartnersComponent {
+  /** The section is the whole page. */
+  readonly page = input(false)
   protected readonly logos = [...PARTNER_LOGOS, ...PARTNER_LOGOS]
   protected readonly segments = [...PARTNER_SEGMENTS, ...PARTNER_SEGMENTS]
   protected readonly hasLogos = PARTNER_LOGOS.length > 0

@@ -234,9 +234,13 @@ process; once they provide it, an adapter translates their messages to these sam
 
 ### Home page
 
-Sections, each a component in `frontend/src/app/features/home/components/`: banner, welcome,
-services, tariffs (live from the API), "For drivers" with an application form, testimonials
-swiper, partners and clients, footer. **Texts, contacts, partner logos and social links are in
+Order: banner, **the booking form** (from / to → map with the route → approximate price of each
+car, recalculated automatically as the form changes → options and contact once a car is chosen;
+the same component as `/book`), welcome, four services, tariffs (live from the API), "For
+drivers" with an application form, testimonials swiper, partners and clients, footer. Sections
+are components in `frontend/src/app/features/home/components/`; each also has its own page
+(`/services`, `/tariffs`, `/drivers`, `/reviews`, `/partners`), which the header and footer link
+to (no in-page `#anchors`). The header is fixed at the top. **Texts, contacts, partner logos and social links are in
 `features/home/home.content.ts`.**
 
 - Testimonials show only real reviews whose authors ticked "you may publish my review" on the
@@ -315,7 +319,7 @@ frontend/src/
     shared/pipes/      money, duration
     layout/            public layout (header, footer), admin layout (sidebar filtered by role)
     features/
-      booking/         /book: trip → vehicle → details → confirmation (BookingStore, typed forms)
+      booking/         /book and the home page: from/to → map → prices → details (BookingStore, typed forms)
       admin/           dashboard, bookings, shifts, drivers, vehicles, pricing, zones (map editor),
                        payments (refunds, invoices, export)
       my-booking/      the client's page from the signed link (pay, status, invoice)
@@ -338,6 +342,12 @@ Conventions:
 - **Interceptors:** `authInterceptor` adds the bearer token to `/api` calls;
   `errorInterceptor` signs out when the API answers 401.
 - Components are standalone with `OnPush`, use signal inputs, and load lazily from `app.routes.ts`.
+- **Icons** are an icon font built with fantasticon. To add or change one, put a 24×24 stroked SVG
+  in `src/assets/icons/src/` and run `npm run generate-fonts`: it outlines the strokes
+  (`oslllo-svg-fixer` → `src/assets/icons/font-icons/`), builds `src/assets/fonts/icons.woff` +
+  `icons.css` and the `IconName` type (`core/models/icon-names.generated.ts`). The generated files
+  are committed, so builds don't run it. Use `<app-icon name="car" />`; size it with the host's
+  width/height. Only woff is produced: this machine's ttf2woff2 cannot convert the font.
 
 ## Open questions
 

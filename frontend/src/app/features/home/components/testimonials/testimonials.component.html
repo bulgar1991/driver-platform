@@ -2,7 +2,11 @@
   id="reviews"
   class="testimonials page page__section"
   aria-label="Testimonials">
-  <app-section-heading eyebrow="Happy Clients" title="Testimonials" appReveal />
+  <app-section-heading
+    eyebrow="Happy Clients"
+    title="Testimonials"
+    [level]="page() ? 1 : 2"
+    appReveal />
 
   @if (items(); as list) {
     @if (list.length) {
@@ -47,7 +51,7 @@
                       <app-icon
                         class="testimonials__star"
                         [class.testimonials__star--on]="s <= t.rating"
-                        name="star" />
+                        [name]="s <= t.rating ? 'star-filled' : 'star'" />
                     }
                   </div>
                   <blockquote class="testimonials__text"

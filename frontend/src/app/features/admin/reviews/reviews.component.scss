@@ -42,10 +42,6 @@
 
     &--on {
       @apply text-gold;
-
-      ::ng-deep path {
-        fill: currentColor;
-      }
     }
   }
 

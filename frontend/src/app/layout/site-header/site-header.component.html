@@ -4,11 +4,14 @@
       <app-logo />
     </a>
 
-    <nav class="site-header__nav" aria-label="Sections">
-      @for (s of sections; track s.fragment) {
-        <a class="site-header__link" routerLink="/" [fragment]="s.fragment">{{
-          s.label
-        }}</a>
+    <nav class="site-header__nav" aria-label="Main">
+      @for (p of pages; track p.path) {
+        <a
+          class="site-header__link"
+          [routerLink]="p.path"
+          routerLinkActive="site-header__link--active"
+          >{{ p.label }}</a
+        >
       }
     </nav>
 
@@ -29,15 +32,14 @@
   </div>
 
   @if (open()) {
-    <nav id="site-menu" class="site-header__menu" aria-label="Sections">
-      @for (s of sections; track s.fragment; let i = $index) {
+    <nav id="site-menu" class="site-header__menu" aria-label="Main">
+      @for (p of pages; track p.path; let i = $index) {
         <a
           class="site-header__menu-link"
           [style.--i]="i"
-          routerLink="/"
-          [fragment]="s.fragment"
-          (click)="open.set(false)"
-          >{{ s.label }}</a
+          [routerLink]="p.path"
+          routerLinkActive="site-header__menu-link--active"
+          >{{ p.label }}</a
         >
       }
       <a appButton [block]="true" routerLink="/book">Book a ride</a>

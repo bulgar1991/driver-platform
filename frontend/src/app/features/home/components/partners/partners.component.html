@@ -1,6 +1,10 @@
 <section id="partners" class="partners" aria-label="Our partners and clients">
   <div class="page page__section partners__inner">
-    <app-section-heading eyebrow="Our partners" title="And clients" appReveal />
+    <app-section-heading
+      eyebrow="Our partners"
+      title="And clients"
+      [level]="page() ? 1 : 2"
+      appReveal />
     <p class="partners__lead" appReveal [delay]="80">
       Hotels, agencies and cruise companies book for their guests through our
       partner API or the panel, with agreed rates and monthly invoicing.

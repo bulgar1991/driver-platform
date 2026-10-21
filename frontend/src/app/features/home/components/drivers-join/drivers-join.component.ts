@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
+  input,
   signal,
 } from '@angular/core'
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -44,6 +45,8 @@ const LICENCES: { value: DriverLicenceKind; label: string; hint: string }[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DriversJoinComponent {
+  /** The section is the whole page. */
+  readonly page = input(false)
   private readonly site = inject(SiteService)
   private readonly fb = inject(FormBuilder).nonNullable
 

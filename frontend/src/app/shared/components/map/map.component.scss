@@ -1,6 +1,6 @@
 // Block: map — Leaflet canvas themed in black and gold.
 .map {
-  // isolate keeps Leaflet's own z-indexes below the sticky site header.
+  // isolate keeps Leaflet's own z-indexes below the fixed site header.
   @apply relative isolate z-0 block min-h-72 overflow-hidden rounded-sm border border-ink-600 bg-ink-900;
 
   &__canvas {
@@ -9,6 +9,12 @@
 
   &--clickable .leaflet-container {
     @apply cursor-crosshair;
+  }
+
+  // Static picture: the page scrolls over it on phones too.
+  &--locked .leaflet-container {
+    @apply cursor-default;
+    touch-action: pan-y pinch-zoom;
   }
 
   // Light OSM tiles turned into a dark, low-contrast basemap.

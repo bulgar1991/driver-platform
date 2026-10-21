@@ -1,7 +1,10 @@
+// The host keeps its box (1.5rem by default, or the size set where it is used); the glyph fills it.
 :host {
-  @apply inline-flex h-6 w-6 shrink-0;
+  @apply inline-flex h-6 w-6 shrink-0 items-center justify-center;
+  container-type: size;
 }
 
-.icon__svg {
-  @apply h-full w-full;
+.icon__glyph {
+  @apply block not-italic leading-none;
+  font-size: 100cqh;
 }

@@ -2,9 +2,23 @@
   <div class="drivers-join__inner page page__section">
     <div class="drivers-join__intro">
       <p class="eyebrow" appReveal>For Drivers</p>
-      <h2 id="drivers-title" class="drivers-join__title" appReveal [delay]="80">
-        Do you want to <span class="drivers-join__accent">earn with us?</span>
-      </h2>
+      @if (page()) {
+        <h1
+          id="drivers-title"
+          class="drivers-join__title"
+          appReveal
+          [delay]="80">
+          Do you want to <span class="drivers-join__accent">earn with us?</span>
+        </h1>
+      } @else {
+        <h2
+          id="drivers-title"
+          class="drivers-join__title"
+          appReveal
+          [delay]="80">
+          Do you want to <span class="drivers-join__accent">earn with us?</span>
+        </h2>
+      }
       <p class="drivers-join__lead" appReveal [delay]="160">
         We work with licensed NCC and taxi drivers across Italy, with or without
         their own car. Tell us about you; we answer within a few days.

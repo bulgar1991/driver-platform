@@ -1,4 +1,4 @@
-<form class="trip-step" [formGroup]="form()" (ngSubmit)="submit()" novalidate>
+<div class="trip-step" [formGroup]="form()">
   <div class="trip-step__route">
     <app-form-field
       label="From"
@@ -6,50 +6,60 @@
       [error]="invalid('pickup') ? 'Pick an address from the list' : null">
       <app-address-input
         inputId="pickup"
+        placeholder="Airport, station, hotel, address…"
         formControlName="pickup"
         [invalid]="invalid('pickup')" />
     </app-form-field>
+    <button
+      type="button"
+      class="trip-step__swap"
+      aria-label="Swap from and to"
+      (click)="swap()">
+      <app-icon name="route" />
+    </button>
     <app-form-field
       label="To"
       for="dropoff"
       [error]="invalid('dropoff') ? 'Pick an address from the list' : null">
       <app-address-input
         inputId="dropoff"
+        placeholder="Where are you going?"
         formControlName="dropoff"
         [invalid]="invalid('dropoff')" />
     </app-form-field>
   </div>
 
-  <div class="trip-step__row">
-    <app-form-field label="Date" for="date">
-      <input
-        id="date"
-        class="input"
-        type="date"
-        [min]="minDate"
-        formControlName="date" />
-    </app-form-field>
-    <app-form-field label="Pickup time (Italy)" for="time">
-      <input id="time" class="input" type="time" formControlName="time" />
-    </app-form-field>
-  </div>
-
-  <div class="trip-step__counters">
-    <app-counter
-      label="Passengers"
-      [min]="1"
-      [max]="8"
-      formControlName="passengers" />
-    <app-counter
-      label="Large bags"
-      hint="Suitcases"
-      [max]="16"
-      formControlName="largeLuggage" />
-    <app-counter
-      label="Small bags"
-      hint="Carry-on, backpacks"
-      [max]="16"
-      formControlName="smallLuggage" />
+  <div class="trip-step__details">
+    <div class="trip-step__when">
+      <app-form-field label="Date" for="date">
+        <input
+          id="date"
+          class="input"
+          type="date"
+          [min]="minDate"
+          formControlName="date" />
+      </app-form-field>
+      <app-form-field label="Pickup time (Italy)" for="time">
+        <input id="time" class="input" type="time" formControlName="time" />
+      </app-form-field>
+    </div>
+    <div class="trip-step__counters">
+      <app-counter
+        label="Passengers"
+        [min]="1"
+        [max]="8"
+        formControlName="passengers" />
+      <app-counter
+        label="Large bags"
+        hint="Suitcases"
+        [max]="16"
+        formControlName="largeLuggage" />
+      <app-counter
+        label="Small bags"
+        hint="Carry-on"
+        [max]="16"
+        formControlName="smallLuggage" />
+    </div>
   </div>
 
   <label class="trip-step__toggle">
@@ -66,7 +76,7 @@
   </label>
 
   @if (form().controls.returnTrip.value) {
-    <div class="trip-step__row">
+    <div class="trip-step__return">
       <app-form-field
         label="Return date"
         for="returnDate"
@@ -87,8 +97,4 @@
       </app-form-field>
     </div>
   }
-
-  <button appButton type="submit" [block]="true" [disabled]="loading()">
-    {{ loading() ? 'Calculating…' : 'See prices' }}
-  </button>
-</form>
+</div>

@@ -1,5 +1,9 @@
 <section id="tariffs" class="tariffs page page__section" aria-label="Tariffs">
-  <app-section-heading eyebrow="See our" title="Tariffs" appReveal />
+  <app-section-heading
+    eyebrow="See our"
+    title="Tariffs"
+    [level]="page() ? 1 : 2"
+    appReveal />
   <p class="tariffs__intro" appReveal [delay]="80">
     One fixed price per ride: a base fee plus a rate per kilometre for the car
     you choose, VAT included. You see the exact total before you pay.

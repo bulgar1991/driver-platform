@@ -14,17 +14,15 @@
 
     <nav class="site-footer__column" aria-label="Site">
       <h2 class="site-footer__title">Explore</h2>
-      @for (s of sections; track s.fragment) {
-        <a class="site-footer__link" routerLink="/" [fragment]="s.fragment">{{
-          s.label
-        }}</a>
+      @for (p of pages; track p.path) {
+        <a class="site-footer__link" [routerLink]="p.path">{{ p.label }}</a>
       }
     </nav>
 
     <div class="site-footer__column">
       <h2 class="site-footer__title">Services</h2>
       @for (s of services; track s.title) {
-        <span class="site-footer__item">{{ s.title }}</span>
+        <a class="site-footer__link" routerLink="/services">{{ s.title }}</a>
       }
     </div>
 

@@ -1,0 +1,136 @@
+@font-face {
+    font-family: "icons";
+    src: url("./icons.woff?3b405336ae1f8deded0b8888e8b72e33") format("woff");
+}
+
+i[class^="icon-"]:before, i[class*=" icon-"]:before {
+    font-family: icons !important;
+    font-style: normal;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-wallet:before {
+    content: "\f101";
+}
+.icon-users:before {
+    content: "\f102";
+}
+.icon-trash:before {
+    content: "\f103";
+}
+.icon-tag:before {
+    content: "\f104";
+}
+.icon-star:before {
+    content: "\f105";
+}
+.icon-star-filled:before {
+    content: "\f106";
+}
+.icon-sparkle:before {
+    content: "\f107";
+}
+.icon-shield:before {
+    content: "\f108";
+}
+.icon-seat:before {
+    content: "\f109";
+}
+.icon-route:before {
+    content: "\f10a";
+}
+.icon-quote:before {
+    content: "\f10b";
+}
+.icon-plus:before {
+    content: "\f10c";
+}
+.icon-plane:before {
+    content: "\f10d";
+}
+.icon-pin:before {
+    content: "\f10e";
+}
+.icon-phone:before {
+    content: "\f10f";
+}
+.icon-navigate:before {
+    content: "\f110";
+}
+.icon-minus:before {
+    content: "\f111";
+}
+.icon-menu:before {
+    content: "\f112";
+}
+.icon-map:before {
+    content: "\f113";
+}
+.icon-mail:before {
+    content: "\f114";
+}
+.icon-luggage:before {
+    content: "\f115";
+}
+.icon-logout:before {
+    content: "\f116";
+}
+.icon-lock:before {
+    content: "\f117";
+}
+.icon-link:before {
+    content: "\f118";
+}
+.icon-info:before {
+    content: "\f119";
+}
+.icon-grid:before {
+    content: "\f11a";
+}
+.icon-globe:before {
+    content: "\f11b";
+}
+.icon-edit:before {
+    content: "\f11c";
+}
+.icon-download:before {
+    content: "\f11d";
+}
+.icon-diamond:before {
+    content: "\f11e";
+}
+.icon-close:before {
+    content: "\f11f";
+}
+.icon-clock:before {
+    content: "\f120";
+}
+.icon-check:before {
+    content: "\f121";
+}
+.icon-chat:before {
+    content: "\f122";
+}
+.icon-card:before {
+    content: "\f123";
+}
+.icon-car:before {
+    content: "\f124";
+}
+.icon-calendar:before {
+    content: "\f125";
+}
+.icon-briefcase:before {
+    content: "\f126";
+}
+.icon-arrow-right:before {
+    content: "\f127";
+}
+.icon-arrow-left:before {
+    content: "\f128";
+}

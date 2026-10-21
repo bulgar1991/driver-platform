@@ -42,7 +42,7 @@
               <app-icon
                 class="reviews__star"
                 [class.reviews__star--on]="star <= r.rating"
-                name="star" />
+                [name]="star <= r.rating ? 'star-filled' : 'star'" />
             }
           } @else {
             <span class="reviews__muted"

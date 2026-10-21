@@ -3,8 +3,11 @@ import {
   Component,
   computed,
   DestroyRef,
+  ElementRef,
   inject,
+  input,
   OnInit,
+  viewChild,
 } from '@angular/core'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { FormBuilder } from '@angular/forms'
@@ -29,19 +32,15 @@ import {
   toBookingRequest,
   toQuoteRequest,
 } from './booking-form'
-import { BookingStep, BookingStore } from './booking.store'
+import { BookingStore } from './booking.store'
 
-interface StepItem {
-  id: Exclude<BookingStep, 'done'>
-  label: string
-}
+/** Delay after the last change before the price is recalculated. */
+const QUOTE_DEBOUNCE_MS = 500
 
-const STEPS: StepItem[] = [
-  { id: 'trip', label: 'Trip' },
-  { id: 'vehicle', label: 'Vehicle' },
-  { id: 'details', label: 'Details' },
-]
-
+/**
+ * The booking form, top to bottom: from / to, the map with the route, the approximate price of each
+ * car, then options and contact once a car is chosen. Used on /book and on the home page.
+ */
 @Component({
   selector: 'app-booking',
   imports: [
@@ -56,21 +55,27 @@ const STEPS: StepItem[] = [
   templateUrl: './booking.component.html',
   styleUrl: './booking.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '[class.booking--embedded]': 'embedded()' },
 })
 export class BookingComponent implements OnInit {
+  /** On the home page the title is a section heading, not the page title. */
+  readonly embedded = input(false)
+
   protected readonly store = inject(BookingStore)
   private readonly router = inject(Router)
   private readonly destroyRef = inject(DestroyRef)
   protected readonly forms = createBookingForms(inject(FormBuilder))
-  protected readonly steps = STEPS
+  private readonly detailsRef = viewChild<ElementRef<HTMLElement>>('details')
 
   private readonly trip = toSignal(this.forms.trip.valueChanges, {
     initialValue: this.forms.trip.value,
   })
 
-  protected readonly stepIndex = computed(() =>
-    STEPS.findIndex(s => s.id === this.store.step())
-  )
+  /** Both addresses picked: a price can be calculated. */
+  protected readonly ready = computed(() => {
+    const { pickup, dropoff } = this.trip()
+    return !!pickup && !!dropoff
+  })
 
   protected readonly markers = computed<MapMarker[]>(() => {
     const quote = this.store.quote()
@@ -115,17 +120,17 @@ export class BookingComponent implements OnInit {
   ngOnInit(): void {
     this.store.loadOptions()
 
-    // A new address invalidates the meeting point chosen for the old one.
     const { pickup, dropoff, pickupMeetingPoint, dropoffMeetingPoint } =
       this.forms.trip.controls
+    // A new address invalidates the meeting point chosen for the old one.
     pickup.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => pickupMeetingPoint.setValue(null))
+      .subscribe(() => pickupMeetingPoint.setValue(null, { emitEvent: false }))
     dropoff.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => dropoffMeetingPoint.setValue(null))
+      .subscribe(() => dropoffMeetingPoint.setValue(null, { emitEvent: false }))
 
-    // Child seats and name signs change the price: re-quote while on the details step.
+    // The price follows the form: any change of route, time, people or options re-quotes.
     const {
       infantSeats,
       toddlerSeats,
@@ -134,6 +139,7 @@ export class BookingComponent implements OnInit {
       returnNameSign,
     } = this.forms.details.controls
     merge(
+      this.forms.trip.valueChanges,
       infantSeats.valueChanges,
       toddlerSeats.valueChanges,
       boosterSeats.valueChanges,
@@ -141,18 +147,16 @@ export class BookingComponent implements OnInit {
       returnNameSign.valueChanges
     )
       .pipe(
-        debounceTime(400),
-        filter(() => this.store.step() === 'details'),
+        debounceTime(QUOTE_DEBOUNCE_MS),
+        filter(
+          () =>
+            this.ready() &&
+            this.forms.trip.valid &&
+            this.store.step() !== 'done'
+        ),
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(() => this.requote())
-  }
-
-  protected searchPrices(): void {
-    this.store.requestQuote(toQuoteRequest(this.forms)).subscribe({
-      next: () => this.goTo('vehicle'),
-      error: () => undefined,
-    })
   }
 
   protected chooseMeetingPoint(
@@ -169,7 +173,19 @@ export class BookingComponent implements OnInit {
 
   protected chooseVehicle(category: VehicleCategory): void {
     this.store.category.set(category)
-    this.goTo('details')
+    this.store.step.set('details')
+    // The rest of the form opens below the prices; bring it into view.
+    setTimeout(() =>
+      this.detailsRef()?.nativeElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    )
+  }
+
+  protected changeVehicle(): void {
+    this.store.category.set(null)
+    this.store.step.set('trip')
   }
 
   protected book(): void {
@@ -196,13 +212,14 @@ export class BookingComponent implements OnInit {
     })
   }
 
-  protected goTo(step: BookingStep): void {
-    this.store.step.set(step)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
   private requote(): void {
     this.store.requestQuote(toQuoteRequest(this.forms)).subscribe({
+      next: () => {
+        // The chosen car no longer fits (more passengers…): back to choosing.
+        if (this.store.step() === 'details' && !this.store.vehicle()) {
+          this.store.step.set('trip')
+        }
+      },
       error: () => undefined,
     })
   }

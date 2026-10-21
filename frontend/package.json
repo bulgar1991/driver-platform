@@ -7,7 +7,7 @@
     "start:stage": "ng serve --configuration staging",
     "start:prod": "ng serve --configuration production",
     "start:local": "ng serve --configuration local",
-    "generate-fonts": "fantasticon src/assets/icons/font-icons -o src/assets/fonts",
+    "generate-fonts": "npm run icons:outline && fantasticon && prettier --write src/app/core/models/icon-names.generated.ts",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "lint": "ng lint --fix",
@@ -15,7 +15,8 @@
     "test:unit": "ng test",
     "test:ui": "ng test --ui",
     "test:watch": "ng test --watch",
-    "test:coverage": "ng test --code-coverage"
+    "test:coverage": "ng test --code-coverage",
+    "icons:outline": "oslllo-svg-fixer -s src/assets/icons/src -d src/assets/icons/font-icons"
   },
   "private": true,
   "packageManager": "npm@11.19.0",
@@ -84,6 +85,7 @@
     "karma-coverage": "~2.2.1",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "oslllo-svg-fixer": "^6.0.1",
     "postcss": "^8.4.47",
     "prettier": "^3.8.1",
     "prettier-eslint": "^16.3.0",

@@ -18,10 +18,6 @@
 
     &--on {
       @apply text-gold;
-
-      ::ng-deep svg path {
-        fill: currentColor;
-      }
     }
   }
 

@@ -10,4 +10,6 @@ export class SectionHeadingComponent {
   readonly eyebrow = input<string>()
   readonly title = input.required<string>()
   readonly align = input<'center' | 'start'>('center')
+  /** 1 when the section is the whole page (its title is the page title). */
+  readonly level = input<1 | 2>(2)
 }

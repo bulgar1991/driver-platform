@@ -32,7 +32,11 @@ const ZONE_MODIFIER: Record<ZoneType, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   // Leaflet creates its own DOM, so the BEM styles for markers and shapes must be global.
   encapsulation: ViewEncapsulation.None,
-  host: { class: 'map', '[class.map--clickable]': 'clickable()' },
+  host: {
+    class: 'map',
+    '[class.map--clickable]': 'clickable()',
+    '[class.map--locked]': 'locked()',
+  },
 })
 export class MapComponent {
   readonly markers = input<MapMarker[]>([])
@@ -41,6 +45,8 @@ export class MapComponent {
   /** The view zooms to these points whenever the array changes. */
   readonly fitPoints = input<LatLng[]>([])
   readonly clickable = input(false)
+  /** A picture of the route: no dragging, zooming or scroll capture (set once, at creation). */
+  readonly locked = input(false)
   readonly mapClick = output<LatLng>()
 
   private readonly config = inject(MAP_CONFIG)
@@ -51,11 +57,18 @@ export class MapComponent {
 
   constructor() {
     afterNextRender(() => {
+      const interactive = !untracked(this.locked)
       this.map = L.map(this.canvas().nativeElement, {
         center: this.config.center,
         zoom: this.config.zoom,
-        zoomControl: true,
+        zoomControl: interactive,
         attributionControl: true,
+        dragging: interactive,
+        scrollWheelZoom: interactive,
+        touchZoom: interactive,
+        doubleClickZoom: interactive,
+        boxZoom: interactive,
+        keyboard: interactive,
       })
       L.tileLayer(this.config.tileUrl, {
         attribution: this.config.attribution,

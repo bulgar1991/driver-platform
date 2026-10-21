@@ -1,63 +1,103 @@
+:host {
+  @apply block;
+}
+
 .booking {
-  @apply flex flex-col gap-8 py-10 sm:py-14;
+  @apply py-12 sm:py-16;
+
+  &__inner {
+    @apply flex flex-col gap-6;
+  }
 
   &__header {
     @apply flex flex-col gap-3;
   }
 
-  &__steps {
-    @apply flex gap-2 border-b border-ink-600 pb-4;
-  }
-
-  &__step {
-    @apply flex-1;
-  }
-
-  &__step-button {
-    @apply flex w-full items-center gap-2 text-xs uppercase tracking-widest text-ivory-400 disabled:cursor-default;
-  }
-
-  &__step--done &__step-button {
-    @apply text-ivory-200 hover:text-gold;
-  }
-
-  &__step--active &__step-button {
-    @apply text-gold;
-  }
-
-  &__step-number {
-    @apply flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-current text-[11px];
-  }
-
-  &__step--active &__step-number {
-    @apply border-gold bg-gold text-ink;
-  }
-
-  &__layout {
-    @apply grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)];
-  }
-
-  &__main {
-    @apply flex min-w-0 flex-col gap-5;
-  }
-
-  &__stack {
-    @apply flex flex-col gap-4;
-  }
-
-  &__aside {
-    @apply flex min-w-0 flex-col gap-5 lg:sticky lg:top-24 lg:self-start;
+  &__card {
+    @apply rounded-md border border-ink-600 bg-ink-900/80 p-5 shadow-gold backdrop-blur sm:p-6;
   }
 
   &__map {
-    @apply h-72 lg:h-80;
+    @apply h-72 sm:h-96;
+  }
+
+  &__prices {
+    @apply flex flex-col gap-4;
+  }
+
+  &__prices-header {
+    @apply flex flex-wrap items-baseline justify-between gap-2;
+  }
+
+  &__prices-title {
+    @apply font-display text-2xl text-ivory;
+  }
+
+  &__status {
+    @apply flex items-center gap-2 text-xs text-ivory-300;
+  }
+
+  &__spinner {
+    @apply block h-3 w-3 rounded-full border-2 border-gold border-t-transparent;
+    animation: spin 0.8s linear infinite;
+  }
+
+  &__vehicles {
+    @apply grid grid-cols-1 gap-4 md:grid-cols-3;
+    transition: opacity 0.3s;
+
+    &--busy {
+      @apply opacity-60;
+    }
+  }
+
+  &__skeleton {
+    @apply h-56 rounded-md border border-ink-700;
+    background: linear-gradient(
+      100deg,
+      theme('colors.ink.900') 30%,
+      theme('colors.ink.800') 50%,
+      theme('colors.ink.900') 70%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s linear infinite;
+  }
+
+  &__hint {
+    @apply rounded-md border border-dashed border-ink-500 px-5 py-8 text-center text-sm text-ivory-300;
   }
 
   &__note {
     @apply text-xs text-ivory-400;
   }
 
+  &__details {
+    @apply grid grid-cols-1 gap-8 border-t border-ink-600 pt-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)];
+    animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  &__details-form {
+    @apply min-w-0;
+  }
+
+  &__summary {
+    @apply min-w-0 lg:sticky lg:top-24 lg:self-start;
+  }
+
   &__done {
     @apply flex flex-col items-center gap-3 py-24 text-center;
+  }
+}
+
+:host(.booking--embedded) .booking {
+  @apply border-y border-ink-700;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgb(201 164 92 / 0.08), transparent 60%),
+    theme('colors.ink.DEFAULT');
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

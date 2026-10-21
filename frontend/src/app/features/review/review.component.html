@@ -39,7 +39,8 @@
           [attr.aria-label]="star + (star === 1 ? ' star' : ' stars')"
           (mouseenter)="hover.set(star)"
           (click)="rating.set(star)">
-          <app-icon name="star" />
+          <app-icon
+            [name]="star <= (hover() || rating()) ? 'star-filled' : 'star'" />
         </button>
       }
     </div>

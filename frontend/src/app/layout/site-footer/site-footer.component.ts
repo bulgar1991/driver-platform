@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router'
 import { CONTACT, SERVICES, SOCIAL } from '@/features/home/home.content'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { LogoComponent } from '@/shared/components/logo/logo.component'
-import { SITE_SECTIONS } from '../site-header/site-header.component'
+import { SITE_PAGES } from '../site-header/site-header.component'
 
 @Component({
   selector: 'app-site-footer',
@@ -14,7 +14,7 @@ import { SITE_SECTIONS } from '../site-header/site-header.component'
 })
 export class SiteFooterComponent {
   protected readonly year = new Date().getFullYear()
-  protected readonly sections = SITE_SECTIONS
+  protected readonly pages = SITE_PAGES
   protected readonly services = SERVICES
   protected readonly contact = CONTACT
   protected readonly social = SOCIAL

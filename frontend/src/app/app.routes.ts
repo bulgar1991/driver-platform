@@ -24,6 +24,51 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'services',
+        title: 'Our services · Magnus Drive',
+        loadComponent: () =>
+          import('./features/home/components/services-section/services-section.component').then(
+            m => m.ServicesSectionComponent
+          ),
+        data: { page: true },
+      },
+      {
+        path: 'tariffs',
+        title: 'Tariffs · Magnus Drive',
+        loadComponent: () =>
+          import('./features/home/components/tariffs/tariffs.component').then(
+            m => m.TariffsComponent
+          ),
+        data: { page: true },
+      },
+      {
+        path: 'drivers',
+        title: 'For drivers · Magnus Drive',
+        loadComponent: () =>
+          import('./features/home/components/drivers-join/drivers-join.component').then(
+            m => m.DriversJoinComponent
+          ),
+        data: { page: true },
+      },
+      {
+        path: 'reviews',
+        title: 'Reviews · Magnus Drive',
+        loadComponent: () =>
+          import('./features/home/components/testimonials/testimonials.component').then(
+            m => m.TestimonialsComponent
+          ),
+        data: { page: true },
+      },
+      {
+        path: 'partners',
+        title: 'Partners · Magnus Drive',
+        loadComponent: () =>
+          import('./features/home/components/partners/partners.component').then(
+            m => m.PartnersComponent
+          ),
+        data: { page: true },
+      },
+      {
         // Signed link from the confirmation: pay, check the status, download the invoice.
         path: 'my-booking/:reference/:token',
         title: 'Your booking · Magnus Drive',

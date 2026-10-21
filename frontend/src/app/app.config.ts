@@ -25,7 +25,8 @@ export const appConfig: ApplicationConfig = {
       routes,
       // Route data (title, step, icon) binds straight to component inputs.
       withComponentInputBinding(),
-      withInMemoryScrolling({ anchorScrolling: 'enabled' })
+      // A new page opens at the top; back/forward restore the position.
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })
     ),
     provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
     provideAppInitializer(() =>

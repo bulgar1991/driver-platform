@@ -1,6 +1,6 @@
 // Block: hero — the banner. Entrance runs once on load; ambient motion is slow and GPU-only.
 .hero {
-  @apply relative isolate flex min-h-[calc(100svh-4.5rem)] flex-col overflow-hidden;
+  @apply relative isolate flex min-h-[calc(100svh-4.25rem)] flex-col overflow-hidden;
 
   &__backdrop {
     @apply absolute inset-0 -z-20;
@@ -111,15 +111,6 @@
       @apply pointer-events-none absolute inset-0 rounded-sm border border-gold;
       animation: pulse-ring 2.4s ease-out 1.6s infinite;
     }
-  }
-
-  &__scroll {
-    @apply absolute bottom-32 left-1/2 hidden h-10 w-6 -translate-x-1/2 justify-center rounded-full border border-ivory-300/50 pt-2 sm:flex;
-  }
-
-  &__scroll-dot {
-    @apply block h-2 w-1 rounded-full bg-gold;
-    animation: bounce-down 1.6s ease-in-out infinite;
   }
 
   &__trust {

@@ -1,5 +1,6 @@
 :host {
-  @apply sticky top-0 z-30 block;
+  // Fixed rather than sticky: stays at the top in every browser, whatever the page layout.
+  @apply fixed inset-x-0 top-0 z-40 block;
 }
 
 .site-header {
@@ -37,6 +38,14 @@
     &:focus-visible::after {
       @apply scale-x-100;
     }
+
+    &--active {
+      @apply text-gold;
+
+      &::after {
+        @apply scale-x-100;
+      }
+    }
   }
 
   &__actions {
@@ -63,6 +72,10 @@
 
     &:last-of-type {
       @apply mb-4;
+    }
+
+    &--active {
+      @apply text-gold;
     }
   }
 }

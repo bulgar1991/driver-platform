@@ -72,6 +72,27 @@ export const SERVICES: ServiceOffering[] = [
     description: 'Child seats, name sign and luggage space on request.',
     icon: 'diamond',
   },
+  {
+    title: 'Venice Transfers',
+    description:
+      'Pickup at the nearest point cars can reach, with clear directions.',
+    icon: 'map',
+  },
+  {
+    title: 'Groups & Families',
+    description: 'Vans for up to 8 passengers, child seats for every age.',
+    icon: 'users',
+  },
+  {
+    title: 'Return Trips',
+    description: 'Book both ways at once and get a driver for the way back.',
+    icon: 'route',
+  },
+  {
+    title: 'Hotels & Agencies',
+    description: 'Partner rates, our booking API and monthly invoicing.',
+    icon: 'globe',
+  },
 ]
 
 export const VEHICLE_TEXT: Partial<

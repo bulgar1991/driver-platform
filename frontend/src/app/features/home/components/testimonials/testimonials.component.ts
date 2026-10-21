@@ -8,6 +8,7 @@ import {
   ElementRef,
   inject,
   signal,
+  input,
 } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { RouterLink } from '@angular/router'
@@ -42,6 +43,8 @@ const SWIPE_PX = 50
   host: { '(keydown.arrowLeft)': 'go(-1)', '(keydown.arrowRight)': 'go(1)' },
 })
 export class TestimonialsComponent {
+  /** The section is the whole page. */
+  readonly page = input(false)
   protected readonly stars = [1, 2, 3, 4, 5]
   protected readonly items = toSignal(
     inject(SiteService)

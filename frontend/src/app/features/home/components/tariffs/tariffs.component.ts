@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   inject,
+  input,
 } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { RouterLink } from '@angular/router'
@@ -41,6 +42,8 @@ const EXTRA_LABEL: Record<ExtraType, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TariffsComponent {
+  /** The section is the whole page. */
+  readonly page = input(false)
   protected readonly exampleKm = EXAMPLE_KM
   private readonly options = toSignal(
     inject(BookingApiService)

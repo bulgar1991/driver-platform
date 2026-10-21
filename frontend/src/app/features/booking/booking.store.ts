@@ -13,7 +13,8 @@ import {
 import { BookingApiService } from '@/core/services/booking-api.service'
 import { problemMessage } from '@/core/utils/problem'
 
-export type BookingStep = 'trip' | 'vehicle' | 'details' | 'done'
+/** trip: choosing route and car; details: options and contact; done: going to payment. */
+export type BookingStep = 'trip' | 'details' | 'done'
 
 /** State of one booking flow; provided by the booking page. */
 @Injectable()

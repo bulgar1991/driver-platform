@@ -2,15 +2,25 @@
   @apply block;
 }
 
+// A column card in the price grid; lifts on hover, glows when chosen.
 .vehicle-card {
-  @apply flex w-full items-center gap-4 rounded-sm border border-ink-500 bg-ink-800 p-4 text-left transition hover:border-gold/60 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-ink-500;
+  @apply flex h-full w-full flex-col items-start gap-3 rounded-md border border-ink-500 bg-ink-800 p-5 text-left disabled:cursor-not-allowed disabled:opacity-50;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s,
+    box-shadow 0.35s;
+
+  &:not(:disabled):hover {
+    @apply border-gold/60;
+    transform: translate3d(0, -4px, 0);
+  }
 
   &--selected {
     @apply border-gold bg-gold/10 shadow-gold;
   }
 
   &__icon {
-    @apply h-8 w-8 text-gold;
+    @apply h-9 w-9 text-gold;
   }
 
   &__body {
@@ -18,7 +28,7 @@
   }
 
   &__title {
-    @apply font-display text-lg text-ivory;
+    @apply font-display text-xl text-ivory;
   }
 
   &__description {
@@ -38,10 +48,10 @@
   }
 
   &__price {
-    @apply shrink-0 text-right font-semibold text-gold;
+    @apply mt-auto w-full border-t border-ink-600 pt-3 font-display text-2xl text-gold;
   }
 
   &__reason {
-    @apply block max-w-24 text-xs font-normal text-ivory-400;
+    @apply block font-sans text-xs font-normal text-ivory-400;
   }
 }
