@@ -1,0 +1,373 @@
+<div class="partners">
+  <header class="partners__header">
+    <div>
+      <p class="eyebrow">Integrations</p>
+      <h1 class="heading heading--lg">Partners</h1>
+    </div>
+    <div class="partners__tools">
+      <a
+        class="partners__docs"
+        [href]="api.docsUrl"
+        target="_blank"
+        rel="noopener">
+        <app-icon class="partners__icon" name="link" /> API description
+        (OpenAPI)
+      </a>
+      <button appButton size="sm" type="button" (click)="open(null)"
+        ><app-icon name="plus" /> New partner</button
+      >
+    </div>
+  </header>
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  <div class="partners__table-wrap">
+    <table class="partners__table">
+      <thead>
+        <tr>
+          <th>Partner</th>
+          <th>API key</th>
+          <th>Rate</th>
+          <th>This month</th>
+          <th>Webhook</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of partners(); track p.id) {
+          <tr class="partners__row" (click)="open(p)">
+            <td>
+              <button
+                type="button"
+                class="partners__name"
+                (click)="open(p); $event.stopPropagation()"
+                >{{ p.name }}</button
+              >
+              <span class="partners__muted"
+                >{{ p.kind === 'Booking' ? 'Booking.com' : 'Company' }} ·
+                {{ p.contactEmail }}</span
+              >
+            </td>
+            <td>
+              @if (p.apiKeyPrefix) {
+                <code class="partners__code">md_{{ p.apiKeyPrefix }}_…</code>
+                <span class="partners__muted">
+                  {{
+                    p.apiKeyLastUsedAt
+                      ? 'used ' + (p.apiKeyLastUsedAt | date: 'd MMM HH:mm')
+                      : 'never used'
+                  }}
+                </span>
+              } @else {
+                <span class="partners__warning">No key</span>
+              }
+            </td>
+            <td class="partners__nowrap">
+              {{ p.priceAdjustmentPercent > 0 ? '+' : ''
+              }}{{ p.priceAdjustmentPercent }}%
+              <span class="partners__muted"
+                >commission {{ p.commissionPercent }}%</span
+              >
+            </td>
+            <td>{{ p.bookingsThisMonth }} bookings</td>
+            <td>
+              @if (p.webhookUrl) {
+                <span [class.partners__danger]="p.webhooksFailing > 0">{{
+                  p.webhooksFailing > 0 ? p.webhooksFailing + ' failing' : 'OK'
+                }}</span>
+              } @else {
+                <span class="partners__muted">—</span>
+              }
+            </td>
+            <td
+              ><span
+                class="partners__badge"
+                [class.partners__badge--off]="!p.isActive"
+                >{{ p.isActive ? 'Active' : 'Inactive' }}</span
+              ></td
+            >
+          </tr>
+        } @empty {
+          <tr
+            ><td colspan="6" class="partners__muted">{{
+              loading() ? 'Loading…' : 'No partners yet.'
+            }}</td></tr
+          >
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<p-dialog
+  [header]="editing() ? editing()!.name : 'New partner'"
+  [modal]="true"
+  [draggable]="false"
+  styleClass="partners__dialog"
+  [visible]="editing() !== undefined"
+  (visibleChange)="$event || editing.set(undefined)">
+  @if (notice(); as n) {
+    <p class="alert alert--info partners__notice" role="status">{{ n }}</p>
+  }
+  <form
+    class="partners__form"
+    [formGroup]="form"
+    (ngSubmit)="save()"
+    novalidate>
+    @if (formError(); as message) {
+      <p class="alert alert--error" role="alert">{{ message }}</p>
+    }
+    <div class="partners__grid">
+      <app-form-field
+        label="Name"
+        for="pName"
+        [error]="
+          form.controls.name.touched && form.controls.name.invalid
+            ? 'Required'
+            : null
+        ">
+        <input id="pName" class="input" formControlName="name" />
+      </app-form-field>
+      <app-form-field label="Type" for="pKind">
+        <select id="pKind" class="input" formControlName="kind">
+          <option value="Company">Company (agency, hotel, cruise…)</option>
+          <option value="Booking">Booking.com</option>
+        </select>
+      </app-form-field>
+      <app-form-field
+        label="Contact email"
+        for="pEmail"
+        [error]="
+          form.controls.contactEmail.touched &&
+          form.controls.contactEmail.invalid
+            ? 'Enter a valid email'
+            : null
+        ">
+        <input
+          id="pEmail"
+          class="input"
+          type="email"
+          formControlName="contactEmail" />
+      </app-form-field>
+      <app-form-field
+        label="Webhook URL (optional)"
+        for="pHook"
+        [error]="
+          form.controls.webhookUrl.touched && form.controls.webhookUrl.invalid
+            ? 'Use an https:// address'
+            : null
+        ">
+        <input
+          id="pHook"
+          class="input"
+          formControlName="webhookUrl"
+          placeholder="https://partner.example/hooks/magnus" />
+      </app-form-field>
+      <app-form-field label="Agreed rate (% on public price)" for="pRate">
+        <input
+          id="pRate"
+          class="input"
+          type="number"
+          min="-50"
+          max="50"
+          step="0.5"
+          formControlName="priceAdjustmentPercent" />
+      </app-form-field>
+      <app-form-field label="Commission (%)" for="pCommission">
+        <input
+          id="pCommission"
+          class="input"
+          type="number"
+          min="0"
+          max="50"
+          step="0.5"
+          formControlName="commissionPercent" />
+      </app-form-field>
+    </div>
+    <div class="partners__checks">
+      <label class="partners__check"
+        ><input
+          class="partners__checkbox"
+          type="checkbox"
+          formControlName="monthlyInvoicing" />
+        Monthly invoicing (no online payment)</label
+      >
+      <label class="partners__check"
+        ><input
+          class="partners__checkbox"
+          type="checkbox"
+          formControlName="notifyPassengers" />
+        We message passengers (driver details, review link)</label
+      >
+      <label class="partners__check"
+        ><input
+          class="partners__checkbox"
+          type="checkbox"
+          formControlName="isActive" />
+        Active</label
+      >
+    </div>
+    <div class="partners__actions">
+      <button
+        appButton
+        type="button"
+        variant="ghost"
+        (click)="editing.set(undefined)"
+        >Close</button
+      >
+      <button appButton type="submit" [disabled]="saving()">{{
+        saving() ? 'Saving…' : 'Save partner'
+      }}</button>
+    </div>
+  </form>
+
+  @if (editing(); as p) {
+    <section class="partners__section">
+      <h3 class="partners__legend">API key</h3>
+      @if (newKey(); as key) {
+        <p class="partners__warning">Copy it now: it is shown only once.</p>
+        <div class="partners__secret">
+          <input
+            class="input partners__mono"
+            readonly
+            [value]="key"
+            aria-label="New API key"
+            (focus)="$any($event.target).select()" />
+          <button
+            appButton
+            size="sm"
+            variant="outline"
+            type="button"
+            (click)="copy(key)"
+            >Copy</button
+          >
+        </div>
+      } @else if (p.apiKeyPrefix) {
+        <p class="partners__muted"
+          >Current key
+          <code class="partners__code">md_{{ p.apiKeyPrefix }}_…</code>, created
+          {{ p.apiKeyCreatedAt | date: 'd MMM y' }}.</p
+        >
+      }
+      <div class="partners__buttons">
+        <button
+          appButton
+          size="sm"
+          variant="outline"
+          type="button"
+          (click)="createKey()"
+          >{{ p.apiKeyPrefix ? 'Replace key' : 'Create API key' }}</button
+        >
+        @if (p.apiKeyPrefix) {
+          <button
+            appButton
+            size="sm"
+            variant="ghost"
+            type="button"
+            (click)="revokeKey()"
+            >Revoke</button
+          >
+        }
+      </div>
+      <p class="partners__muted"
+        >Requests send it in the
+        <code class="partners__code">X-Api-Key</code> header to
+        <code class="partners__code">/api/partner/v1</code>.</p
+      >
+    </section>
+
+    @if (p.webhookUrl) {
+      <section class="partners__section">
+        <h3 class="partners__legend">Webhook</h3>
+        <p class="partners__muted"
+          >Status changes are POSTed to {{ p.webhookUrl }}, signed with the
+          secret (header
+          <code class="partners__code">MagnusDrive-Signature</code>).</p
+        >
+        @if (secret(); as value) {
+          <div class="partners__secret">
+            <input
+              class="input partners__mono"
+              readonly
+              [value]="value"
+              aria-label="Webhook secret"
+              (focus)="$any($event.target).select()" />
+            <button
+              appButton
+              size="sm"
+              variant="outline"
+              type="button"
+              (click)="copy(value)"
+              >Copy</button
+            >
+          </div>
+        }
+        <div class="partners__buttons">
+          <button
+            appButton
+            size="sm"
+            variant="ghost"
+            type="button"
+            (click)="showSecret()"
+            >Show secret</button
+          >
+          <button
+            appButton
+            size="sm"
+            variant="ghost"
+            type="button"
+            (click)="showSecret(true)"
+            >New secret</button
+          >
+        </div>
+        <ul class="partners__deliveries">
+          @for (d of deliveries(); track d.id) {
+            <li class="partners__delivery">
+              <span
+                [class.partners__danger]="!d.deliveredAt && d.attempts > 0"
+                >{{ d.deliveredAt ? '✓' : d.attempts ? '✗' : '…' }}</span
+              >
+              {{ d.event }} · {{ d.bookingReference }}
+              <span class="partners__muted"
+                >{{ d.createdAt | date: 'd MMM HH:mm'
+                }}{{
+                  d.lastError
+                    ? ' · ' + d.lastError + ' (' + d.attempts + ' tries)'
+                    : ''
+                }}</span
+              >
+            </li>
+          } @empty {
+            <li class="partners__muted">Nothing sent yet.</li>
+          }
+        </ul>
+      </section>
+    }
+
+    <section class="partners__section">
+      <h3 class="partners__legend">Monthly statement</h3>
+      <div class="partners__buttons">
+        <input
+          class="input partners__month"
+          type="month"
+          aria-label="Month"
+          [value]="statementMonth"
+          (change)="statementMonth = $any($event.target).value" />
+        <button
+          appButton
+          size="sm"
+          variant="outline"
+          type="button"
+          (click)="downloadStatement()"
+          ><app-icon name="download" /> CSV</button
+        >
+      </div>
+      <p class="partners__muted"
+        >Rides by pickup date, with price, commission and net. Cancelled rides
+        are listed at zero.</p
+      >
+    </section>
+  }
+</p-dialog>

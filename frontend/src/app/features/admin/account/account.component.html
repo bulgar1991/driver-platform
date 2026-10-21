@@ -1,0 +1,81 @@
+<section class="account">
+  <header class="account__header">
+    <p class="eyebrow">My account</p>
+    <h1 class="heading heading--lg">{{ user()?.fullName }}</h1>
+    <p class="account__muted">{{ user()?.email }} · {{ user()?.role }}</p>
+  </header>
+
+  @if (user()?.mustChangePassword) {
+    <p class="alert alert--info" role="status">
+      Welcome. Replace the temporary password before using the panel.
+    </p>
+  }
+  @if (done()) {
+    <p class="alert alert--info" role="status"
+      >Password changed. Other devices were signed out.</p
+    >
+  }
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  <form
+    class="account__form"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    novalidate>
+    <app-form-field
+      label="Current password"
+      for="current"
+      [error]="
+        form.controls.currentPassword.touched &&
+        form.controls.currentPassword.invalid
+          ? 'Required'
+          : null
+      ">
+      <input
+        id="current"
+        class="input"
+        type="password"
+        autocomplete="current-password"
+        formControlName="currentPassword" />
+    </app-form-field>
+    <app-form-field
+      label="New password"
+      for="newPassword"
+      [error]="
+        form.controls.newPassword.touched && form.controls.newPassword.invalid
+          ? 'At least 12 characters'
+          : null
+      ">
+      <input
+        id="newPassword"
+        class="input"
+        type="password"
+        autocomplete="new-password"
+        formControlName="newPassword" />
+    </app-form-field>
+    <app-form-field
+      label="Repeat the new password"
+      for="confirm"
+      [error]="
+        form.controls.confirm.touched && form.hasError('mismatch')
+          ? 'The two passwords differ'
+          : null
+      ">
+      <input
+        id="confirm"
+        class="input"
+        type="password"
+        autocomplete="new-password"
+        formControlName="confirm" />
+    </app-form-field>
+    <p class="account__muted">
+      At least 12 characters. A short sentence is easier to remember than
+      symbols, e.g. “gondola at sunset over rialto”.
+    </p>
+    <button appButton type="submit" [disabled]="saving()">{{
+      saving() ? 'Saving…' : 'Change password'
+    }}</button>
+  </form>
+</section>

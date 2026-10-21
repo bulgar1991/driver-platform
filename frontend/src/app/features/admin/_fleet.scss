@@ -1,0 +1,121 @@
+// Block: fleet — shared by the Drivers and Vehicles pages.
+.fleet {
+  @apply flex flex-col gap-5;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__tools {
+    @apply flex flex-wrap items-center gap-4;
+  }
+
+  &__check {
+    @apply flex cursor-pointer items-center gap-2 text-sm text-ivory;
+  }
+
+  &__checkbox {
+    @apply h-4 w-4 accent-gold;
+  }
+
+  &__table-wrap {
+    @apply overflow-x-auto rounded-sm border border-ink-600 bg-ink-900;
+  }
+
+  &__table {
+    @apply w-full min-w-[48rem] border-collapse text-sm;
+
+    th {
+      @apply border-b border-ink-600 px-4 py-3 text-left text-xs font-normal uppercase tracking-widest text-ivory-400;
+    }
+
+    td {
+      @apply border-b border-ink-700 px-4 py-3 align-top text-ivory;
+    }
+  }
+
+  &__row {
+    @apply cursor-pointer transition hover:bg-ink-800;
+  }
+
+  &__name {
+    @apply block text-left text-gold hover:underline;
+  }
+
+  &__upper {
+    @apply uppercase;
+  }
+
+  &__muted {
+    @apply block text-xs text-ivory-400;
+  }
+
+  &__warning {
+    @apply text-warning;
+  }
+
+  &__danger {
+    @apply text-danger;
+  }
+
+  &__badge {
+    @apply inline-block whitespace-nowrap rounded-sm bg-success/15 px-2 py-0.5 text-[10px] uppercase tracking-widest text-success;
+
+    &--off {
+      @apply bg-ink-700 text-ivory-300;
+    }
+  }
+
+  &__form {
+    @apply flex flex-col gap-5;
+  }
+
+  &__grid {
+    @apply grid grid-cols-1 gap-4 sm:grid-cols-2;
+  }
+
+  &__switches {
+    @apply flex flex-col justify-end gap-2 pb-2;
+  }
+
+  &__documents {
+    @apply flex flex-col gap-3 border-t border-ink-600 pt-4;
+  }
+
+  &__legend {
+    @apply mb-2 text-xs uppercase tracking-widest text-ivory-400;
+  }
+
+  // Type · number / expiry · remove on phones; one row on wider screens.
+  &__document {
+    @apply grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-2 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_10rem_2.5rem];
+  }
+
+  &__icon-button {
+    @apply flex h-10 w-10 justify-self-end items-center justify-center rounded-sm text-ivory-300 hover:bg-ink-700 hover:text-danger;
+  }
+
+  &__actions {
+    @apply flex justify-end gap-3;
+  }
+
+  &__nowrap {
+    @apply whitespace-nowrap;
+  }
+
+  &__link {
+    @apply flex flex-col gap-2 border-t border-ink-600 pt-4;
+  }
+
+  &__link-input {
+    @apply py-2 font-mono text-xs;
+  }
+
+  &__link-actions {
+    @apply flex flex-wrap items-center gap-2;
+  }
+}
+
+::ng-deep .fleet__dialog {
+  @apply w-[min(46rem,calc(100vw-2rem))];
+}

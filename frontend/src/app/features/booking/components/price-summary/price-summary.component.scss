@@ -1,0 +1,63 @@
+.price-summary {
+  @apply flex flex-col gap-5 rounded-sm border border-ink-600 bg-ink-900 p-5;
+
+  &__leg {
+    @apply flex flex-col gap-2 border-b border-ink-600 pb-5;
+
+    &:last-of-type {
+      @apply border-b-0 pb-0;
+    }
+  }
+
+  &__when {
+    @apply flex items-center gap-2 text-sm text-ivory;
+  }
+
+  &__icon {
+    @apply h-4 w-4 text-gold;
+  }
+
+  &__place {
+    @apply flex items-start gap-2 text-sm text-ivory-200;
+  }
+
+  &__dot {
+    @apply mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full;
+
+    &--pickup {
+      @apply bg-gold;
+    }
+
+    &--dropoff {
+      @apply bg-ivory;
+    }
+  }
+
+  &__meta {
+    @apply text-xs text-ivory-400;
+  }
+
+  &__lines {
+    @apply mt-2 flex flex-col gap-1;
+  }
+
+  &__line {
+    @apply flex justify-between gap-4 text-xs text-ivory-200;
+
+    &--discount {
+      @apply text-success;
+    }
+  }
+
+  &__total {
+    @apply flex items-end justify-between gap-4 border-t border-gold/40 pt-4 text-sm text-ivory;
+  }
+
+  &__vat {
+    @apply block text-xs text-ivory-400;
+  }
+
+  &__amount {
+    @apply font-display text-2xl text-gold;
+  }
+}

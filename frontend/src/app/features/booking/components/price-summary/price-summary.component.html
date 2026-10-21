@@ -1,0 +1,68 @@
+<section class="price-summary" aria-live="polite">
+  @for (item of legs(); track item.title) {
+    <div class="price-summary__leg">
+      <p class="eyebrow">{{ item.title }}</p>
+      <p class="price-summary__when">
+        <app-icon class="price-summary__icon" name="calendar" />
+        {{ item.leg.pickupAt | date: 'EEE d MMM y, HH:mm' }}
+      </p>
+      <p class="price-summary__place">
+        <span class="price-summary__dot price-summary__dot--pickup"></span>
+        {{ item.leg.pickupMeetingPoint?.name ?? item.leg.pickup.address }}
+      </p>
+      <p class="price-summary__place">
+        <span class="price-summary__dot price-summary__dot--dropoff"></span>
+        {{ item.leg.dropoffMeetingPoint?.name ?? item.leg.dropoff.address }}
+      </p>
+      <p class="price-summary__meta">
+        {{ item.leg.distanceKm }} km · about
+        {{ item.leg.durationMinutes | duration }}
+        @if (item.leg.routeIsEstimate) {
+          · estimated
+        }
+      </p>
+
+      @if (item.price; as price) {
+        <ul class="price-summary__lines">
+          @for (line of price.lines; track $index) {
+            <li
+              class="price-summary__line"
+              [class.price-summary__line--discount]="line.kind === 'Discount'">
+              <span>
+                {{ line.label }}
+                @if (line.quantity > 1) {
+                  × {{ line.quantity }}
+                }
+              </span>
+              <span>{{ line.amount | money: quote().currency }}</span>
+            </li>
+          }
+        </ul>
+      } @else if (item.leg.surcharges.length) {
+        <p class="price-summary__meta">
+          Includes
+          @for (s of item.leg.surcharges; track s.name; let last = $last) {
+            {{ s.name }}{{ last ? '' : ', ' }}
+          }
+        </p>
+      }
+    </div>
+  }
+
+  @if (vehicle(); as v) {
+    <div class="price-summary__total">
+      <span>
+        Total · {{ title() }}
+        <span class="price-summary__vat">
+          incl. VAT {{ quote().vatRatePercent }}%
+          {{ v.vatIncluded | money: quote().currency }}
+        </span>
+      </span>
+      <span class="price-summary__amount">
+        {{ v.total | money: quote().currency }}
+      </span>
+    </div>
+  } @else {
+    <p class="price-summary__meta">Choose a vehicle to see the full price.</p>
+  }
+</section>

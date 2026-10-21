@@ -1,0 +1,47 @@
+:host {
+  @apply block;
+}
+
+.vehicle-card {
+  @apply flex w-full items-center gap-4 rounded-sm border border-ink-500 bg-ink-800 p-4 text-left transition hover:border-gold/60 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-ink-500;
+
+  &--selected {
+    @apply border-gold bg-gold/10 shadow-gold;
+  }
+
+  &__icon {
+    @apply h-8 w-8 text-gold;
+  }
+
+  &__body {
+    @apply flex min-w-0 flex-1 flex-col gap-1;
+  }
+
+  &__title {
+    @apply font-display text-lg text-ivory;
+  }
+
+  &__description {
+    @apply text-xs text-ivory-400;
+  }
+
+  &__capacity {
+    @apply mt-1 flex gap-4;
+  }
+
+  &__spec {
+    @apply flex items-center gap-1 text-xs text-ivory-200;
+  }
+
+  &__spec-icon {
+    @apply h-4 w-4;
+  }
+
+  &__price {
+    @apply shrink-0 text-right font-semibold text-gold;
+  }
+
+  &__reason {
+    @apply block max-w-24 text-xs font-normal text-ivory-400;
+  }
+}

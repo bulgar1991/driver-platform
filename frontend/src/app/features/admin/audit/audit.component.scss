@@ -1,0 +1,40 @@
+.audit {
+  @apply flex flex-col gap-5;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__search {
+    @apply w-full max-w-sm py-2;
+  }
+
+  &__list {
+    @apply flex flex-col divide-y divide-ink-700 rounded-sm border border-ink-600 bg-ink-900;
+  }
+
+  &__row {
+    @apply grid w-full grid-cols-1 gap-x-4 px-4 py-2 text-left text-sm text-ivory hover:bg-ink-800 sm:grid-cols-[11rem_minmax(0,1fr)_minmax(0,14rem)_8rem];
+  }
+
+  &__time {
+    @apply whitespace-nowrap text-ivory-300;
+  }
+
+  &__action {
+    @apply truncate font-mono text-xs text-gold sm:text-sm;
+  }
+
+  &__actor,
+  &__ip {
+    @apply truncate text-xs text-ivory-400;
+  }
+
+  &__changes {
+    @apply overflow-x-auto whitespace-pre-wrap break-all bg-ink-800 px-4 py-3 font-mono text-xs text-ivory-200;
+  }
+
+  &__muted {
+    @apply px-4 py-3 text-xs text-ivory-400;
+  }
+}

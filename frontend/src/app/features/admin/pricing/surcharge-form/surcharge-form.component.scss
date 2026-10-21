@@ -1,0 +1,35 @@
+.surcharge-form {
+  @apply flex flex-col gap-4;
+
+  &__row {
+    @apply grid grid-cols-1 gap-4 xm:grid-cols-2;
+  }
+
+  &__days {
+    @apply flex flex-wrap gap-2;
+  }
+
+  &__day {
+    @apply flex cursor-pointer items-center gap-2 rounded-sm border border-ink-500 bg-ink-800 px-3 py-2 text-sm text-ivory;
+  }
+
+  &__toggle {
+    @apply flex cursor-pointer items-center gap-3 text-sm text-ivory;
+  }
+
+  &__checkbox {
+    @apply h-4 w-4 accent-gold;
+  }
+
+  &__hint {
+    @apply text-xs text-ivory-400;
+  }
+
+  &__error {
+    @apply text-xs text-danger;
+  }
+
+  &__actions {
+    @apply flex justify-end gap-3 pt-2;
+  }
+}

@@ -1,0 +1,83 @@
+:host {
+  @apply block;
+}
+
+.shift-card {
+  @apply flex flex-col gap-2 rounded-sm border border-ink-600 bg-ink-900 p-4 text-sm text-ivory;
+
+  &--closed {
+    @apply opacity-60;
+  }
+
+  &__header {
+    @apply flex items-center justify-between gap-3;
+  }
+
+  &__time {
+    @apply font-display text-xl text-gold;
+  }
+
+  &__driver {
+    @apply font-semibold;
+  }
+
+  &__phone {
+    @apply ml-2 text-xs font-normal text-ivory-300 hover:text-gold;
+  }
+
+  &__bookings {
+    @apply mt-1 flex flex-col gap-2 border-t border-ink-700 pt-3;
+  }
+
+  &__booking {
+    @apply flex gap-3;
+
+    &--cancelled {
+      @apply line-through opacity-60;
+    }
+  }
+
+  &__booking-time {
+    @apply w-12 shrink-0 font-semibold;
+  }
+
+  &__booking-text {
+    @apply min-w-0;
+  }
+
+  &__ref {
+    @apply mr-1 text-gold;
+  }
+
+  &__notes {
+    @apply border-l-2 border-gold pl-3 text-xs text-ivory-300;
+  }
+
+  &__messages {
+    @apply flex flex-wrap gap-x-4 gap-y-1 text-xs text-success;
+  }
+
+  &__message {
+    @apply flex items-baseline gap-1;
+
+    &--failed {
+      @apply text-danger;
+    }
+
+    .shift-card__muted {
+      @apply inline;
+    }
+  }
+
+  &__muted {
+    @apply block text-xs text-ivory-400;
+  }
+
+  &__actions {
+    @apply mt-1 flex flex-wrap items-center justify-end gap-2 border-t border-ink-700 pt-3;
+  }
+
+  &__reason {
+    @apply min-w-40 flex-1 py-2;
+  }
+}

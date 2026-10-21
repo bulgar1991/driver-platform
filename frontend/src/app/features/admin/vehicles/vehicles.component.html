@@ -1,0 +1,245 @@
+<div class="fleet">
+  <header class="fleet__header">
+    <div>
+      <p class="eyebrow">Fleet</p>
+      <h1 class="heading heading--lg">Vehicles</h1>
+    </div>
+    <div class="fleet__tools">
+      <label class="fleet__check">
+        <input
+          class="fleet__checkbox"
+          type="checkbox"
+          [checked]="showInactive()"
+          (change)="toggleInactive()" />
+        Show inactive
+      </label>
+      <button appButton size="sm" type="button" (click)="open(null)"
+        ><app-icon name="plus" /> New vehicle</button
+      >
+    </div>
+  </header>
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  <div class="fleet__table-wrap">
+    <table class="fleet__table">
+      <thead>
+        <tr>
+          <th>Plate</th>
+          <th>Car</th>
+          <th>Capacity</th>
+          <th>Insurance</th>
+          <th>Inspection</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (v of vehicles(); track v.id) {
+          <tr class="fleet__row" (click)="open(v)">
+            <td
+              ><button
+                type="button"
+                class="fleet__name"
+                (click)="open(v); $event.stopPropagation()"
+                >{{ v.plateNumber }}</button
+              ></td
+            >
+            <td>
+              {{ v.make }} {{ v.model }}
+              <span class="fleet__muted"
+                >{{ v.category }}{{ v.color ? ' · ' + v.color : '' }} ·
+                {{ v.mileageKm }} km</span
+              >
+            </td>
+            <td>
+              {{ v.seats }} seats · {{ v.luggageCapacity }} bags
+              <span class="fleet__muted"
+                >{{ v.childSeatsAvailable }} child seats</span
+              >
+            </td>
+            <td
+              [class.fleet__danger]="tone(v.insuranceExpiresOn) === 'danger'"
+              [class.fleet__warning]="tone(v.insuranceExpiresOn) === 'warning'">
+              {{
+                v.insuranceExpiresOn
+                  ? (v.insuranceExpiresOn | date: 'd MMM y')
+                  : 'Not set'
+              }}
+            </td>
+            <td
+              [class.fleet__danger]="tone(v.inspectionExpiresOn) === 'danger'"
+              [class.fleet__warning]="
+                tone(v.inspectionExpiresOn) === 'warning'
+              ">
+              {{
+                v.inspectionExpiresOn
+                  ? (v.inspectionExpiresOn | date: 'd MMM y')
+                  : 'Not set'
+              }}
+            </td>
+            <td>
+              <span
+                class="fleet__badge"
+                [class.fleet__badge--off]="!v.isActive"
+                >{{ v.isActive ? 'Active' : 'Inactive' }}</span
+              >
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="fleet__muted">{{
+              loading() ? 'Loading…' : 'No vehicles yet.'
+            }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<p-dialog
+  [header]="editing() ? 'Edit vehicle' : 'New vehicle'"
+  [modal]="true"
+  [draggable]="false"
+  styleClass="fleet__dialog"
+  [visible]="editing() !== undefined"
+  (visibleChange)="$event || editing.set(undefined)">
+  <form class="fleet__form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    @if (formError(); as message) {
+      <p class="alert alert--error" role="alert">{{ message }}</p>
+    }
+    <div class="fleet__grid">
+      <app-form-field
+        label="Plate"
+        for="vPlate"
+        [error]="
+          form.controls.plateNumber.touched && form.controls.plateNumber.invalid
+            ? 'e.g. GA123BC'
+            : null
+        ">
+        <input
+          id="vPlate"
+          class="input fleet__upper"
+          formControlName="plateNumber" />
+      </app-form-field>
+      <app-form-field label="Category" for="vCategory">
+        <select
+          id="vCategory"
+          class="input"
+          formControlName="category"
+          (change)="categoryChanged()">
+          @for (c of categories; track c.value) {
+            <option [value]="c.value">{{ c.label }}</option>
+          }
+        </select>
+      </app-form-field>
+      <app-form-field
+        label="Make"
+        for="vMake"
+        [error]="
+          form.controls.make.touched && form.controls.make.invalid
+            ? 'Required'
+            : null
+        ">
+        <input id="vMake" class="input" formControlName="make" />
+      </app-form-field>
+      <app-form-field
+        label="Model"
+        for="vModel"
+        [error]="
+          form.controls.model.touched && form.controls.model.invalid
+            ? 'Required'
+            : null
+        ">
+        <input id="vModel" class="input" formControlName="model" />
+      </app-form-field>
+      <app-form-field label="Colour" for="vColor">
+        <input id="vColor" class="input" formControlName="color" />
+      </app-form-field>
+      <app-form-field label="Mileage (km)" for="vKm">
+        <input
+          id="vKm"
+          class="input"
+          type="number"
+          min="0"
+          formControlName="mileageKm" />
+      </app-form-field>
+      <app-form-field label="Passenger seats" for="vSeats">
+        <input
+          id="vSeats"
+          class="input"
+          type="number"
+          min="1"
+          max="8"
+          formControlName="seats" />
+      </app-form-field>
+      <app-form-field label="Large bags" for="vLuggage">
+        <input
+          id="vLuggage"
+          class="input"
+          type="number"
+          min="0"
+          max="16"
+          formControlName="luggageCapacity" />
+      </app-form-field>
+      <app-form-field label="Child seats on board" for="vChild">
+        <input
+          id="vChild"
+          class="input"
+          type="number"
+          min="0"
+          max="4"
+          formControlName="childSeatsAvailable" />
+      </app-form-field>
+      <app-form-field label="Insurance expires" for="vInsurance">
+        <input
+          id="vInsurance"
+          class="input"
+          type="date"
+          formControlName="insuranceExpiresOn" />
+      </app-form-field>
+      <app-form-field label="Inspection (revisione) due" for="vInspection">
+        <input
+          id="vInspection"
+          class="input"
+          type="date"
+          formControlName="inspectionExpiresOn" />
+      </app-form-field>
+      <app-form-field label="Next service" for="vService">
+        <input
+          id="vService"
+          class="input"
+          type="date"
+          formControlName="nextServiceOn" />
+      </app-form-field>
+    </div>
+    <label class="fleet__check"
+      ><input
+        class="fleet__checkbox"
+        type="checkbox"
+        formControlName="isActive" />
+      Active</label
+    >
+    <app-form-field label="Notes (condition, cleaning…)" for="vNotes">
+      <textarea
+        id="vNotes"
+        class="input"
+        rows="2"
+        formControlName="notes"></textarea>
+    </app-form-field>
+    <div class="fleet__actions">
+      <button
+        appButton
+        type="button"
+        variant="ghost"
+        (click)="editing.set(undefined)"
+        >Cancel</button
+      >
+      <button appButton type="submit" [disabled]="saving()">{{
+        saving() ? 'Saving…' : 'Save vehicle'
+      }}</button>
+    </div>
+  </form>
+</p-dialog>

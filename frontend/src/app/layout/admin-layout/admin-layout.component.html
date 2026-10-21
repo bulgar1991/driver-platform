@@ -1,0 +1,58 @@
+<div class="admin-layout">
+  @if (menuOpen()) {
+    <button
+      type="button"
+      class="admin-layout__backdrop"
+      aria-label="Close menu"
+      (click)="menuOpen.set(false)"></button>
+  }
+  <aside
+    class="admin-layout__sidebar"
+    [class.admin-layout__sidebar--open]="menuOpen()">
+    <div class="admin-layout__brand">
+      <app-logo />
+      <span class="admin-layout__badge">Panel</span>
+    </div>
+    <nav class="admin-layout__nav" aria-label="Management">
+      @for (item of navigation(); track item.path) {
+        <a
+          class="admin-layout__link"
+          [routerLink]="item.path"
+          routerLinkActive="admin-layout__link--active"
+          [routerLinkActiveOptions]="{ exact: item.path === '/admin' }"
+          (click)="menuOpen.set(false)">
+          <app-icon [name]="item.icon" />
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+  </aside>
+
+  <div class="admin-layout__body">
+    <header class="admin-layout__topbar">
+      <button
+        type="button"
+        class="admin-layout__menu-button"
+        aria-label="Toggle menu"
+        (click)="toggleMenu()">
+        <app-icon [name]="menuOpen() ? 'close' : 'menu'" />
+      </button>
+      @if (user(); as user) {
+        <a
+          class="admin-layout__user"
+          routerLink="/admin/account"
+          title="My account">
+          <span class="admin-layout__user-name">{{ user.fullName }}</span>
+          <span class="admin-layout__user-role">{{ user.role }}</span>
+        </a>
+      }
+      <button type="button" class="admin-layout__logout" (click)="logout()">
+        <app-icon name="logout" />
+        <span class="admin-layout__logout-label">Sign out</span>
+      </button>
+    </header>
+    <main class="admin-layout__content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

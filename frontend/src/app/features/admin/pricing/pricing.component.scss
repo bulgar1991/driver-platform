@@ -1,0 +1,123 @@
+.pricing {
+  @apply flex flex-col gap-6;
+
+  &__header {
+    @apply flex flex-col gap-2;
+  }
+
+  &__intro {
+    @apply max-w-3xl text-sm leading-relaxed text-ivory-300;
+  }
+
+  &__card {
+    @apply flex min-w-0 flex-col gap-4 rounded-sm border border-ink-600 bg-ink-900 p-5;
+  }
+
+  &__grid {
+    @apply grid grid-cols-1 gap-6 xl:grid-cols-2;
+  }
+
+  &__title-row {
+    @apply flex items-center justify-between gap-4;
+  }
+
+  &__title {
+    @apply font-display text-xl text-ivory;
+  }
+
+  &__muted {
+    @apply text-xs text-ivory-400;
+  }
+
+  &__table-wrap {
+    @apply -mx-5 overflow-x-auto px-5;
+  }
+
+  &__table {
+    @apply w-full min-w-[40rem] border-collapse text-sm;
+
+    th {
+      @apply px-2 py-2 text-left text-xs font-normal uppercase tracking-widest text-ivory-400;
+    }
+
+    tbody th {
+      @apply text-sm normal-case tracking-normal text-ivory;
+    }
+
+    td {
+      @apply px-2 py-2;
+    }
+  }
+
+  &__number {
+    @apply w-24 px-3 py-2;
+  }
+
+  &__rules {
+    @apply flex flex-col divide-y divide-ink-700;
+  }
+
+  &__rule {
+    @apply flex flex-wrap items-center gap-x-4 gap-y-2 py-3;
+
+    &--inactive {
+      @apply opacity-50;
+    }
+  }
+
+  &__rule-text {
+    @apply flex min-w-0 flex-1 flex-col;
+  }
+
+  &__rule-name {
+    @apply text-sm text-ivory;
+  }
+
+  &__rule-when {
+    @apply text-xs text-ivory-400;
+  }
+
+  &__rule-percent {
+    @apply font-semibold text-gold;
+  }
+
+  &__rule-actions {
+    @apply flex items-center gap-2;
+  }
+
+  &__switch {
+    @apply flex cursor-pointer items-center;
+  }
+
+  &__checkbox {
+    @apply h-4 w-4 accent-gold;
+  }
+
+  &__icon-button {
+    @apply flex h-8 w-8 items-center justify-center rounded-sm text-ivory-300 transition hover:bg-ink-700 hover:text-gold;
+
+    &--danger {
+      @apply hover:text-danger;
+    }
+  }
+
+  &__list {
+    @apply flex flex-col gap-3;
+  }
+
+  &__list-item {
+    @apply flex flex-wrap items-center justify-between gap-3;
+  }
+
+  &__label {
+    @apply min-w-0 flex-1 text-sm text-ivory-200;
+  }
+
+  &__sr {
+    @apply sr-only;
+  }
+}
+
+::ng-deep .pricing__dialog {
+  @apply w-[min(32rem,calc(100vw-2rem))];
+}

@@ -1,0 +1,11 @@
+.logo {
+  @apply whitespace-nowrap font-display text-lg tracking-widest text-ivory;
+
+  &--lg {
+    @apply text-2xl;
+  }
+
+  &__accent {
+    @apply bg-gold-gradient bg-clip-text text-transparent;
+  }
+}

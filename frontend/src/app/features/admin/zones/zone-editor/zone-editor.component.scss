@@ -1,0 +1,91 @@
+.zone-editor {
+  @apply flex flex-col gap-4 rounded-sm border border-ink-600 bg-ink-900 p-5;
+
+  &__header {
+    @apply flex items-center justify-between gap-4;
+  }
+
+  &__title {
+    @apply font-display text-xl text-ivory;
+  }
+
+  &__close {
+    @apply flex h-8 w-8 items-center justify-center rounded-sm text-ivory-300 hover:bg-ink-700 hover:text-gold;
+  }
+
+  &__map-wrap {
+    @apply flex flex-col gap-2;
+  }
+
+  &__map {
+    @apply h-80;
+  }
+
+  &__hint {
+    @apply flex items-center gap-2 text-xs text-gold;
+  }
+
+  &__hint-icon {
+    @apply h-4 w-4;
+  }
+
+  &__row {
+    @apply grid grid-cols-1 items-end gap-4 xm:grid-cols-2;
+  }
+
+  &__muted {
+    @apply text-xs text-ivory-400;
+  }
+
+  &__coords {
+    @apply text-xs tabular-nums text-ivory-300;
+  }
+
+  &__missing {
+    @apply text-warning;
+  }
+
+  &__polygon {
+    @apply flex items-center gap-2;
+  }
+
+  &__toggle {
+    @apply flex cursor-pointer items-center gap-3 pb-3 text-sm text-ivory;
+  }
+
+  &__checkbox {
+    @apply h-4 w-4 accent-gold;
+  }
+
+  &__points {
+    @apply flex flex-col gap-4 border-t border-ink-600 pt-4;
+  }
+
+  &__points-header {
+    @apply flex items-center justify-between;
+  }
+
+  &__subtitle {
+    @apply text-sm font-semibold uppercase tracking-widest text-ivory-200;
+  }
+
+  &__point {
+    @apply flex flex-col gap-3 rounded-sm border border-ink-600 p-4;
+  }
+
+  &__point-actions {
+    @apply flex flex-wrap items-center gap-2;
+
+    .zone-editor__coords {
+      @apply mr-auto;
+    }
+  }
+
+  &__actions {
+    @apply flex flex-wrap items-center justify-end gap-3 border-t border-ink-600 pt-4;
+  }
+
+  &__confirm {
+    @apply mr-auto flex items-center gap-2 text-sm text-ivory-200;
+  }
+}

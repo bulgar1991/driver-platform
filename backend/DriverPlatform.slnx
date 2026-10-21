@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DriverPlatform.Api/DriverPlatform.Api.csproj" />
+    <Project Path="src/DriverPlatform.Application/DriverPlatform.Application.csproj" />
+    <Project Path="src/DriverPlatform.Domain/DriverPlatform.Domain.csproj" />
+    <Project Path="src/DriverPlatform.Infrastructure/DriverPlatform.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DriverPlatform.Tests/DriverPlatform.Tests.csproj" />
+  </Folder>
+</Solution>

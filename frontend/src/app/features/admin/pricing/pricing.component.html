@@ -1,0 +1,290 @@
+<div class="pricing">
+  <header class="pricing__header">
+    <p class="eyebrow">Administration</p>
+    <h1 class="heading heading--lg">Pricing</h1>
+    <p class="pricing__intro">
+      Price = base fee + km × rate, then the day surcharges, which are added
+      together (Saturday night = weekend + night). Extras and zone fees are
+      fixed amounts. All prices include VAT. Changes apply to new quotes only;
+      booked rides keep their price.
+    </p>
+  </header>
+
+  @if (message(); as m) {
+    <p
+      class="alert"
+      [class.alert--error]="m.error"
+      [class.alert--info]="!m.error"
+      role="status">
+      {{ m.text }}
+    </p>
+  }
+
+  @if (loading()) {
+    <p class="pricing__muted">Loading…</p>
+  } @else {
+    <section class="pricing__card">
+      <h2 class="pricing__title">Vehicle tariffs</h2>
+      <div class="pricing__table-wrap">
+        <table class="pricing__table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Base fee (€)</th>
+              <th>Per km (€)</th>
+              <th>Passengers</th>
+              <th>Large bags</th>
+              <th><span class="pricing__sr">Save</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (
+              group of rates.controls;
+              track group.controls.category.value;
+              let i = $index
+            ) {
+              <tr [formGroup]="group">
+                <th scope="row">{{ group.controls.category.value }}</th>
+                <td
+                  ><input
+                    class="input pricing__number"
+                    type="number"
+                    step="0.5"
+                    min="0"
+                    formControlName="baseFee"
+                    [attr.aria-label]="
+                      group.controls.category.value + ' base fee'
+                    "
+                /></td>
+                <td
+                  ><input
+                    class="input pricing__number"
+                    type="number"
+                    step="0.05"
+                    min="0"
+                    formControlName="pricePerKm"
+                    [attr.aria-label]="
+                      group.controls.category.value + ' price per km'
+                    "
+                /></td>
+                <td
+                  ><input
+                    class="input pricing__number"
+                    type="number"
+                    min="1"
+                    max="8"
+                    formControlName="maxPassengers"
+                    [attr.aria-label]="
+                      group.controls.category.value + ' passengers'
+                    "
+                /></td>
+                <td
+                  ><input
+                    class="input pricing__number"
+                    type="number"
+                    min="0"
+                    max="16"
+                    formControlName="maxLuggage"
+                    [attr.aria-label]="
+                      group.controls.category.value + ' large bags'
+                    "
+                /></td>
+                <td>
+                  <button
+                    appButton
+                    size="sm"
+                    type="button"
+                    [disabled]="
+                      group.pristine ||
+                      saving() === 'rate-' + group.controls.category.value
+                    "
+                    (click)="saveRate(i)"
+                    >Save</button
+                  >
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="pricing__card">
+      <div class="pricing__title-row">
+        <h2 class="pricing__title">Surcharges</h2>
+        <button
+          appButton
+          size="sm"
+          variant="outline"
+          type="button"
+          (click)="openSurcharge(null)">
+          <app-icon name="plus" /> Add
+        </button>
+      </div>
+      <p class="pricing__muted">
+        Weekend, public holidays, night, peak season and events. Every rule that
+        matches the pickup time is added.
+      </p>
+      <ul class="pricing__rules">
+        @for (rule of surcharges(); track rule.id) {
+          <li
+            class="pricing__rule"
+            [class.pricing__rule--inactive]="!rule.isActive">
+            <div class="pricing__rule-text">
+              <span class="pricing__rule-name">{{ rule.name }}</span>
+              <span class="pricing__rule-when">{{ describe(rule) }}</span>
+            </div>
+            <span class="pricing__rule-percent">+{{ rule.percent }}%</span>
+            <div class="pricing__rule-actions">
+              <label class="pricing__switch">
+                <input
+                  type="checkbox"
+                  class="pricing__checkbox"
+                  [checked]="rule.isActive"
+                  [disabled]="saving() === 'toggle-' + rule.id"
+                  (change)="toggleSurcharge(rule)" />
+                <span class="pricing__sr">Active</span>
+              </label>
+              <button
+                type="button"
+                class="pricing__icon-button"
+                [attr.aria-label]="'Edit ' + rule.name"
+                (click)="openSurcharge(rule)">
+                <app-icon name="edit" />
+              </button>
+              @if (confirmDelete() === rule.id) {
+                <button
+                  appButton
+                  size="sm"
+                  variant="outline"
+                  type="button"
+                  (click)="deleteSurcharge(rule)"
+                  >Delete</button
+                >
+                <button
+                  appButton
+                  size="sm"
+                  variant="ghost"
+                  type="button"
+                  (click)="confirmDelete.set(null)"
+                  >Keep</button
+                >
+              } @else {
+                <button
+                  type="button"
+                  class="pricing__icon-button pricing__icon-button--danger"
+                  [attr.aria-label]="'Delete ' + rule.name"
+                  (click)="confirmDelete.set(rule.id)">
+                  <app-icon name="trash" />
+                </button>
+              }
+            </div>
+          </li>
+        } @empty {
+          <li class="pricing__muted">No surcharges yet.</li>
+        }
+      </ul>
+    </section>
+
+    <div class="pricing__grid">
+      <section class="pricing__card">
+        <h2 class="pricing__title">Extras</h2>
+        <ul class="pricing__list">
+          @for (
+            group of extras.controls;
+            track group.controls.type.value;
+            let i = $index
+          ) {
+            <li class="pricing__list-item" [formGroup]="group">
+              <label class="pricing__label" [for]="'extra-' + i">{{
+                extraLabels[group.controls.type.value]
+              }}</label>
+              <input
+                [id]="'extra-' + i"
+                class="input pricing__number"
+                type="number"
+                min="0"
+                step="0.5"
+                formControlName="amount" />
+              <button
+                appButton
+                size="sm"
+                type="button"
+                [disabled]="group.pristine"
+                (click)="saveExtra(i)"
+                >Save</button
+              >
+            </li>
+          }
+        </ul>
+      </section>
+
+      <section class="pricing__card" [formGroup]="settings">
+        <h2 class="pricing__title">General</h2>
+        <ul class="pricing__list">
+          <li class="pricing__list-item">
+            <label class="pricing__label" for="vat"
+              >VAT included (%) · confirm with the accountant</label
+            >
+            <input
+              id="vat"
+              class="input pricing__number"
+              type="number"
+              min="0"
+              max="50"
+              formControlName="vatRatePercent" />
+          </li>
+          <li class="pricing__list-item">
+            <label class="pricing__label" for="returnDiscount"
+              >Return trip discount (%)</label
+            >
+            <input
+              id="returnDiscount"
+              class="input pricing__number"
+              type="number"
+              min="0"
+              max="50"
+              formControlName="returnDiscountPercent" />
+          </li>
+          <li class="pricing__list-item">
+            <label class="pricing__label" for="leadTime"
+              >Book at least (hours ahead)</label
+            >
+            <input
+              id="leadTime"
+              class="input pricing__number"
+              type="number"
+              min="0"
+              max="168"
+              formControlName="minLeadTimeHours" />
+          </li>
+        </ul>
+        <button
+          appButton
+          size="sm"
+          type="button"
+          [disabled]="settings.pristine || saving() === 'settings'"
+          (click)="saveSettings()"
+          >Save settings</button
+        >
+      </section>
+    </div>
+  }
+</div>
+
+<p-dialog
+  [header]="editing() ? 'Edit surcharge' : 'New surcharge'"
+  [modal]="true"
+  [draggable]="false"
+  [dismissableMask]="true"
+  styleClass="pricing__dialog"
+  [visible]="dialogOpen()"
+  (visibleChange)="dialogOpen.set($event)">
+  @if (dialogOpen()) {
+    <app-surcharge-form
+      [rule]="editing()"
+      [saving]="saving() === 'surcharge'"
+      (saved)="saveSurcharge($event)"
+      (cancelled)="dialogOpen.set(false)" />
+  }
+</p-dialog>

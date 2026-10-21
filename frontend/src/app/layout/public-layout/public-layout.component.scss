@@ -1,0 +1,7 @@
+.public-layout {
+  @apply flex min-h-screen flex-col;
+
+  &__main {
+    @apply flex-1;
+  }
+}

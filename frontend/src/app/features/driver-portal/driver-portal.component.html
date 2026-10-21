@@ -1,0 +1,82 @@
+<div class="driver-portal">
+  <header class="driver-portal__bar">
+    <app-logo />
+    @if (portal(); as p) {
+      <span class="driver-portal__hello">Hi {{ p.driverFirstName }}</span>
+    }
+  </header>
+
+  <main class="driver-portal__main">
+    @if (error(); as message) {
+      <p class="alert alert--error" role="alert">{{ message }}</p>
+    }
+
+    @if (loading()) {
+      <p class="driver-portal__muted">Loading your shifts…</p>
+    } @else if (invalid()) {
+      <div class="driver-portal__empty">
+        <h1 class="heading heading--md">This link is not valid</h1>
+        <p class="driver-portal__muted"
+          >Ask the dispatcher to send you your current link.</p
+        >
+      </div>
+    } @else if (portal(); as p) {
+      @for (shift of p.shifts; track shift.id) {
+        <section
+          class="driver-portal__shift"
+          [class.driver-portal__shift--cancelled]="
+            shift.status === 'Cancelled'
+          ">
+          <header class="driver-portal__shift-header">
+            <div>
+              <p class="eyebrow">{{ shift.startsAt | date: 'EEEE d MMMM' }}</p>
+              <h2 class="driver-portal__shift-title">
+                {{ shift.startsAt | date: 'HH:mm' }}–{{
+                  shift.endsAt | date: 'HH:mm'
+                }}
+              </h2>
+              <p class="driver-portal__muted"
+                >{{ shift.vehiclePlate }} · {{ shift.vehicleLabel }}</p
+              >
+            </div>
+            <app-status-badge kind="shift" [status]="shift.status" />
+          </header>
+
+          @if (shift.notes) {
+            <p class="driver-portal__notes">{{ shift.notes }}</p>
+          }
+
+          @if (shift.status === 'Cancelled') {
+            <p class="driver-portal__muted"
+              >This shift was cancelled. You don't need to do anything.</p
+            >
+          } @else {
+            @if (shift.canConfirm) {
+              <button
+                appButton
+                type="button"
+                [block]="true"
+                [disabled]="busy() === shift.id"
+                (click)="confirm(shift.id)">
+                {{ busy() === shift.id ? 'Confirming…' : 'Confirm this shift' }}
+              </button>
+            }
+            @for (ride of shift.bookings; track ride.id) {
+              <app-driver-ride
+                [ride]="ride"
+                [busy]="busy() === ride.id"
+                (action)="rideAction(ride.id, $event)" />
+            }
+          }
+        </section>
+      } @empty {
+        <div class="driver-portal__empty">
+          <h1 class="heading heading--md">No shifts for now</h1>
+          <p class="driver-portal__muted"
+            >New shifts appear here; you also get them on WhatsApp.</p
+          >
+        </div>
+      }
+    }
+  </main>
+</div>

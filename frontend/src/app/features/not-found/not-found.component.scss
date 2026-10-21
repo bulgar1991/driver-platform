@@ -1,0 +1,7 @@
+.not-found {
+  @apply flex flex-col items-center gap-6 px-4 py-32 text-center;
+
+  &__code {
+    @apply bg-gold-gradient bg-clip-text font-display text-7xl text-transparent;
+  }
+}

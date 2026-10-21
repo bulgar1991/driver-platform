@@ -1,0 +1,115 @@
+<section class="booking page">
+  @if (store.step() === 'done' && store.result(); as result) {
+    <div class="booking__done" role="status">
+      <p class="eyebrow">Booking {{ result.reference }} reserved</p>
+      <h1 class="heading heading--md">Opening the secure payment page…</h1>
+      <p class="booking__note">Card or PayPal, processed by Stripe.</p>
+    </div>
+  } @else {
+    <header class="booking__header">
+      <p class="eyebrow">Fixed price · Italy</p>
+      <h1 class="heading heading--lg">
+        Book your <span class="heading__accent">transfer</span>
+      </h1>
+    </header>
+
+    <ol class="booking__steps">
+      @for (step of steps; track step.id; let i = $index) {
+        <li
+          class="booking__step"
+          [class.booking__step--active]="i === stepIndex()"
+          [class.booking__step--done]="i < stepIndex()">
+          <button
+            type="button"
+            class="booking__step-button"
+            [disabled]="i >= stepIndex()"
+            [attr.aria-current]="i === stepIndex() ? 'step' : null"
+            (click)="goTo(step.id)">
+            <span class="booking__step-number">{{ i + 1 }}</span>
+            {{ step.label }}
+          </button>
+        </li>
+      }
+    </ol>
+
+    <div class="booking__layout">
+      <div class="booking__main">
+        @if (store.error(); as error) {
+          <p
+            class="alert"
+            [class.alert--info]="store.priceChanged()"
+            [class.alert--error]="!store.priceChanged()"
+            role="alert">
+            {{ error }}
+          </p>
+        }
+
+        @switch (store.step()) {
+          @case ('trip') {
+            <app-trip-step
+              [form]="forms.trip"
+              [options]="store.options()"
+              [loading]="store.loading()"
+              (submitted)="searchPrices()" />
+          }
+          @case ('vehicle') {
+            @if (store.quote(); as quote) {
+              <div class="booking__stack">
+                @if (quote.outbound.pickupZone?.meetingPoints?.length) {
+                  <app-meeting-point-picker
+                    direction="pickup"
+                    [zone]="quote.outbound.pickupZone!"
+                    [selected]="quote.outbound.pickupMeetingPoint"
+                    [disabled]="store.loading()"
+                    (changed)="chooseMeetingPoint('pickup', $event)" />
+                }
+                @if (quote.outbound.dropoffMeetingPoint) {
+                  <app-meeting-point-picker
+                    direction="dropoff"
+                    [zone]="quote.outbound.dropoffZone!"
+                    [selected]="quote.outbound.dropoffMeetingPoint"
+                    [disabled]="store.loading()"
+                    (changed)="chooseMeetingPoint('dropoff', $event)" />
+                }
+                <h2 class="heading heading--md">Choose your vehicle</h2>
+                @for (vehicle of quote.vehicles; track vehicle.category) {
+                  <app-vehicle-card
+                    [vehicle]="vehicle"
+                    [currency]="quote.currency"
+                    [selected]="vehicle.category === store.category()"
+                    (chosen)="chooseVehicle(vehicle.category)" />
+                }
+                <p class="booking__note">
+                  Prices include VAT and are fixed once you book.
+                </p>
+              </div>
+            }
+          }
+          @case ('details') {
+            <app-details-step
+              [details]="forms.details"
+              [contact]="forms.contact"
+              [options]="store.options()"
+              [vehicle]="store.vehicle()"
+              [hasReturn]="forms.trip.controls.returnTrip.value"
+              [loading]="store.loading()"
+              (back)="goTo('vehicle')"
+              (submitted)="book()" />
+          }
+        }
+      </div>
+
+      <aside class="booking__aside">
+        <app-map
+          class="booking__map"
+          [markers]="markers()"
+          [path]="path()"
+          [zones]="zones()"
+          [fitPoints]="fitPoints()" />
+        @if (store.quote(); as quote) {
+          <app-price-summary [quote]="quote" [vehicle]="store.vehicle()" />
+        }
+      </aside>
+    </div>
+  }
+</section>

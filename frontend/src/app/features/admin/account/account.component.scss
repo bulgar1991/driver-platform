@@ -1,0 +1,15 @@
+.account {
+  @apply flex max-w-md flex-col gap-5;
+
+  &__header {
+    @apply flex flex-col gap-2;
+  }
+
+  &__form {
+    @apply flex flex-col gap-4;
+  }
+
+  &__muted {
+    @apply text-xs text-ivory-400;
+  }
+}

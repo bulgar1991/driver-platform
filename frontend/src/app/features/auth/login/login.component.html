@@ -1,0 +1,39 @@
+<div class="login">
+  <form class="login__card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="login__header">
+      <app-logo size="lg" />
+      <p class="eyebrow">Management panel</p>
+    </div>
+
+    @if (error(); as message) {
+      <p class="alert alert--error" role="alert">{{ message }}</p>
+    }
+
+    <app-form-field label="Email" for="email" [error]="fieldError('email')">
+      <input
+        id="email"
+        class="input"
+        [class.input--invalid]="fieldError('email')"
+        type="email"
+        autocomplete="username"
+        formControlName="email" />
+    </app-form-field>
+
+    <app-form-field
+      label="Password"
+      for="password"
+      [error]="fieldError('password')">
+      <input
+        id="password"
+        class="input"
+        [class.input--invalid]="fieldError('password')"
+        type="password"
+        autocomplete="current-password"
+        formControlName="password" />
+    </app-form-field>
+
+    <button appButton type="submit" [block]="true" [disabled]="submitting()">
+      {{ submitting() ? 'Signing in…' : 'Sign in' }}
+    </button>
+  </form>
+</div>

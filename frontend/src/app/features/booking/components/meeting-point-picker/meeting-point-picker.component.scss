@@ -1,0 +1,55 @@
+.meeting-point {
+  @apply flex flex-col gap-4 rounded-sm border border-gold/40 bg-gold/5 p-4;
+
+  &--warning {
+    @apply border-warning/50 bg-warning/5;
+  }
+
+  &__header {
+    @apply flex items-start gap-3;
+  }
+
+  &__icon {
+    @apply h-5 w-5 text-gold;
+  }
+
+  &--warning &__icon {
+    @apply text-warning;
+  }
+
+  &__title {
+    @apply text-sm font-semibold text-ivory;
+  }
+
+  &__text {
+    @apply mt-1 text-xs leading-relaxed text-ivory-300;
+  }
+
+  &__options {
+    @apply grid grid-cols-1 gap-2 xm:grid-cols-2;
+  }
+
+  &__option {
+    @apply relative flex cursor-pointer flex-col gap-0.5 rounded-sm border border-ink-500 bg-ink-800 py-2 pl-9 pr-3 transition hover:border-ink-400;
+
+    &--selected {
+      @apply border-gold;
+    }
+  }
+
+  &__radio {
+    @apply absolute left-3 top-3 accent-gold;
+  }
+
+  &__name {
+    @apply text-sm text-ivory;
+  }
+
+  &__address {
+    @apply text-xs text-ivory-400;
+  }
+
+  &__instructions {
+    @apply border-l-2 border-gold pl-3 text-xs leading-relaxed text-ivory-200;
+  }
+}

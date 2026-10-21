@@ -1,0 +1,312 @@
+<div class="fleet">
+  <header class="fleet__header">
+    <div>
+      <p class="eyebrow">Fleet</p>
+      <h1 class="heading heading--lg">Drivers</h1>
+    </div>
+    <div class="fleet__tools">
+      <label class="fleet__check">
+        <input
+          class="fleet__checkbox"
+          type="checkbox"
+          [checked]="showInactive()"
+          (change)="toggleInactive()" />
+        Show inactive
+      </label>
+      <button appButton size="sm" type="button" (click)="open(null)"
+        ><app-icon name="plus" /> New driver</button
+      >
+    </div>
+  </header>
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  <div class="fleet__table-wrap">
+    <table class="fleet__table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Contact</th>
+          <th>Languages</th>
+          <th>Next expiry</th>
+          <th>Rides</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (d of drivers(); track d.id) {
+          <tr class="fleet__row" (click)="open(d)">
+            <td>
+              <button
+                type="button"
+                class="fleet__name"
+                (click)="open(d); $event.stopPropagation()"
+                >{{ d.firstName }} {{ d.lastName }}</button
+              >
+              @if (d.preferredAreas.length) {
+                <span class="fleet__muted">{{
+                  d.preferredAreas.join(', ')
+                }}</span>
+              }
+            </td>
+            <td>
+              {{ d.phone }}
+              <span class="fleet__muted">{{ d.email }}</span>
+            </td>
+            <td class="fleet__upper">{{ d.languages.join(' · ') }}</td>
+            <td>
+              @if (nextExpiry(d); as doc) {
+                <span
+                  [class.fleet__danger]="doc.expiresOn! < today"
+                  [class.fleet__warning]="
+                    doc.expiresOn! >= today && doc.expiresOn! <= soon
+                  ">
+                  {{ doc.expiresOn | date: 'd MMM y' }}
+                </span>
+                <span class="fleet__muted">{{ documentLabel[doc.type] }}</span>
+              } @else {
+                <span class="fleet__warning">No dates on file</span>
+              }
+            </td>
+            <td class="fleet__nowrap">
+              {{ d.completedRides }}
+              <span class="fleet__muted">
+                @if (d.rating) {
+                  ★ {{ d.rating }} ({{ d.ratingCount }})
+                } @else {
+                  no reviews
+                }
+                @if (d.cancelledShifts) {
+                  · {{ d.cancelledShifts }} cancelled
+                }
+              </span>
+            </td>
+            <td>
+              <span
+                class="fleet__badge"
+                [class.fleet__badge--off]="!d.isActive || !d.isAvailable">
+                {{
+                  !d.isActive
+                    ? 'Inactive'
+                    : d.isAvailable
+                      ? 'Available'
+                      : 'Not available'
+                }}
+              </span>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="fleet__muted">{{
+              loading() ? 'Loading…' : 'No drivers yet.'
+            }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<p-dialog
+  [header]="editing() ? 'Edit driver' : 'New driver'"
+  [modal]="true"
+  [draggable]="false"
+  styleClass="fleet__dialog"
+  [visible]="editing() !== undefined"
+  (visibleChange)="$event || editing.set(undefined)">
+  <form class="fleet__form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    @if (formError(); as message) {
+      <p class="alert alert--error" role="alert">{{ message }}</p>
+    }
+    <div class="fleet__grid">
+      <app-form-field
+        label="First name"
+        for="dFirst"
+        [error]="
+          form.controls.firstName.touched && form.controls.firstName.invalid
+            ? 'Required'
+            : null
+        ">
+        <input id="dFirst" class="input" formControlName="firstName" />
+      </app-form-field>
+      <app-form-field
+        label="Last name"
+        for="dLast"
+        [error]="
+          form.controls.lastName.touched && form.controls.lastName.invalid
+            ? 'Required'
+            : null
+        ">
+        <input id="dLast" class="input" formControlName="lastName" />
+      </app-form-field>
+      <app-form-field
+        label="Mobile (WhatsApp)"
+        for="dPhone"
+        [error]="
+          form.controls.phone.touched && form.controls.phone.invalid
+            ? 'With country code, e.g. +39 …'
+            : null
+        ">
+        <input id="dPhone" class="input" type="tel" formControlName="phone" />
+      </app-form-field>
+      <app-form-field
+        label="Email"
+        for="dEmail"
+        [error]="
+          form.controls.email.touched && form.controls.email.invalid
+            ? 'Enter a valid email'
+            : null
+        ">
+        <input id="dEmail" class="input" type="email" formControlName="email" />
+      </app-form-field>
+      <app-form-field label="Languages (comma separated)" for="dLang">
+        <input
+          id="dLang"
+          class="input"
+          formControlName="languages"
+          placeholder="it, en, fr" />
+      </app-form-field>
+      <app-form-field label="Preferred areas" for="dAreas">
+        <input
+          id="dAreas"
+          class="input"
+          formControlName="preferredAreas"
+          placeholder="Venezia, Mestre" />
+      </app-form-field>
+      <app-form-field label="Commission (%)" for="dCommission">
+        <input
+          id="dCommission"
+          class="input"
+          type="number"
+          min="0"
+          max="100"
+          formControlName="commissionPercent" />
+      </app-form-field>
+      <div class="fleet__switches">
+        <label class="fleet__check"
+          ><input
+            class="fleet__checkbox"
+            type="checkbox"
+            formControlName="isActive" />
+          Active</label
+        >
+        <label class="fleet__check"
+          ><input
+            class="fleet__checkbox"
+            type="checkbox"
+            formControlName="isAvailable" />
+          Available for shifts</label
+        >
+      </div>
+    </div>
+
+    <fieldset class="fleet__documents" formArrayName="documents">
+      <legend class="fleet__legend">Documents</legend>
+      @for (
+        doc of form.controls.documents.controls;
+        track doc;
+        let i = $index
+      ) {
+        <div class="fleet__document" [formGroupName]="i">
+          <select
+            class="input"
+            formControlName="type"
+            [attr.aria-label]="'Document ' + (i + 1) + ' type'">
+            @for (t of documentTypes; track t.value) {
+              <option [value]="t.value">{{ t.label }}</option>
+            }
+          </select>
+          <input
+            class="input"
+            formControlName="number"
+            placeholder="Number"
+            [attr.aria-label]="'Document ' + (i + 1) + ' number'" />
+          <input
+            class="input"
+            type="date"
+            formControlName="expiresOn"
+            [attr.aria-label]="'Document ' + (i + 1) + ' expiry date'" />
+          <button
+            type="button"
+            class="fleet__icon-button"
+            [attr.aria-label]="'Remove document ' + (i + 1)"
+            (click)="removeDocument(i)"
+            ><app-icon name="trash"
+          /></button>
+        </div>
+      }
+      <button
+        appButton
+        size="sm"
+        variant="ghost"
+        type="button"
+        (click)="addDocument()"
+        ><app-icon name="plus" /> Add document</button
+      >
+      <p class="fleet__muted"
+        >A driver with an expired document cannot be put on a shift for that
+        day. Scans can be attached in a later step.</p
+      >
+    </fieldset>
+
+    @if (link(); as url) {
+      <section class="fleet__link">
+        <p class="fleet__legend">Personal link</p>
+        <p class="fleet__muted"
+          >All the driver's shifts, without a password. It is sent with every
+          shift.</p
+        >
+        <input
+          class="input fleet__link-input"
+          readonly
+          [value]="url"
+          aria-label="Driver's personal link"
+          (focus)="$any($event.target).select()" />
+        <div class="fleet__link-actions">
+          <button
+            appButton
+            size="sm"
+            variant="outline"
+            type="button"
+            (click)="copyLink()"
+            ><app-icon name="link" /> Copy</button
+          >
+          <button
+            appButton
+            size="sm"
+            variant="ghost"
+            type="button"
+            (click)="rotateLink()"
+            >Make a new link</button
+          >
+          @if (linkMessage(); as m) {
+            <span class="fleet__muted">{{ m }}</span>
+          }
+        </div>
+      </section>
+    }
+
+    <app-form-field label="Notes" for="dNotes">
+      <textarea
+        id="dNotes"
+        class="input"
+        rows="2"
+        formControlName="notes"></textarea>
+    </app-form-field>
+
+    <div class="fleet__actions">
+      <button
+        appButton
+        type="button"
+        variant="ghost"
+        (click)="editing.set(undefined)"
+        >Cancel</button
+      >
+      <button appButton type="submit" [disabled]="saving()">{{
+        saving() ? 'Saving…' : 'Save driver'
+      }}</button>
+    </div>
+  </form>
+</p-dialog>

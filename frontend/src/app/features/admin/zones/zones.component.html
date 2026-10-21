@@ -1,0 +1,78 @@
+<div class="zones">
+  <header class="zones__header">
+    <div>
+      <p class="eyebrow">Administration</p>
+      <h1 class="heading heading--lg">Zones</h1>
+    </div>
+    <button
+      appButton
+      size="sm"
+      variant="outline"
+      type="button"
+      (click)="selected.set(null)">
+      <app-icon name="plus" /> New zone
+    </button>
+  </header>
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  <div class="zones__layout">
+    <ul class="zones__list">
+      @if (loading()) {
+        <li class="zones__muted">Loading…</li>
+      }
+      @for (zone of zones(); track zone.id) {
+        <li>
+          <button
+            type="button"
+            class="zones__item"
+            [class.zones__item--selected]="selected()?.id === zone.id"
+            [class.zones__item--inactive]="!zone.isActive"
+            (click)="selected.set(zone)">
+            <span class="zones__name">{{ zone.name }}</span>
+            <span class="zones__meta">
+              <span
+                class="zones__chip"
+                [class]="'zones__chip zones__chip--' + zone.type">
+                {{ typeLabel[zone.type] }}
+              </span>
+              @if (zone.accessFee) {
+                {{ zone.accessFee | money }}
+              }
+              @if (zone.meetingPoints.length) {
+                · {{ zone.meetingPoints.length }} meeting
+                {{ zone.meetingPoints.length === 1 ? 'point' : 'points' }}
+              }
+              @if (!zone.isActive) {
+                · inactive
+              }
+            </span>
+          </button>
+        </li>
+      } @empty {
+        @if (!loading()) {
+          <li class="zones__muted">No zones yet.</li>
+        }
+      }
+    </ul>
+
+    <div class="zones__detail">
+      @if (selected() !== undefined) {
+        <app-zone-editor
+          [zone]="selected() ?? null"
+          [otherZones]="zones()"
+          (saved)="onSaved($event)"
+          (deleted)="onDeleted($event)"
+          (closed)="selected.set(undefined)" />
+      } @else {
+        <app-map class="zones__map" [zones]="mapZones()" />
+        <p class="zones__muted">
+          Red: no car access · amber: limited traffic (ZTL) · blue: airports,
+          stations and ports. Select a zone to edit it.
+        </p>
+      }
+    </div>
+  </div>
+</div>

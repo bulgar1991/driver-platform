@@ -1,0 +1,19 @@
+.section-heading {
+  @apply mb-10 flex flex-col items-center gap-3 text-center;
+
+  &--start {
+    @apply items-start text-left;
+  }
+
+  &__eyebrow {
+    @apply text-xs uppercase tracking-luxe text-ivory-200;
+  }
+
+  &__title {
+    @apply font-display text-3xl tracking-wide text-ivory sm:text-4xl;
+  }
+
+  &__divider {
+    @apply mt-2 h-px w-24 bg-gold-line;
+  }
+}

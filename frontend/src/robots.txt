@@ -1,0 +1,9 @@
+# Personal pages (client booking, driver shifts, reviews) and the panel are not for search engines.
+User-agent: *
+Disallow: /admin
+Disallow: /login
+Disallow: /my-booking/
+Disallow: /driver/
+Disallow: /review/
+Disallow: /dev/
+Disallow: /api/

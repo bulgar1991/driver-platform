@@ -1,0 +1,15 @@
+.service-card {
+  @apply flex h-full flex-col items-center gap-4 rounded-md border border-ink-500 bg-ink-800 p-6 text-center transition hover:border-gold/60 hover:shadow-gold;
+
+  &__icon {
+    @apply flex h-14 w-14 items-center justify-center rounded-full border border-gold text-gold;
+  }
+
+  &__title {
+    @apply text-xs uppercase tracking-[0.2em] text-ivory;
+  }
+
+  &__text {
+    @apply text-sm text-ivory-200;
+  }
+}

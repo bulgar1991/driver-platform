@@ -1,0 +1,182 @@
+<form class="details-step" (submit)="submit($event)" novalidate>
+  <fieldset class="details-step__group" [formGroup]="details()">
+    <legend class="details-step__legend">Options</legend>
+
+    <p class="details-step__hint">
+      Child seats
+      @if (options()?.extras?.ChildSeat; as price) {
+        · {{ price | money }} each
+      }
+    </p>
+    <app-counter
+      label="Infant seat"
+      hint="Group 0+, 0–13 kg"
+      [max]="3"
+      formControlName="infantSeats" />
+    <app-counter
+      label="Child seat"
+      hint="Group 1, 9–18 kg"
+      [max]="3"
+      formControlName="toddlerSeats" />
+    <app-counter
+      label="Booster"
+      hint="Group 2/3, 15–36 kg"
+      [max]="3"
+      formControlName="boosterSeats" />
+
+    <label class="details-step__toggle">
+      <input
+        class="details-step__checkbox"
+        type="checkbox"
+        formControlName="nameSign" />
+      <span>
+        Name sign in arrivals
+        @if (options()?.extras?.NameSign; as price) {
+          <span class="details-step__price">+{{ price | money }}</span>
+        }
+      </span>
+    </label>
+    @if (details().controls.nameSign.value) {
+      <app-form-field
+        label="Name on the sign"
+        for="nameSignText"
+        [error]="detailsError('nameSignText')">
+        <input
+          id="nameSignText"
+          class="input"
+          placeholder="Your name if left empty"
+          formControlName="nameSignText" />
+      </app-form-field>
+    }
+
+    <app-form-field
+      label="Flight or ship number"
+      for="flightNumber"
+      [error]="detailsError('flightNumber')">
+      <input
+        id="flightNumber"
+        class="input"
+        placeholder="Optional — we track delays"
+        autocomplete="off"
+        formControlName="flightNumber" />
+    </app-form-field>
+
+    @if (hasReturn()) {
+      <label class="details-step__toggle">
+        <input
+          class="details-step__checkbox"
+          type="checkbox"
+          formControlName="returnNameSign" />
+        <span>Name sign on the return trip</span>
+      </label>
+      <app-form-field
+        label="Return flight or ship number"
+        for="returnFlightNumber"
+        [error]="detailsError('returnFlightNumber')">
+        <input
+          id="returnFlightNumber"
+          class="input"
+          autocomplete="off"
+          formControlName="returnFlightNumber" />
+      </app-form-field>
+    }
+
+    <app-form-field label="Notes for the driver" for="notes">
+      <textarea
+        id="notes"
+        class="input details-step__notes"
+        rows="3"
+        formControlName="notes"></textarea>
+    </app-form-field>
+  </fieldset>
+
+  <fieldset class="details-step__group" [formGroup]="contact()">
+    <legend class="details-step__legend">Your details</legend>
+    <div class="details-step__row">
+      <app-form-field
+        label="First name"
+        for="firstName"
+        [error]="contactError('firstName')">
+        <input
+          id="firstName"
+          class="input"
+          autocomplete="given-name"
+          formControlName="firstName" />
+      </app-form-field>
+      <app-form-field
+        label="Last name"
+        for="lastName"
+        [error]="contactError('lastName')">
+        <input
+          id="lastName"
+          class="input"
+          autocomplete="family-name"
+          formControlName="lastName" />
+      </app-form-field>
+    </div>
+    <div class="details-step__row">
+      <app-form-field label="Email" for="email" [error]="contactError('email')">
+        <input
+          id="email"
+          class="input"
+          type="email"
+          autocomplete="email"
+          formControlName="email" />
+      </app-form-field>
+      <app-form-field
+        label="Mobile phone"
+        for="phone"
+        [error]="contactError('phone')">
+        <input
+          id="phone"
+          class="input"
+          type="tel"
+          autocomplete="tel"
+          placeholder="+39 …"
+          formControlName="phone" />
+      </app-form-field>
+    </div>
+
+    <label class="details-step__toggle">
+      <input
+        class="details-step__checkbox"
+        type="checkbox"
+        formControlName="gdprConsent" />
+      <span>
+        I agree that my details are used to arrange this ride, as described in
+        the
+        <a class="details-step__link" routerLink="/privacy" target="_blank"
+          >privacy policy</a
+        >, and to the
+        <a class="details-step__link" routerLink="/terms" target="_blank"
+          >terms of service</a
+        >.
+      </span>
+    </label>
+    @if (contactError('gdprConsent')) {
+      <p class="details-step__error" role="alert">
+        Please accept to continue.
+      </p>
+    }
+    <label class="details-step__toggle">
+      <input
+        class="details-step__checkbox"
+        type="checkbox"
+        formControlName="marketingConsent" />
+      <span>Send me occasional offers (optional).</span>
+    </label>
+  </fieldset>
+
+  <div class="details-step__actions">
+    <button appButton type="button" variant="ghost" (click)="back.emit()">
+      Back
+    </button>
+    <button appButton type="submit" [disabled]="loading() || !vehicle()">
+      @if (loading()) {
+        Booking…
+      } @else {
+        Book and pay · {{ vehicle()?.total | money }}
+      }
+    </button>
+  </div>
+</form>

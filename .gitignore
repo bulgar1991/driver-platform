@@ -1,0 +1,10 @@
+# IDE and OS
+.idea/
+.vscode/
+.DS_Store
+
+# Secrets and server data — never commit
+deploy/.env
+deploy/backups/
+**/App_Data/
+*.dump

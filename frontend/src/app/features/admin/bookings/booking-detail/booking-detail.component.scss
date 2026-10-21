@@ -1,0 +1,60 @@
+.booking-detail {
+  @apply flex flex-col gap-5 text-sm text-ivory;
+
+  &__header {
+    @apply flex flex-wrap items-center gap-3;
+  }
+
+  &__ref {
+    @apply font-display text-2xl text-gold;
+  }
+
+  &__section {
+    @apply flex flex-col gap-2 border-t border-ink-600 pt-4;
+  }
+
+  &__when {
+    @apply text-base font-semibold;
+  }
+
+  &__facts {
+    @apply grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-3 gap-y-2;
+
+    dt {
+      @apply text-xs uppercase tracking-widest text-ivory-400;
+    }
+
+    dd {
+      @apply flex flex-col gap-0.5;
+    }
+  }
+
+  &__subtitle {
+    @apply text-xs uppercase tracking-widest text-ivory-400;
+  }
+
+  &__contact a,
+  &__link {
+    @apply text-gold hover:underline;
+  }
+
+  &__link {
+    @apply text-xs;
+  }
+
+  &__note {
+    @apply mt-1 border-l-2 border-gold pl-3 text-xs text-ivory-300;
+  }
+
+  &__muted {
+    @apply block text-xs text-ivory-400;
+  }
+
+  &__actions {
+    @apply flex flex-col gap-3 border-t border-ink-600 pt-4;
+  }
+
+  &__buttons {
+    @apply flex flex-wrap justify-end gap-2;
+  }
+}

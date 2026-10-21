@@ -1,0 +1,101 @@
+// Block: map — Leaflet canvas themed in black and gold.
+.map {
+  // isolate keeps Leaflet's own z-indexes below the sticky site header.
+  @apply relative isolate z-0 block min-h-72 overflow-hidden rounded-sm border border-ink-600 bg-ink-900;
+
+  &__canvas {
+    @apply absolute inset-0;
+  }
+
+  &--clickable .leaflet-container {
+    @apply cursor-crosshair;
+  }
+
+  // Light OSM tiles turned into a dark, low-contrast basemap.
+  &__tiles {
+    filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9)
+      saturate(0.4);
+  }
+
+  &__route {
+    stroke: theme('colors.gold.DEFAULT');
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+  }
+
+  &__zone {
+    stroke-width: 1.5;
+    fill-opacity: 0.12;
+
+    &--no-car {
+      stroke: theme('colors.danger');
+      fill: theme('colors.danger');
+    }
+
+    &--ztl {
+      stroke: theme('colors.warning');
+      fill: theme('colors.warning');
+    }
+
+    &--hub {
+      stroke: theme('colors.info');
+      fill: theme('colors.info');
+    }
+
+    &--highlighted {
+      stroke-width: 3;
+      fill-opacity: 0.25;
+    }
+  }
+
+  .leaflet-container {
+    @apply bg-ink-900 font-sans;
+  }
+
+  .leaflet-bar a {
+    @apply border-ink-600 bg-ink-800 text-ivory hover:bg-ink-700;
+  }
+
+  .leaflet-control-attribution {
+    @apply bg-ink/80 text-[10px] text-ivory-400;
+
+    a {
+      @apply text-ivory-300;
+    }
+  }
+
+  .leaflet-tooltip {
+    @apply rounded-sm border-ink-500 bg-ink-800 text-xs text-ivory shadow-none;
+
+    &::before {
+      @apply hidden;
+    }
+  }
+}
+
+// Block: map-marker — Leaflet divIcon.
+.map-marker {
+  @apply flex items-center justify-center;
+
+  &__dot {
+    @apply block h-full w-full rounded-full border-2 border-ink shadow-gold;
+  }
+
+  &--pickup &__dot {
+    @apply bg-gold;
+  }
+
+  &--dropoff &__dot {
+    @apply bg-ivory;
+  }
+
+  &--meeting &__dot {
+    @apply border-gold bg-ink;
+  }
+
+  &--vertex &__dot {
+    @apply border border-ink bg-gold;
+  }
+}

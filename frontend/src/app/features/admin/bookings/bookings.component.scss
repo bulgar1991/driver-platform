@@ -1,0 +1,91 @@
+.bookings {
+  @apply flex flex-col gap-5;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__filters {
+    @apply flex flex-wrap items-end gap-3;
+  }
+
+  &__filter {
+    @apply flex flex-col gap-1;
+
+    &--grow {
+      @apply min-w-56 flex-1;
+    }
+  }
+
+  &__filter-label {
+    @apply text-[10px] uppercase tracking-widest text-ivory-400;
+  }
+
+  &__input {
+    @apply py-2;
+  }
+
+  &__check {
+    @apply flex cursor-pointer items-center gap-2 pb-2 text-sm text-ivory;
+  }
+
+  &__checkbox {
+    @apply h-4 w-4 cursor-pointer accent-gold;
+  }
+
+  &__table-wrap {
+    @apply overflow-x-auto rounded-sm border border-ink-600 bg-ink-900;
+  }
+
+  &__table {
+    @apply w-full min-w-[64rem] border-collapse text-sm;
+
+    th {
+      @apply border-b border-ink-600 px-3 py-3 text-left text-xs font-normal uppercase tracking-widest text-ivory-400;
+    }
+
+    td {
+      @apply border-b border-ink-700 px-3 py-3 align-top text-ivory;
+    }
+  }
+
+  &__row {
+    @apply cursor-pointer transition hover:bg-ink-800;
+
+    &--open {
+      @apply bg-ink-800;
+    }
+  }
+
+  &__ref {
+    @apply mb-1 block whitespace-nowrap text-gold hover:underline;
+  }
+
+  &__route {
+    @apply max-w-xs;
+  }
+
+  &__strong {
+    @apply block font-semibold;
+  }
+
+  &__nowrap {
+    @apply whitespace-nowrap;
+  }
+
+  &__muted {
+    @apply block text-xs text-ivory-400;
+  }
+
+  &__pager {
+    @apply flex items-center justify-center gap-4;
+  }
+
+  &__sr {
+    @apply sr-only;
+  }
+}
+
+::ng-deep .bookings__drawer {
+  @apply w-full max-w-lg;
+}

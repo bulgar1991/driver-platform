@@ -1,0 +1,118 @@
+<div class="shifts">
+  <header class="shifts__header">
+    <div>
+      <p class="eyebrow">Dispatch</p>
+      <h1 class="heading heading--lg">Shifts</h1>
+    </div>
+    <div class="shifts__day">
+      <button
+        type="button"
+        class="shifts__nav"
+        aria-label="Previous day"
+        (click)="shiftDay(-1)"
+        >‹</button
+      >
+      <input
+        class="input shifts__date"
+        type="date"
+        aria-label="Day"
+        [ngModel]="day()"
+        (ngModelChange)="changeDay($event)" />
+      <button
+        type="button"
+        class="shifts__nav"
+        aria-label="Next day"
+        (click)="shiftDay(1)"
+        >›</button
+      >
+      <button appButton size="sm" type="button" (click)="newShift()"
+        ><app-icon name="plus" /> New shift</button
+      >
+    </div>
+  </header>
+
+  @if (message(); as m) {
+    <div
+      class="alert"
+      [class.alert--error]="m.error"
+      [class.alert--info]="!m.error"
+      role="status">
+      {{ m.text }}
+      @if (m.warnings?.length) {
+        <ul class="shifts__warnings">
+          @for (w of m.warnings; track w) {
+            <li>⚠ {{ w }}</li>
+          }
+        </ul>
+      }
+    </div>
+  }
+
+  <div class="shifts__layout">
+    <section class="shifts__queue">
+      <h2 class="shifts__title">To assign · {{ unassigned().length }}</h2>
+      <ul class="shifts__list">
+        @for (b of unassigned(); track b.id) {
+          <li class="shifts__booking">
+            <span class="shifts__time">{{ b.pickupAt | date: 'HH:mm' }}</span>
+            <span class="shifts__text">
+              <span class="shifts__ref">{{ b.reference }}</span>
+              {{ b.pickupLabel }} → {{ b.dropoffLabel }}
+              <span class="shifts__muted"
+                >{{ b.vehicleCategory }} · {{ b.passengers }} pax ·
+                {{ b.clientName }}</span
+              >
+            </span>
+            <button
+              appButton
+              size="sm"
+              variant="ghost"
+              type="button"
+              [attr.aria-label]="'New shift with ' + b.reference"
+              (click)="newShift([b.id])"
+              >Assign</button
+            >
+          </li>
+        } @empty {
+          <li class="shifts__muted">{{
+            loading() ? 'Loading…' : 'Nothing left to assign on this day.'
+          }}</li>
+        }
+      </ul>
+    </section>
+
+    <section class="shifts__board">
+      <h2 class="shifts__title"
+        >{{ day() | date: 'EEEE d MMMM' }} · {{ shifts().length }} shifts</h2
+      >
+      <div class="shifts__cards">
+        @for (s of shifts(); track s.id) {
+          <app-shift-card
+            [shift]="s"
+            [busy]="busyId() === s.id"
+            (edit)="editShift($event)"
+            (statusChange)="onStatusChange($event)" />
+        } @empty {
+          <p class="shifts__muted">No shifts yet on this day.</p>
+        }
+      </div>
+    </section>
+  </div>
+</div>
+
+<p-dialog
+  [header]="editing() ? 'Edit shift' : 'New shift'"
+  [modal]="true"
+  [draggable]="false"
+  styleClass="shifts__dialog"
+  [visible]="editorOpen()"
+  (visibleChange)="$event || closeEditor()">
+  @if (editorOpen()) {
+    <app-shift-editor
+      [shift]="editing()"
+      [candidates]="unassigned()"
+      [preselected]="preselected()"
+      (saved)="onSaved($event)"
+      (closed)="closeEditor()" />
+  }
+</p-dialog>

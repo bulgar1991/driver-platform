@@ -1,0 +1,23 @@
+:host {
+  @apply inline-block whitespace-nowrap rounded-sm px-2 py-0.5 text-[10px] uppercase tracking-widest;
+}
+
+:host(.status-badge--neutral) {
+  @apply bg-ink-700 text-ivory-300;
+}
+
+:host(.status-badge--warning) {
+  @apply bg-warning/15 text-warning;
+}
+
+:host(.status-badge--info) {
+  @apply bg-info/15 text-info;
+}
+
+:host(.status-badge--success) {
+  @apply bg-success/15 text-success;
+}
+
+:host(.status-badge--danger) {
+  @apply bg-danger/15 text-danger;
+}

@@ -1,0 +1,31 @@
+.review {
+  @apply flex flex-col gap-4 py-16;
+
+  &__muted {
+    @apply text-sm text-ivory-300;
+  }
+
+  &__badge {
+    @apply flex h-14 w-14 items-center justify-center rounded-full bg-gold-gradient text-ink;
+  }
+
+  &__stars {
+    @apply flex gap-2 py-2;
+  }
+
+  &__star {
+    @apply flex h-12 w-12 items-center justify-center rounded-full text-ink-400 transition hover:scale-110;
+
+    &--on {
+      @apply text-gold;
+
+      ::ng-deep svg path {
+        fill: currentColor;
+      }
+    }
+  }
+
+  &__label {
+    @apply text-xs uppercase tracking-widest text-ivory-200;
+  }
+}

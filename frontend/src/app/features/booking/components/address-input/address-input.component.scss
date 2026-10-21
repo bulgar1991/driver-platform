@@ -1,0 +1,36 @@
+:host {
+  @apply block;
+}
+
+.address-input {
+  @apply block w-full;
+}
+
+// PrimeNG renders these elements, so they are reached through ::ng-deep.
+:host ::ng-deep .address-input__control {
+  @apply flex w-full;
+}
+
+::ng-deep .address-input__panel {
+  @apply max-w-[calc(100vw-2rem)];
+}
+
+.address-input__option {
+  @apply flex min-w-0 items-start gap-3 py-1;
+}
+
+.address-input__icon {
+  @apply h-5 w-5 text-gold;
+}
+
+.address-input__text {
+  @apply flex min-w-0 flex-col;
+}
+
+.address-input__label {
+  @apply truncate text-sm text-ivory;
+}
+
+.address-input__address {
+  @apply truncate text-xs text-ivory-400;
+}

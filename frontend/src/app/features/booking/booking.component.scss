@@ -1,0 +1,63 @@
+.booking {
+  @apply flex flex-col gap-8 py-10 sm:py-14;
+
+  &__header {
+    @apply flex flex-col gap-3;
+  }
+
+  &__steps {
+    @apply flex gap-2 border-b border-ink-600 pb-4;
+  }
+
+  &__step {
+    @apply flex-1;
+  }
+
+  &__step-button {
+    @apply flex w-full items-center gap-2 text-xs uppercase tracking-widest text-ivory-400 disabled:cursor-default;
+  }
+
+  &__step--done &__step-button {
+    @apply text-ivory-200 hover:text-gold;
+  }
+
+  &__step--active &__step-button {
+    @apply text-gold;
+  }
+
+  &__step-number {
+    @apply flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-current text-[11px];
+  }
+
+  &__step--active &__step-number {
+    @apply border-gold bg-gold text-ink;
+  }
+
+  &__layout {
+    @apply grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)];
+  }
+
+  &__main {
+    @apply flex min-w-0 flex-col gap-5;
+  }
+
+  &__stack {
+    @apply flex flex-col gap-4;
+  }
+
+  &__aside {
+    @apply flex min-w-0 flex-col gap-5 lg:sticky lg:top-24 lg:self-start;
+  }
+
+  &__map {
+    @apply h-72 lg:h-80;
+  }
+
+  &__note {
+    @apply text-xs text-ivory-400;
+  }
+
+  &__done {
+    @apply flex flex-col items-center gap-3 py-24 text-center;
+  }
+}

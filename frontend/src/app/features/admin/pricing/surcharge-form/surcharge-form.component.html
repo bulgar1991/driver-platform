@@ -1,0 +1,126 @@
+<form
+  class="surcharge-form"
+  [formGroup]="form"
+  (ngSubmit)="submit()"
+  novalidate>
+  <app-form-field
+    label="Name"
+    for="surchargeName"
+    [error]="
+      form.controls.name.touched && form.controls.name.invalid
+        ? 'Required'
+        : null
+    ">
+    <input
+      id="surchargeName"
+      class="input"
+      placeholder="e.g. Venice Carnival 2027"
+      formControlName="name" />
+  </app-form-field>
+
+  <div class="surcharge-form__row">
+    <app-form-field label="Applies on" for="surchargeKind">
+      <select id="surchargeKind" class="input" formControlName="kind">
+        @for (kind of kinds; track kind.value) {
+          <option [value]="kind.value">{{ kind.label }}</option>
+        }
+      </select>
+    </app-form-field>
+    <app-form-field label="Increase (%)" for="surchargePercent">
+      <input
+        id="surchargePercent"
+        class="input"
+        type="number"
+        min="0"
+        max="200"
+        step="0.5"
+        formControlName="percent" />
+    </app-form-field>
+  </div>
+
+  @switch (form.controls.kind.value) {
+    @case ('DaysOfWeek') {
+      <div class="surcharge-form__days" role="group" aria-label="Days">
+        @for (day of days; track day.value) {
+          <label class="surcharge-form__day">
+            <input
+              class="surcharge-form__checkbox"
+              type="checkbox"
+              [checked]="form.controls.daysOfWeek.value.includes(day.value)"
+              (change)="toggleDay(day.value, $any($event.target).checked)" />
+            {{ day.label }}
+          </label>
+        }
+      </div>
+    }
+    @case ('DateRange') {
+      <div class="surcharge-form__row">
+        <app-form-field label="From" for="startDate">
+          <input
+            id="startDate"
+            class="input"
+            type="date"
+            formControlName="startDate" />
+        </app-form-field>
+        <app-form-field label="To (inclusive)" for="endDate">
+          <input
+            id="endDate"
+            class="input"
+            type="date"
+            formControlName="endDate" />
+        </app-form-field>
+      </div>
+      <label class="surcharge-form__toggle">
+        <input
+          class="surcharge-form__checkbox"
+          type="checkbox"
+          formControlName="repeatsYearly" />
+        Every year on these dates
+      </label>
+    }
+    @case ('TimeOfDay') {
+      <div class="surcharge-form__row">
+        <app-form-field label="From" for="startTime">
+          <input
+            id="startTime"
+            class="input"
+            type="time"
+            formControlName="startTime" />
+        </app-form-field>
+        <app-form-field label="Until" for="endTime">
+          <input
+            id="endTime"
+            class="input"
+            type="time"
+            formControlName="endTime" />
+        </app-form-field>
+      </div>
+      <p class="surcharge-form__hint">
+        Uses the pickup time. A range such as 22:00–06:00 runs over midnight.
+      </p>
+    }
+  }
+
+  @if (form.touched && form.errors) {
+    <p class="surcharge-form__error" role="alert">
+      Fill in the days, dates or times for this rule.
+    </p>
+  }
+
+  <label class="surcharge-form__toggle">
+    <input
+      class="surcharge-form__checkbox"
+      type="checkbox"
+      formControlName="isActive" />
+    Active
+  </label>
+
+  <div class="surcharge-form__actions">
+    <button appButton type="button" variant="ghost" (click)="cancelled.emit()">
+      Cancel
+    </button>
+    <button appButton type="submit" [disabled]="saving()">
+      {{ saving() ? 'Saving…' : 'Save' }}
+    </button>
+  </div>
+</form>

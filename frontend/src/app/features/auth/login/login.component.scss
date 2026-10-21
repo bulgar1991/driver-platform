@@ -1,0 +1,16 @@
+.login {
+  @apply flex min-h-screen items-center justify-center px-4 py-12;
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    rgb(201 164 92 / 0.12),
+    transparent 60%
+  );
+
+  &__card {
+    @apply flex w-full max-w-sm flex-col gap-5 rounded-md border border-ink-500 bg-ink-800 p-8 shadow-gold;
+  }
+
+  &__header {
+    @apply mb-2 flex flex-col items-center gap-2;
+  }
+}

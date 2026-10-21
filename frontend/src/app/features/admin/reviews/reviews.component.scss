@@ -1,0 +1,63 @@
+.reviews {
+  @apply flex flex-col gap-5;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__filter {
+    @apply flex flex-col gap-1;
+  }
+
+  &__label {
+    @apply text-[10px] uppercase tracking-widest text-ivory-400;
+  }
+
+  &__select {
+    @apply w-64 py-2;
+  }
+
+  &__summary {
+    @apply flex items-center gap-3 text-sm text-ivory-300;
+  }
+
+  &__average {
+    @apply font-display text-2xl text-gold;
+  }
+
+  &__list {
+    @apply flex flex-col divide-y divide-ink-700 rounded-sm border border-ink-600 bg-ink-900;
+  }
+
+  &__item {
+    @apply flex flex-col gap-2 p-4 sm:flex-row sm:gap-6;
+  }
+
+  &__stars {
+    @apply flex w-36 shrink-0 items-start gap-0.5;
+  }
+
+  &__star {
+    @apply h-5 w-5 text-ink-500;
+
+    &--on {
+      @apply text-gold;
+
+      ::ng-deep path {
+        fill: currentColor;
+      }
+    }
+  }
+
+  &__body {
+    @apply min-w-0;
+  }
+
+  &__comment {
+    @apply text-sm text-ivory;
+  }
+
+  &__muted {
+    @apply text-xs text-ivory-400;
+  }
+}

@@ -1,0 +1,102 @@
+<div class="shift-editor">
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  <fieldset class="shift-editor__group">
+    <legend class="shift-editor__legend">Bookings</legend>
+    <ul class="shift-editor__bookings">
+      @for (b of options(); track b.id) {
+        <li>
+          <label
+            class="shift-editor__booking"
+            [class.shift-editor__booking--on]="selected().has(b.id)">
+            <input
+              class="shift-editor__checkbox"
+              type="checkbox"
+              [checked]="selected().has(b.id)"
+              (change)="toggle(b.id)" />
+            <span class="shift-editor__time">{{
+              b.pickupAt | date: 'HH:mm'
+            }}</span>
+            <span class="shift-editor__text">
+              <span class="shift-editor__ref">{{ b.reference }}</span>
+              {{ b.pickupLabel }} → {{ b.dropoffLabel }}
+              <span class="shift-editor__muted">
+                {{ b.vehicleCategory }} · {{ b.passengers }} pax ·
+                {{ b.largeLuggage + b.smallLuggage }} bags
+                @if (b.childSeats) {
+                  · {{ b.childSeats }} child seat
+                }
+                · about {{ b.durationMinutes }} min
+              </span>
+            </span>
+          </label>
+        </li>
+      } @empty {
+        <li class="shift-editor__muted">No bookings to assign on this day.</li>
+      }
+    </ul>
+  </fieldset>
+
+  @if (availability(); as a) {
+    <div class="shift-editor__row">
+      <label class="shift-editor__field">
+        <span class="shift-editor__legend">Driver</span>
+        <select
+          class="input"
+          [ngModel]="driverId()"
+          (ngModelChange)="driverId.set($event)">
+          <option value="">Choose a driver</option>
+          @for (d of a.drivers; track d.id) {
+            <option [value]="d.id"
+              >{{ d.available ? '' : '⚠ ' }}{{ d.name }}</option
+            >
+          }
+        </select>
+        @for (p of driverProblems(); track p) {
+          <span class="shift-editor__problem">{{ p }}</span>
+        }
+      </label>
+      <label class="shift-editor__field">
+        <span class="shift-editor__legend">Car</span>
+        <select
+          class="input"
+          [ngModel]="vehicleId()"
+          (ngModelChange)="vehicleId.set($event)">
+          <option value="">Choose a car</option>
+          @for (v of a.vehicles; track v.id) {
+            <option [value]="v.id"
+              >{{ v.available ? '' : '⚠ ' }}{{ v.plateNumber }} ·
+              {{ v.label }} ({{ v.category }})</option
+            >
+          }
+        </select>
+        @for (p of vehicleProblems(); track p) {
+          <span class="shift-editor__problem">{{ p }}</span>
+        }
+      </label>
+    </div>
+  }
+
+  <label class="shift-editor__field">
+    <span class="shift-editor__legend">Notes for the driver</span>
+    <textarea class="input" rows="2" [(ngModel)]="notes"></textarea>
+  </label>
+
+  @if (shift()?.status === 'Confirmed') {
+    <p class="shift-editor__muted"
+      >Saving changes sets the shift back to draft: the driver confirms it
+      again.</p
+    >
+  }
+
+  <div class="shift-editor__actions">
+    <button appButton type="button" variant="ghost" (click)="closed.emit()"
+      >Cancel</button
+    >
+    <button appButton type="button" [disabled]="saving()" (click)="save()">
+      {{ saving() ? 'Saving…' : shift() ? 'Save shift' : 'Create shift' }}
+    </button>
+  </div>
+</div>

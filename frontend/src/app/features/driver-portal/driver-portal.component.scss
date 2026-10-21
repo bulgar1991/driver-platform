@@ -1,0 +1,43 @@
+.driver-portal {
+  @apply min-h-screen bg-ink;
+
+  &__bar {
+    @apply sticky top-0 z-20 flex items-center justify-between border-b border-ink-600 bg-ink/95 px-4 py-3 backdrop-blur;
+  }
+
+  &__hello {
+    @apply text-sm text-ivory-200;
+  }
+
+  &__main {
+    @apply mx-auto flex max-w-xl flex-col gap-8 px-4 py-6;
+  }
+
+  &__shift {
+    @apply flex flex-col gap-4;
+
+    &--cancelled {
+      @apply opacity-60;
+    }
+  }
+
+  &__shift-header {
+    @apply flex items-start justify-between gap-3 border-b border-gold/40 pb-3;
+  }
+
+  &__shift-title {
+    @apply font-display text-2xl text-ivory;
+  }
+
+  &__notes {
+    @apply border-l-2 border-gold pl-3 text-sm text-ivory-200;
+  }
+
+  &__empty {
+    @apply flex flex-col gap-2 py-16 text-center;
+  }
+
+  &__muted {
+    @apply text-xs text-ivory-400;
+  }
+}

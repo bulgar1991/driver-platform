@@ -1,0 +1,187 @@
+<div class="staff">
+  <header class="staff__header">
+    <div>
+      <p class="eyebrow">Administration</p>
+      <h1 class="heading heading--lg">Staff</h1>
+    </div>
+    <button appButton size="sm" type="button" (click)="open(null)"
+      ><app-icon name="plus" /> New account</button
+    >
+  </header>
+
+  @if (message(); as m) {
+    <p
+      class="alert"
+      [class.alert--error]="m.error"
+      [class.alert--info]="!m.error"
+      role="status"
+      >{{ m.text }}</p
+    >
+  }
+
+  @if (temporary(); as t) {
+    <div class="alert alert--info staff__temporary" role="status">
+      <p
+        >Temporary password for <strong>{{ t.email }}</strong
+        >, shown only now. Give it in person or by phone; it must be changed at
+        the first sign-in.</p
+      >
+      <div class="staff__secret">
+        <input
+          class="input staff__mono"
+          readonly
+          [value]="t.password"
+          aria-label="Temporary password"
+          (focus)="$any($event.target).select()" />
+        <button
+          appButton
+          size="sm"
+          variant="outline"
+          type="button"
+          (click)="copy(t.password)"
+          >Copy</button
+        >
+        <button
+          appButton
+          size="sm"
+          variant="ghost"
+          type="button"
+          (click)="temporary.set(null)"
+          >Done</button
+        >
+      </div>
+    </div>
+  }
+
+  <div class="staff__table-wrap">
+    <table class="staff__table">
+      <thead>
+        <tr
+          ><th>Name</th><th>Role</th><th>Last sign-in</th><th>Status</th
+          ><th><span class="staff__sr">Actions</span></th></tr
+        >
+      </thead>
+      <tbody>
+        @for (s of staff(); track s.id) {
+          <tr>
+            <td
+              >{{ s.fullName
+              }}<span class="staff__muted">{{ s.email }}</span></td
+            >
+            <td>{{ s.role }}</td>
+            <td>{{
+              s.lastLoginAt ? (s.lastLoginAt | date: 'd MMM y, HH:mm') : 'Never'
+            }}</td>
+            <td>
+              <span
+                class="staff__badge"
+                [class.staff__badge--off]="!s.isActive"
+                >{{ s.isActive ? 'Active' : 'Inactive' }}</span
+              >
+              @if (s.mustChangePassword) {
+                <span class="staff__muted">temporary password</span>
+              }
+              @if (s.lockedUntil) {
+                <span class="staff__warning"
+                  >locked until {{ s.lockedUntil | date: 'HH:mm' }}</span
+                >
+              }
+            </td>
+            <td class="staff__actions">
+              <button
+                appButton
+                size="sm"
+                variant="ghost"
+                type="button"
+                (click)="open(s)"
+                >Edit</button
+              >
+              <button
+                appButton
+                size="sm"
+                variant="ghost"
+                type="button"
+                (click)="reset(s)"
+                >Reset password</button
+              >
+            </td>
+          </tr>
+        } @empty {
+          <tr
+            ><td colspan="5" class="staff__muted">{{
+              loading() ? 'Loading…' : 'No accounts.'
+            }}</td></tr
+          >
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<p-dialog
+  [header]="editing() ? 'Edit account' : 'New account'"
+  [modal]="true"
+  [draggable]="false"
+  styleClass="staff__dialog"
+  [visible]="editing() !== undefined"
+  (visibleChange)="$event || editing.set(undefined)">
+  <form class="staff__form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <app-form-field
+      label="Email"
+      for="sEmail"
+      [error]="
+        form.controls.email.touched && form.controls.email.invalid
+          ? 'Enter a valid email'
+          : null
+      ">
+      <input id="sEmail" class="input" type="email" formControlName="email" />
+    </app-form-field>
+    <app-form-field
+      label="Full name"
+      for="sName"
+      [error]="
+        form.controls.fullName.touched && form.controls.fullName.invalid
+          ? 'Required'
+          : null
+      ">
+      <input id="sName" class="input" formControlName="fullName" />
+    </app-form-field>
+    <app-form-field label="Role" for="sRole">
+      <select id="sRole" class="input" formControlName="role">
+        <option value="Dispatcher"
+          >Dispatcher: bookings, shifts, drivers, vehicles</option
+        >
+        <option value="Admin"
+          >Admin: everything, including prices, payments and staff</option
+        >
+      </select>
+    </app-form-field>
+    @if (editing()) {
+      <label class="staff__check">
+        <input
+          class="staff__checkbox"
+          type="checkbox"
+          formControlName="isActive"
+          [attr.disabled]="editing()?.id === me()?.id ? true : null" />
+        Active
+      </label>
+      <p class="staff__muted"
+        >Changing the role or deactivating signs the person out at once.</p
+      >
+    } @else {
+      <p class="staff__muted">A temporary password is shown after saving.</p>
+    }
+    <div class="staff__dialog-actions">
+      <button
+        appButton
+        type="button"
+        variant="ghost"
+        (click)="editing.set(undefined)"
+        >Cancel</button
+      >
+      <button appButton type="submit" [disabled]="saving()">{{
+        saving() ? 'Saving…' : 'Save'
+      }}</button>
+    </div>
+  </form>
+</p-dialog>

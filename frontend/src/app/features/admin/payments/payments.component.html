@@ -1,0 +1,236 @@
+<div class="payments">
+  <header class="payments__header">
+    <div>
+      <p class="eyebrow">Administration</p>
+      <h1 class="heading heading--lg">Payments</h1>
+    </div>
+    <form
+      class="payments__export"
+      [formGroup]="exportForm"
+      (ngSubmit)="exportCsv()">
+      <app-form-field label="Invoices from" for="exportFrom">
+        <input
+          id="exportFrom"
+          class="input payments__date"
+          type="date"
+          formControlName="from" />
+      </app-form-field>
+      <app-form-field label="To" for="exportTo">
+        <input
+          id="exportTo"
+          class="input payments__date"
+          type="date"
+          formControlName="to" />
+      </app-form-field>
+      <button appButton size="sm" variant="outline" type="submit">
+        <app-icon name="download" /> CSV for the accountant
+      </button>
+    </form>
+  </header>
+
+  @if (message(); as m) {
+    <p
+      class="alert"
+      [class.alert--error]="m.error"
+      [class.alert--info]="!m.error"
+      role="status">
+      {{ m.text }}
+    </p>
+  }
+
+  <div class="payments__filters" role="group" aria-label="Filter by status">
+    @for (s of statuses; track s.label) {
+      <button
+        type="button"
+        class="payments__filter"
+        [class.payments__filter--active]="status() === s.value"
+        (click)="filter(s.value)">
+        {{ s.label }}
+      </button>
+    }
+  </div>
+
+  <div class="payments__table-wrap">
+    <table class="payments__table">
+      <thead>
+        <tr>
+          <th>Booking</th>
+          <th>Client</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Paid</th>
+          <th>Documents</th>
+          <th><span class="payments__sr">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of payments(); track p.id) {
+          <tr>
+            <td>
+              <span class="payments__ref">{{ p.bookingReference }}</span>
+              <span class="payments__muted">{{ p.bookingStatus }}</span>
+            </td>
+            <td>
+              {{ p.clientName }}
+              <span class="payments__muted">{{ p.clientEmail }}</span>
+            </td>
+            <td class="payments__nowrap">
+              {{ p.amount | money: p.currency }}
+              @if (p.refundedAmount > 0) {
+                <span class="payments__muted"
+                  >−{{ p.refundedAmount | money: p.currency }} refunded</span
+                >
+              }
+            </td>
+            <td>
+              <span
+                class="payments__status"
+                [class]="'payments__status payments__status--' + p.status">
+                {{ statusLabel[p.status] }}
+              </span>
+              @if (p.method) {
+                <span class="payments__muted"
+                  >{{ p.method }} · {{ p.provider }}</span
+                >
+              }
+            </td>
+            <td class="payments__nowrap">
+              @if (p.paidAt) {
+                {{ p.paidAt | date: 'd MMM y, HH:mm' }}
+              } @else {
+                <span class="payments__muted">{{
+                  p.createdAt | date: 'd MMM, HH:mm'
+                }}</span>
+              }
+            </td>
+            <td>
+              <div class="payments__documents">
+                @for (invoice of p.invoices; track invoice.id) {
+                  <span class="payments__document">
+                    <button
+                      type="button"
+                      class="payments__link"
+                      (click)="download(invoice)">
+                      <app-icon class="payments__icon" name="download" />
+                      {{ invoice.number }}
+                    </button>
+                    <button
+                      type="button"
+                      class="payments__link payments__link--muted"
+                      [attr.aria-label]="'Email ' + invoice.number + ' again'"
+                      (click)="resend(invoice)">
+                      resend
+                    </button>
+                  </span>
+                }
+              </div>
+            </td>
+            <td>
+              @if (canRefund(p)) {
+                <button
+                  appButton
+                  size="sm"
+                  variant="ghost"
+                  type="button"
+                  (click)="openRefund(p)"
+                  >Refund</button
+                >
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="payments__muted">
+              {{ loading() ? 'Loading…' : 'No payments yet.' }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<p-dialog
+  header="Refund"
+  [modal]="true"
+  [draggable]="false"
+  [dismissableMask]="true"
+  styleClass="payments__dialog"
+  [visible]="refunding() !== null"
+  (visibleChange)="$event || refunding.set(null)">
+  @if (refunding(); as p) {
+    <form
+      class="payments__refund"
+      [formGroup]="refundForm"
+      (ngSubmit)="refund()"
+      novalidate>
+      <p class="payments__muted">
+        {{ p.bookingReference }} · {{ p.clientName }} · paid
+        {{ p.amount | money: p.currency }}
+        @if (p.refundedAmount) {
+          , {{ p.refundedAmount | money: p.currency }} already refunded
+        }
+      </p>
+      <app-form-field
+        label="Amount (€)"
+        for="refundAmount"
+        [error]="
+          refundForm.controls.amount.touched &&
+          refundForm.controls.amount.invalid
+            ? 'Up to what is left to refund'
+            : null
+        ">
+        <input
+          id="refundAmount"
+          class="input"
+          type="number"
+          step="0.01"
+          min="0.01"
+          formControlName="amount" />
+      </app-form-field>
+      <app-form-field
+        label="Reason (printed on the credit note)"
+        for="refundReason"
+        [error]="
+          refundForm.controls.reason.touched &&
+          refundForm.controls.reason.invalid
+            ? 'Required'
+            : null
+        ">
+        <input
+          id="refundReason"
+          class="input"
+          formControlName="reason"
+          placeholder="e.g. Client cancelled 48 h before" />
+      </app-form-field>
+      <label class="payments__toggle">
+        <input
+          class="payments__checkbox"
+          type="checkbox"
+          formControlName="cancelBooking" />
+        Also cancel the ride (and its return trip)
+      </label>
+      <p class="payments__muted">
+        The money goes back to the client's card or PayPal through Stripe. A
+        credit note is issued and emailed. This cannot be undone.
+      </p>
+      <div class="payments__actions">
+        <button
+          appButton
+          type="button"
+          variant="ghost"
+          (click)="refunding.set(null)"
+          >Cancel</button
+        >
+        <button appButton type="submit" [disabled]="saving()">
+          {{
+            saving()
+              ? 'Refunding…'
+              : 'Refund ' +
+                (refundForm.controls.amount.value | money: p.currency)
+          }}
+        </button>
+      </div>
+    </form>
+  }
+</p-dialog>

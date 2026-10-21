@@ -1,0 +1,32 @@
+<button
+  type="button"
+  class="vehicle-card"
+  [class.vehicle-card--selected]="selected()"
+  [disabled]="!vehicle().available"
+  [attr.aria-pressed]="selected()"
+  (click)="chosen.emit()">
+  <app-icon class="vehicle-card__icon" name="car" />
+  <span class="vehicle-card__body">
+    <span class="vehicle-card__title">{{ info().title }}</span>
+    <span class="vehicle-card__description">{{ info().description }}</span>
+    <span class="vehicle-card__capacity">
+      <span class="vehicle-card__spec">
+        <app-icon class="vehicle-card__spec-icon" name="users" />
+        {{ vehicle().maxPassengers }}
+      </span>
+      <span class="vehicle-card__spec">
+        <app-icon class="vehicle-card__spec-icon" name="luggage" />
+        {{ vehicle().maxLuggage }}
+      </span>
+    </span>
+  </span>
+  <span class="vehicle-card__price">
+    @if (vehicle().available) {
+      {{ vehicle().total | money: currency() }}
+    } @else {
+      <span class="vehicle-card__reason">{{
+        vehicle().unavailableReason
+      }}</span>
+    }
+  </span>
+</button>

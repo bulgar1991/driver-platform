@@ -1,0 +1,68 @@
+.shifts {
+  @apply flex flex-col gap-5;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__day {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  &__nav {
+    @apply flex h-9 w-9 items-center justify-center rounded-sm border border-ink-600 text-lg text-ivory hover:border-gold hover:text-gold;
+  }
+
+  &__date {
+    @apply w-44 py-2;
+  }
+
+  &__warnings {
+    @apply mt-2 flex flex-col gap-1 text-xs text-warning;
+  }
+
+  &__layout {
+    @apply grid grid-cols-1 gap-6 xl:grid-cols-[24rem_minmax(0,1fr)];
+  }
+
+  &__queue,
+  &__board {
+    @apply flex min-w-0 flex-col gap-3;
+  }
+
+  &__title {
+    @apply text-xs uppercase tracking-widest text-ivory-200;
+  }
+
+  &__list {
+    @apply flex flex-col gap-2;
+  }
+
+  &__booking {
+    @apply flex items-start gap-3 rounded-sm border border-warning/40 bg-ink-900 p-3 text-sm text-ivory;
+  }
+
+  &__time {
+    @apply w-12 shrink-0 font-semibold;
+  }
+
+  &__text {
+    @apply min-w-0 flex-1;
+  }
+
+  &__ref {
+    @apply mr-1 text-gold;
+  }
+
+  &__cards {
+    @apply grid grid-cols-1 gap-3 lg:grid-cols-2;
+  }
+
+  &__muted {
+    @apply block text-xs text-ivory-400;
+  }
+}
+
+::ng-deep .shifts__dialog {
+  @apply w-[min(44rem,calc(100vw-2rem))];
+}

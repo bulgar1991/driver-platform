@@ -1,0 +1,27 @@
+<div class="counter" role="group" [attr.aria-label]="label()">
+  <div class="counter__text">
+    <span class="counter__label">{{ label() }}</span>
+    @if (hint()) {
+      <span class="counter__hint">{{ hint() }}</span>
+    }
+  </div>
+  <div class="counter__controls">
+    <button
+      type="button"
+      class="counter__button"
+      [disabled]="disabled() || value() <= min()"
+      [attr.aria-label]="'Fewer ' + label()"
+      (click)="step(-1)">
+      <app-icon name="minus" />
+    </button>
+    <output class="counter__value" aria-live="polite">{{ value() }}</output>
+    <button
+      type="button"
+      class="counter__button"
+      [disabled]="disabled() || value() >= max()"
+      [attr.aria-label]="'More ' + label()"
+      (click)="step(1)">
+      <app-icon name="plus" />
+    </button>
+  </div>
+</div>

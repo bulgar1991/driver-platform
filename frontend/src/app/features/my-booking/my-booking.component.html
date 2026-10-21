@@ -1,0 +1,134 @@
+<section class="my-booking page">
+  @if (loading()) {
+    <p class="my-booking__muted">Loading your booking…</p>
+  } @else if (notFound()) {
+    <div class="my-booking__empty">
+      <h1 class="heading heading--md">Booking not found</h1>
+      <p class="my-booking__muted">
+        Check that you opened the full link from your email.
+      </p>
+      <a appButton variant="outline" routerLink="/">Back to home</a>
+    </div>
+  } @else if (booking(); as b) {
+    <header class="my-booking__header">
+      <p class="eyebrow">Your booking</p>
+      <h1 class="heading heading--lg">
+        <span class="heading__accent">{{ b.reference }}</span>
+      </h1>
+      <span
+        class="my-booking__status"
+        [class.my-booking__status--ok]="
+          b.status !== 'AwaitingPayment' && b.status !== 'Cancelled'
+        "
+        [class.my-booking__status--cancelled]="b.status === 'Cancelled'">
+        {{ statusLabel[b.status] }}
+      </span>
+    </header>
+
+    @if (error(); as message) {
+      <p class="alert alert--error" role="alert">{{ message }}</p>
+    }
+
+    @if (waitingForPayment()) {
+      <p class="alert alert--info" role="status">
+        Confirming your payment with the bank… this takes a few seconds.
+      </p>
+    } @else if (b.canPay) {
+      <div class="my-booking__pay">
+        <div>
+          <p class="my-booking__pay-title">
+            @if (
+              b.payment?.status === 'Failed' || b.payment?.status === 'Pending'
+            ) {
+              The payment was not completed.
+            } @else {
+              Your ride is reserved. Pay to confirm it.
+            }
+          </p>
+          <p class="my-booking__muted">
+            Card or PayPal on Stripe's secure page. The price stays fixed.
+          </p>
+        </div>
+        <button appButton type="button" [disabled]="paying()" (click)="pay()">
+          <app-icon name="lock" />
+          {{ paying() ? 'Opening…' : 'Pay ' + (b.total | money: b.currency) }}
+        </button>
+      </div>
+    } @else if (paidOk() && b.status !== 'Cancelled') {
+      <p class="alert alert--info" role="status">
+        Thank you, {{ b.clientName }}. Your ride is confirmed; the confirmation
+        and invoice were sent by email. We will send the driver's details before
+        the ride.
+      </p>
+    }
+
+    <ul class="my-booking__legs">
+      @for (leg of b.legs; track leg.reference) {
+        <li class="my-booking__leg">
+          <span class="my-booking__ref">{{ leg.reference }}</span>
+          <span class="my-booking__when">
+            <app-icon class="my-booking__icon" name="calendar" />
+            {{ leg.pickupAt | date: 'EEE d MMM y, HH:mm' }} (Italian time)
+          </span>
+          <span class="my-booking__route">
+            {{ leg.pickupMeetingPoint?.name ?? leg.pickupAddress }} →
+            {{ leg.dropoffMeetingPoint?.name ?? leg.dropoffAddress }}
+          </span>
+          @if (leg.pickupMeetingPoint?.clientInstructions; as text) {
+            <span class="my-booking__note">{{ text }}</span>
+          }
+          <span class="my-booking__muted">
+            {{ leg.distanceKm }} km · {{ leg.price.total | money: b.currency }}
+          </span>
+        </li>
+      }
+    </ul>
+
+    <dl class="my-booking__facts">
+      <div class="my-booking__fact">
+        <dt>Vehicle</dt>
+        <dd>{{ vehicles[b.vehicleCategory].title }}</dd>
+      </div>
+      <div class="my-booking__fact">
+        <dt>Total</dt>
+        <dd>
+          {{ b.total | money: b.currency }}
+          <span class="my-booking__muted"
+            >incl. VAT {{ b.vatRatePercent }}%</span
+          >
+        </dd>
+      </div>
+      @if (b.payment; as p) {
+        <div class="my-booking__fact">
+          <dt>Payment</dt>
+          <dd>
+            {{ paymentLabel[p.status] }}
+            @if (p.method) {
+              · {{ p.method === 'PayPal' ? 'PayPal' : 'card' }}
+            }
+            @if (p.refundedAmount > 0) {
+              · {{ p.refundedAmount | money: b.currency }} refunded
+            }
+          </dd>
+        </div>
+      }
+    </dl>
+
+    @if (b.invoices.length) {
+      <section class="my-booking__documents">
+        <h2 class="my-booking__subtitle">Documents</h2>
+        @for (invoice of b.invoices; track invoice.number) {
+          <a
+            class="my-booking__document"
+            [href]="invoiceUrl(invoice.number)"
+            download>
+            <app-icon class="my-booking__icon" name="download" />
+            {{ invoice.type === 'Invoice' ? 'Invoice' : 'Credit note' }}
+            {{ invoice.number }} ·
+            {{ invoice.totalAmount | money: b.currency }}
+          </a>
+        }
+      </section>
+    }
+  }
+</section>

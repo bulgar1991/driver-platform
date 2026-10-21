@@ -1,0 +1,156 @@
+<article class="shift-card" [class.shift-card--closed]="!open()">
+  <header class="shift-card__header">
+    <span class="shift-card__time"
+      >{{ shift().startsAt | date: 'HH:mm' }}–{{
+        shift().endsAt | date: 'HH:mm'
+      }}</span
+    >
+    <app-status-badge kind="shift" [status]="shift().status" />
+  </header>
+  <p class="shift-card__driver">
+    {{ shift().driverName }}
+    <a class="shift-card__phone" [href]="'tel:' + shift().driverPhone">{{
+      shift().driverPhone
+    }}</a>
+  </p>
+  <p class="shift-card__muted"
+    >{{ shift().vehiclePlate }} · {{ shift().vehicleLabel }} ({{
+      shift().vehicleCategory
+    }})</p
+  >
+
+  <ol class="shift-card__bookings">
+    @for (b of shift().bookings; track b.id) {
+      <li
+        class="shift-card__booking"
+        [class.shift-card__booking--cancelled]="b.status === 'Cancelled'">
+        <span class="shift-card__booking-time">{{
+          b.pickupAt | date: 'HH:mm'
+        }}</span>
+        <span class="shift-card__booking-text">
+          <span class="shift-card__ref">{{ b.reference }}</span>
+          {{ b.pickupLabel }} → {{ b.dropoffLabel }}
+          <span class="shift-card__muted"
+            >{{ b.clientName }} · {{ b.passengers }} pax · {{ b.status }}</span
+          >
+        </span>
+      </li>
+    }
+  </ol>
+
+  @if (shift().notes) {
+    <p class="shift-card__notes">{{ shift().notes }}</p>
+  }
+
+  @if (shift().messages.length) {
+    <ul class="shift-card__messages">
+      @for (m of shift().messages; track m.channel) {
+        <li
+          class="shift-card__message"
+          [class.shift-card__message--failed]="m.status === 'Failed'"
+          [attr.title]="m.error">
+          {{ m.channel }}
+          {{
+            m.status === 'Sent'
+              ? '✓'
+              : m.status === 'Failed'
+                ? '✗ failed'
+                : '– skipped'
+          }}
+          <span class="shift-card__muted">{{
+            m.createdAt | date: 'd MMM HH:mm'
+          }}</span>
+        </li>
+      }
+      @if (shift().seenAt) {
+        <li class="shift-card__message"
+          >Seen {{ shift().seenAt | date: 'HH:mm' }}</li
+        >
+      }
+    </ul>
+  }
+
+  @if (open()) {
+    <footer class="shift-card__actions">
+      @if (cancelling()) {
+        <input
+          class="input shift-card__reason"
+          placeholder="Reason"
+          aria-label="Reason for cancelling the shift"
+          [(ngModel)]="reason" />
+        <button
+          appButton
+          size="sm"
+          variant="ghost"
+          type="button"
+          (click)="cancelling.set(false)"
+          >Keep</button
+        >
+        <button
+          appButton
+          size="sm"
+          variant="outline"
+          type="button"
+          [disabled]="busy() || !reason.trim()"
+          (click)="change('Cancelled')"
+          >Cancel shift</button
+        >
+      } @else {
+        <button
+          appButton
+          size="sm"
+          variant="ghost"
+          type="button"
+          (click)="edit.emit(shift())"
+          >Edit</button
+        >
+        @if (shift().status !== 'Confirmed') {
+          <button
+            appButton
+            size="sm"
+            type="button"
+            [disabled]="busy()"
+            (click)="change('Sent')"
+            >{{ sendLabel() }}</button
+          >
+          <button
+            appButton
+            size="sm"
+            variant="outline"
+            type="button"
+            [disabled]="busy()"
+            (click)="change('Confirmed')"
+            >Confirmed by phone</button
+          >
+        } @else {
+          <button
+            appButton
+            size="sm"
+            variant="ghost"
+            type="button"
+            [disabled]="busy()"
+            (click)="change('Draft')"
+            >Reopen</button
+          >
+        }
+        <button
+          appButton
+          size="sm"
+          variant="ghost"
+          type="button"
+          [disabled]="busy()"
+          (click)="change('Completed')"
+          >Completed</button
+        >
+        <button
+          appButton
+          size="sm"
+          variant="ghost"
+          type="button"
+          (click)="cancelling.set(true)"
+          >Cancel…</button
+        >
+      }
+    </footer>
+  }
+</article>

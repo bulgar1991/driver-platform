@@ -1,0 +1,59 @@
+.shift-editor {
+  @apply flex flex-col gap-5 text-sm;
+
+  &__group {
+    @apply flex flex-col gap-2;
+  }
+
+  &__legend {
+    @apply mb-1 text-xs uppercase tracking-widest text-ivory-400;
+  }
+
+  &__bookings {
+    @apply flex max-h-72 flex-col gap-2 overflow-y-auto;
+  }
+
+  &__booking {
+    @apply flex cursor-pointer items-start gap-3 rounded-sm border border-ink-600 p-3 text-ivory transition hover:border-ink-400;
+
+    &--on {
+      @apply border-gold bg-gold/5;
+    }
+  }
+
+  &__checkbox {
+    @apply mt-0.5 h-4 w-4 shrink-0 accent-gold;
+  }
+
+  &__time {
+    @apply w-12 shrink-0 font-semibold;
+  }
+
+  &__text {
+    @apply min-w-0;
+  }
+
+  &__ref {
+    @apply mr-1 text-gold;
+  }
+
+  &__row {
+    @apply grid grid-cols-1 gap-4 sm:grid-cols-2;
+  }
+
+  &__field {
+    @apply flex flex-col gap-1;
+  }
+
+  &__problem {
+    @apply text-xs text-warning;
+  }
+
+  &__muted {
+    @apply block text-xs text-ivory-400;
+  }
+
+  &__actions {
+    @apply flex justify-end gap-3;
+  }
+}

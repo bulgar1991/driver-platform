@@ -1,0 +1,32 @@
+<p-autocomplete
+  class="address-input"
+  styleClass="address-input__control"
+  [inputStyleClass]="invalid() ? 'input input--invalid' : 'input'"
+  panelStyleClass="address-input__panel"
+  [inputId]="inputId()"
+  [placeholder]="placeholder()"
+  [suggestions]="suggestions()"
+  optionLabel="label"
+  [minQueryLength]="3"
+  [delay]="0"
+  [forceSelection]="true"
+  [showEmptyMessage]="true"
+  emptyMessage="No address found in Italy"
+  [disabled]="disabled()"
+  [ngModel]="selection"
+  (ngModelChange)="typed($event)"
+  (completeMethod)="search($event)"
+  (onSelect)="select($event)"
+  (onBlur)="onTouched()">
+  <ng-template let-place #item>
+    <div class="address-input__option">
+      <app-icon
+        class="address-input__icon"
+        [name]="place.kind === 'MeetingPoint' ? 'plane' : 'pin'" />
+      <div class="address-input__text">
+        <span class="address-input__label">{{ place.label }}</span>
+        <span class="address-input__address">{{ place.address }}</span>
+      </div>
+    </div>
+  </ng-template>
+</p-autocomplete>

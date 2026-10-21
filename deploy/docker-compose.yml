@@ -1,0 +1,114 @@
+# Single-server deployment (a VPS with Docker). Copy .env.example to .env, fill it in, then:
+#   docker compose --env-file .env up -d --build
+name: magnus-drive
+
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: frontend/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL}
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+    networks: [edge]
+
+  api:
+    build:
+      context: ../backend
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Database: Host=db;Port=5432;Database=driver_platform;Username=driver_platform;Password=${POSTGRES_PASSWORD}
+      # One API instance: migrations run on start.
+      Database__MigrateOnStartup: "true"
+      # Only Caddy on the internal network may set X-Forwarded-For.
+      ForwardedHeaders__KnownNetworks__0: 172.30.0.0/24
+      Jwt__SigningKey: ${JWT_SIGNING_KEY}
+      Links__SigningKey: ${LINKS_SIGNING_KEY}
+      Bootstrap__AdminEmail: ${BOOTSTRAP_ADMIN_EMAIL}
+      Bootstrap__AdminPassword: ${BOOTSTRAP_ADMIN_PASSWORD}
+      Payments__Provider: Stripe
+      Payments__FrontendBaseUrl: https://${SITE_DOMAIN}
+      Payments__Stripe__SecretKey: ${STRIPE_SECRET_KEY}
+      Payments__Stripe__WebhookSecret: ${STRIPE_WEBHOOK_SECRET}
+      Email__Host: ${SMTP_HOST}
+      Email__Port: ${SMTP_PORT}
+      Email__Username: ${SMTP_USERNAME}
+      Email__Password: ${SMTP_PASSWORD}
+      Email__FromAddress: ${EMAIL_FROM}
+      WhatsApp__Provider: ${WHATSAPP_PROVIDER}
+      WhatsApp__PhoneNumberId: ${WHATSAPP_PHONE_NUMBER_ID}
+      WhatsApp__AccessToken: ${WHATSAPP_ACCESS_TOKEN}
+      Maps__OsrmBaseUrl: ${OSRM_BASE_URL}
+      Maps__NominatimBaseUrl: ${NOMINATIM_BASE_URL}
+      Maps__UserAgent: MagnusDrive/1.0 (${ACME_EMAIL})
+      Company__Name: ${COMPANY_NAME}
+      Company__Address: ${COMPANY_ADDRESS}
+      Company__VatNumber: ${COMPANY_VAT_NUMBER}
+      Company__TaxCode: ${COMPANY_TAX_CODE}
+      Company__Email: ${COMPANY_EMAIL}
+      Company__Phone: ${COMPANY_PHONE}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [edge, data]
+
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: driver_platform
+      POSTGRES_USER: driver_platform
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U driver_platform -d driver_platform"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    # Not published on the host: only the API and the backup job can reach it.
+    networks: [data]
+
+  backup:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      PGHOST: db
+      PGUSER: driver_platform
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: driver_platform
+      BACKUP_DIR: /backups
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-14}
+      BACKUP_AT: ${BACKUP_AT:-03:15}
+    volumes:
+      - ./backup:/scripts:ro
+      - ${BACKUP_HOST_DIR:-./backups}:/backups
+    entrypoint: ["/bin/sh", "/scripts/backup-loop.sh"]
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [data]
+
+networks:
+  edge:
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+  data:
+    internal: true
+
+volumes:
+  db_data:
+  caddy_data:
+  caddy_config:

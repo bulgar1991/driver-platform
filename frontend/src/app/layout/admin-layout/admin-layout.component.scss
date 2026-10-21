@@ -1,0 +1,71 @@
+.admin-layout {
+  @apply flex min-h-screen bg-ink;
+
+  &__sidebar {
+    @apply fixed inset-y-0 left-0 z-30 flex w-64 -translate-x-full flex-col border-r border-ink-600 bg-ink-800 transition-transform lg:static lg:translate-x-0;
+
+    &--open {
+      @apply translate-x-0;
+    }
+  }
+
+  &__backdrop {
+    @apply fixed inset-0 z-20 bg-ink/70 backdrop-blur-sm lg:hidden;
+  }
+
+  &__brand {
+    @apply flex items-center gap-2 border-b border-ink-600 px-5 py-5;
+  }
+
+  &__badge {
+    @apply rounded-sm border border-gold/50 px-2 py-0.5 text-[10px] uppercase tracking-widest text-gold;
+  }
+
+  &__nav {
+    @apply flex flex-col gap-1 p-3;
+  }
+
+  &__link {
+    @apply flex items-center gap-3 rounded-sm px-3 py-2.5 text-sm text-ivory-200 transition hover:bg-ink-700 hover:text-ivory;
+
+    &--active {
+      @apply bg-ink-700 text-gold;
+    }
+  }
+
+  &__body {
+    @apply flex min-w-0 flex-1 flex-col;
+  }
+
+  &__topbar {
+    @apply flex items-center gap-4 border-b border-ink-600 px-4 py-3 sm:px-6;
+  }
+
+  &__menu-button {
+    @apply text-ivory-200 hover:text-gold lg:invisible;
+  }
+
+  &__user {
+    @apply ml-auto flex flex-col items-end leading-tight;
+  }
+
+  &__user-name {
+    @apply text-sm text-ivory;
+  }
+
+  &__user-role {
+    @apply text-[10px] uppercase tracking-widest text-gold;
+  }
+
+  &__logout {
+    @apply flex items-center gap-2 text-ivory-200 transition hover:text-gold;
+  }
+
+  &__logout-label {
+    @apply hidden text-xs uppercase tracking-widest sm:inline;
+  }
+
+  &__content {
+    @apply flex-1 p-4 sm:p-8;
+  }
+}

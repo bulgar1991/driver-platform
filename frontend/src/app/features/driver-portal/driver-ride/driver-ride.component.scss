@@ -1,0 +1,95 @@
+:host {
+  @apply block;
+}
+
+.driver-ride {
+  @apply flex flex-col gap-4 rounded-sm border border-ink-600 bg-ink-900 p-4 text-sm text-ivory;
+
+  &--done {
+    @apply opacity-60;
+  }
+
+  &__header {
+    @apply flex items-center gap-3;
+  }
+
+  &__time {
+    @apply font-display text-3xl text-gold;
+  }
+
+  &__ref {
+    @apply mr-auto text-xs uppercase tracking-widest text-ivory-300;
+  }
+
+  &__stops {
+    @apply flex flex-col gap-3;
+  }
+
+  &__stop {
+    @apply flex gap-3;
+  }
+
+  &__dot {
+    @apply mt-1.5 h-3 w-3 shrink-0 rounded-full;
+
+    &--pickup {
+      @apply bg-gold;
+    }
+
+    &--dropoff {
+      @apply bg-ivory;
+    }
+  }
+
+  &__label {
+    @apply text-[10px] uppercase tracking-widest text-ivory-400;
+  }
+
+  &__place {
+    @apply text-base;
+  }
+
+  &__muted {
+    @apply block text-xs text-ivory-400;
+  }
+
+  &__note {
+    @apply my-1 border-l-2 border-gold pl-3 text-xs leading-relaxed text-ivory-200;
+  }
+
+  &__link {
+    @apply mt-1 inline-flex items-center gap-1 text-xs uppercase tracking-widest text-gold;
+  }
+
+  &__icon {
+    @apply h-4 w-4;
+  }
+
+  &__map {
+    @apply h-48;
+  }
+
+  &__facts {
+    @apply grid grid-cols-2 gap-3;
+
+    dt {
+      @apply text-[10px] uppercase tracking-widest text-ivory-400;
+    }
+
+    dd {
+      @apply flex flex-col text-base;
+    }
+  }
+
+  &__fact--alert dd {
+    @apply text-warning;
+  }
+
+  &__client {
+    @apply flex flex-col gap-2 border-t border-ink-700 pt-3;
+  }
+
+  &__contact {
+    @apply flex gap-2;
+  }
+}

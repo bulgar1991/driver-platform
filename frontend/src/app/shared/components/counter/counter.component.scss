@@ -1,0 +1,27 @@
+.counter {
+  @apply flex items-center justify-between gap-4 rounded-sm border border-ink-500 bg-ink-800 px-4 py-2;
+
+  &__text {
+    @apply flex min-w-0 flex-col;
+  }
+
+  &__label {
+    @apply text-sm text-ivory;
+  }
+
+  &__hint {
+    @apply text-xs text-ivory-400;
+  }
+
+  &__controls {
+    @apply flex shrink-0 items-center gap-3;
+  }
+
+  &__button {
+    @apply flex h-8 w-8 items-center justify-center rounded-full border border-ink-400 text-ivory transition hover:border-gold hover:text-gold disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-ink-400 disabled:hover:text-ivory;
+  }
+
+  &__value {
+    @apply w-5 text-center font-semibold tabular-nums text-gold;
+  }
+}

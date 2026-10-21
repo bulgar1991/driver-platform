@@ -1,0 +1,52 @@
+<section class="dev-payment page page--narrow">
+  <p class="dev-payment__badge">Test payment · no money is charged</p>
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+  @if (session(); as s) {
+    <h1 class="heading heading--md">Pay {{ s.reference }}</h1>
+    <ul class="dev-payment__lines">
+      @for (line of s.lines; track line.name) {
+        <li class="dev-payment__line">
+          <span>
+            {{ line.name }}
+            <span class="dev-payment__muted">{{ line.description }}</span>
+          </span>
+          <span>{{ line.amount | money: s.currency }}</span>
+        </li>
+      }
+    </ul>
+    <p class="dev-payment__total">{{ s.amount | money: s.currency }}</p>
+    <div class="dev-payment__actions">
+      <button
+        appButton
+        type="button"
+        [block]="true"
+        [disabled]="busy()"
+        (click)="pay('Card')">
+        Pay by card
+      </button>
+      <button
+        appButton
+        type="button"
+        variant="outline"
+        [block]="true"
+        [disabled]="busy()"
+        (click)="pay('PayPal')">
+        Pay with PayPal
+      </button>
+      <button
+        appButton
+        type="button"
+        variant="ghost"
+        [disabled]="busy()"
+        (click)="cancel()">
+        Cancel and go back
+      </button>
+    </div>
+    <p class="dev-payment__muted">
+      This page replaces Stripe in development. Set Payments:Provider to
+      "Stripe" with test keys to use the real payment page.
+    </p>
+  }
+</section>

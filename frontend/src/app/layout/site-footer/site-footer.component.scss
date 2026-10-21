@@ -1,0 +1,15 @@
+.site-footer {
+  @apply border-t border-ink-600 py-8;
+
+  &__text {
+    @apply text-center text-xs text-ivory-400;
+  }
+
+  &__links {
+    @apply mt-2 flex justify-center gap-4;
+  }
+
+  &__link {
+    @apply text-xs text-ivory-400 hover:text-gold;
+  }
+}

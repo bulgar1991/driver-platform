@@ -1,0 +1,140 @@
+.partners {
+  @apply flex flex-col gap-5;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__tools {
+    @apply flex flex-wrap items-center gap-4;
+  }
+
+  &__docs {
+    @apply flex items-center gap-1 text-xs uppercase tracking-widest text-gold hover:underline;
+  }
+
+  &__icon {
+    @apply h-4 w-4;
+  }
+
+  &__table-wrap {
+    @apply overflow-x-auto rounded-sm border border-ink-600 bg-ink-900;
+  }
+
+  &__table {
+    @apply w-full min-w-[52rem] border-collapse text-sm;
+
+    th {
+      @apply border-b border-ink-600 px-4 py-3 text-left text-xs font-normal uppercase tracking-widest text-ivory-400;
+    }
+
+    td {
+      @apply border-b border-ink-700 px-4 py-3 align-top text-ivory;
+    }
+  }
+
+  &__row {
+    @apply cursor-pointer transition hover:bg-ink-800;
+  }
+
+  &__name {
+    @apply block text-left text-gold hover:underline;
+  }
+
+  &__code,
+  &__mono {
+    @apply font-mono text-xs;
+  }
+
+  &__nowrap {
+    @apply whitespace-nowrap;
+  }
+
+  &__muted {
+    @apply block text-xs text-ivory-400;
+
+    .partners__code {
+      @apply text-ivory-200;
+    }
+  }
+
+  &__warning {
+    @apply text-warning;
+  }
+
+  &__danger {
+    @apply text-danger;
+  }
+
+  &__badge {
+    @apply inline-block rounded-sm bg-success/15 px-2 py-0.5 text-[10px] uppercase tracking-widest text-success;
+
+    &--off {
+      @apply bg-ink-700 text-ivory-300;
+    }
+  }
+
+  &__notice {
+    @apply mb-4;
+  }
+
+  &__form {
+    @apply flex flex-col gap-4;
+  }
+
+  &__grid {
+    @apply grid grid-cols-1 gap-4 sm:grid-cols-2;
+  }
+
+  &__checks {
+    @apply flex flex-col gap-2;
+  }
+
+  &__check {
+    @apply flex cursor-pointer items-center gap-3 text-sm text-ivory;
+  }
+
+  &__checkbox {
+    @apply h-4 w-4 accent-gold;
+  }
+
+  &__actions {
+    @apply flex justify-end gap-3;
+  }
+
+  &__section {
+    @apply mt-5 flex flex-col gap-2 border-t border-ink-600 pt-4 text-sm;
+  }
+
+  &__legend {
+    @apply text-xs uppercase tracking-widest text-ivory-400;
+  }
+
+  &__secret {
+    @apply flex gap-2;
+  }
+
+  &__buttons {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  &__month {
+    @apply w-44 py-2;
+  }
+
+  &__deliveries {
+    @apply flex max-h-48 flex-col gap-1 overflow-y-auto text-xs text-ivory;
+  }
+
+  &__delivery {
+    @apply flex flex-wrap items-baseline gap-x-2;
+
+    .partners__muted {
+      @apply inline;
+    }
+  }
+}
+
+::ng-deep .partners__dialog {
+  @apply w-[min(44rem,calc(100vw-2rem))];
+}

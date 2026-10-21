@@ -1,0 +1,18 @@
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html,
+  body {
+    @apply min-h-full bg-ink font-sans text-ivory antialiased;
+  }
+
+  ::selection {
+    @apply bg-gold text-ink;
+  }
+
+  :focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-gold;
+  }
+}

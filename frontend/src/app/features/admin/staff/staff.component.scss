@@ -1,0 +1,79 @@
+.staff {
+  @apply flex flex-col gap-5;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__temporary {
+    @apply flex flex-col gap-3;
+  }
+
+  &__secret {
+    @apply flex flex-wrap gap-2;
+  }
+
+  &__mono {
+    @apply max-w-xs font-mono;
+  }
+
+  &__table-wrap {
+    @apply overflow-x-auto rounded-sm border border-ink-600 bg-ink-900;
+  }
+
+  &__table {
+    @apply w-full min-w-[44rem] border-collapse text-sm;
+
+    th {
+      @apply border-b border-ink-600 px-4 py-3 text-left text-xs font-normal uppercase tracking-widest text-ivory-400;
+    }
+
+    td {
+      @apply border-b border-ink-700 px-4 py-3 align-top text-ivory;
+    }
+  }
+
+  &__actions {
+    @apply whitespace-nowrap text-right;
+  }
+
+  &__muted {
+    @apply block text-xs text-ivory-400;
+  }
+
+  &__warning {
+    @apply block text-xs text-warning;
+  }
+
+  &__badge {
+    @apply inline-block rounded-sm bg-success/15 px-2 py-0.5 text-[10px] uppercase tracking-widest text-success;
+
+    &--off {
+      @apply bg-ink-700 text-ivory-300;
+    }
+  }
+
+  &__form {
+    @apply flex flex-col gap-4;
+  }
+
+  &__check {
+    @apply flex items-center gap-3 text-sm text-ivory;
+  }
+
+  &__checkbox {
+    @apply h-4 w-4 accent-gold;
+  }
+
+  &__dialog-actions {
+    @apply flex justify-end gap-3;
+  }
+
+  &__sr {
+    @apply sr-only;
+  }
+}
+
+::ng-deep .staff__dialog {
+  @apply w-[min(30rem,calc(100vw-2rem))];
+}

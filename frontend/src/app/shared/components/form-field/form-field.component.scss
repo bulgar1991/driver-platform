@@ -1,0 +1,11 @@
+.form-field {
+  @apply flex flex-col gap-2;
+
+  &__label {
+    @apply text-xs uppercase tracking-widest text-ivory-200;
+  }
+
+  &__error {
+    @apply text-xs text-danger;
+  }
+}

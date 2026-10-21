@@ -1,0 +1,23 @@
+.legal {
+  @apply flex max-w-3xl flex-col gap-4 py-14 text-sm leading-relaxed text-ivory-200;
+
+  &__draft {
+    @apply self-start rounded-sm bg-warning/15 px-3 py-1 text-xs uppercase tracking-widest text-warning;
+  }
+
+  &__title {
+    @apply mt-4 font-display text-xl text-ivory;
+  }
+
+  &__list {
+    @apply flex list-disc flex-col gap-2 pl-5;
+  }
+
+  &__link {
+    @apply text-gold hover:underline;
+  }
+
+  &__muted {
+    @apply mt-6 text-xs text-ivory-400;
+  }
+}

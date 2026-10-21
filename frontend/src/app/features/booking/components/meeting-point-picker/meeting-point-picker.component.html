@@ -1,0 +1,51 @@
+<section class="meeting-point" [class.meeting-point--warning]="noCar()">
+  <header class="meeting-point__header">
+    <app-icon class="meeting-point__icon" name="info" />
+    <div>
+      <h3 class="meeting-point__title">
+        @if (noCar()) {
+          {{ zone().name }}: no car access
+        } @else {
+          Meeting point · {{ zone().name }}
+        }
+      </h3>
+      <p class="meeting-point__text">
+        @if (noCar()) {
+          Cars cannot reach this address. Your driver will
+          {{ direction() === 'pickup' ? 'pick you up' : 'drop you off' }} at the
+          meeting point you choose; the price is calculated from there.
+        } @else {
+          Your driver will meet you here.
+        }
+      </p>
+    </div>
+  </header>
+
+  @if (zone().meetingPoints.length > 1) {
+    <div class="meeting-point__options" role="radiogroup">
+      @for (point of zone().meetingPoints; track point.name) {
+        <label
+          class="meeting-point__option"
+          [class.meeting-point__option--selected]="
+            point.name === selected()?.name
+          ">
+          <input
+            class="meeting-point__radio"
+            type="radio"
+            [name]="groupName()"
+            [checked]="point.name === selected()?.name"
+            [disabled]="disabled()"
+            (change)="changed.emit(point.name)" />
+          <span class="meeting-point__name">{{ point.name }}</span>
+          <span class="meeting-point__address">{{ point.address }}</span>
+        </label>
+      }
+    </div>
+  } @else if (selected(); as point) {
+    <p class="meeting-point__name">{{ point.name }}</p>
+  }
+
+  @if (selected()?.clientInstructions; as instructions) {
+    <p class="meeting-point__instructions">{{ instructions }}</p>
+  }
+</section>

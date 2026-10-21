@@ -1,0 +1,27 @@
+.dev-payment {
+  @apply flex flex-col gap-5 py-16;
+
+  &__badge {
+    @apply self-start rounded-sm bg-warning/15 px-3 py-1 text-xs uppercase tracking-widest text-warning;
+  }
+
+  &__lines {
+    @apply flex flex-col gap-2;
+  }
+
+  &__line {
+    @apply flex justify-between gap-4 text-sm text-ivory;
+  }
+
+  &__muted {
+    @apply block text-xs text-ivory-400;
+  }
+
+  &__total {
+    @apply border-t border-gold/40 pt-3 text-right font-display text-3xl text-gold;
+  }
+
+  &__actions {
+    @apply flex flex-col gap-3;
+  }
+}

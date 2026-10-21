@@ -1,0 +1,243 @@
+<form class="zone-editor" [formGroup]="form" (ngSubmit)="save()" novalidate>
+  <header class="zone-editor__header">
+    <h2 class="zone-editor__title">{{ zone() ? 'Edit zone' : 'New zone' }}</h2>
+    <button
+      type="button"
+      class="zone-editor__close"
+      aria-label="Close"
+      (click)="closed.emit()">
+      <app-icon name="close" />
+    </button>
+  </header>
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  <div class="zone-editor__map-wrap">
+    <app-map
+      class="zone-editor__map"
+      [clickable]="true"
+      [zones]="mapZones()"
+      [markers]="markers()"
+      [fitPoints]="fitPoints()"
+      (mapClick)="onMapClick($event)" />
+    <p class="zone-editor__hint">
+      <app-icon class="zone-editor__hint-icon" name="info" /> {{ clickHint() }}
+    </p>
+  </div>
+
+  <app-form-field
+    label="Name"
+    for="zoneName"
+    [error]="
+      form.controls.name.touched && form.controls.name.invalid
+        ? 'Required'
+        : null
+    ">
+    <input id="zoneName" class="input" formControlName="name" />
+  </app-form-field>
+
+  <div class="zone-editor__row">
+    <app-form-field label="Type" for="zoneType">
+      <select id="zoneType" class="input" formControlName="type">
+        @for (type of types; track type.value) {
+          <option [value]="type.value">{{ type.label }}</option>
+        }
+      </select>
+    </app-form-field>
+    <app-form-field label="Shape" for="zoneShape">
+      <select id="zoneShape" class="input" formControlName="shape">
+        <option value="Circle">Circle</option>
+        <option value="Polygon">Polygon</option>
+      </select>
+    </app-form-field>
+  </div>
+  <p class="zone-editor__muted">{{ typeHint() }}</p>
+
+  @if (form.controls.shape.value === 'Circle') {
+    <div class="zone-editor__row">
+      <app-form-field label="Radius (m)" for="radius">
+        <input
+          id="radius"
+          class="input"
+          type="number"
+          min="50"
+          max="50000"
+          step="50"
+          formControlName="radiusMeters" />
+      </app-form-field>
+      <p class="zone-editor__coords">
+        Centre:
+        @if (form.controls.centerLatitude.value !== null) {
+          {{ form.controls.centerLatitude.value }},
+          {{ form.controls.centerLongitude.value }}
+        } @else {
+          not set
+        }
+      </p>
+    </div>
+  } @else {
+    <div class="zone-editor__polygon">
+      <span class="zone-editor__muted"
+        >{{ form.controls.polygon.value.length }} corners</span
+      >
+      <button
+        appButton
+        size="sm"
+        variant="ghost"
+        type="button"
+        [disabled]="!form.controls.polygon.value.length"
+        (click)="undoPoint()"
+        >Undo</button
+      >
+      <button
+        appButton
+        size="sm"
+        variant="ghost"
+        type="button"
+        [disabled]="!form.controls.polygon.value.length"
+        (click)="clearPolygon()"
+        >Clear</button
+      >
+    </div>
+  }
+
+  <div class="zone-editor__row">
+    <app-form-field label="Access fee (€)" for="accessFee">
+      <input
+        id="accessFee"
+        class="input"
+        type="number"
+        min="0"
+        max="500"
+        step="0.5"
+        formControlName="accessFee" />
+    </app-form-field>
+    <label class="zone-editor__toggle">
+      <input
+        class="zone-editor__checkbox"
+        type="checkbox"
+        formControlName="isActive" />
+      Active
+    </label>
+  </div>
+
+  <section class="zone-editor__points" formArrayName="meetingPoints">
+    <div class="zone-editor__points-header">
+      <h3 class="zone-editor__subtitle">Meeting points</h3>
+      <button
+        appButton
+        size="sm"
+        variant="outline"
+        type="button"
+        (click)="addMeetingPoint()">
+        <app-icon name="plus" /> Add
+      </button>
+    </div>
+    @for (point of meetingPoints.controls; track point; let i = $index) {
+      <fieldset class="zone-editor__point" [formGroupName]="i">
+        <div class="zone-editor__row">
+          <app-form-field label="Name" [for]="'mpName' + i">
+            <input [id]="'mpName' + i" class="input" formControlName="name" />
+          </app-form-field>
+          <app-form-field label="Address" [for]="'mpAddress' + i">
+            <input
+              [id]="'mpAddress' + i"
+              class="input"
+              formControlName="address" />
+          </app-form-field>
+        </div>
+        <app-form-field
+          label="Instructions for the client"
+          [for]="'mpClient' + i">
+          <textarea
+            [id]="'mpClient' + i"
+            class="input"
+            rows="2"
+            formControlName="clientInstructions"></textarea>
+        </app-form-field>
+        <app-form-field
+          label="Instructions for the driver"
+          [for]="'mpDriver' + i">
+          <textarea
+            [id]="'mpDriver' + i"
+            class="input"
+            rows="2"
+            formControlName="driverInstructions"></textarea>
+        </app-form-field>
+        <div class="zone-editor__point-actions">
+          <span class="zone-editor__coords">
+            @if (point.controls.latitude.value !== null) {
+              {{ point.controls.latitude.value }},
+              {{ point.controls.longitude.value }}
+            } @else {
+              <span class="zone-editor__missing">Not placed on the map</span>
+            }
+          </span>
+          <button
+            appButton
+            size="sm"
+            variant="ghost"
+            type="button"
+            [attr.aria-pressed]="clickMode() === i"
+            (click)="clickMode.set(clickMode() === i ? 'shape' : i)">
+            <app-icon name="pin" />
+            {{ clickMode() === i ? 'Click the map…' : 'Place on map' }}
+          </button>
+          <button
+            appButton
+            size="sm"
+            variant="ghost"
+            type="button"
+            (click)="removeMeetingPoint(i)">
+            <app-icon name="trash" /> Remove
+          </button>
+        </div>
+      </fieldset>
+    } @empty {
+      <p class="zone-editor__muted">
+        None. A no-car zone needs at least one place reachable by car.
+      </p>
+    }
+  </section>
+
+  <div class="zone-editor__actions">
+    @if (zone()) {
+      @if (confirmDelete()) {
+        <span class="zone-editor__confirm">
+          Delete this zone?
+          <button
+            appButton
+            size="sm"
+            variant="outline"
+            type="button"
+            [disabled]="saving()"
+            (click)="remove()"
+            >Delete</button
+          >
+          <button
+            appButton
+            size="sm"
+            variant="ghost"
+            type="button"
+            (click)="confirmDelete.set(false)"
+            >Keep</button
+          >
+        </span>
+      } @else {
+        <button
+          appButton
+          size="sm"
+          variant="ghost"
+          type="button"
+          (click)="confirmDelete.set(true)">
+          <app-icon name="trash" /> Delete
+        </button>
+      }
+    }
+    <button appButton type="submit" [disabled]="saving() || form.pristine">
+      {{ saving() ? 'Saving…' : 'Save zone' }}
+    </button>
+  </div>
+</form>

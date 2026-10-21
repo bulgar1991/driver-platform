@@ -1,0 +1,12 @@
+// Block: page — centred content column.
+.page {
+  @apply mx-auto w-full max-w-6xl px-4;
+
+  &--narrow {
+    @apply max-w-md;
+  }
+
+  &__section {
+    @apply py-16 sm:py-20;
+  }
+}

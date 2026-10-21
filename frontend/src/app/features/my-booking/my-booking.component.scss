@@ -1,0 +1,91 @@
+.my-booking {
+  @apply flex max-w-2xl flex-col gap-6 py-12 sm:py-16;
+
+  &__header {
+    @apply flex flex-col items-start gap-3;
+  }
+
+  &__status {
+    @apply rounded-sm bg-warning/15 px-3 py-1 text-xs uppercase tracking-widest text-warning;
+
+    &--ok {
+      @apply bg-success/15 text-success;
+    }
+
+    &--cancelled {
+      @apply bg-danger/15 text-danger;
+    }
+  }
+
+  &__pay {
+    @apply flex flex-col gap-4 rounded-sm border border-gold/50 bg-gold/5 p-5 xm:flex-row xm:items-center xm:justify-between;
+  }
+
+  &__pay-title {
+    @apply text-sm font-semibold text-ivory;
+  }
+
+  &__legs {
+    @apply flex flex-col gap-3;
+  }
+
+  &__leg {
+    @apply flex flex-col gap-1 rounded-sm border border-ink-600 bg-ink-900 p-4;
+  }
+
+  &__ref {
+    @apply text-xs uppercase tracking-widest text-gold;
+  }
+
+  &__when {
+    @apply flex items-center gap-2 text-sm text-ivory;
+  }
+
+  &__icon {
+    @apply h-4 w-4 text-gold;
+  }
+
+  &__route {
+    @apply text-sm text-ivory-200;
+  }
+
+  &__note {
+    @apply mt-1 border-l-2 border-gold pl-3 text-xs leading-relaxed text-ivory-300;
+  }
+
+  &__facts {
+    @apply grid grid-cols-1 gap-3 xm:grid-cols-3;
+  }
+
+  &__fact {
+    @apply flex flex-col gap-1 text-sm text-ivory;
+
+    dt {
+      @apply text-xs uppercase tracking-widest text-ivory-400;
+    }
+
+    dd {
+      @apply flex flex-col;
+    }
+  }
+
+  &__documents {
+    @apply flex flex-col gap-2 border-t border-ink-600 pt-5;
+  }
+
+  &__subtitle {
+    @apply text-xs uppercase tracking-widest text-ivory-200;
+  }
+
+  &__document {
+    @apply flex items-center gap-2 text-sm text-ivory hover:text-gold;
+  }
+
+  &__empty {
+    @apply flex flex-col items-start gap-4;
+  }
+
+  &__muted {
+    @apply text-xs text-ivory-400;
+  }
+}

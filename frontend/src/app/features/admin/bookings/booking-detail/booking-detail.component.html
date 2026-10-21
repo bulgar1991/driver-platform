@@ -1,0 +1,224 @@
+@if (booking(); as b) {
+  <article class="booking-detail">
+    <header class="booking-detail__header">
+      <span class="booking-detail__ref">{{ b.reference }}</span>
+      <app-status-badge [status]="b.status" />
+      @if (b.source !== 'Website') {
+        <span class="booking-detail__muted">
+          via {{ b.partnerName ?? b.source }}
+          @if (b.externalReference) {
+            · their ref. {{ b.externalReference }}
+          }
+        </span>
+      }
+    </header>
+
+    @if (error(); as message) {
+      <p class="alert alert--error" role="alert">{{ message }}</p>
+    }
+
+    <section class="booking-detail__section">
+      <p class="booking-detail__when">{{
+        b.pickupAt | date: 'EEEE d MMMM y, HH:mm'
+      }}</p>
+      <dl class="booking-detail__facts">
+        <dt>Pickup</dt>
+        <dd>
+          @if (b.pickupMeetingPoint; as mp) {
+            <strong>{{ mp.name }}</strong> · {{ mp.address }}
+            <span class="booking-detail__muted"
+              >Client's address: {{ b.pickup.address }}</span
+            >
+            @if (mp.driverInstructions) {
+              <span class="booking-detail__note">{{
+                mp.driverInstructions
+              }}</span>
+            }
+          } @else {
+            {{ b.pickup.address }}
+          }
+        </dd>
+        <dt>Drop-off</dt>
+        <dd>
+          @if (b.dropoffMeetingPoint; as mp) {
+            <strong>{{ mp.name }}</strong> · {{ mp.address }}
+            <span class="booking-detail__muted"
+              >Client's address: {{ b.dropoff.address }}</span
+            >
+          } @else {
+            {{ b.dropoff.address }}
+          }
+        </dd>
+        <dt>Route</dt>
+        <dd>{{ b.distanceKm }} km · {{ b.durationMinutes | duration }}</dd>
+        <dt>Passengers</dt>
+        <dd>
+          {{ b.passengers }} · {{ b.largeLuggage }} large +
+          {{ b.smallLuggage }} small bags
+          @for (seat of b.childSeats; track seat.group) {
+            <span class="booking-detail__muted"
+              >{{ seat.count }} × {{ groupLabel[seat.group] }}</span
+            >
+          }
+        </dd>
+        <dt>Vehicle</dt>
+        <dd>{{ b.vehicleCategory }}</dd>
+        @if (b.flightNumber) {
+          <dt>Flight</dt>
+          <dd>{{ b.flightNumber }}</dd>
+        }
+        @if (b.nameSign) {
+          <dt>Name sign</dt>
+          <dd>{{ b.nameSignText }}</dd>
+        }
+        @if (b.clientNotes) {
+          <dt>Client notes</dt>
+          <dd>{{ b.clientNotes }}</dd>
+        }
+        @if (b.linkedReference) {
+          <dt>Linked ride</dt>
+          <dd>{{ b.linkedReference }} (outbound / return)</dd>
+        }
+      </dl>
+    </section>
+
+    <section class="booking-detail__section">
+      <h3 class="booking-detail__subtitle">Client</h3>
+      <p>{{ b.client.name }}</p>
+      <p class="booking-detail__contact">
+        <a [href]="'tel:' + b.client.phone">{{ b.client.phone }}</a>
+        @if (b.client.email) {
+          · <a [href]="'mailto:' + b.client.email">{{ b.client.email }}</a>
+        }
+        · speaks {{ b.client.language }}
+      </p>
+    </section>
+
+    <section class="booking-detail__section">
+      <h3 class="booking-detail__subtitle">Shift</h3>
+      @if (b.driverName) {
+        <p>{{ b.driverName }} · {{ b.vehiclePlate }}</p>
+      } @else {
+        <p class="booking-detail__muted">Not in a shift yet.</p>
+      }
+      <a
+        class="booking-detail__link"
+        routerLink="/admin/shifts"
+        [queryParams]="{ date: b.pickupAt.slice(0, 10) }"
+        >Open shifts of that day →</a
+      >
+    </section>
+
+    <section class="booking-detail__section">
+      <h3 class="booking-detail__subtitle">Price</h3>
+      <p>
+        {{ b.totalPrice | money: b.currency }}
+        <span class="booking-detail__muted"
+          >Payment: {{ b.paymentStatus ?? 'none' }}</span
+        >
+      </p>
+      @if (b.status === 'Cancelled') {
+        <p class="booking-detail__muted">
+          Cancelled: {{ b.cancellationReason }}.
+          @if (isAdmin && b.paymentStatus === 'Succeeded') {
+            <a class="booking-detail__link" routerLink="/admin/payments"
+              >Refund in Payments →</a
+            >
+          }
+        </p>
+      }
+    </section>
+
+    <section class="booking-detail__section">
+      <label class="booking-detail__subtitle" for="internalNotes"
+        >Internal notes</label
+      >
+      <textarea
+        id="internalNotes"
+        class="input"
+        rows="3"
+        [(ngModel)]="notes"></textarea>
+      <button
+        appButton
+        size="sm"
+        variant="ghost"
+        type="button"
+        [disabled]="busy() || notes === (b.internalNotes ?? '')"
+        (click)="saveNotes()"
+        >Save notes</button
+      >
+    </section>
+
+    @if (actions().pickedUp || actions().completed || actions().cancel) {
+      <footer class="booking-detail__actions">
+        @if (cancelling()) {
+          <input
+            class="input"
+            placeholder="Reason for cancelling"
+            [(ngModel)]="cancelReason"
+            aria-label="Reason for cancelling" />
+          <div class="booking-detail__buttons">
+            <button
+              appButton
+              size="sm"
+              variant="ghost"
+              type="button"
+              (click)="cancelling.set(false)"
+              >Keep</button
+            >
+            <button
+              appButton
+              size="sm"
+              variant="outline"
+              type="button"
+              [disabled]="busy()"
+              (click)="setStatus('Cancelled')"
+              >Cancel booking</button
+            >
+          </div>
+          <p class="booking-detail__muted"
+            >Cancelling does not refund: refunds are made in Payments.</p
+          >
+        } @else {
+          <div class="booking-detail__buttons">
+            @if (actions().pickedUp) {
+              <button
+                appButton
+                size="sm"
+                variant="outline"
+                type="button"
+                [disabled]="busy()"
+                (click)="setStatus('PickedUp')"
+                >Picked up</button
+              >
+            }
+            @if (actions().completed) {
+              <button
+                appButton
+                size="sm"
+                type="button"
+                [disabled]="busy()"
+                (click)="setStatus('Completed')"
+                >Completed</button
+              >
+            }
+            @if (actions().cancel) {
+              <button
+                appButton
+                size="sm"
+                variant="ghost"
+                type="button"
+                (click)="cancelling.set(true)"
+                >Cancel…</button
+              >
+            }
+          </div>
+        }
+      </footer>
+    }
+  </article>
+} @else if (error(); as message) {
+  <p class="alert alert--error" role="alert">{{ message }}</p>
+} @else {
+  <p class="booking-detail__muted">Loading…</p>
+}

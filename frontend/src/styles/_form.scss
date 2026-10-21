@@ -1,0 +1,29 @@
+// Block: input — text fields, used on <input>, <select> and <textarea>.
+.input {
+  @apply w-full rounded-sm border border-ink-500 bg-ink-800 px-4 py-3 text-sm text-ivory placeholder:text-ivory-400 transition;
+
+  &:hover {
+    @apply border-ink-400;
+  }
+
+  &:focus {
+    @apply border-gold outline-none ring-1 ring-gold;
+  }
+
+  &--invalid {
+    @apply border-danger;
+  }
+}
+
+// Block: alert — inline message.
+.alert {
+  @apply rounded-sm border px-4 py-3 text-sm;
+
+  &--error {
+    @apply border-danger/50 bg-danger/10 text-ivory;
+  }
+
+  &--info {
+    @apply border-gold/40 bg-gold/10 text-ivory;
+  }
+}

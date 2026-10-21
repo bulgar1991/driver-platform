@@ -1,0 +1,47 @@
+.details-step {
+  @apply flex flex-col gap-8;
+
+  &__group {
+    @apply flex flex-col gap-4;
+  }
+
+  &__legend {
+    @apply mb-4 font-display text-xl text-ivory;
+  }
+
+  &__hint {
+    @apply text-xs uppercase tracking-widest text-ivory-200;
+  }
+
+  &__row {
+    @apply grid grid-cols-1 gap-4 xm:grid-cols-2;
+  }
+
+  &__toggle {
+    @apply flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-ivory;
+  }
+
+  &__checkbox {
+    @apply mt-1 h-4 w-4 shrink-0 accent-gold;
+  }
+
+  &__price {
+    @apply ml-2 text-xs text-gold;
+  }
+
+  &__link {
+    @apply text-gold underline;
+  }
+
+  &__notes {
+    @apply resize-y;
+  }
+
+  &__error {
+    @apply -mt-2 text-xs text-danger;
+  }
+
+  &__actions {
+    @apply flex items-center justify-between gap-4;
+  }
+}

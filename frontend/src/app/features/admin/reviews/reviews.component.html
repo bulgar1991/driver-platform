@@ -1,0 +1,71 @@
+<div class="reviews">
+  <header class="reviews__header">
+    <div>
+      <p class="eyebrow">Quality</p>
+      <h1 class="heading heading--lg">Reviews</h1>
+    </div>
+    <label class="reviews__filter">
+      <span class="reviews__label">Driver</span>
+      <select
+        class="input reviews__select"
+        (change)="filter($any($event.target).value)">
+        <option value="">All drivers</option>
+        @for (d of drivers(); track d.id) {
+          <option [value]="d.id"
+            >{{ d.firstName }} {{ d.lastName
+            }}{{ d.rating ? ' · ★ ' + d.rating : '' }}</option
+          >
+        }
+      </select>
+    </label>
+  </header>
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  <p class="reviews__summary">
+    @if (average(); as avg) {
+      <span class="reviews__average">★ {{ avg.toFixed(1) }}</span>
+    }
+    {{ answered().length }} reviews from {{ reviews().length }} requests
+  </p>
+
+  <ul class="reviews__list">
+    @for (r of reviews(); track r.id) {
+      <li class="reviews__item">
+        <div
+          class="reviews__stars"
+          [attr.aria-label]="r.rating ? r.rating + ' of 5' : 'Not rated yet'">
+          @if (r.rating) {
+            @for (star of stars; track star) {
+              <app-icon
+                class="reviews__star"
+                [class.reviews__star--on]="star <= r.rating"
+                name="star" />
+            }
+          } @else {
+            <span class="reviews__muted"
+              >Waiting · sent by {{ r.channel }}</span
+            >
+          }
+        </div>
+        <div class="reviews__body">
+          @if (r.comment) {
+            <p class="reviews__comment">“{{ r.comment }}”</p>
+          }
+          <p class="reviews__muted">
+            {{ r.clientName }} · {{ r.bookingReference }} ·
+            {{ r.pickupAt | date: 'd MMM y' }} · driver {{ r.driverName }}
+          </p>
+        </div>
+      </li>
+    } @empty {
+      <li class="reviews__muted">{{
+        loading()
+          ? 'Loading…'
+          : 'No reviews yet. They are requested automatically after each completed ride.'
+      }}</li>
+    }
+  </ul>
+</div>

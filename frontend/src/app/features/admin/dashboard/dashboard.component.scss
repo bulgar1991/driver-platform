@@ -1,0 +1,79 @@
+.dashboard {
+  @apply flex flex-col gap-8;
+
+  &__header {
+    @apply flex flex-col gap-2;
+  }
+
+  &__stats {
+    @apply grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6;
+  }
+
+  &__stat {
+    @apply flex h-full flex-col gap-1 rounded-sm border border-ink-600 bg-ink-900 p-4 transition hover:border-gold/60;
+
+    &--alert {
+      @apply border-warning/60;
+    }
+  }
+
+  &__value {
+    @apply font-display text-3xl text-ivory;
+  }
+
+  &__stat--alert &__value {
+    @apply text-warning;
+  }
+
+  &__label {
+    @apply text-xs uppercase tracking-widest text-ivory-400;
+  }
+
+  &__columns {
+    @apply grid grid-cols-1 gap-6 xl:grid-cols-2;
+  }
+
+  &__card {
+    @apply flex min-w-0 flex-col gap-4 rounded-sm border border-ink-600 bg-ink-900 p-5;
+  }
+
+  &__title {
+    @apply font-display text-xl text-ivory;
+  }
+
+  &__list {
+    @apply flex flex-col divide-y divide-ink-700;
+  }
+
+  &__row {
+    @apply grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-3 gap-y-1 py-2 text-sm sm:grid-cols-[6.5rem_minmax(0,1fr)_auto];
+
+    &--danger .dashboard__meta {
+      @apply text-danger;
+    }
+  }
+
+  &__time {
+    @apply whitespace-nowrap text-ivory-200;
+  }
+
+  &__text {
+    @apply min-w-0 truncate text-ivory;
+  }
+
+  &__ref {
+    @apply mr-1 text-gold hover:underline;
+  }
+
+  &__meta {
+    @apply col-start-2 text-xs text-ivory-400 sm:col-start-auto;
+  }
+
+  &__more {
+    @apply self-end text-xs uppercase tracking-widest text-gold hover:underline;
+  }
+
+  &__muted {
+    @apply py-2 text-xs text-ivory-400;
+  }
+}

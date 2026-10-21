@@ -1,0 +1,88 @@
+<section class="dashboard">
+  <header class="dashboard__header">
+    <p class="eyebrow">Dashboard</p>
+    <h1 class="heading heading--lg">
+      Welcome, <span class="heading__accent">{{ user()?.fullName }}</span>
+    </h1>
+  </header>
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  <ul class="dashboard__stats">
+    @for (stat of stats(); track stat.label) {
+      <li>
+        <a
+          class="dashboard__stat"
+          [class.dashboard__stat--alert]="stat.alert"
+          [routerLink]="stat.link"
+          [queryParams]="stat.query">
+          <span class="dashboard__value">{{ stat.value }}</span>
+          <span class="dashboard__label">{{ stat.label }}</span>
+        </a>
+      </li>
+    }
+  </ul>
+
+  @if (data(); as d) {
+    <div class="dashboard__columns">
+      <section class="dashboard__card">
+        <h2 class="dashboard__title">Next rides to assign</h2>
+        <ul class="dashboard__list">
+          @for (b of d.nextUnassigned; track b.id) {
+            <li class="dashboard__row">
+              <span class="dashboard__time">{{
+                b.pickupAt | date: 'EEE d, HH:mm'
+              }}</span>
+              <span class="dashboard__text">
+                <span class="dashboard__ref">{{ b.reference }}</span>
+                {{ b.pickupLabel }} → {{ b.dropoffLabel }}
+              </span>
+              <span class="dashboard__meta"
+                >{{ b.vehicleCategory }} · {{ b.passengers }} pax</span
+              >
+            </li>
+          } @empty {
+            <li class="dashboard__muted"
+              >Every ride in the next 48 hours has a driver.</li
+            >
+          }
+        </ul>
+        <a class="dashboard__more" routerLink="/admin/shifts">Plan shifts →</a>
+      </section>
+
+      <section class="dashboard__card">
+        <h2 class="dashboard__title">Documents expiring</h2>
+        <ul class="dashboard__list">
+          @for (a of d.documentAlerts; track a.ownerId + a.document) {
+            <li
+              class="dashboard__row"
+              [class.dashboard__row--danger]="a.expired">
+              <span class="dashboard__time">{{
+                a.expiresOn | date: 'd MMM y'
+              }}</span>
+              <span class="dashboard__text">
+                <a
+                  class="dashboard__ref"
+                  [routerLink]="
+                    a.kind === 'Driver' ? '/admin/drivers' : '/admin/vehicles'
+                  "
+                  >{{ a.owner }}</a
+                >
+                {{ a.document }}
+              </span>
+              <span class="dashboard__meta">{{
+                a.expired ? 'Expired' : 'Expires soon'
+              }}</span>
+            </li>
+          } @empty {
+            <li class="dashboard__muted"
+              >No document expires in the next 30 days.</li
+            >
+          }
+        </ul>
+      </section>
+    </div>
+  }
+</section>

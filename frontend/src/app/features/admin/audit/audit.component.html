@@ -1,0 +1,57 @@
+<div class="audit">
+  <header class="audit__header">
+    <div>
+      <p class="eyebrow">Administration</p>
+      <h1 class="heading heading--lg">Audit log</h1>
+    </div>
+    <input
+      class="input audit__search"
+      type="search"
+      placeholder="Search action, person, reference…"
+      aria-label="Search the audit log"
+      [formControl]="search" />
+  </header>
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  <ul class="audit__list">
+    @for (e of entries(); track e.id) {
+      <li class="audit__item">
+        <button
+          type="button"
+          class="audit__row"
+          [attr.aria-expanded]="expanded() === e.id"
+          (click)="expanded.set(expanded() === e.id ? null : e.id)">
+          <span class="audit__time">{{
+            e.createdAt | date: 'd MMM y, HH:mm:ss'
+          }}</span>
+          <span class="audit__action">{{ e.action }}</span>
+          <span class="audit__actor">{{ e.actor }}</span>
+          <span class="audit__ip">{{ e.ipAddress }}</span>
+        </button>
+        @if (expanded() === e.id) {
+          <pre class="audit__changes"
+            >{{ e.entityType }} {{ e.entityId }}
+{{ e.changes ?? '(no details)' }}</pre>
+        }
+      </li>
+    } @empty {
+      <li class="audit__muted">{{
+        loading() ? 'Loading…' : 'Nothing found.'
+      }}</li>
+    }
+  </ul>
+  @if (next()) {
+    <button
+      appButton
+      size="sm"
+      variant="ghost"
+      type="button"
+      [disabled]="loading()"
+      (click)="load(true)"
+      >Older entries</button
+    >
+  }
+</div>

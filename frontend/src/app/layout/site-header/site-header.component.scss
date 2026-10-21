@@ -1,0 +1,11 @@
+.site-header {
+  @apply sticky top-0 z-20 border-b border-ink-600 bg-ink/90 backdrop-blur;
+
+  &__inner {
+    @apply mx-auto flex max-w-6xl items-center justify-between px-4 py-4;
+  }
+
+  &__brand {
+    @apply no-underline;
+  }
+}

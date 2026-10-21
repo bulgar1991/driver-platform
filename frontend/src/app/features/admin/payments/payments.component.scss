@@ -1,0 +1,117 @@
+.payments {
+  @apply flex flex-col gap-6;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__export {
+    @apply flex flex-wrap items-end gap-3;
+  }
+
+  &__date {
+    @apply w-40 py-2;
+  }
+
+  &__filters {
+    @apply flex flex-wrap gap-2;
+  }
+
+  &__filter {
+    @apply rounded-sm border border-ink-600 px-3 py-1.5 text-xs uppercase tracking-widest text-ivory-300 transition hover:border-ink-400;
+
+    &--active {
+      @apply border-gold text-gold;
+    }
+  }
+
+  &__table-wrap {
+    @apply overflow-x-auto rounded-sm border border-ink-600 bg-ink-900;
+  }
+
+  &__table {
+    @apply w-full min-w-[56rem] border-collapse text-sm;
+
+    th {
+      @apply border-b border-ink-600 px-4 py-3 text-left text-xs font-normal uppercase tracking-widest text-ivory-400;
+    }
+
+    td {
+      @apply border-b border-ink-700 px-4 py-3 align-top text-ivory;
+    }
+  }
+
+  &__ref {
+    @apply block whitespace-nowrap text-gold;
+  }
+
+  &__nowrap {
+    @apply whitespace-nowrap;
+  }
+
+  &__muted {
+    @apply block text-xs text-ivory-400;
+  }
+
+  &__status {
+    @apply inline-block whitespace-nowrap rounded-sm px-2 py-0.5 text-[10px] uppercase tracking-widest;
+
+    &--Succeeded {
+      @apply bg-success/15 text-success;
+    }
+
+    &--Pending,
+    &--PartiallyRefunded {
+      @apply bg-warning/15 text-warning;
+    }
+
+    &--Failed,
+    &--Refunded {
+      @apply bg-ink-700 text-ivory-300;
+    }
+  }
+
+  &__documents {
+    @apply flex flex-col gap-1;
+  }
+
+  &__document {
+    @apply flex items-center gap-2;
+  }
+
+  &__link {
+    @apply flex items-center gap-1 whitespace-nowrap text-xs text-ivory hover:text-gold;
+
+    &--muted {
+      @apply text-ivory-400;
+    }
+  }
+
+  &__icon {
+    @apply h-4 w-4;
+  }
+
+  &__refund {
+    @apply flex flex-col gap-4;
+  }
+
+  &__toggle {
+    @apply flex cursor-pointer items-center gap-3 text-sm text-ivory;
+  }
+
+  &__checkbox {
+    @apply h-4 w-4 accent-gold;
+  }
+
+  &__actions {
+    @apply flex justify-end gap-3;
+  }
+
+  &__sr {
+    @apply sr-only;
+  }
+}
+
+::ng-deep .payments__dialog {
+  @apply w-[min(30rem,calc(100vw-2rem))];
+}

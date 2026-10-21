@@ -1,0 +1,65 @@
+.zones {
+  @apply flex flex-col gap-6;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__layout {
+    @apply grid grid-cols-1 gap-6 xl:grid-cols-[20rem_minmax(0,1fr)];
+  }
+
+  &__list {
+    @apply flex flex-col gap-2;
+  }
+
+  &__item {
+    @apply flex w-full flex-col gap-1 rounded-sm border border-ink-600 bg-ink-900 px-4 py-3 text-left transition hover:border-ink-400;
+
+    &--selected {
+      @apply border-gold;
+    }
+
+    &--inactive {
+      @apply opacity-60;
+    }
+  }
+
+  &__name {
+    @apply text-sm text-ivory;
+  }
+
+  &__meta {
+    @apply flex flex-wrap items-center gap-1 text-xs text-ivory-400;
+  }
+
+  &__chip {
+    @apply rounded-sm px-1.5 py-0.5 text-[10px] uppercase tracking-widest;
+
+    &--NoCarAccess {
+      @apply bg-danger/15 text-danger;
+    }
+
+    &--LimitedTraffic {
+      @apply bg-warning/15 text-warning;
+    }
+
+    &--Airport,
+    &--TrainStation,
+    &--Port {
+      @apply bg-info/15 text-info;
+    }
+  }
+
+  &__detail {
+    @apply flex min-w-0 flex-col gap-3;
+  }
+
+  &__map {
+    @apply h-[32rem];
+  }
+
+  &__muted {
+    @apply text-xs text-ivory-400;
+  }
+}

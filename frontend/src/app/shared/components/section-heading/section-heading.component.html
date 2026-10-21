@@ -1,0 +1,9 @@
+<header
+  class="section-heading"
+  [class.section-heading--start]="align() === 'start'">
+  @if (eyebrow()) {
+    <p class="section-heading__eyebrow">{{ eyebrow() }}</p>
+  }
+  <h2 class="section-heading__title">{{ title() }}</h2>
+  <div class="section-heading__divider"></div>
+</header>

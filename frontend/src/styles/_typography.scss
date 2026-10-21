@@ -1,0 +1,34 @@
+// Block: heading — display titles in Cinzel.
+.heading {
+  @apply font-display tracking-wide text-ivory;
+
+  &--xl {
+    @apply text-4xl sm:text-6xl;
+  }
+
+  &--lg {
+    @apply text-3xl sm:text-4xl;
+  }
+
+  &--md {
+    @apply text-xl sm:text-2xl;
+  }
+
+  &__accent {
+    @apply bg-gold-gradient bg-clip-text text-transparent;
+  }
+}
+
+// Block: eyebrow — small spaced caption above headings.
+.eyebrow {
+  @apply text-xs uppercase tracking-luxe text-ivory-200;
+}
+
+// Block: divider — thin gold line.
+.divider {
+  @apply h-px w-full bg-gold-line;
+
+  &--short {
+    @apply mx-auto max-w-sm;
+  }
+}
