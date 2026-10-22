@@ -85,7 +85,7 @@
             {{ leg.pickupMeetingPoint?.name ?? leg.pickupAddress }} →
             {{ leg.dropoffMeetingPoint?.name ?? leg.dropoffAddress }}
           </span>
-          @if (leg.pickupMeetingPoint?.clientInstructions; as text) {
+          @if (leg.pickupMeetingPoint | instructions; as text) {
             <span class="my-booking__note">{{ text }}</span>
           }
           <span class="my-booking__muted">

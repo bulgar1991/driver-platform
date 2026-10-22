@@ -45,6 +45,9 @@ type MeetingPointForm = FormGroup<{
   latitude: FormControl<number | null>
   longitude: FormControl<number | null>
   clientInstructions: FormControl<string>
+  clientInstructionsIt: FormControl<string>
+  clientInstructionsDe: FormControl<string>
+  clientInstructionsFr: FormControl<string>
   driverInstructions: FormControl<string>
 }>
 
@@ -77,6 +80,11 @@ export class ZoneEditorComponent {
   private readonly fb = inject(FormBuilder).nonNullable
 
   protected readonly types = ZONE_TYPES
+  protected readonly instructionLanguages = [
+    { code: 'It', name: 'Italian', control: 'clientInstructionsIt' },
+    { code: 'De', name: 'German', control: 'clientInstructionsDe' },
+    { code: 'Fr', name: 'French', control: 'clientInstructionsFr' },
+  ] as const
   protected readonly saving = signal(false)
   protected readonly error = signal<string | null>(null)
   protected readonly confirmDelete = signal(false)
@@ -243,6 +251,11 @@ export class ZoneEditorComponent {
         latitude: m.latitude ?? 0,
         longitude: m.longitude ?? 0,
         clientInstructions: m.clientInstructions.trim() || null,
+        clientInstructionsTranslations: {
+          it: m.clientInstructionsIt.trim() || null,
+          de: m.clientInstructionsDe.trim() || null,
+          fr: m.clientInstructionsFr.trim() || null,
+        },
         driverInstructions: m.driverInstructions.trim() || null,
       })),
     }
@@ -301,6 +314,9 @@ export class ZoneEditorComponent {
         Validators.required
       ),
       clientInstructions: [point?.clientInstructions ?? ''],
+      clientInstructionsIt: [point?.clientInstructionsTranslations?.it ?? ''],
+      clientInstructionsDe: [point?.clientInstructionsTranslations?.de ?? ''],
+      clientInstructionsFr: [point?.clientInstructionsTranslations?.fr ?? ''],
       driverInstructions: [point?.driverInstructions ?? ''],
     })
   }

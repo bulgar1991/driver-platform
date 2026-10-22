@@ -1774,6 +1774,31 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("BookingId")
                                 .HasConstraintName("fk_bookings_bookings_id");
+
+                            b1.OwnsOne("DriverPlatform.Domain.ValueObjects.Translations", "ClientInstructionsTranslations", b2 =>
+                                {
+                                    b2.Property<Guid>("MeetingPointBookingId");
+
+                                    b2.Property<string>("De")
+                                        .HasMaxLength(500);
+
+                                    b2.Property<string>("Fr")
+                                        .HasMaxLength(500);
+
+                                    b2.Property<string>("It")
+                                        .HasMaxLength(500);
+
+                                    b2.HasKey("MeetingPointBookingId")
+                                        .HasName("pk_bookings");
+
+                                    b2.ToTable("bookings");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("MeetingPointBookingId")
+                                        .HasConstraintName("fk_bookings_bookings_meeting_point_booking_id");
+                                });
+
+                            b1.Navigation("ClientInstructionsTranslations");
                         });
 
                     b.OwnsOne("DriverPlatform.Domain.ValueObjects.GeoPoint", "Pickup", b1 =>
@@ -1839,6 +1864,31 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("BookingId")
                                 .HasConstraintName("fk_bookings_bookings_booking_id");
+
+                            b1.OwnsOne("DriverPlatform.Domain.ValueObjects.Translations", "ClientInstructionsTranslations", b2 =>
+                                {
+                                    b2.Property<Guid>("MeetingPointBookingId");
+
+                                    b2.Property<string>("De")
+                                        .HasMaxLength(500);
+
+                                    b2.Property<string>("Fr")
+                                        .HasMaxLength(500);
+
+                                    b2.Property<string>("It")
+                                        .HasMaxLength(500);
+
+                                    b2.HasKey("MeetingPointBookingId")
+                                        .HasName("pk_bookings");
+
+                                    b2.ToTable("bookings");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("MeetingPointBookingId")
+                                        .HasConstraintName("fk_bookings_bookings_meeting_point_booking_id");
+                                });
+
+                            b1.Navigation("ClientInstructionsTranslations");
                         });
 
                     b.OwnsMany("DriverPlatform.Domain.ValueObjects.ChildSeatRequest", "ChildSeats", b1 =>
@@ -2147,6 +2197,37 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("Driver");
                 });
 
+            modelBuilder.Entity("DriverPlatform.Domain.Entities.SurchargeRule", b =>
+                {
+                    b.OwnsOne("DriverPlatform.Domain.ValueObjects.Translations", "NameTranslations", b1 =>
+                        {
+                            b1.Property<Guid>("SurchargeRuleId");
+
+                            b1.Property<string>("De")
+                                .HasMaxLength(500);
+
+                            b1.Property<string>("Fr")
+                                .HasMaxLength(500);
+
+                            b1.Property<string>("It")
+                                .HasMaxLength(500);
+
+                            b1.HasKey("SurchargeRuleId");
+
+                            b1.ToTable("surcharge_rules");
+
+                            b1
+                                .ToJson("name_translations")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SurchargeRuleId")
+                                .HasConstraintName("fk_surcharge_rules_surcharge_rules_id");
+                        });
+
+                    b.Navigation("NameTranslations");
+                });
+
             modelBuilder.Entity("DriverPlatform.Domain.Entities.Zone", b =>
                 {
                     b.OwnsMany("DriverPlatform.Domain.ValueObjects.MeetingPoint", "MeetingPoints", b1 =>
@@ -2185,6 +2266,33 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("ZoneId")
                                 .HasConstraintName("fk_zones_zones_zone_id");
+
+                            b1.OwnsOne("DriverPlatform.Domain.ValueObjects.Translations", "ClientInstructionsTranslations", b2 =>
+                                {
+                                    b2.Property<Guid>("MeetingPointZoneId");
+
+                                    b2.Property<int>("MeetingPoint__synthesizedOrdinal");
+
+                                    b2.Property<string>("De")
+                                        .HasMaxLength(500);
+
+                                    b2.Property<string>("Fr")
+                                        .HasMaxLength(500);
+
+                                    b2.Property<string>("It")
+                                        .HasMaxLength(500);
+
+                                    b2.HasKey("MeetingPointZoneId", "MeetingPoint__synthesizedOrdinal")
+                                        .HasName("pk_zones");
+
+                                    b2.ToTable("zones");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("MeetingPointZoneId", "MeetingPoint__synthesizedOrdinal")
+                                        .HasConstraintName("fk_zones_zones_meeting_point_zone_id_meeting_point__synthesized_ord");
+                                });
+
+                            b1.Navigation("ClientInstructionsTranslations");
                         });
 
                     b.OwnsMany("DriverPlatform.Domain.ValueObjects.PolygonPoint", "Polygon", b1 =>

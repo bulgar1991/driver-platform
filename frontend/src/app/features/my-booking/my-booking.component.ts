@@ -19,6 +19,7 @@ import { ButtonComponent } from '@/shared/components/button/button.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { VEHICLE_INFO } from '../booking/vehicle-info'
+import { InstructionsPipe } from '@/shared/pipes/instructions.pipe'
 
 const STATUS_LABEL: Record<BookingStatus, string> = {
   AwaitingPayment: $localize`Awaiting payment`,
@@ -44,7 +45,14 @@ const POLL_ATTEMPTS = 15
 /** /my-booking/:reference/:token — the client's page from the signed link. */
 @Component({
   selector: 'app-my-booking',
-  imports: [DatePipe, RouterLink, ButtonComponent, IconComponent, MoneyPipe],
+  imports: [
+    DatePipe,
+    RouterLink,
+    ButtonComponent,
+    IconComponent,
+    InstructionsPipe,
+    MoneyPipe,
+  ],
   templateUrl: './my-booking.component.html',
   styleUrl: './my-booking.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

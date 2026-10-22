@@ -8,6 +8,7 @@ using DriverPlatform.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.Payments;
 
@@ -43,12 +44,12 @@ public sealed class PaymentService(
         if (outbound.Status != BookingStatus.AwaitingPayment)
         {
             throw new ConflictException(outbound.Status == BookingStatus.Cancelled
-                ? "This booking was cancelled."
-                : "This booking is already paid.");
+                ? Texts.Current.BookingWasCancelled
+                : Texts.Current.BookingAlreadyPaid);
         }
         if (outbound.ReturnOfBookingId is not null)
         {
-            throw new RequestValidationException("reference", "Pay the outbound booking; the return trip is included.");
+            throw new RequestValidationException("reference", Texts.Current.PayTheOutbound);
         }
 
         // Loaded here if needed: the return link to the client's page is in the client's language.

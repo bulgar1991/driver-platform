@@ -1,4 +1,4 @@
-using System.Globalization;
+using DriverPlatform.Application.Localization;
 using DriverPlatform.Application.Geo;
 using DriverPlatform.Application.Pricing;
 using DriverPlatform.Domain.Entities;
@@ -16,11 +16,12 @@ public static class BookingMapping
         b.PickupMeetingPoint, b.DropoffMeetingPoint, b.DistanceKm, b.DurationMinutes, b.ToLegPrice());
 
     /// <summary>One-line description for invoices, payment pages and emails.</summary>
-    public static string Describe(this Booking b)
-    {
-        var from = b.PickupMeetingPoint?.Name ?? b.Pickup.Address;
-        var to = b.DropoffMeetingPoint?.Name ?? b.Dropoff.Address;
-        return string.Create(CultureInfo.InvariantCulture,
-            $"Transfer {b.Reference}, {ItalyTime.ToLocal(b.PickupAt):dd/MM/yyyy HH:mm}: {from} → {to}");
-    }
+    public static string Describe(this Booking b) => b.Describe(Texts.English);
+
+    /// <summary>"Transfer MD-…, 03/05/2027 14:30: Piazzale Roma → Fiumicino Terminal 3 arrivals" in that language.</summary>
+    public static string Describe(this Booking b, Texts texts) => texts.Transfer(
+        b.Reference,
+        ItalyTime.ToLocal(b.PickupAt),
+        b.PickupMeetingPoint?.Name ?? b.Pickup.Address,
+        b.DropoffMeetingPoint?.Name ?? b.Dropoff.Address);
 }

@@ -5,6 +5,7 @@ using DriverPlatform.Application.Payments;
 using DriverPlatform.Domain.Entities;
 using DriverPlatform.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.MyBooking;
 
@@ -75,7 +76,7 @@ public sealed class MyBookingService(IAppDbContext db, IBookingLinks links, IPay
         var outbound = await FindAsync(reference, token, cancellationToken);
         var invoice = await db.Invoices.AsNoTracking()
             .FirstOrDefaultAsync(i => i.BookingId == outbound.Id && i.Number == number, cancellationToken)
-            ?? throw new NotFoundException("Invoice not found.");
+            ?? throw new NotFoundException(Texts.Current.InvoiceNotFound);
         return new InvoiceFile($"{invoice.Number}.pdf", invoice.Pdf ?? []);
     }
 
@@ -86,7 +87,7 @@ public sealed class MyBookingService(IAppDbContext db, IBookingLinks links, IPay
             .FirstOrDefaultAsync(b => b.Reference == reference.ToUpperInvariant() && b.ReturnOfBookingId == null, cancellationToken);
         if (booking is null || !links.IsValid(booking, token))
         {
-            throw new NotFoundException("Booking not found.");
+            throw new NotFoundException(Texts.Current.BookingNotFound);
         }
         return booking;
     }

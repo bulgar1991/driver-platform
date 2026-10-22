@@ -1,10 +1,10 @@
-using System.Globalization;
 using System.Net;
 using DriverPlatform.Application.Abstractions;
 using DriverPlatform.Application.Bookings;
 using DriverPlatform.Application.Common;
 using DriverPlatform.Application.DriverPortal;
 using DriverPlatform.Application.Geo;
+using DriverPlatform.Application.Localization;
 using DriverPlatform.Domain.Entities;
 using DriverPlatform.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -38,34 +38,32 @@ public sealed class NotificationService(
     TimeProvider clock,
     ILogger<NotificationService> logger) : INotificationService
 {
-    private static readonly CultureInfo Invariant = CultureInfo.InvariantCulture;
-
     public async Task SendShiftToDriverAsync(Assignment shift, NotificationKind kind, CancellationToken cancellationToken)
     {
         var driver = shift.Driver;
+        var t = DriverTexts(driver);
         var url = driverLinks.Url(driver);
-        var start = ItalyTime.ToLocal(shift.StartsAt);
-        var when = start.ToString("ddd d MMM, HH:mm", Invariant);
+        var when = t.ShortDateTime(ItalyTime.ToLocal(shift.StartsAt));
         var rides = shift.Bookings.Count(b => b.Status != BookingStatus.Cancelled);
         var headline = kind switch
         {
-            NotificationKind.DriverShiftChanged when shift.Status == AssignmentStatus.Cancelled => $"Your shift of {when} was cancelled.",
-            NotificationKind.DriverShiftChanged => $"Your shift of {when} was changed. Please check and confirm it again.",
-            _ => $"New shift on {when}: {rides} ride(s) with {shift.Vehicle.PlateNumber}. Please confirm it.",
+            NotificationKind.DriverShiftChanged when shift.Status == AssignmentStatus.Cancelled => t.ShiftCancelled(when),
+            NotificationKind.DriverShiftChanged => t.ShiftChanged(when),
+            _ => t.NewShift(when, rides, shift.Vehicle.PlateNumber),
         };
 
         await SendAsync(kind, NotificationChannel.WhatsApp, driver.Phone, log =>
         {
             log.DriverId = driver.Id;
             log.AssignmentId = shift.Id;
-        }, () => whatsApp.SendTemplateAsync(driver.Phone, kind, "en", [driver.FirstName, headline, url], cancellationToken), cancellationToken);
+        }, () => whatsApp.SendTemplateAsync(driver.Phone, kind, t.Language, [driver.FirstName, headline, url], cancellationToken), cancellationToken);
 
         if (!string.IsNullOrEmpty(driver.Email))
         {
             var lines = shift.Bookings.Where(b => b.Status != BookingStatus.Cancelled).OrderBy(b => b.PickupAt)
-                .Select(b => b.Describe()).ToList();
-            await SendEmailAsync(kind, driver.Email, $"{driver.FirstName} {driver.LastName}", $"{headline}",
-                [$"Hello {driver.FirstName},", headline, .. lines], ("Open my shifts", url),
+                .Select(b => b.Describe(t)).ToList();
+            await SendEmailAsync(kind, driver.Email, $"{driver.FirstName} {driver.LastName}", headline,
+                [t.Hello(driver.FirstName), headline, .. lines], (t.OpenMyShifts, url),
                 log => { log.DriverId = driver.Id; log.AssignmentId = shift.Id; }, cancellationToken);
         }
         await db.SaveChangesAsync(cancellationToken);
@@ -87,7 +85,8 @@ public sealed class NotificationService(
                 continue;
             }
             var client = booking.Client;
-            var pickup = ItalyTime.ToLocal(booking.PickupAt).ToString("ddd d MMM, HH:mm", Invariant);
+            var t = Texts.For(client.Language);
+            var pickup = t.ShortDateTime(ItalyTime.ToLocal(booking.PickupAt));
             var where = booking.PickupMeetingPoint?.Name ?? booking.Pickup.Address;
             var details = $"{driver.FirstName}, {driver.Phone}, {car} ({vehicle.PlateNumber})";
             var manage = bookingLinks.ManageUrl(booking.ReturnOfBookingId is null ? booking : await OutboundAsync(booking, cancellationToken));
@@ -98,14 +97,14 @@ public sealed class NotificationService(
             if (!string.IsNullOrEmpty(client.Email))
             {
                 await SendEmailAsync(NotificationKind.ClientDriverDetails, client.Email, $"{client.FirstName} {client.LastName}",
-                    $"Your driver for {booking.Reference}",
+                    t.DriverSubject(booking.Reference),
                     [
-                        $"Dear {client.FirstName},",
-                        $"your driver for {pickup} at {where} is {driver.FirstName} ({driver.Phone}).",
-                        $"Car: {car}, plate {vehicle.PlateNumber}.",
-                        booking.PickupMeetingPoint?.ClientInstructions ?? "",
+                        t.Dear(client.FirstName),
+                        t.YourDriver(pickup, where, driver.FirstName, driver.Phone),
+                        t.Car(car, vehicle.PlateNumber),
+                        booking.PickupMeetingPoint?.Instructions(t) ?? "",
                     ],
-                    ("View your booking", manage),
+                    (t.ViewBooking, manage),
                     log => log.BookingId = booking.Id, cancellationToken);
             }
             booking.DriverDetailsSentKey = key;
@@ -118,10 +117,11 @@ public sealed class NotificationService(
         var client = booking.Client;
         if (channel == NotificationChannel.Email && !string.IsNullOrEmpty(client.Email))
         {
+            var t = Texts.For(client.Language);
             await SendEmailAsync(NotificationKind.ReviewRequest, client.Email, $"{client.FirstName} {client.LastName}",
-                $"How was your ride {booking.Reference}?",
-                [$"Dear {client.FirstName},", "thank you for travelling with us. Tell us how the ride and the driver were — it takes a minute."],
-                ("Rate your ride", reviewUrl),
+                t.ReviewSubject(booking.Reference),
+                [t.Dear(client.FirstName), t.ReviewAsk],
+                (t.RateRide, reviewUrl),
                 log => log.BookingId = booking.Id, cancellationToken);
         }
         else
@@ -132,6 +132,12 @@ public sealed class NotificationService(
         }
         await db.SaveChangesAsync(cancellationToken);
     }
+
+    /// <summary>The driver's first language the site has, else Italian: drivers work in Italy.</summary>
+    private static Texts DriverTexts(Driver driver) =>
+        driver.Languages.Select(l => l.Trim().ToLowerInvariant()).FirstOrDefault(l => l is "it" or "en" or "de" or "fr") is { } language
+            ? Texts.For(language)
+            : Texts.Italian;
 
     /// <summary>Partners that asked us not to message their passengers.</summary>
     private async Task<HashSet<Guid>> SilentPartnersAsync(IEnumerable<Booking> bookings, CancellationToken cancellationToken)

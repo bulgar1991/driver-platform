@@ -19,6 +19,7 @@ import { firstValueFrom } from 'rxjs'
 import { routes } from './app.routes'
 import { authInterceptor } from './core/interceptors/auth.interceptor'
 import { errorInterceptor } from './core/interceptors/error.interceptor'
+import { languageInterceptor } from './core/interceptors/language.interceptor'
 import { serverApiInterceptor } from './core/interceptors/server-api.interceptor'
 import { AuthService } from './core/services/auth.service'
 import { MagnusPreset } from './theme'
@@ -39,6 +40,7 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([
         serverApiInterceptor,
         authInterceptor,
+        languageInterceptor,
         errorInterceptor,
       ])
     ),

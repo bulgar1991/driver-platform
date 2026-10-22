@@ -66,11 +66,19 @@ export class SurchargeFormComponent {
 
   protected readonly days = DAYS
   protected readonly kinds = KINDS
+  protected readonly nameLanguages = [
+    { code: 'It', name: 'Italian', control: 'nameIt' },
+    { code: 'De', name: 'German', control: 'nameDe' },
+    { code: 'Fr', name: 'French', control: 'nameFr' },
+  ] as const
 
   private readonly fb = inject(FormBuilder).nonNullable
   protected readonly form = this.fb.group(
     {
       name: ['', [Validators.required, Validators.maxLength(120)]],
+      nameIt: ['', Validators.maxLength(120)],
+      nameDe: ['', Validators.maxLength(120)],
+      nameFr: ['', Validators.maxLength(120)],
       kind: this.fb.control<SurchargeKind>('DateRange'),
       percent: [
         10,
@@ -92,6 +100,9 @@ export class SurchargeFormComponent {
       const rule = this.rule()
       this.form.reset({
         name: rule?.name ?? '',
+        nameIt: rule?.nameTranslations?.it ?? '',
+        nameDe: rule?.nameTranslations?.de ?? '',
+        nameFr: rule?.nameTranslations?.fr ?? '',
         kind: rule?.kind ?? 'DateRange',
         percent: rule?.percent ?? 10,
         daysOfWeek: rule?.daysOfWeek ?? [],
@@ -117,10 +128,15 @@ export class SurchargeFormComponent {
       this.form.markAllAsTouched()
       return
     }
-    const v = this.form.getRawValue()
+    const { nameIt, nameDe, nameFr, ...v } = this.form.getRawValue()
     this.saved.emit({
       ...v,
       name: v.name.trim(),
+      nameTranslations: {
+        it: nameIt.trim() || null,
+        de: nameDe.trim() || null,
+        fr: nameFr.trim() || null,
+      },
       startDate: v.startDate || null,
       endDate: v.endDate || null,
       startTime: v.startTime ? `${v.startTime}:00` : null,

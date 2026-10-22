@@ -8,6 +8,7 @@ using DriverPlatform.Domain.Enums;
 using DriverPlatform.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.Bookings;
 
@@ -25,19 +26,19 @@ public sealed class BookingService(
     {
         if (!request.GdprConsent)
         {
-            throw new RequestValidationException("gdprConsent", "Please accept the privacy policy to book.");
+            throw new RequestValidationException("gdprConsent", Texts.Current.AcceptPrivacyToBook);
         }
 
         var quote = await quotes.QuoteAsync(request.Trip, cancellationToken);
         var vehicle = quote.Vehicles.FirstOrDefault(v => v.Category == request.VehicleCategory)
-            ?? throw new RequestValidationException("vehicleCategory", "This vehicle category is not offered.");
+            ?? throw new RequestValidationException("vehicleCategory", Texts.Current.CategoryNotOffered);
         if (!vehicle.Available)
         {
-            throw new RequestValidationException("vehicleCategory", vehicle.UnavailableReason ?? "This vehicle does not fit the trip.");
+            throw new RequestValidationException("vehicleCategory", vehicle.UnavailableReason ?? Texts.Current.VehicleDoesNotFit);
         }
         if (request.ExpectedTotal is { } expected && expected != vehicle.Total)
         {
-            throw new ConflictException("The price has changed. Please check the new price and confirm again.", quote);
+            throw new ConflictException(Texts.Current.PriceChanged, quote);
         }
 
         var client = await FindOrCreateClientAsync(request.Contact, request.MarketingConsent, cancellationToken);

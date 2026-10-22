@@ -8,6 +8,7 @@ using DriverPlatform.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.DriverPortal;
 
@@ -74,7 +75,7 @@ public sealed class DriverApplicationService(
         }
         if (!request.PrivacyConsent)
         {
-            throw new RequestValidationException("privacyConsent", "Please accept the privacy policy.");
+            throw new RequestValidationException("privacyConsent", Texts.Current.AcceptPrivacy);
         }
 
         var phone = BookingFactory.NormalizePhone(request.Phone);

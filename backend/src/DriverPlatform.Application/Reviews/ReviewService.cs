@@ -9,6 +9,7 @@ using DriverPlatform.Domain.Entities;
 using DriverPlatform.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.Reviews;
 
@@ -117,7 +118,7 @@ public sealed class ReviewService(
         var review = await FindAsync(token, cancellationToken);
         if (review.SubmittedAt is not null)
         {
-            throw new ConflictException("Thank you, this ride has already been rated.");
+            throw new ConflictException(Texts.Current.AlreadyRated);
         }
         review.Rating = request.Rating;
         review.Comment = string.IsNullOrWhiteSpace(request.Comment) ? null : request.Comment.Trim();
@@ -169,7 +170,7 @@ public sealed class ReviewService(
             .FirstOrDefaultAsync(r => r.TokenHash == hash, cancellationToken);
         if (review is null || (review.SubmittedAt is null && review.ExpiresAt < clock.GetUtcNow()))
         {
-            throw new NotFoundException("This review link is not valid or has expired.");
+            throw new NotFoundException(Texts.Current.ReviewLinkInvalid);
         }
         return review;
     }

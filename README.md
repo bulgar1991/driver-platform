@@ -190,7 +190,9 @@ of the driver id and a version: it never changes unless the dispatcher presses "
 `WhatsApp:PhoneNumberId`, `WhatsApp:AccessToken`). Until the account is approved, development
 uses `"Log"`: messages are written to `backend/src/DriverPlatform.Api/App_Data/whatsapp/`.
 Messages we start need templates approved by Meta, in every language listed in
-`WhatsApp:Languages` (en, it by default; other clients get `DefaultLanguage`):
+`WhatsApp:Languages` (it, en, de, fr by default; other clients get `DefaultLanguage`). Clients get
+the template in the language they booked in; drivers in their first language the site has, else
+Italian. The parameters (such as the shift summary) are already in that language:
 
 | Template | Body parameters |
 | --- | --- |
@@ -384,14 +386,25 @@ The admin panel stays in English.
 - **After changing or adding a text:** `npm run i18n` extracts the texts and lists what each
   language lacks; add those to the three files. The production build fails if a translation is
   missing, so nothing ships half-translated.
-- `ng serve` serves the Italian build; the other languages are checked with a production build.
+- `npm start` (`ng serve`) serves Italian only, with live reload; opening `/de/…` there shows the
+  Italian page. **`npm run start:languages`** serves all four at http://localhost:4300 (`/`, `/en`,
+  `/de`, `/fr`, the API proxied to :5000) like the production server: it rebuilds on change
+  (about a minute), then reload the page.
 - Prices and dates follow the language ("58,00 €" in Italian, German, French; "€58.00" in English);
   address search returns place names in it ("Mailand" on the German site).
 - Client links (booking page, payment return, review) open in the language the client booked in
   (`SiteLanguages` in the backend); other languages (Spanish, Russian…) get English.
-- **Still in English, from the backend:** the confirmation emails and WhatsApp texts, the price
-  breakdown lines ("Fare 13.5 km", "… access"), surcharge names typed in the panel, and some
-  validation messages.
+- **Backend texts** (emails, WhatsApp parameters, price lines, error messages, invoice lines) are
+  in `backend/src/DriverPlatform.Application/Localization/`: one class per language, so a missing
+  text does not compile. The site sends its language in `Accept-Language`; emails and messages use
+  the language stored with the client. Price lines are saved on the booking in that language.
+- **Texts typed in the panel:** surcharge names and meeting point client instructions have Italian,
+  German and French fields; a blank one shows the English text. The starting surcharges, holidays
+  and meeting points come translated.
+- **Still in English:** the admin panel, zone and meeting point names (place names such as
+  "Florence ZTL"), the "Partner rate" line, and the generic form checks (a missing field) that the
+  site already checks before sending. The invoice PDF layout is Italian and English, with the lines
+  in the client's language.
 
 ### SEO
 

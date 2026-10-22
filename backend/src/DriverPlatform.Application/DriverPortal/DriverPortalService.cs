@@ -8,6 +8,7 @@ using DriverPlatform.Domain.Entities;
 using DriverPlatform.Domain.Enums;
 using DriverPlatform.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
+using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.DriverPortal;
 
@@ -95,10 +96,10 @@ public sealed class DriverPortalService(
     {
         var driver = await FindDriverAsync(token, cancellationToken);
         var shifts = await VisibleShiftsAsync(driver, cancellationToken);
-        var shift = shifts.FirstOrDefault(s => s.Id == shiftId) ?? throw new NotFoundException("Shift not found.");
+        var shift = shifts.FirstOrDefault(s => s.Id == shiftId) ?? throw new NotFoundException(Texts.Current.ShiftNotFound);
         if (shift.Status is not (AssignmentStatus.Sent or AssignmentStatus.Seen))
         {
-            throw new ConflictException(shift.Status == AssignmentStatus.Confirmed ? "Already confirmed." : "This shift can no longer be confirmed.");
+            throw new ConflictException(shift.Status == AssignmentStatus.Confirmed ? Texts.Current.ShiftAlreadyConfirmed : Texts.Current.ShiftCannotBeConfirmed);
         }
 
         shift.Status = AssignmentStatus.Confirmed;
@@ -121,22 +122,22 @@ public sealed class DriverPortalService(
     {
         var driver = await FindDriverAsync(token, cancellationToken);
         var shifts = await VisibleShiftsAsync(driver, cancellationToken);
-        var shift = shifts.FirstOrDefault(s => s.Bookings.Any(b => b.Id == bookingId)) ?? throw new NotFoundException("Ride not found.");
+        var shift = shifts.FirstOrDefault(s => s.Bookings.Any(b => b.Id == bookingId)) ?? throw new NotFoundException(Texts.Current.RideNotFound);
         var booking = shift.Bookings.First(b => b.Id == bookingId);
 
         if (shift.Status != AssignmentStatus.Confirmed)
         {
-            throw new ConflictException("Confirm the shift first.");
+            throw new ConflictException(Texts.Current.ConfirmShiftFirst);
         }
         var allowed = status == BookingStatus.PickedUp ? booking.Status == BookingStatus.Assigned : booking.Status == BookingStatus.PickedUp;
         if (!allowed)
         {
-            throw new ConflictException(status == BookingStatus.PickedUp ? "This ride is not waiting for pickup." : "Mark the pickup first.");
+            throw new ConflictException(status == BookingStatus.PickedUp ? Texts.Current.NotWaitingForPickup : Texts.Current.MarkPickupFirst);
         }
         var now = clock.GetUtcNow();
         if (status == BookingStatus.PickedUp && now < booking.PickupAt - PickupWindow)
         {
-            throw new ConflictException($"You can mark the pickup from {PickupWindow.TotalHours:0} hours before the pickup time.");
+            throw new ConflictException(Texts.Current.PickupFrom((int)PickupWindow.TotalHours));
         }
 
         booking.Status = status;
@@ -165,7 +166,7 @@ public sealed class DriverPortalService(
     {
         var hash = links.Hash(token);
         return await db.Drivers.FirstOrDefaultAsync(d => d.AccessTokenHash == hash && d.IsActive, cancellationToken)
-            ?? throw new NotFoundException("This link is not valid. Ask the dispatcher for a new one.");
+            ?? throw new NotFoundException(Texts.Current.DriverLinkInvalid);
     }
 
     /// <summary>Shifts sent to the driver (never drafts), until 12 hours after they end.</summary>

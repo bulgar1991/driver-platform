@@ -9,6 +9,10 @@ internal sealed class ZoneConfiguration : IEntityTypeConfiguration<Zone>
     public void Configure(EntityTypeBuilder<Zone> builder)
     {
         builder.OwnsMany(z => z.Polygon, p => p.ToJson());
-        builder.OwnsMany(z => z.MeetingPoints, m => m.ToJson());
+        builder.OwnsMany(z => z.MeetingPoints, m =>
+        {
+            m.ToJson();
+            m.OwnsOne(p => p.ClientInstructionsTranslations);
+        });
     }
 }

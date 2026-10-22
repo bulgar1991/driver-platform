@@ -1,3 +1,4 @@
+import { Translations } from './geo.model'
 import { VehicleCategory } from './vehicle.model'
 
 export interface VehicleRate {
@@ -20,7 +21,9 @@ export type DayOfWeek =
   | 'Saturday'
 
 export interface SurchargeRuleRequest {
+  /** In English; clients see {@link nameTranslations} in their language. */
   name: string
+  nameTranslations: Translations | null
   kind: SurchargeKind
   percent: number
   daysOfWeek: DayOfWeek[]

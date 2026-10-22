@@ -12,15 +12,21 @@ const LANGUAGES = [
 ]
 const site = (process.env.SITE_URL ?? '').replace(/\/+$/, '')
 if (!/^https?:\/\/[^/]+$/.test(site)) {
-  console.warn('seo-files: SITE_URL not set (e.g. https://magnusdrive.it); no sitemap written.')
+  console.warn(
+    'seo-files: SITE_URL not set (e.g. https://magnusdrive.it); no sitemap written.'
+  )
   process.exit(0)
 }
 
 // The prerendered routes include every language; group them by page ("/de/tariffs" → "/tariffs").
-const { routes } = JSON.parse(readFileSync('dist/frontend/prerendered-routes.json', 'utf8'))
+const { routes } = JSON.parse(
+  readFileSync('dist/frontend/prerendered-routes.json', 'utf8')
+)
 const pages = new Set(
   Object.keys(routes).map(route => {
-    const language = LANGUAGES.find(l => l.prefix && (route === l.prefix || route.startsWith(`${l.prefix}/`)))
+    const language = LANGUAGES.find(
+      l => l.prefix && (route === l.prefix || route.startsWith(`${l.prefix}/`))
+    )
     return (language ? route.slice(language.prefix.length) : route) || '/'
   })
 )
@@ -30,8 +36,14 @@ const entries = [...pages]
   .sort((a, b) => a.length - b.length || a.localeCompare(b))
   .flatMap(page =>
     LANGUAGES.map(language => {
-      const alternates = [...LANGUAGES.map(l => [l.code, l.prefix]), ['x-default', '']]
-        .map(([code, prefix]) => `    <xhtml:link rel="alternate" hreflang="${code}" href="${url(prefix, page)}"/>`)
+      const alternates = [
+        ...LANGUAGES.map(l => [l.code, l.prefix]),
+        ['x-default', ''],
+      ]
+        .map(
+          ([code, prefix]) =>
+            `    <xhtml:link rel="alternate" hreflang="${code}" href="${url(prefix, page)}"/>`
+        )
         .join('\n')
       return `  <url>
     <loc>${url(language.prefix, page)}</loc>
@@ -49,5 +61,10 @@ ${entries.join('\n')}
 `
 )
 const robots = readFileSync(`${OUT}/robots.txt`, 'utf8').trimEnd()
-writeFileSync(`${OUT}/robots.txt`, `${robots}\n\nSitemap: ${site}/sitemap.xml\n`)
-console.log(`seo-files: sitemap.xml with ${entries.length} pages (${pages.size} × ${LANGUAGES.length} languages) for ${site}`)
+writeFileSync(
+  `${OUT}/robots.txt`,
+  `${robots}\n\nSitemap: ${site}/sitemap.xml\n`
+)
+console.log(
+  `seo-files: sitemap.xml with ${entries.length} pages (${pages.size} × ${LANGUAGES.length} languages) for ${site}`
+)

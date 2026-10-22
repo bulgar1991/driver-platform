@@ -1,12 +1,15 @@
+using System.Globalization;
 using System.Text.Json.Serialization;
 using DriverPlatform.Api;
 using DriverPlatform.Api.Extensions;
 using DriverPlatform.Api.Services;
 using DriverPlatform.Application;
 using DriverPlatform.Application.Abstractions;
+using DriverPlatform.Application.Localization;
 using DriverPlatform.Infrastructure;
 using DriverPlatform.Infrastructure.Persistence;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,6 +58,15 @@ if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
 }
 
 app.UseForwardedHeaders();
+// The site sends its language (Accept-Language): client texts and errors come back in it (Texts.Current).
+// Only the UI culture changes; numbers and dates in code keep the invariant format.
+app.UseRequestLocalization(o =>
+{
+    o.DefaultRequestCulture = new RequestCulture(CultureInfo.InvariantCulture, CultureInfo.GetCultureInfo("en"));
+    o.SupportedCultures = [CultureInfo.InvariantCulture];
+    o.SupportedUICultures = Texts.All.Select(t => CultureInfo.GetCultureInfo(t.Language)).ToList();
+    o.RequestCultureProviders = [new AcceptLanguageHeaderRequestCultureProvider()];
+});
 app.UseApiSecurityHeaders();
 app.UseExceptionHandler();
 app.UseStatusCodePages();

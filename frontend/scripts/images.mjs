@@ -12,31 +12,58 @@ const WIDTHS = [480, 960, 1600]
 
 mkdirSync(OUTPUT, { recursive: true })
 const entries = []
-for (const file of readdirSync(SOURCE).filter(f => /\.(jpe?g|png|webp)$/i.test(f)).sort()) {
+for (const file of readdirSync(SOURCE)
+  .filter(f => /\.(jpe?g|png|webp)$/i.test(f))
+  .sort()) {
   const name = basename(file, extname(file))
   const input = sharp(`${SOURCE}/${file}`).rotate()
   const { width, height } = await input.metadata()
   const widths = [...new Set(WIDTHS.filter(w => w < width).concat(width))]
   for (const w of widths) {
-    await input.clone().resize({ width: w }).webp({ quality: 78 }).toFile(`${OUTPUT}/${name}-${w}.webp`)
+    await input
+      .clone()
+      .resize({ width: w })
+      .webp({ quality: 78 })
+      .toFile(`${OUTPUT}/${name}-${w}.webp`)
   }
-  const tiny = await input.clone().resize({ width: 24 }).blur(1.2).webp({ quality: 40 }).toBuffer()
-  entries.push({ name, width, height, widths, placeholder: `data:image/webp;base64,${tiny.toString('base64')}` })
+  const tiny = await input
+    .clone()
+    .resize({ width: 24 })
+    .blur(1.2)
+    .webp({ quality: 40 })
+    .toBuffer()
+  entries.push({
+    name,
+    width,
+    height,
+    widths,
+    placeholder: `data:image/webp;base64,${tiny.toString('base64')}`,
+  })
 }
 
 // Link previews (Open Graph): 1200×630 JPEG, which every preview service accepts.
 const OG = { source: 'hero', width: 1200, height: 630 }
-const ogFile = readdirSync(SOURCE).find(f => basename(f, extname(f)) === OG.source)
+const ogFile = readdirSync(SOURCE).find(
+  f => basename(f, extname(f)) === OG.source
+)
 await sharp(`${SOURCE}/${ogFile}`)
   .resize({ width: OG.width, height: OG.height, fit: 'cover' })
   .jpeg({ quality: 82, mozjpeg: true })
   .toFile(`${OUTPUT}/og.jpg`)
-entries.push({ name: 'og', width: OG.width, height: OG.height, file: '/assets/images/og.jpg' })
+entries.push({
+  name: 'og',
+  width: OG.width,
+  height: OG.height,
+  file: '/assets/images/og.jpg',
+})
 
 // App icons and favicon from src/assets/brand/icon.svg.
 const ICON = 'src/assets/brand/icon.svg'
 for (const size of [180, 192, 512]) {
-  await sharp(ICON).resize(size, size).png().toFile(`src/assets/brand/icon-${size}.png`)
+  await sharp(ICON)
+    .resize(size, size)
+    .png()
+    .toFile(`src/assets/brand/icon-${size}.png`)
 }
 // favicon.ico holding one 32×32 PNG (an ICO header and a single directory entry, then the PNG).
 const png32 = await sharp(ICON).resize(32, 32).png().toBuffer()
@@ -54,11 +81,10 @@ writeFileSync('src/favicon.ico', Buffer.concat([header, png32]))
 
 const key = name => (/^[a-z_$][\w$]*$/i.test(name) ? name : `'${name}'`)
 const body = entries
-  .map(
-    e =>
-      e.file
-        ? `  ${key(e.name)}: { src: '${e.file}', width: ${e.width}, height: ${e.height} },`
-        : `  ${key(e.name)}: {
+  .map(e =>
+    e.file
+      ? `  ${key(e.name)}: { src: '${e.file}', width: ${e.width}, height: ${e.height} },`
+      : `  ${key(e.name)}: {
     src: '/assets/images/${e.name}-${e.widths.at(-1)}.webp',
     srcset: '${e.widths.map(w => `/assets/images/${e.name}-${w}.webp ${w}w`).join(', ')}',
     width: ${e.width},
@@ -77,4 +103,6 @@ ${body}
 } satisfies Record<string, ImageAsset>
 `
 )
-console.log(`${entries.length} images: ${entries.map(e => `${e.name} (${e.widths?.join('/') ?? `${e.width}×${e.height}`})`).join(', ')}; icons 180/192/512, favicon.ico`)
+console.log(
+  `${entries.length} images: ${entries.map(e => `${e.name} (${e.widths?.join('/') ?? `${e.width}×${e.height}`})`).join(', ')}; icons 180/192/512, favicon.ico`
+)

@@ -14,7 +14,7 @@ public sealed class WhatsAppOptions
     /// <summary>A permanent system-user token; keep it in secrets, never in git.</summary>
     public string AccessToken { get; set; } = "";
     /// <summary>Languages in which every template is approved; other clients get <see cref="DefaultLanguage"/>.</summary>
-    public string[] Languages { get; set; } = ["en", "it"];
+    public string[] Languages { get; set; } = ["it", "en", "de", "fr"];
     public string DefaultLanguage { get; set; } = "en";
     public string LogDirectory { get; set; } = "App_Data/whatsapp";
 

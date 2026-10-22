@@ -3,6 +3,7 @@ using DriverPlatform.Application.Common;
 using DriverPlatform.Application.Pricing;
 using DriverPlatform.Domain.Entities;
 using DriverPlatform.Domain.Enums;
+using DriverPlatform.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace DriverPlatform.Application.Admin;
@@ -148,6 +149,7 @@ public sealed class PricingAdminService(IAppDbContext db, IAuditLogger audit) : 
     private static void Apply(SurchargeRule rule, SurchargeRuleRequest request)
     {
         rule.Name = request.Name.Trim();
+        rule.NameTranslations = request.NameTranslations.Cleaned();
         rule.Kind = request.Kind;
         rule.Percent = request.Percent;
         rule.IsActive = request.IsActive;
@@ -162,7 +164,7 @@ public sealed class PricingAdminService(IAppDbContext db, IAuditLogger audit) : 
     private static VehicleRateDto ToDto(VehicleRate r) => new(r.Category, r.BaseFee, r.PricePerKm, r.MaxPassengers, r.MaxLuggage);
 
     private static SurchargeRuleDto ToDto(SurchargeRule r) => new(
-        r.Id, r.Name, r.Kind, r.Percent, r.DaysOfWeek, r.StartDate, r.EndDate, r.StartTime, r.EndTime, r.RepeatsYearly, r.IsActive);
+        r.Id, r.Name, r.NameTranslations ?? new Translations(), r.Kind, r.Percent, r.DaysOfWeek, r.StartDate, r.EndDate, r.StartTime, r.EndTime, r.RepeatsYearly, r.IsActive);
 
     private static PricingSettingsDto ToDto(PricingSettings s) => new()
     {

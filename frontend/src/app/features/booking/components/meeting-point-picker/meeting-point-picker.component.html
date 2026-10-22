@@ -60,7 +60,7 @@
     <p class="meeting-point__name">{{ point.name }}</p>
   }
 
-  @if (selected()?.clientInstructions; as instructions) {
+  @if (selected() | instructions; as instructions) {
     <p class="meeting-point__instructions">{{ instructions }}</p>
   }
 </section>

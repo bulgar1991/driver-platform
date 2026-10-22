@@ -1,6 +1,7 @@
 using DriverPlatform.Application.Abstractions;
 using DriverPlatform.Application.Common;
 using DriverPlatform.Application.Geo;
+using DriverPlatform.Application.Localization;
 using DriverPlatform.Application.Pricing;
 using DriverPlatform.Domain.Entities;
 using DriverPlatform.Domain.Enums;
@@ -23,11 +24,12 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
 
         // Holidays are one rule per date; the public page shows them as a single line.
         const string holiday = "Public holiday";
+        var texts = Texts.Current;
         var surcharges = rules.Where(r => !r.Name.StartsWith(holiday, StringComparison.Ordinal))
-            .Select(r => new PublicSurcharge(r.Name, r.Percent))
+            .Select(r => new PublicSurcharge(r.NameTranslations.Pick(r.Name, texts.Language), r.Percent))
             .Concat(rules.Where(r => r.Name.StartsWith(holiday, StringComparison.Ordinal))
                 .GroupBy(r => r.Percent)
-                .Select(g => new PublicSurcharge("Public holidays", g.Key)))
+                .Select(g => new PublicSurcharge(texts.PublicHolidays, g.Key)))
             .OrderBy(s => s.Percent).ThenBy(s => s.Name)
             .ToList();
 
@@ -49,28 +51,29 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
         var surcharges = await db.SurchargeRules.AsNoTracking().Where(r => r.IsActive).ToListAsync(cancellationToken);
         var extraFees = await db.ExtraFees.AsNoTracking().ToDictionaryAsync(f => f.Type, f => f.Amount, cancellationToken);
 
+        var texts = Texts.Current;
         var errors = new ValidationErrors();
-        ValidateTrip(request, errors);
+        ValidateTrip(request, errors, texts);
         var outboundPlan = PlanLeg(
             request.Pickup, request.Dropoff, request.PickupAt,
             request.PickupMeetingPoint, request.DropoffMeetingPoint,
-            zones, settings, errors, "");
+            zones, settings, errors, texts, "");
         // The return leg runs the other way: the outbound drop-off meeting point becomes the pickup one.
         var returnPlan = request.Return is null ? null : PlanLeg(
             request.Dropoff, request.Pickup, request.Return.PickupAt,
             request.DropoffMeetingPoint, request.PickupMeetingPoint,
-            zones, settings, errors, "return.");
+            zones, settings, errors, texts, "return.");
         errors.ThrowIfAny();
 
-        var outbound = await RouteLegAsync(outboundPlan!, surcharges, cancellationToken);
+        var outbound = await RouteLegAsync(outboundPlan!, surcharges, texts, cancellationToken);
         RoutedLeg? inbound = null;
         if (returnPlan is not null)
         {
             if (returnPlan.PickupUtc < outbound.Leg.PickupAtUtc.AddMinutes(outbound.Leg.DurationMinutes))
             {
-                throw new RequestValidationException("return.pickupAt", "The return pickup must be after the first ride arrives.");
+                throw new RequestValidationException("return.pickupAt", texts.ReturnAfterArrival);
             }
-            inbound = await RouteLegAsync(returnPlan, surcharges, cancellationToken);
+            inbound = await RouteLegAsync(returnPlan, surcharges, texts, cancellationToken);
         }
 
         var luggageUnits = TripCapacity.LuggageUnits(request.LargeLuggage, request.SmallLuggage);
@@ -79,16 +82,16 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
 
         var vehicles = rates.Select(rate =>
         {
-            var reason = request.Passengers > rate.MaxPassengers ? $"Up to {rate.MaxPassengers} passengers"
-                : luggageUnits > rate.MaxLuggage ? $"Up to {rate.MaxLuggage} large bags"
+            var reason = request.Passengers > rate.MaxPassengers ? texts.UpToPassengers(rate.MaxPassengers)
+                : luggageUnits > rate.MaxLuggage ? texts.UpToLargeBags(rate.MaxLuggage)
                 : null;
 
             var outboundPrice = PriceCalculator.Calculate(new PriceInput(
                 rate, outbound.Leg.DistanceKm, outbound.Surcharges, outbound.FeeZones,
-                childSeats, extraLuggage, request.NameSign, extraFees));
+                childSeats, extraLuggage, request.NameSign, extraFees, Texts: texts));
             var returnPrice = inbound is null ? null : PriceCalculator.Calculate(new PriceInput(
                 rate, inbound.Leg.DistanceKm, inbound.Surcharges, inbound.FeeZones,
-                childSeats, extraLuggage, request.Return!.NameSign, extraFees, settings.ReturnDiscountPercent));
+                childSeats, extraLuggage, request.Return!.NameSign, extraFees, settings.ReturnDiscountPercent, texts));
 
             var total = outboundPrice.Total + (returnPrice?.Total ?? 0);
             return new VehicleOption(
@@ -100,16 +103,16 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
         return new QuoteResponse(outbound.Leg, inbound?.Leg, vehicles, PricingDefaults.Currency, settings.VatRatePercent);
     }
 
-    private static void ValidateTrip(QuoteRequest request, ValidationErrors errors)
+    private static void ValidateTrip(QuoteRequest request, ValidationErrors errors, Texts texts)
     {
         var seats = request.ChildSeats.Sum(s => s.Count);
         if (seats > Math.Min(request.Passengers, 3))
         {
-            errors.Add("childSeats", "At most one child seat per passenger, and three per car.");
+            errors.Add("childSeats", texts.ChildSeatLimit);
         }
         if (request.ChildSeats.GroupBy(s => s.Group).Any(g => g.Count() > 1))
         {
-            errors.Add("childSeats", "List each child seat group once.");
+            errors.Add("childSeats", texts.ChildSeatGroupOnce);
         }
     }
 
@@ -135,6 +138,7 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
         List<Zone> zones,
         PricingSettings settings,
         ValidationErrors errors,
+        Texts texts,
         string prefix)
     {
         var from = new Coordinate(pickup.Latitude, pickup.Longitude);
@@ -143,17 +147,17 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
 
         if (!GeoMath.IsInServiceArea(from))
         {
-            errors.Add(prefix + "pickup", "We operate in Italy, France, Germany and Switzerland.");
+            errors.Add(prefix + "pickup", texts.OutsideServiceArea);
             valid = false;
         }
         if (!GeoMath.IsInServiceArea(to))
         {
-            errors.Add(prefix + "dropoff", "We operate in Italy, France, Germany and Switzerland.");
+            errors.Add(prefix + "dropoff", texts.OutsideServiceArea);
             valid = false;
         }
         if (valid && GeoMath.DistanceMeters(from, to) < MinTripMeters)
         {
-            errors.Add(prefix + "dropoff", "Pickup and drop-off are too close to each other.");
+            errors.Add(prefix + "dropoff", texts.TooClose);
             valid = false;
         }
 
@@ -161,22 +165,22 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
         var now = clock.GetUtcNow();
         if (utc is null)
         {
-            errors.Add(prefix + "pickupAt", "This time does not exist locally (clocks go forward). Pick another time.");
+            errors.Add(prefix + "pickupAt", texts.TimeDoesNotExist);
             valid = false;
         }
         else if (utc < now.AddHours(settings.MinLeadTimeHours))
         {
-            errors.Add(prefix + "pickupAt", $"Book at least {settings.MinLeadTimeHours} hours ahead.");
+            errors.Add(prefix + "pickupAt", texts.BookAhead(settings.MinLeadTimeHours));
             valid = false;
         }
         else if (utc > now.AddDays(PricingDefaults.MaxDaysAhead))
         {
-            errors.Add(prefix + "pickupAt", "Bookings open up to one year ahead.");
+            errors.Add(prefix + "pickupAt", texts.OneYearAhead);
             valid = false;
         }
 
-        var (pickupZone, pickupPoint) = ResolveMeetingPoint(zones, from, pickupMeetingPoint, isPickup: true, prefix + "pickupMeetingPoint", errors);
-        var (dropoffZone, dropoffPoint) = ResolveMeetingPoint(zones, to, dropoffMeetingPoint, isPickup: false, prefix + "dropoffMeetingPoint", errors);
+        var (pickupZone, pickupPoint) = ResolveMeetingPoint(zones, from, pickupMeetingPoint, isPickup: true, prefix + "pickupMeetingPoint", errors, texts);
+        var (dropoffZone, dropoffPoint) = ResolveMeetingPoint(zones, to, dropoffMeetingPoint, isPickup: false, prefix + "dropoffMeetingPoint", errors, texts);
         if (!valid || errors.Any)
         {
             return null;
@@ -191,13 +195,13 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
     /// Airports, stations and ports also have meeting points, for pickups only.
     /// </summary>
     private static (Zone? Zone, MeetingPoint? Point) ResolveMeetingPoint(
-        List<Zone> zones, Coordinate point, string? requested, bool isPickup, string field, ValidationErrors errors)
+        List<Zone> zones, Coordinate point, string? requested, bool isPickup, string field, ValidationErrors errors, Texts texts)
     {
         var containing = zones.Where(z => GeoMath.Contains(z, point)).ToList();
         var noCar = containing.FirstOrDefault(z => z.Type == ZoneType.NoCarAccess);
         if (noCar is { MeetingPoints.Count: 0 })
         {
-            errors.Add(field, $"{noCar.Name} has no meeting point configured yet. Please contact us.");
+            errors.Add(field, texts.NoMeetingPointYet(noCar.Name));
             return (noCar, null);
         }
 
@@ -214,7 +218,7 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
             var chosen = zone.MeetingPoints.FirstOrDefault(m => string.Equals(m.Name, requested.Trim(), StringComparison.OrdinalIgnoreCase));
             if (chosen is null)
             {
-                errors.Add(field, $"\"{requested}\" is not a meeting point of {zone.Name}.");
+                errors.Add(field, texts.NotAMeetingPoint(requested, zone.Name));
             }
             return (zone, chosen);
         }
@@ -224,7 +228,7 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
         return (zone, nearest);
     }
 
-    private async Task<RoutedLeg> RouteLegAsync(LegPlan plan, List<SurchargeRule> surcharges, CancellationToken cancellationToken)
+    private async Task<RoutedLeg> RouteLegAsync(LegPlan plan, List<SurchargeRule> surcharges, Texts texts, CancellationToken cancellationToken)
     {
         var route = await routing.GetRouteAsync(
             Effective(plan.Pickup, plan.PickupMeetingPoint),
@@ -237,7 +241,7 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
             ToDto(plan.PickupZone), ToDto(plan.DropoffZone),
             plan.PickupMeetingPoint, plan.DropoffMeetingPoint,
             Math.Round(route.DistanceKm, 1, MidpointRounding.AwayFromZero), route.DurationMinutes, route.IsEstimate, route.Path,
-            matched.Select(s => new SurchargeDto(s.Name, s.Percent)).ToList(),
+            matched.Select(s => new SurchargeDto(s.NameTranslations.Pick(s.Name, texts.Language), s.Percent)).ToList(),
             matched.Sum(s => s.Percent));
         return new RoutedLeg(leg, matched, plan.FeeZones);
     }

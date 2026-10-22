@@ -1,8 +1,8 @@
-using System.Globalization;
 using DriverPlatform.Application.Abstractions;
 using DriverPlatform.Application.Bookings;
 using DriverPlatform.Application.Common;
 using DriverPlatform.Application.Geo;
+using DriverPlatform.Application.Localization;
 using DriverPlatform.Application.Pricing;
 using DriverPlatform.Domain.Entities;
 using DriverPlatform.Domain.Enums;
@@ -40,7 +40,8 @@ public sealed class InvoiceService(
 
         var outbound = await db.Bookings.Include(b => b.Client).FirstAsync(b => b.Id == payment.BookingId, cancellationToken);
         var legs = await db.LoadLegsAsync(outbound, cancellationToken);
-        var lines = legs.SelectMany(InvoiceLines).ToList();
+        var texts = Texts.For(outbound.Client.Language);
+        var lines = legs.SelectMany(leg => InvoiceLines(leg, texts)).ToList();
 
         return await IssueAsync(InvoiceType.Invoice, outbound, lines, payment.Id, null, null, cancellationToken);
     }
@@ -54,7 +55,7 @@ public sealed class InvoiceService(
         var outbound = await db.Bookings.Include(b => b.Client).FirstAsync(b => b.Id == payment.BookingId, cancellationToken);
 
         var line = Line(
-            $"Refund for invoice {original.Number}" + (string.IsNullOrWhiteSpace(refund.Reason) ? "" : $": {refund.Reason}"),
+            Texts.For(outbound.Client.Language).RefundForInvoice(original.Number) + (string.IsNullOrWhiteSpace(refund.Reason) ? "" : $": {refund.Reason}"),
             refund.Amount,
             outbound.VatRate);
         return await IssueAsync(InvoiceType.CreditNote, outbound, [line], payment.Id, refund.Id, original, cancellationToken);
@@ -116,14 +117,17 @@ public sealed class InvoiceService(
         }
     }
 
-    /// <summary>The ride (fare, surcharges and discount) as one line, then each zone fee and extra.</summary>
-    private static IEnumerable<InvoiceLine> InvoiceLines(Booking booking)
+    /// <summary>
+    /// The ride (fare, surcharges and discount) as one line, then each zone fee and extra, in the
+    /// client's language like the price lines (the layout of the PDF is Italian and English).
+    /// </summary>
+    private static IEnumerable<InvoiceLine> InvoiceLines(Booking booking, Texts t)
     {
         var ride = booking.PriceLines
             .Where(l => l.Kind is PriceLineKind.Fare or PriceLineKind.Surcharge or PriceLineKind.Discount)
             .Sum(l => l.Amount);
         yield return Line(
-            string.Create(CultureInfo.InvariantCulture, $"{booking.Describe()} ({booking.VehicleCategory}, {booking.DistanceKm:0.0} km)"),
+            $"{booking.Describe(t)} ({t.FareLine(booking.VehicleCategory, booking.DistanceKm)})",
             ride,
             booking.VatRate);
 

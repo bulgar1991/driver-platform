@@ -33,6 +33,10 @@
     @apply grid grid-cols-1 items-end gap-4 xm:grid-cols-2;
   }
 
+  &__translations {
+    @apply grid grid-cols-1 gap-4 md:grid-cols-3;
+  }
+
   &__muted {
     @apply text-xs text-ivory-400;
   }

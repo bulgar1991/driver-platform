@@ -150,7 +150,7 @@
           </app-form-field>
         </div>
         <app-form-field
-          label="Instructions for the client"
+          label="Client instructions – English"
           [for]="'mpClient' + i">
           <textarea
             [id]="'mpClient' + i"
@@ -158,6 +158,21 @@
             rows="2"
             formControlName="clientInstructions"></textarea>
         </app-form-field>
+        <!-- Clients on the Italian, German and French site read these; blank shows the English. -->
+        <div class="zone-editor__translations">
+          @for (lang of instructionLanguages; track lang.control) {
+            <app-form-field
+              [label]="'Client instructions – ' + lang.name"
+              [for]="'mpClient' + lang.code + i">
+              <textarea
+                [id]="'mpClient' + lang.code + i"
+                class="input"
+                rows="2"
+                [formControlName]="lang.control"
+                placeholder="Blank: the English text"></textarea>
+            </app-form-field>
+          }
+        </div>
         <app-form-field
           label="Instructions for the driver"
           [for]="'mpDriver' + i">

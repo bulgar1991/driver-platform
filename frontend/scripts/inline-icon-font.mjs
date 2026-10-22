@@ -14,4 +14,6 @@ if (inlined === css) {
 }
 writeFileSync(`${dir}/icons.css`, inlined)
 rmSync(`${dir}/icons.woff`)
-console.log(`icons.css: font embedded (${Math.round(woff.length / 1024)} KB base64)`)
+console.log(
+  `icons.css: font embedded (${Math.round(woff.length / 1024)} KB base64)`
+)

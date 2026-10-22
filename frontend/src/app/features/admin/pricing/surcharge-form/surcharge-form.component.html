@@ -4,7 +4,7 @@
   (ngSubmit)="submit()"
   novalidate>
   <app-form-field
-    label="Name"
+    label="Name – English"
     for="surchargeName"
     [error]="
       form.controls.name.touched && form.controls.name.invalid
@@ -17,6 +17,21 @@
       placeholder="e.g. Venice Carnival 2027"
       formControlName="name" />
   </app-form-field>
+
+  <!-- What clients on the Italian, German and French site see; blank shows the English name. -->
+  <div class="surcharge-form__translations">
+    @for (lang of nameLanguages; track lang.control) {
+      <app-form-field
+        [label]="'Name – ' + lang.name"
+        [for]="'surchargeName' + lang.code">
+        <input
+          [id]="'surchargeName' + lang.code"
+          class="input"
+          placeholder="Blank: the English name"
+          [formControlName]="lang.control" />
+      </app-form-field>
+    }
+  </div>
 
   <div class="surcharge-form__row">
     <app-form-field label="Applies on" for="surchargeKind">

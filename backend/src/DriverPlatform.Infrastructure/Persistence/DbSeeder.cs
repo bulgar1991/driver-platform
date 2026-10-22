@@ -30,6 +30,8 @@ public sealed class DbSeeder(
             await SeedDemoFleetAsync(cancellationToken);
         }
         await db.SaveChangesAsync(cancellationToken);
+        await SeedTranslationsAsync(cancellationToken);
+        await db.SaveChangesAsync(cancellationToken);
     }
 
     private async Task SeedAdminAsync(CancellationToken cancellationToken)
@@ -220,6 +222,73 @@ public sealed class DbSeeder(
             Airport("Naples Airport (NAP)", 40.8846, 14.2906, 1200,
                 "Naples Airport arrivals", "Aeroporto di Napoli, Viale F. Ruffo di Calabria, 80144 Napoli NA", 40.8849, 14.2900));
     }
+
+    /// <summary>
+    /// Italian, German and French for the texts seeded above, keyed by the English text. Filled in
+    /// only where nothing is translated yet, so it also reaches older databases and never
+    /// overwrites what the staff typed.
+    /// </summary>
+    private static readonly Dictionary<string, Translations> SeededTranslations = new()
+    {
+        ["Weekend (Fri–Sun)"] = new() { It = "Weekend (ven–dom)", De = "Wochenende (Fr–So)", Fr = "Week-end (ven–dim)" },
+        ["Night 22:00–06:00"] = new() { It = "Notte 22:00–06:00", De = "Nacht 22:00–06:00", Fr = "Nuit 22h00–06h00" },
+        ["Peak season (July–August)"] = new() { It = "Alta stagione (luglio–agosto)", De = "Hochsaison (Juli–August)", Fr = "Haute saison (juillet–août)" },
+        ["Cars cannot enter the historic centre. Walk or take a water bus (vaporetto) to Piazzale Roma; your driver waits by the taxi rank."] = new() { It = "Le auto non possono entrare nel centro storico. Raggiunga Piazzale Roma a piedi o in vaporetto; l'autista La aspetta vicino alla fermata dei taxi.", De = "Autos dürfen nicht in die Altstadt. Gehen Sie zu Fuß oder nehmen Sie einen Wasserbus (Vaporetto) zum Piazzale Roma; Ihr Fahrer wartet am Taxistand.", Fr = "Les voitures ne peuvent pas entrer dans le centre historique. Rejoignez Piazzale Roma à pied ou en vaporetto ; votre chauffeur vous attend près de la station de taxis." },
+        ["Take the People Mover from Piazzale Roma or vaporetto line 2 to Tronchetto; your driver waits at the car park entrance."] = new() { It = "Prenda il People Mover da Piazzale Roma o il vaporetto linea 2 fino al Tronchetto; l'autista La aspetta all'ingresso del parcheggio.", De = "Nehmen Sie den People Mover ab Piazzale Roma oder die Vaporetto-Linie 2 zum Tronchetto; Ihr Fahrer wartet an der Einfahrt des Parkhauses.", Fr = "Prenez le People Mover depuis Piazzale Roma ou le vaporetto ligne 2 jusqu'à Tronchetto ; votre chauffeur vous attend à l'entrée du parking." },
+        ["Your driver waits outside the terminal building, holding a sign if you asked for one."] = new() { It = "L'autista La aspetta fuori dal terminal, con un cartello se lo ha richiesto.", De = "Ihr Fahrer wartet vor dem Terminalgebäude, mit einem Schild, falls Sie eines bestellt haben.", Fr = "Votre chauffeur vous attend devant le terminal, avec une pancarte si vous l'avez demandée." },
+        ["Trains from Venezia Santa Lucia reach Mestre in about 10 minutes. Your driver waits at the main exit."] = new() { It = "I treni da Venezia Santa Lucia arrivano a Mestre in circa 10 minuti. L'autista La aspetta all'uscita principale.", De = "Züge ab Venezia Santa Lucia erreichen Mestre in etwa 10 Minuten. Ihr Fahrer wartet am Hauptausgang.", Fr = "Les trains depuis Venezia Santa Lucia rejoignent Mestre en 10 minutes environ. Votre chauffeur vous attend à la sortie principale." },
+        ["After customs, your driver waits in the arrivals hall, holding a sign if you asked for one. Flight delays are tracked."] = new() { It = "Dopo la dogana, l'autista La aspetta nella sala arrivi, con un cartello se lo ha richiesto. I ritardi del volo sono monitorati.", De = "Nach dem Zoll wartet Ihr Fahrer in der Ankunftshalle, mit einem Schild, falls Sie eines bestellt haben. Flugverspätungen werden verfolgt.", Fr = "Après la douane, votre chauffeur vous attend dans le hall des arrivées, avec une pancarte si vous l'avez demandée. Les retards de vol sont suivis." },
+        ["Public holiday – New Year's Day"] = new() { It = "Festivo – Capodanno", De = "Feiertag – Neujahr", Fr = "Jour férié – Jour de l'an" },
+        ["Public holiday – Epiphany"] = new() { It = "Festivo – Epifania", De = "Feiertag – Heilige Drei Könige", Fr = "Jour férié – Épiphanie" },
+        ["Public holiday – Easter Monday 2027"] = new() { It = "Festivo – Lunedì dell'Angelo 2027", De = "Feiertag – Ostermontag 2027", Fr = "Jour férié – Lundi de Pâques 2027" },
+        ["Public holiday – Liberation Day"] = new() { It = "Festivo – Festa della Liberazione", De = "Feiertag – Tag der Befreiung", Fr = "Jour férié – Fête de la Libération" },
+        ["Public holiday – Labour Day"] = new() { It = "Festivo – Festa dei Lavoratori", De = "Feiertag – Tag der Arbeit", Fr = "Jour férié – Fête du Travail" },
+        ["Public holiday – Republic Day"] = new() { It = "Festivo – Festa della Repubblica", De = "Feiertag – Tag der Republik", Fr = "Jour férié – Fête de la République" },
+        ["Public holiday – Ferragosto"] = new() { It = "Festivo – Ferragosto", De = "Feiertag – Ferragosto (Mariä Himmelfahrt)", Fr = "Jour férié – Ferragosto (Assomption)" },
+        ["Public holiday – All Saints' Day"] = new() { It = "Festivo – Ognissanti", De = "Feiertag – Allerheiligen", Fr = "Jour férié – Toussaint" },
+        ["Public holiday – Immaculate Conception"] = new() { It = "Festivo – Immacolata Concezione", De = "Feiertag – Mariä Empfängnis", Fr = "Jour férié – Immaculée Conception" },
+        ["Public holiday – Christmas Day"] = new() { It = "Festivo – Natale", De = "Feiertag – Weihnachten", Fr = "Jour férié – Noël" },
+        ["Public holiday – St Stephen's Day"] = new() { It = "Festivo – Santo Stefano", De = "Feiertag – Stephanstag", Fr = "Jour férié – Saint-Étienne" },
+    };
+
+    private async Task SeedTranslationsAsync(CancellationToken cancellationToken)
+    {
+        foreach (var rule in await db.SurchargeRules.ToListAsync(cancellationToken))
+        {
+            if (rule.NameTranslations is null && SeededTranslations.TryGetValue(rule.Name, out var name))
+            {
+                rule.NameTranslations = Copy(name);
+            }
+        }
+        foreach (var zone in await db.Zones.ToListAsync(cancellationToken))
+        {
+            var points = zone.MeetingPoints.Select(Translated).ToList();
+            if (points.Any(p => p is not null))
+            {
+                // A new list, so the JSON column is saved.
+                zone.MeetingPoints = zone.MeetingPoints.Select((m, i) => points[i] ?? m).ToList();
+            }
+        }
+    }
+
+    private static MeetingPoint? Translated(MeetingPoint point) =>
+        point.ClientInstructionsTranslations is null
+        && point.ClientInstructions is { } text
+        && SeededTranslations.TryGetValue(text, out var translations)
+            ? new MeetingPoint
+            {
+                Name = point.Name,
+                Address = point.Address,
+                Latitude = point.Latitude,
+                Longitude = point.Longitude,
+                ClientInstructions = point.ClientInstructions,
+                ClientInstructionsTranslations = Copy(translations),
+                DriverInstructions = point.DriverInstructions,
+            }
+            : null;
+
+    // Each owner needs its own instance: the airports share one text.
+    private static Translations Copy(Translations t) => new() { It = t.It, De = t.De, Fr = t.Fr };
 
     private static PolygonPoint Point(double latitude, double longitude) => new() { Latitude = latitude, Longitude = longitude };
 

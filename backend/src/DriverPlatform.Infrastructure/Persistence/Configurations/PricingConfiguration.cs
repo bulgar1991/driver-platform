@@ -18,6 +18,7 @@ internal sealed class SurchargeRuleConfiguration : IEntityTypeConfiguration<Surc
     public void Configure(EntityTypeBuilder<SurchargeRule> builder)
     {
         builder.Property(r => r.Percent).HasPrecision(5, 2);
+        builder.OwnsOne(r => r.NameTranslations, t => t.ToJson());
     }
 }
 

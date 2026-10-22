@@ -12,7 +12,7 @@
 ## B. Accounts and providers
 
 - [ ] Stripe live account, PayPal enabled, webhook created (see deployment.md).
-- [ ] WhatsApp Business: number verified, the 4 templates approved in English and Italian.
+- [ ] WhatsApp Business: number verified, the 4 templates approved in Italian, English, German and French (or shorten `WhatsApp:Languages` to the approved ones).
 - [ ] SMTP provider with the domain authenticated (SPF, DKIM, DMARC) so emails are not spam.
 - [ ] Maps provider (routing, address search, tiles) instead of the public OpenStreetMap servers.
 - [ ] Server, DNS, off-site backup bucket, uptime monitor.
@@ -44,7 +44,9 @@ Run each with a real driver and car, on the phone the driver will use. Tick when
       submitted; the home page tested with the Rich Results Test; a link shared on WhatsApp shows
       the preview.
 - [ ] Translations reviewed by native speakers (Italian, German, French:
-      `frontend/src/locale/messages.*.json`), and the legal pages in each language by the lawyer.
+      `frontend/src/locale/messages.*.json` and the emails in
+      `backend/src/DriverPlatform.Application/Localization/`), and the legal pages in each language
+      by the lawyer.
 - [ ] Real logo: replace `frontend/src/assets/brand/icon.svg` and run `npm run images`.
 - [ ] Bootstrap admin values removed from `.env`; admin password changed; dispatchers created.
 - [ ] First backup present, copied off the server, **restore drill done**.

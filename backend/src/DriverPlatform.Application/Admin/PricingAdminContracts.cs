@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using DriverPlatform.Domain.Enums;
+using DriverPlatform.Domain.ValueObjects;
 
 namespace DriverPlatform.Application.Admin;
 
@@ -20,6 +21,7 @@ public sealed record UpdateVehicleRateRequest
 public sealed record SurchargeRuleDto(
     Guid Id,
     string Name,
+    Translations NameTranslations,
     SurchargeKind Kind,
     decimal Percent,
     IReadOnlyList<DayOfWeek> DaysOfWeek,
@@ -34,6 +36,8 @@ public sealed record SurchargeRuleRequest
 {
     [Required, MaxLength(120)]
     public required string Name { get; init; }
+    /// <summary>The name clients see in Italian, German and French; blank ones show the English name.</summary>
+    public Translations? NameTranslations { get; init; }
     public SurchargeKind Kind { get; init; }
     [Range(0, 200)]
     public decimal Percent { get; init; }

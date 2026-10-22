@@ -1,9 +1,9 @@
-using System.Globalization;
 using System.Net;
 using System.Text;
 using DriverPlatform.Application.Abstractions;
 using DriverPlatform.Application.Bookings;
 using DriverPlatform.Application.Common;
+using DriverPlatform.Application.Localization;
 using DriverPlatform.Domain.Entities;
 using DriverPlatform.Domain.Enums;
 using Microsoft.Extensions.Logging;
@@ -19,7 +19,7 @@ public interface IBookingEmails
     Task SendCreditNoteAsync(Booking outbound, Invoice creditNote, bool cancelled, CancellationToken cancellationToken);
 }
 
-/// <summary>Client emails in English for now; translations come with the multilingual site.</summary>
+/// <summary>Client emails, in the language the client booked in.</summary>
 public sealed class BookingEmails(
     IEmailSender sender,
     IAppDbContext db,
@@ -31,63 +31,60 @@ public sealed class BookingEmails(
     public async Task SendConfirmationAsync(
         Booking outbound, IReadOnlyList<Booking> legs, Invoice invoice, CancellationToken cancellationToken)
     {
+        var t = Texts.For(outbound.Client.Language);
         var html = new StringBuilder();
         var text = new StringBuilder();
-        Paragraph(html, text, $"Dear {outbound.Client.FirstName},");
-        Paragraph(html, text, $"thank you, your payment of {Money(invoice.TotalAmount)} is confirmed and your ride is booked.");
+        Paragraph(html, text, t.Dear(outbound.Client.FirstName));
+        Paragraph(html, text, t.PaymentConfirmed(t.Money(invoice.TotalAmount)));
 
         foreach (var leg in legs)
         {
             var summary = leg.ToLegSummary();
             html.Append("<table style=\"border-collapse:collapse;margin:16px 0;width:100%;max-width:520px\">");
-            Row(html, "Booking", leg.Reference);
-            Row(html, "Pickup", summary.PickupAt.ToString("dddd d MMMM yyyy, HH:mm", CultureInfo.InvariantCulture) + " (Italian time)");
-            Row(html, "From", leg.PickupMeetingPoint is { } pm ? $"{pm.Name} – {pm.Address}" : leg.Pickup.Address);
-            Row(html, "To", leg.DropoffMeetingPoint is { } dm ? $"{dm.Name} – {dm.Address}" : leg.Dropoff.Address);
-            Row(html, "Vehicle", $"{leg.VehicleCategory}, {leg.Passengers} passengers, {leg.LargeLuggage} large + {leg.SmallLuggage} small bags");
+            Row(html, t.Booking, leg.Reference);
+            Row(html, t.Pickup, $"{t.LongDateTime(summary.PickupAt)} {t.ItalianTime}");
+            Row(html, t.From, leg.PickupMeetingPoint is { } pm ? $"{pm.Name} – {pm.Address}" : leg.Pickup.Address);
+            Row(html, t.To, leg.DropoffMeetingPoint is { } dm ? $"{dm.Name} – {dm.Address}" : leg.Dropoff.Address);
+            Row(html, t.Vehicle, t.VehicleSummary(leg.VehicleCategory, leg.Passengers, leg.LargeLuggage, leg.SmallLuggage));
             if (leg.FlightNumber is not null)
             {
-                Row(html, "Flight", leg.FlightNumber);
+                Row(html, t.Flight, leg.FlightNumber);
             }
             html.Append("</table>");
 
-            text.AppendLine(leg.Describe());
-            if (leg.PickupMeetingPoint?.ClientInstructions is { } instructions)
+            text.AppendLine(leg.Describe(t));
+            if (leg.PickupMeetingPoint?.Instructions(t) is { } instructions)
             {
-                Paragraph(html, text, $"Meeting point: {instructions}");
+                Paragraph(html, text, t.MeetingPoint(instructions));
             }
         }
 
-        Paragraph(html, text, "Your driver's name and car will be sent to you before the ride.");
-        Link(html, text, "View or manage your booking", links.ManageUrl(outbound));
-        Paragraph(html, text, $"The invoice {invoice.Number} is attached.");
-        Signature(html, text);
+        Paragraph(html, text, t.DriverDetailsFollow);
+        Link(html, text, t.ManageBooking, links.ManageUrl(outbound));
+        Paragraph(html, text, t.InvoiceAttached(invoice.Number));
+        Signature(html, text, t);
 
-        await SendAsync(
-            outbound, invoice,
-            $"Booking confirmed – {outbound.Reference}",
-            html, text, cancellationToken);
+        await SendAsync(outbound, invoice, t.ConfirmedSubject(outbound.Reference), html, text, cancellationToken);
     }
 
     public async Task SendCreditNoteAsync(Booking outbound, Invoice creditNote, bool cancelled, CancellationToken cancellationToken)
     {
+        var t = Texts.For(outbound.Client.Language);
         var html = new StringBuilder();
         var text = new StringBuilder();
-        Paragraph(html, text, $"Dear {outbound.Client.FirstName},");
+        Paragraph(html, text, t.Dear(outbound.Client.FirstName));
         if (cancelled)
         {
-            Paragraph(html, text, $"your booking {outbound.Reference} has been cancelled.");
+            Paragraph(html, text, t.BookingCancelled(outbound.Reference));
         }
-        Paragraph(html, text,
-            $"We have refunded {Money(creditNote.TotalAmount)} to your original payment method. " +
-            "Depending on your bank it can take 5–10 days to appear.");
-        Paragraph(html, text, $"The credit note {creditNote.Number} is attached.");
-        Link(html, text, "View your booking", links.ManageUrl(outbound));
-        Signature(html, text);
+        Paragraph(html, text, t.Refunded(t.Money(creditNote.TotalAmount)));
+        Paragraph(html, text, t.CreditNoteAttached(creditNote.Number));
+        Link(html, text, t.ViewBooking, links.ManageUrl(outbound));
+        Signature(html, text, t);
 
         await SendAsync(
             outbound, creditNote,
-            cancelled ? $"Booking cancelled and refunded – {outbound.Reference}" : $"Refund – {outbound.Reference}",
+            cancelled ? t.CancelledSubject(outbound.Reference) : t.RefundSubject(outbound.Reference),
             html, text, cancellationToken);
     }
 
@@ -130,11 +127,11 @@ public sealed class BookingEmails(
         $"<p style=\"font-size:18px;letter-spacing:2px;color:#0B0B0C\">{Encode(company.Value.Name.ToUpperInvariant())}</p>" +
         body + "</div>";
 
-    private void Signature(StringBuilder html, StringBuilder text)
+    private void Signature(StringBuilder html, StringBuilder text, Texts t)
     {
         var c = company.Value;
         var contact = string.Join(" · ", new[] { c.Phone, c.Email }.Where(s => !string.IsNullOrWhiteSpace(s)));
-        Paragraph(html, text, $"Kind regards,\n{c.Name}" + (contact.Length > 0 ? $"\n{contact}" : ""));
+        Paragraph(html, text, $"{t.KindRegards}\n{c.Name}" + (contact.Length > 0 ? $"\n{contact}" : ""));
     }
 
     private static void Paragraph(StringBuilder html, StringBuilder text, string value)
@@ -155,8 +152,6 @@ public sealed class BookingEmails(
         html.Append($"<p><a href=\"{Encode(url)}\" style=\"display:inline-block;background:#C9A45C;color:#0B0B0C;padding:10px 18px;text-decoration:none;border-radius:2px\">{Encode(label)}</a></p>");
         text.AppendLine($"{label}: {url}").AppendLine();
     }
-
-    private static string Money(decimal amount) => amount.ToString("€#,##0.00", CultureInfo.InvariantCulture);
 
     private static string Encode(string value) => WebUtility.HtmlEncode(value);
 }

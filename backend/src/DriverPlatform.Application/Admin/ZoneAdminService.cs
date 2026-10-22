@@ -121,6 +121,7 @@ public sealed class ZoneAdminService(IAppDbContext db, IAuditLogger audit) : IZo
             Latitude = m.Latitude,
             Longitude = m.Longitude,
             ClientInstructions = string.IsNullOrWhiteSpace(m.ClientInstructions) ? null : m.ClientInstructions.Trim(),
+            ClientInstructionsTranslations = m.ClientInstructionsTranslations.Cleaned(),
             DriverInstructions = string.IsNullOrWhiteSpace(m.DriverInstructions) ? null : m.DriverInstructions.Trim(),
         }).ToList();
     }
