@@ -24,6 +24,8 @@ import { IconComponent } from '../icon/icon.component'
   ],
 })
 export class CounterComponent implements ControlValueAccessor {
+  protected readonly fewer = (label: string) => $localize`Fewer ${label}:label:`
+  protected readonly more = (label: string) => $localize`More ${label}:label:`
   readonly label = input.required<string>()
   readonly hint = input<string | null>(null)
   readonly min = input(0)

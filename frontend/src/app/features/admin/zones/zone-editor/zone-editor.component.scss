@@ -1,5 +1,5 @@
 .zone-editor {
-  @apply flex flex-col gap-4 rounded-sm border border-ink-600 bg-ink-900 p-5;
+  @apply flex flex-col gap-5 rounded-sm border border-ink-600 bg-ink-900 p-5;
 
   &__header {
     @apply flex items-center justify-between gap-4;

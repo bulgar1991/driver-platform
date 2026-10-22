@@ -1,11 +1,13 @@
 <div class="trip-step" [formGroup]="form()">
   <div class="trip-step__route">
     <app-form-field
+      i18n-label
       label="From"
       for="pickup"
-      [error]="invalid('pickup') ? 'Pick an address from the list' : null">
+      [error]="invalid('pickup') ? t.pickAddress : null">
       <app-address-input
         inputId="pickup"
+        i18n-placeholder
         placeholder="Airport, station, hotel, address…"
         formControlName="pickup"
         [invalid]="invalid('pickup')" />
@@ -13,16 +15,19 @@
     <button
       type="button"
       class="trip-step__swap"
+      i18n-aria-label
       aria-label="Swap from and to"
       (click)="swap()">
       <app-icon name="route" />
     </button>
     <app-form-field
+      i18n-label
       label="To"
       for="dropoff"
-      [error]="invalid('dropoff') ? 'Pick an address from the list' : null">
+      [error]="invalid('dropoff') ? t.pickAddress : null">
       <app-address-input
         inputId="dropoff"
+        i18n-placeholder
         placeholder="Where are you going?"
         formControlName="dropoff"
         [invalid]="invalid('dropoff')" />
@@ -31,7 +36,7 @@
 
   <div class="trip-step__details">
     <div class="trip-step__when">
-      <app-form-field label="Date" for="date">
+      <app-form-field i18n-label label="Date" for="date">
         <input
           id="date"
           class="input"
@@ -39,23 +44,28 @@
           [min]="minDate"
           formControlName="date" />
       </app-form-field>
-      <app-form-field label="Pickup time (Italy)" for="time">
+      <app-form-field i18n-label label="Pickup time (local)" for="time">
         <input id="time" class="input" type="time" formControlName="time" />
       </app-form-field>
     </div>
     <div class="trip-step__counters">
       <app-counter
+        i18n-label
         label="Passengers"
         [min]="1"
         [max]="8"
         formControlName="passengers" />
       <app-counter
+        i18n-label
         label="Large bags"
+        i18n-hint
         hint="Suitcases"
         [max]="16"
         formControlName="largeLuggage" />
       <app-counter
+        i18n-label
         label="Small bags"
+        i18n-hint
         hint="Carry-on"
         [max]="16"
         formControlName="smallLuggage" />
@@ -68,7 +78,7 @@
       type="checkbox"
       formControlName="returnTrip" />
     <span>
-      Add a return trip
+      <ng-container i18n>Add a return trip</ng-container>
       @if (options()?.returnDiscountPercent; as discount) {
         <span class="trip-step__badge">−{{ discount }}%</span>
       }
@@ -78,9 +88,10 @@
   @if (form().controls.returnTrip.value) {
     <div class="trip-step__return">
       <app-form-field
+        i18n-label
         label="Return date"
         for="returnDate"
-        [error]="returnMissing ? 'Enter the return date and time' : null">
+        [error]="returnMissing ? t.returnMissing : null">
         <input
           id="returnDate"
           class="input"
@@ -88,7 +99,7 @@
           [min]="form().controls.date.value || minDate"
           formControlName="returnDate" />
       </app-form-field>
-      <app-form-field label="Return pickup time" for="returnTime">
+      <app-form-field i18n-label label="Return pickup time" for="returnTime">
         <input
           id="returnTime"
           class="input"

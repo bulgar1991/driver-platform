@@ -4,9 +4,11 @@ import { LatLng } from '../models'
 export interface MapConfig {
   tileUrl: string
   attribution: string
-  /** Initial view: the whole of Italy. */
+  /** Fallback view before the map has a size. */
   center: LatLng
   zoom: number
+  /** Initial view, fitted to the map's size: the countries served (Italy, France, Switzerland, Germany). */
+  area: [LatLng, LatLng]
 }
 
 /**
@@ -19,7 +21,11 @@ export const MAP_CONFIG = new InjectionToken<MapConfig>('MAP_CONFIG', {
     tileUrl: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    center: [42.5, 12.5],
-    zoom: 6,
+    center: [46, 9],
+    zoom: 5,
+    area: [
+      [37.5, -1.5],
+      [53.5, 15],
+    ],
   }),
 })

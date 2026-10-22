@@ -10,7 +10,7 @@
       type="button"
       class="counter__button"
       [disabled]="disabled() || value() <= min()"
-      [attr.aria-label]="'Fewer ' + label()"
+      [attr.aria-label]="fewer(label())"
       (click)="step(-1)">
       <app-icon name="minus" />
     </button>
@@ -19,7 +19,7 @@
       type="button"
       class="counter__button"
       [disabled]="disabled() || value() >= max()"
-      [attr.aria-label]="'More ' + label()"
+      [attr.aria-label]="more(label())"
       (click)="step(1)">
       <app-icon name="plus" />
     </button>

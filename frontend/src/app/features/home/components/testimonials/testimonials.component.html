@@ -1,9 +1,12 @@
 <section
   id="reviews"
   class="testimonials page page__section"
+  i18n-aria-label
   aria-label="Testimonials">
   <app-section-heading
+    i18n-eyebrow
     eyebrow="Happy Clients"
+    i18n-title
     title="Testimonials"
     [level]="page() ? 1 : 2"
     appReveal />
@@ -14,6 +17,7 @@
         class="testimonials__carousel"
         role="region"
         aria-roledescription="carousel"
+        i18n-aria-label
         aria-label="Client reviews"
         tabindex="0"
         appReveal
@@ -37,7 +41,7 @@
                 [style.flex-basis]="slideWidth()"
                 role="group"
                 aria-roledescription="slide"
-                [attr.aria-label]="i + 1 + ' of ' + list.length">
+                [attr.aria-label]="labels.position(i + 1, list.length)">
                 <figure
                   class="testimonials__card"
                   [class.testimonials__card--active]="
@@ -46,7 +50,7 @@
                   <app-icon class="testimonials__quote" name="quote" />
                   <div
                     class="testimonials__stars"
-                    [attr.aria-label]="t.rating + ' out of 5'">
+                    [attr.aria-label]="labels.rating(t.rating)">
                     @for (s of stars; track s) {
                       <app-icon
                         class="testimonials__star"
@@ -64,7 +68,7 @@
                     <span>
                       <strong class="testimonials__name">{{ t.author }}</strong>
                       <span class="testimonials__meta"
-                        >{{ t.vehicleCategory }} ·
+                        >{{ vehicleName(t.vehicleCategory) }} ·
                         {{ t.date | date: 'MMMM y' }}</span
                       >
                     </span>
@@ -80,6 +84,7 @@
             <button
               type="button"
               class="testimonials__arrow"
+              i18n-aria-label
               aria-label="Previous review"
               (click)="go(-1)">
               <app-icon name="arrow-left" />
@@ -90,7 +95,7 @@
                   type="button"
                   class="testimonials__dot"
                   [class.testimonials__dot--on]="p === index()"
-                  [attr.aria-label]="'Show review ' + (p + 1)"
+                  [attr.aria-label]="labels.show(p + 1)"
                   [attr.aria-current]="p === index() ? 'true' : null"
                   (click)="index.set(p)"></button>
               }
@@ -98,6 +103,7 @@
             <button
               type="button"
               class="testimonials__arrow"
+              i18n-aria-label
               aria-label="Next review"
               (click)="go(1)">
               <app-icon name="arrow-right" />
@@ -109,14 +115,14 @@
       <!-- No published reviews yet: an honest invitation instead of made-up quotes. -->
       <div class="testimonials__empty" appReveal [delay]="100">
         <app-icon class="testimonials__empty-icon" name="star" />
-        <p class="testimonials__empty-title"
+        <p class="testimonials__empty-title" i18n
           >Your review could be the first here</p
         >
-        <p class="testimonials__empty-text"
-          >After every ride we ask our clients how it went. With their
-          permission, their words appear on this page.</p
-        >
-        <a appButton variant="outline" routerLink="/book"
+        <p class="testimonials__empty-text" i18n>
+          After every ride we ask our clients how it went. With their
+          permission, their words appear on this page.
+        </p>
+        <a appButton variant="outline" routerLink="/book" i18n
           >Book your first ride</a
         >
       </div>

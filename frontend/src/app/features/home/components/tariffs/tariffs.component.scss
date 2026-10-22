@@ -1,26 +1,23 @@
 .tariffs {
-  &__intro {
-    @apply mx-auto -mt-4 mb-12 max-w-2xl text-center leading-relaxed text-ivory-300;
-  }
-
+  // Cards as in the reference: car, name, description, price per km. Centred, airy.
   &__grid {
-    @apply grid grid-cols-1 gap-6 md:grid-cols-3;
+    @apply mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8;
   }
 
   &__card {
-    @apply relative flex list-none flex-col gap-3 rounded-md border border-ink-600 bg-ink-900 p-7;
+    @apply relative flex list-none flex-col items-center overflow-hidden rounded-md border border-ink-600 bg-ink-900 px-6 pb-9 pt-8 text-center;
     transition:
-      transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 0.4s,
-      box-shadow 0.4s;
+      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.45s,
+      box-shadow 0.45s;
 
     &:hover {
-      @apply border-gold/50 shadow-gold;
+      @apply border-gold/60 shadow-gold;
       transform: translate3d(0, -6px, 0);
     }
 
     &--featured {
-      @apply border-gold/60 md:-my-3 md:py-10;
+      @apply border-2 border-gold;
       background:
         radial-gradient(
           ellipse at 50% 0%,
@@ -31,7 +28,7 @@
     }
 
     &--skeleton {
-      @apply h-[30rem] border-ink-700;
+      @apply h-[26rem] border-ink-700;
       background: linear-gradient(
         100deg,
         theme('colors.ink.900') 30%,
@@ -43,56 +40,60 @@
     }
   }
 
-  &__badge {
-    @apply absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-gold-gradient px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-ink;
+  // Gold corner triangle with a star (top right of the featured card).
+  &__ribbon {
+    @apply absolute right-0 top-0 h-16 w-16 bg-gold-gradient;
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
   }
 
-  &__icon {
-    @apply h-10 w-10 text-gold;
+  &__ribbon-icon {
+    @apply absolute right-2 top-2 h-5 w-5 text-ink;
+  }
+
+  // The car drives in a little on hover.
+  &__car {
+    @apply mb-6 aspect-[320/150] w-full max-w-[17rem] bg-transparent;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  &__card:hover &__car {
+    transform: translate3d(0.5rem, 0, 0) scale(1.04);
   }
 
   &__name {
-    @apply font-display text-2xl text-ivory;
+    @apply font-display text-2xl font-bold uppercase tracking-wider text-ivory;
   }
 
-  &__models {
-    @apply -mt-2 text-xs text-ivory-400;
+  &__description {
+    @apply mt-4 max-w-xs text-sm leading-relaxed text-ivory-300;
   }
 
   &__price {
-    @apply mt-3 flex items-baseline gap-1;
+    @apply mt-6 flex items-baseline justify-center gap-1;
   }
 
   &__amount {
-    @apply font-display text-4xl text-gold;
+    @apply font-display text-5xl font-bold text-ivory;
   }
 
   &__unit {
-    @apply text-sm text-ivory-300;
+    @apply font-display text-2xl font-bold text-gold;
   }
 
   &__base {
-    @apply -mt-2 text-sm text-ivory-300;
+    @apply mt-2 text-xs text-ivory-400;
   }
 
-  &__specs {
-    @apply my-2 flex flex-col gap-2 border-y border-ink-700 py-4;
+  &__more {
+    @apply mt-10 text-center;
   }
 
-  &__spec {
-    @apply flex items-center gap-2 text-sm text-ivory-200;
+  &__link {
+    @apply text-sm uppercase tracking-widest text-gold underline-offset-4 hover:underline;
   }
 
-  &__spec-icon {
-    @apply h-4 w-4 text-gold;
-  }
-
-  &__example {
-    @apply mb-2 text-xs text-ivory-400;
-  }
-
-  &__example-price {
-    @apply ml-1 text-base text-ivory;
+  &__cta {
+    @apply mt-10 flex justify-center;
   }
 
   &__notes {

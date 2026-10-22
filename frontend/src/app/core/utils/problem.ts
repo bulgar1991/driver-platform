@@ -4,16 +4,16 @@ import { ProblemDetails } from '../models'
 /** A readable message from an API error: the first field error, else the title. */
 export function problemMessage(
   err: unknown,
-  fallback = 'Something went wrong. Please try again.'
+  fallback = $localize`Something went wrong. Please try again.`
 ): string {
   if (!(err instanceof HttpErrorResponse)) {
     return fallback
   }
   if (err.status === 0) {
-    return 'Could not reach the server. Check your connection and try again.'
+    return $localize`Could not reach the server. Check your connection and try again.`
   }
   if (err.status === 429) {
-    return 'Too many requests. Wait a minute and try again.'
+    return $localize`Too many requests. Wait a minute and try again.`
   }
   const problem = err.error as ProblemDetails | null
   const firstError = problem?.errors

@@ -4,13 +4,20 @@ using System.Text.Json.Serialization;
 using DriverPlatform.Application.Abstractions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace DriverPlatform.Infrastructure.Maps;
 
-/// <summary>Address search on Nominatim (OpenStreetMap), restricted to Italy. Results are cached for a day.</summary>
-public sealed class NominatimGeocodingService(HttpClient http, IMemoryCache cache, ILogger<NominatimGeocodingService> logger)
+/// <summary>
+/// Address search on Nominatim (OpenStreetMap), restricted to the countries served (Maps:Countries).
+/// Results are cached for a day.
+/// </summary>
+public sealed class NominatimGeocodingService(
+    HttpClient http, IMemoryCache cache, IOptions<MapsOptions> options, ILogger<NominatimGeocodingService> logger)
     : IGeocodingService
 {
+    private readonly string[] _countries = options.Value.Countries.Select(c => c.ToLowerInvariant()).ToArray();
+
     private static readonly TimeSpan CacheFor = TimeSpan.FromDays(1);
     // The public server allows one request per second for the whole application.
     private static readonly SemaphoreSlim Gate = new(1, 1);
@@ -24,14 +31,14 @@ public sealed class NominatimGeocodingService(HttpClient http, IMemoryCache cach
             return cached;
         }
 
-        var path = $"search?format=jsonv2&addressdetails=1&countrycodes=it&limit=6&accept-language={Uri.EscapeDataString(language)}&q={Uri.EscapeDataString(query)}";
+        var path = $"search?format=jsonv2&addressdetails=1&countrycodes={string.Join(',', _countries)}&limit=6&accept-language={Uri.EscapeDataString(language)}&q={Uri.EscapeDataString(query)}";
         var places = await SendAsync<List<NominatimPlace>>(path, cancellationToken);
         if (places is null)
         {
             return [];
         }
 
-        IReadOnlyList<GeocodedAddress> result = places.Select(ToAddress).OfType<GeocodedAddress>().ToList();
+        IReadOnlyList<GeocodedAddress> result = places.Select(p => ToAddress(p, withName: true)).OfType<GeocodedAddress>().ToList();
         cache.Set(key, result, CacheFor);
         return result;
     }
@@ -47,7 +54,10 @@ public sealed class NominatimGeocodingService(HttpClient http, IMemoryCache cach
         var path = string.Create(CultureInfo.InvariantCulture,
             $"reverse?format=jsonv2&addressdetails=1&zoom=18&accept-language={Uri.EscapeDataString(language)}&lat={latitude}&lon={longitude}");
         var place = await SendAsync<NominatimPlace>(path, cancellationToken);
-        var result = place is null ? null : ToAddress(place);
+        // A click outside the countries served (Austria, the sea…) is not an address we can use.
+        var result = place is null || !_countries.Contains(place.Address?.CountryCode ?? "")
+            ? null
+            : ToAddress(place, withName: false);
         if (result is not null)
         {
             cache.Set(key, result, CacheFor);
@@ -83,7 +93,7 @@ public sealed class NominatimGeocodingService(HttpClient http, IMemoryCache cach
         }
     }
 
-    private static GeocodedAddress? ToAddress(NominatimPlace place)
+    private static GeocodedAddress? ToAddress(NominatimPlace place, bool withName)
     {
         if (!double.TryParse(place.Lat, CultureInfo.InvariantCulture, out var lat)
             || !double.TryParse(place.Lon, CultureInfo.InvariantCulture, out var lon)
@@ -93,12 +103,19 @@ public sealed class NominatimGeocodingService(HttpClient http, IMemoryCache cach
         }
 
         var a = place.Address;
-        var street = string.Join(" ", new[] { a?.Road, a?.HouseNumber }.Where(s => !string.IsNullOrEmpty(s)));
-        var city = a?.City ?? a?.Town ?? a?.Village ?? a?.Municipality;
-        var label = string.IsNullOrEmpty(place.Name) || place.Name == a?.Road
-            ? string.Join(", ", new[] { street, city }.Where(s => !string.IsNullOrEmpty(s)))
-            : string.Join(", ", new[] { place.Name, city }.Where(s => !string.IsNullOrEmpty(s)));
-        return new GeocodedAddress(string.IsNullOrEmpty(label) ? place.DisplayName : label, place.DisplayName, lat, lon);
+        var parts = new AddressParts(
+            Name: place.Name,
+            Road: a?.Road ?? a?.Pedestrian ?? a?.Square,
+            HouseNumber: a?.HouseNumber,
+            Postcode: a?.Postcode,
+            City: a?.City ?? a?.Town ?? a?.Village ?? a?.Municipality,
+            // The most precise area first: "San Marco", not "Venezia-Murano-Burano".
+            Suburb: a?.Neighbourhood ?? a?.Quarter ?? a?.Hamlet ?? a?.Suburb,
+            Region: a?.State);
+        var formatted = AddressFormatter.Format(parts, withName);
+        return formatted is { } f
+            ? new GeocodedAddress(f.Label, f.Address, lat, lon)
+            : new GeocodedAddress(place.DisplayName, place.DisplayName, lat, lon);
     }
 
     private sealed record NominatimPlace(
@@ -114,5 +131,14 @@ public sealed class NominatimGeocodingService(HttpClient http, IMemoryCache cach
         string? City,
         string? Town,
         string? Village,
-        string? Municipality);
+        string? Municipality,
+        string? Pedestrian,
+        string? Square,
+        string? Postcode,
+        string? Suburb,
+        string? Hamlet,
+        string? Neighbourhood,
+        string? Quarter,
+        string? State,
+        [property: JsonPropertyName("country_code")] string? CountryCode);
 }

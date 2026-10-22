@@ -235,7 +235,9 @@ process; once they provide it, an adapter translates their messages to these sam
 ### Home page
 
 Order: banner, **the booking form** (from / to → map with the route → approximate price of each
-car, recalculated automatically as the form changes → options and contact once a car is chosen;
+car, recalculated automatically as the form changes → options and contact once a car is chosen.
+From and To can be typed (a city name is enough: Enter or leaving the field takes the best match)
+or set by clicking the map ("Set From" / "Set To"); the map has + / − buttons but does not drag;
 the same component as `/book`), welcome, four services, tariffs (live from the API), "For
 drivers" with an application form, testimonials swiper, partners and clients, footer. Sections
 are components in `frontend/src/app/features/home/components/`; each also has its own page
@@ -272,6 +274,15 @@ to (no in-page `#anchors`). The header is fixed at the top. **Texts, contacts, p
 | Driving distance | public OSRM demo server | `Maps:OsrmBaseUrl` |
 | Address search | public Nominatim (max 1 request/s) | `Maps:NominatimBaseUrl`, `Maps:UserAgent` |
 | Map tiles | tile.openstreetmap.org, darkened in CSS | `MAP_CONFIG` token in the frontend |
+
+**Countries served: Italy, France, Switzerland and Germany** (`Maps:Countries`). Address search
+and map clicks only return places there; the price check refuses anything outside rough boxes
+around the four (`GeoMath.IsInServiceArea`).
+
+Addresses are shortened from OpenStreetMap's parts (`AddressFormatter`): "Via del Corso 12, 00187
+Rome", or "San Marco 1, 30124 Venice". A searched place keeps its name ("Hotel Danieli, Riva degli
+Schiavoni 4196…"), since the driver reads it; a point clicked on the map does not (it would be
+whatever shop is there).
 
 The public servers are fine for development but not for production traffic: before launch,
 use a paid provider or self-host OSRM/Nominatim. If OSRM is unreachable, the quote uses a
@@ -347,7 +358,59 @@ Conventions:
   (`oslllo-svg-fixer` → `src/assets/icons/font-icons/`), builds `src/assets/fonts/icons.woff` +
   `icons.css` and the `IconName` type (`core/models/icon-names.generated.ts`). The generated files
   are committed, so builds don't run it. Use `<app-icon name="car" />`; size it with the host's
-  width/height. Only woff is produced: this machine's ttf2woff2 cannot convert the font.
+  width/height. Only woff is produced (this machine's ttf2woff2 cannot convert the font), and it
+  is embedded in `icons.css`, so icons never show as empty boxes while loading.
+- **Tariff cards** show the illustrations in `src/assets/images/cars/` (sedan, SUV, van); replace
+  them with photos of the real cars when there are some (`CAR_IMAGE` in the tariffs component).
+- **Form errors** float under the field (absolute), so showing one never moves the layout; forms
+  leave at least 16px between rows for them.
+- **Images** go through `<app-image [image]="IMAGES.hero" alt="…" />`: a tiny blurred preview (or
+  a shimmer) fills the box at once and the photo fades in when loaded; the box keeps the photo's
+  proportions, so nothing moves. `fit="cover"` fills the parent; `priority` for the banner (loaded
+  first, preloaded in the prerendered page). To add a photo, put it in `src/assets/images/src/` and
+  run `npm run images`: WebP sizes (480/960/1600), the preview and `core/images.generated.ts`. The
+  same script makes the link-preview image `og.jpg` (1200×630) and the app icons / favicon from
+  `src/assets/brand/icon.svg` (a placeholder "M" monogram until there is a real logo).
+
+### Languages
+
+The public site and the client/driver pages are in **Italian (default, at `/`), English (`/en`),
+German (`/de`) and French (`/fr`)**, with a switcher in the header, the mobile menu and the footer.
+The admin panel stays in English.
+
+- Angular's built-in i18n: one prerendered build per language (`angular.json` → `i18n`). Texts are
+  marked with `i18n` attributes in templates and `$localize` in code; translations are in
+  `frontend/src/locale/messages.{it,de,fr}.json` (English is the source).
+- **After changing or adding a text:** `npm run i18n` extracts the texts and lists what each
+  language lacks; add those to the three files. The production build fails if a translation is
+  missing, so nothing ships half-translated.
+- `ng serve` serves the Italian build; the other languages are checked with a production build.
+- Prices and dates follow the language ("58,00 €" in Italian, German, French; "€58.00" in English);
+  address search returns place names in it ("Mailand" on the German site).
+- Client links (booking page, payment return, review) open in the language the client booked in
+  (`SiteLanguages` in the backend); other languages (Spanish, Russian…) get English.
+- **Still in English, from the backend:** the confirmation emails and WhatsApp texts, the price
+  breakdown lines ("Fare 13.5 km", "… access"), surcharge names typed in the panel, and some
+  validation messages.
+
+### SEO
+
+- **Prerendered pages.** `/`, `/book`, `/services`, `/tariffs`, `/drivers`, `/reviews`,
+  `/partners`, `/privacy` and `/terms`, in each language (36 pages), are rendered to HTML at build time (`app.routes.server.ts`),
+  so search engines and link previews (WhatsApp, Facebook, Telegram) read them without running
+  scripts; the browser then takes over the page (hydration). Live data (prices, reviews) is
+  loaded by the browser: while prerendering, API calls return nothing (`serverApiInterceptor`).
+  Other routes render in the browser only, and Caddy sends `X-Robots-Tag: noindex` for them.
+- **Head tags** per page from the route data `seo(description)` in `app.routes.ts`
+  (`SeoService`): description, robots, canonical, Open Graph and Twitter card; the home page also
+  gets schema.org data (`TaxiService`, `Organization`, `WebSite`; contact details only once they
+  are filled in `home.content.ts`). Routes without `seo` are `noindex`. Each page links its other
+  language versions (`hreflang`, Italian as `x-default`); the sitemap lists all of them.
+- **Site address.** `npm run build:site` with `SITE_URL=https://domain` puts it in canonical links
+  and previews and writes `sitemap.xml` and the `Sitemap:` line of `robots.txt`. The Docker build
+  does this from `SITE_DOMAIN`.
+- Code that runs while prerendering must not touch `window`/`document` directly: browser-only
+  work goes in `afterNextRender` (see the map, which loads Leaflet there).
 
 ## Open questions
 

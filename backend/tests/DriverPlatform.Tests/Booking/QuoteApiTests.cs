@@ -99,13 +99,26 @@ public sealed class QuoteApiTests(ApiFactory factory) : IClassFixture<ApiFactory
     }
 
     [Fact]
-    public async Task Points_outside_italy_are_refused()
+    public async Task Points_outside_the_four_countries_are_refused()
     {
-        var paris = new Application.Quotes.PointInput { Address = "Paris", Latitude = 48.8566, Longitude = 2.3522 };
+        var london = new Application.Quotes.PointInput { Address = "London", Latitude = 51.5072, Longitude = -0.1276 };
 
-        var response = await factory.CreateClient().PostAsJsonAsync("/api/quotes", TestData.Trip(paris), TestData.Json);
+        var response = await factory.CreateClient().PostAsJsonAsync("/api/quotes", TestData.Trip(london), TestData.Json);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Trips_into_france_switzerland_and_germany_are_quoted()
+    {
+        foreach (var (name, lat, lng) in new[] { ("Paris", 48.8566, 2.3522), ("Zurich", 47.3769, 8.5417), ("Munich", 48.1351, 11.5820) })
+        {
+            var to = new Application.Quotes.PointInput { Address = name, Latitude = lat, Longitude = lng };
+
+            var response = await factory.CreateClient().PostAsJsonAsync("/api/quotes", TestData.Trip(dropoff: to), TestData.Json);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
     }
 
     [Fact]

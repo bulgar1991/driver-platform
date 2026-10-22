@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 150" role="img">
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a4a50"/>
+      <stop offset="0.45" stop-color="#26262a"/>
+      <stop offset="1" stop-color="#121214"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3b4250"/>
+      <stop offset="0.6" stop-color="#14161b"/>
+      <stop offset="1" stop-color="#0b0c0f"/>
+    </linearGradient>
+    <linearGradient id="gold" gradientUnits="userSpaceOnUse" x1="20" y1="0" x2="300" y2="0">
+      <stop offset="0" stop-color="#8E6E34"/>
+      <stop offset="0.5" stop-color="#E9D29A"/>
+      <stop offset="1" stop-color="#8E6E34"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.22"/>
+      <stop offset="0.35" stop-color="#fff" stop-opacity="0.04"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="rim" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#d9d9de"/>
+      <stop offset="0.7" stop-color="#8b8b92"/>
+      <stop offset="1" stop-color="#55555b"/>
+    </radialGradient>
+    <radialGradient id="shadow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#000" stop-opacity="0.65"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="164" cy="128" rx="150" ry="10" fill="url(#shadow)"/>
+  <path d="M22 104 Q19 86 40 81 L96 74 Q124 50 154 46 L206 46 Q230 48 254 72 L292 78 Q308 82 306 100 L304 108 Q302 114 294 114 L30 114 Q22 114 22 106 Z" fill="url(#body)" stroke="#0b0b0c" stroke-width="2"/>
+  <path d="M22 104 Q19 86 40 81 L96 74 Q124 50 154 46 L206 46 Q230 48 254 72 L292 78 Q308 82 306 100 L304 108 Q302 114 294 114 L30 114 Q22 114 22 106 Z" fill="url(#sheen)"/>
+  <path d="M108 74 Q130 56 154 54 L180 54 L180 74 Z" fill="url(#glass)" stroke="#0b0b0c" stroke-width="2"/>
+  <path d="M188 54 L206 54 Q224 56 240 74 L188 74 Z" fill="url(#glass)" stroke="#0b0b0c" stroke-width="2"/>
+  <path d="M38 90 L300 90" stroke="url(#gold)" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+  <path d="M184 76 L184 110" stroke="#0b0b0c" stroke-width="1.5" opacity="0.7"/>
+  <ellipse cx="299" cy="92" rx="5" ry="3.5" fill="#fff4d6"/>
+  <ellipse cx="26" cy="92" rx="4" ry="3" fill="#9b2c2c"/>
+  <circle cx="84" cy="112" r="23" fill="#0b0b0c"/>
+  <circle cx="84" cy="112" r="19" fill="#161618"/>
+  <circle cx="84" cy="112" r="11.78" fill="url(#rim)"/>
+  <line x1="84" y1="112" x2="94.45" y2="112.0" stroke="#2a2a2e" stroke-width="2.2"/><line x1="84" y1="112" x2="87.22959592558576" y2="121.9384209086474" stroke="#2a2a2e" stroke-width="2.2"/><line x1="84" y1="112" x2="75.54622772106413" y2="118.14298252121031" stroke="#2a2a2e" stroke-width="2.2"/><line x1="84" y1="112" x2="75.54508952745138" y2="105.85858412894977" stroke="#2a2a2e" stroke-width="2.2"/><line x1="84" y1="112" x2="87.22775420939801" y2="102.06098079468032" stroke="#2a2a2e" stroke-width="2.2"/>
+  <circle cx="84" cy="112" r="3.04" fill="url(#gold)"/>
+  <circle cx="244" cy="112" r="23" fill="#0b0b0c"/>
+  <circle cx="244" cy="112" r="19" fill="#161618"/>
+  <circle cx="244" cy="112" r="11.78" fill="url(#rim)"/>
+  <line x1="244" y1="112" x2="254.45" y2="112.0" stroke="#2a2a2e" stroke-width="2.2"/><line x1="244" y1="112" x2="247.22959592558576" y2="121.9384209086474" stroke="#2a2a2e" stroke-width="2.2"/><line x1="244" y1="112" x2="235.54622772106413" y2="118.14298252121031" stroke="#2a2a2e" stroke-width="2.2"/><line x1="244" y1="112" x2="235.54508952745138" y2="105.85858412894977" stroke="#2a2a2e" stroke-width="2.2"/><line x1="244" y1="112" x2="247.22775420939803" y2="102.06098079468032" stroke="#2a2a2e" stroke-width="2.2"/>
+  <circle cx="244" cy="112" r="3.04" fill="url(#gold)"/>
+</svg>

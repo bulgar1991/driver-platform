@@ -1,19 +1,30 @@
 <section class="review page page--narrow">
   @if (invalid()) {
-    <h1 class="heading heading--md">This link has expired</h1>
-    <p class="review__muted"
+    <h1 class="heading heading--md" i18n>This link has expired</h1>
+    <p class="review__muted" i18n
       >Review links work once, for 30 days after the ride.</p
     >
   } @else if (done()) {
     <span class="review__badge"><app-icon name="check" /></span>
-    <h1 class="heading heading--md">Thank you</h1>
-    <p class="review__muted"
-      >Your review helps us and {{ page()?.driverFirstName }}.</p
+    <h1 class="heading heading--md" i18n>Thank you</h1>
+    <p class="review__muted" i18n
+      >Your review helps us and
+      {{
+        page()?.driverFirstName  // i18n(ph="driver")
+      }}.</p
     >
   } @else if (page(); as p) {
-    <p class="eyebrow">Your ride {{ p.reference }}</p>
-    <h1 class="heading heading--md"
-      >How was your ride with {{ p.driverFirstName }}?</h1
+    <p class="eyebrow" i18n
+      >Your ride
+      {{
+        p.reference // i18n(ph="reference")
+      }}</p
+    >
+    <h1 class="heading heading--md" i18n
+      >How was your ride with
+      {{
+        p.driverFirstName  // i18n(ph="driver")
+      }}?</h1
     >
     <p class="review__muted"
       >{{ p.pickupAt | date: 'EEEE d MMMM, HH:mm' }} · {{ p.from }} →
@@ -27,6 +38,7 @@
     <div
       class="review__stars"
       role="radiogroup"
+      i18n-aria-label
       aria-label="Rating"
       (mouseleave)="hover.set(0)">
       @for (star of stars; track star) {
@@ -36,7 +48,7 @@
           class="review__star"
           [class.review__star--on]="star <= (hover() || rating())"
           [attr.aria-checked]="rating() === star"
-          [attr.aria-label]="star + (star === 1 ? ' star' : ' stars')"
+          [attr.aria-label]="t.stars(star)"
           (mouseenter)="hover.set(star)"
           (click)="rating.set(star)">
           <app-icon
@@ -45,7 +57,7 @@
       }
     </div>
 
-    <label class="review__label" for="comment"
+    <label class="review__label" for="comment" i18n
       >Anything to tell us? (optional)</label
     >
     <textarea
@@ -57,7 +69,7 @@
 
     <label class="review__consent">
       <input class="review__checkbox" type="checkbox" [(ngModel)]="publish" />
-      <span
+      <span i18n
         >You may show my rating and comment on the website, with my first name
         and the initial of my surname.</span
       >
@@ -69,7 +81,7 @@
       [block]="true"
       [disabled]="sending()"
       (click)="submit()">
-      {{ sending() ? 'Sending…' : 'Send review' }}
+      {{ sending() ? t.sending : t.send }}
     </button>
   } @else if (error(); as message) {
     <p class="alert alert--error" role="alert">{{ message }}</p>

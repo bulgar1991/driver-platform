@@ -12,8 +12,14 @@
 		Referrer-Policy "strict-origin-when-cross-origin"
 		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
 		# Scripts only from this site; styles inline (Angular and PrimeNG inject them); map tiles from OpenStreetMap.
-		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tile.openstreetmap.org; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://tile.openstreetmap.org; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
 		-Server
+	}
+
+	# Italian is the root: /it/tariffs → /tariffs (people and links often add the code).
+	redir /it / 301
+	handle_path /it/* {
+		redir * {path} 301
 	}
 
 	handle /api/* {
@@ -22,13 +28,34 @@
 
 	handle {
 		root * /srv
-		# Hashed bundles never change; index.html must always be fresh.
+		# Hashed bundles never change; images and fonts change rarely; pages must always be fresh.
 		@hashed path_regexp \.[0-9A-Z]{8}\.(js|css)$|-[0-9A-Z]{8}\.(js|css)$
 		header @hashed Cache-Control "public, max-age=31536000, immutable"
-		@index path / /index.html
-		header @index Cache-Control "no-cache"
-		try_files {path} /index.html
-		file_server
+		@assets path /assets/* /favicon.ico
+		header @assets Cache-Control "public, max-age=604800"
+		header ?Cache-Control "no-cache"
+
+		# One build per language: Italian at the root, English, German and French under /en, /de, /fr.
+		# Public pages are prerendered (/de/tariffs → de/tariffs/index.html). Anything else (panel,
+		# personal links, unknown addresses) gets that language's browser-rendered page, never indexed.
+		@en path /en /en/*
+		@de path /de /de/*
+		@fr path /fr /fr/*
+		route @en {
+			try_files {path} {path}/index.html /en/index.csr.html
+		}
+		route @de {
+			try_files {path} {path}/index.html /de/index.csr.html
+		}
+		route @fr {
+			try_files {path} {path}/index.html /fr/index.csr.html
+		}
+		route {
+			try_files {path} {path}/index.html /index.csr.html
+			@client path */index.csr.html /index.csr.html
+			header @client X-Robots-Tag "noindex, nofollow"
+			file_server
+		}
 	}
 
 	log {

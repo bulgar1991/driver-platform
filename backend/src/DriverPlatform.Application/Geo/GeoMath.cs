@@ -9,9 +9,22 @@ public static class GeoMath
 {
     private const double EarthRadiusMeters = 6_371_000;
 
-    /// <summary>Rough box around Italy, San Marino and Vatican City; bookings outside it are refused.</summary>
-    public static bool IsInItaly(Coordinate c) =>
-        c.Latitude is >= 35.2 and <= 47.2 && c.Longitude is >= 6.5 and <= 18.6;
+    /// <summary>
+    /// Rough boxes around the countries served: Italy (with San Marino and Vatican City), France
+    /// (with Corsica), Switzerland and Germany. Bookings outside them are refused. The boxes also
+    /// touch neighbours (Austria, Belgium…); the precise check is the address search, which only
+    /// returns places in these countries (Maps:Countries).
+    /// </summary>
+    public static bool IsInServiceArea(Coordinate c) => ServiceArea.Any(box =>
+        c.Latitude >= box.South && c.Latitude <= box.North && c.Longitude >= box.West && c.Longitude <= box.East);
+
+    private static readonly (double South, double North, double West, double East)[] ServiceArea =
+    [
+        (35.2, 47.2, 6.5, 18.6),   // Italy
+        (41.3, 51.2, -5.3, 9.7),   // France and Corsica
+        (45.8, 47.9, 5.9, 10.6),   // Switzerland
+        (47.2, 55.1, 5.8, 15.1),   // Germany
+    ];
 
     public static bool IsValid(Coordinate c) =>
         c.Latitude is >= -90 and <= 90 && c.Longitude is >= -180 and <= 180;

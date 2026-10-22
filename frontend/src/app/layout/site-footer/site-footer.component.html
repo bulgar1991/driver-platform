@@ -3,31 +3,32 @@
   <div class="site-footer__inner">
     <div class="site-footer__brand">
       <app-logo size="lg" />
-      <p class="site-footer__tagline"
-        >Private transfers with driver across Italy. Fixed price, booked in a
-        minute.</p
-      >
+      <p class="site-footer__tagline" i18n>
+        Private transfers with driver in Italy, France, Switzerland and Germany.
+        Fixed price, booked in a minute.
+      </p>
       <a class="site-footer__book" routerLink="/book"
-        >Book a ride <app-icon name="arrow-right"
+        ><ng-container i18n>Book a ride</ng-container>
+        <app-icon name="arrow-right"
       /></a>
     </div>
 
-    <nav class="site-footer__column" aria-label="Site">
-      <h2 class="site-footer__title">Explore</h2>
+    <nav class="site-footer__column" i18n-aria-label aria-label="Site">
+      <h2 class="site-footer__title" i18n>Explore</h2>
       @for (p of pages; track p.path) {
         <a class="site-footer__link" [routerLink]="p.path">{{ p.label }}</a>
       }
     </nav>
 
     <div class="site-footer__column">
-      <h2 class="site-footer__title">Services</h2>
+      <h2 class="site-footer__title" i18n>Services</h2>
       @for (s of services; track s.title) {
         <a class="site-footer__link" routerLink="/services">{{ s.title }}</a>
       }
     </div>
 
     <div class="site-footer__column">
-      <h2 class="site-footer__title">Contact</h2>
+      <h2 class="site-footer__title" i18n>Contact</h2>
       @if (contact.phone) {
         <a class="site-footer__link" [href]="'tel:' + contact.phone"
           ><app-icon class="site-footer__icon" name="phone" />
@@ -56,9 +57,13 @@
         >
       }
       <a class="site-footer__link" routerLink="/book"
-        ><app-icon class="site-footer__icon" name="clock" /> Book online 24/7</a
+        ><app-icon class="site-footer__icon" name="clock" />
+        <ng-container i18n>Book online 24/7</ng-container></a
       >
-      <ul class="site-footer__payments" aria-label="Payment methods">
+      <ul
+        class="site-footer__payments"
+        i18n-aria-label
+        aria-label="Payment methods">
         <li class="site-footer__payment">Visa</li>
         <li class="site-footer__payment">Mastercard</li>
         <li class="site-footer__payment">PayPal</li>
@@ -67,12 +72,13 @@
   </div>
 
   <div class="site-footer__bottom">
-    <p class="site-footer__text"
+    <p class="site-footer__text" i18n
       >© {{ year }} Magnus Drive · Private Driver Services</p
     >
-    <nav class="site-footer__links" aria-label="Legal">
-      <a class="site-footer__small-link" routerLink="/privacy">Privacy</a>
-      <a class="site-footer__small-link" routerLink="/terms">Terms</a>
+    <app-language-switch class="site-footer__languages" />
+    <nav class="site-footer__links" i18n-aria-label aria-label="Legal">
+      <a class="site-footer__small-link" routerLink="/privacy" i18n>Privacy</a>
+      <a class="site-footer__small-link" routerLink="/terms" i18n>Terms</a>
       @for (s of social; track s.url) {
         <a
           class="site-footer__small-link"

@@ -1,11 +1,14 @@
+// The error floats under the input, so showing it never moves the fields around it.
 .form-field {
-  @apply flex flex-col gap-2;
+  @apply relative flex flex-col gap-2;
 
   &__label {
     @apply text-xs uppercase tracking-widest text-ivory-200;
   }
 
   &__error {
-    @apply text-xs text-danger;
+    // 2px + 14px: fits in the 16px gap that forms leave between fields.
+    @apply pointer-events-none absolute left-0 right-0 top-full mt-0.5 truncate text-[0.6875rem] leading-[14px] text-danger;
+    animation: fade-up 0.25s ease-out both;
   }
 }

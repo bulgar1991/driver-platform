@@ -1,13 +1,15 @@
-<section id="tariffs" class="tariffs page page__section" aria-label="Tariffs">
+<section
+  class="tariffs page page__section"
+  [class.tariffs--page]="page()"
+  i18n-aria-label
+  aria-label="Tariffs">
   <app-section-heading
+    i18n-eyebrow
     eyebrow="See our"
+    i18n-title
     title="Tariffs"
     [level]="page() ? 1 : 2"
     appReveal />
-  <p class="tariffs__intro" appReveal [delay]="80">
-    One fixed price per ride: a base fee plus a rate per kilometre for the car
-    you choose, VAT included. You see the exact total before you pay.
-  </p>
 
   @if (loading()) {
     <div class="tariffs__grid" aria-busy="true">
@@ -16,10 +18,10 @@
       }
     </div>
   } @else if (failed()) {
-    <p class="tariffs__muted"
-      >Tariffs are not available right now. You can still get an exact price
-      when you book.</p
-    >
+    <p class="tariffs__muted" i18n>
+      Tariffs are not available right now. You can still get an exact price when
+      you book.
+    </p>
   } @else {
     <ul class="tariffs__grid">
       @for (card of cards(); track card.category; let i = $index) {
@@ -29,76 +31,97 @@
           appReveal
           [delay]="i * 120">
           @if (card.featured) {
-            <span class="tariffs__badge">Families & luggage</span>
+            <span
+              class="tariffs__ribbon"
+              i18n-title
+              title="Most booked for families">
+              <app-icon class="tariffs__ribbon-icon" name="star-filled" />
+            </span>
           }
-          <app-icon class="tariffs__icon" name="car" />
+          <app-image
+            class="tariffs__car"
+            [image]="card.image"
+            [alt]="
+              (card.text?.title ?? card.category) +
+              ', ' +
+              (card.text?.models ?? '')
+            "
+            sizes="(min-width: 1024px) 320px, 80vw" />
           <h3 class="tariffs__name">{{ card.text?.title ?? card.category }}</h3>
-          <p class="tariffs__models">{{ card.text?.models }}</p>
-
+          <p class="tariffs__description" i18n>
+            {{
+              card.text?.bestFor  // i18n(ph="best_for")
+            }}, up to
+            {{
+              card.maxPassengers // i18n(ph="passengers")
+            }}
+            passengers and
+            {{
+              card.maxLuggage // i18n(ph="bags")
+            }}
+            large bags.
+            {{
+              card.text?.models  // i18n(ph="models")
+            }}.
+          </p>
           <p class="tariffs__price">
             <span class="tariffs__amount">{{ card.pricePerKm | money }}</span>
-            <span class="tariffs__unit">/ km</span>
+            <span class="tariffs__unit" i18n="unit after a price per kilometre"
+              >/km</span
+            >
           </p>
-          <p class="tariffs__base">+ {{ card.baseFee | money }} base fee</p>
-
-          <ul class="tariffs__specs">
-            <li class="tariffs__spec"
-              ><app-icon class="tariffs__spec-icon" name="users" /> Up to
-              {{ card.maxPassengers }} passengers</li
-            >
-            <li class="tariffs__spec"
-              ><app-icon class="tariffs__spec-icon" name="luggage" />
-              {{ card.maxLuggage }} large bags</li
-            >
-            <li class="tariffs__spec"
-              ><app-icon class="tariffs__spec-icon" name="check" />
-              {{ card.text?.bestFor }}</li
-            >
-          </ul>
-
-          <p class="tariffs__example">
-            e.g. {{ exampleKm }} km on a weekday:
-            <strong class="tariffs__example-price">{{
-              card.example | money
-            }}</strong>
+          <p class="tariffs__base" i18n>
+            +
+            {{
+              card.baseFee | money // i18n(ph="base_fee")
+            }}
+            per ride · VAT included
           </p>
-          <a
-            appButton
-            [variant]="card.featured ? 'primary' : 'outline'"
-            [block]="true"
-            routerLink="/book"
-            >Book a {{ card.text?.title ?? card.category }}</a
-          >
         </li>
       }
     </ul>
 
-    <div class="tariffs__notes">
-      <div class="tariffs__note" appReveal="left">
-        <h3 class="tariffs__note-title">Extras</h3>
-        <ul class="tariffs__chips">
-          @for (extra of extras(); track extra.label) {
-            <li class="tariffs__chip"
-              >{{ extra.label }} <strong>{{ extra.amount | money }}</strong></li
-            >
-          }
-          @if (returnDiscount() > 0) {
-            <li class="tariffs__chip tariffs__chip--gold"
-              >Return trip −{{ returnDiscount() }}%</li
-            >
-          }
-        </ul>
+    @if (page()) {
+      <div class="tariffs__notes">
+        <div class="tariffs__note" appReveal="left">
+          <h3 class="tariffs__note-title" i18n>Extras</h3>
+          <ul class="tariffs__chips">
+            @for (extra of extras(); track extra.label) {
+              <li class="tariffs__chip">
+                {{ extra.label }} <strong>{{ extra.amount | money }}</strong>
+              </li>
+            }
+            @if (returnDiscount() > 0) {
+              <li class="tariffs__chip tariffs__chip--gold" i18n>
+                Return trip −{{
+                  returnDiscount()  // i18n(ph="percent")
+                }}%
+              </li>
+            }
+          </ul>
+        </div>
+        <div class="tariffs__note" appReveal="right">
+          <h3 class="tariffs__note-title" i18n
+            >Surcharges, added to the fare</h3
+          >
+          <ul class="tariffs__chips">
+            @for (s of surcharges(); track s.name) {
+              <li class="tariffs__chip">
+                {{ s.name }} <strong>+{{ s.percent }}%</strong>
+              </li>
+            }
+          </ul>
+        </div>
       </div>
-      <div class="tariffs__note" appReveal="right">
-        <h3 class="tariffs__note-title">Surcharges, added to the fare</h3>
-        <ul class="tariffs__chips">
-          @for (s of surcharges(); track s.name) {
-            <li class="tariffs__chip"
-              >{{ s.name }} <strong>+{{ s.percent }}%</strong></li
-            >
-          }
-        </ul>
-      </div>
-    </div>
+      <p class="tariffs__cta" appReveal>
+        <a appButton routerLink="/book" i18n>Get your exact price</a>
+      </p>
+    } @else {
+      <p class="tariffs__more" appReveal>
+        <a class="tariffs__link" routerLink="/tariffs" i18n
+          >Extras, surcharges and return discount →</a
+        >
+      </p>
+    }
   }
 </section>

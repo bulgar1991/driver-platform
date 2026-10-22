@@ -15,9 +15,13 @@
     }
   }
 
+  // app-image filling the frame, cropped towards the car.
   &__image {
-    @apply h-full w-full object-cover transition-transform duration-[1.5s] ease-out;
-    object-position: 30% 50%;
+    @apply transition-transform duration-[1.5s] ease-out;
+
+    ::ng-deep .image__img {
+      object-position: 30% 50%;
+    }
   }
 
   &__media:hover &__image {

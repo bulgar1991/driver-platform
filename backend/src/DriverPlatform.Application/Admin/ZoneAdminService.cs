@@ -65,7 +65,7 @@ public sealed class ZoneAdminService(IAppDbContext db, IAuditLogger audit) : IZo
         if (request.Shape == ZoneShape.Circle)
         {
             if (request is not { CenterLatitude: { } lat, CenterLongitude: { } lng, RadiusMeters: not null }
-                || !GeoMath.IsInItaly(new Coordinate(lat, lng)))
+                || !GeoMath.IsInServiceArea(new Coordinate(lat, lng)))
             {
                 errors.Add("center", "Pick the centre on the map and set a radius.");
             }
@@ -74,9 +74,9 @@ public sealed class ZoneAdminService(IAppDbContext db, IAuditLogger audit) : IZo
         {
             errors.Add("polygon", "A polygon needs at least three points.");
         }
-        else if (request.Polygon.Any(p => !GeoMath.IsInItaly(new Coordinate(p.Latitude, p.Longitude))))
+        else if (request.Polygon.Any(p => !GeoMath.IsInServiceArea(new Coordinate(p.Latitude, p.Longitude))))
         {
-            errors.Add("polygon", "All points must be in Italy.");
+            errors.Add("polygon", "All points must be in the service area (Italy, France, Germany, Switzerland).");
         }
 
         if (request.Type == ZoneType.NoCarAccess && request.MeetingPoints.Count == 0)
@@ -90,7 +90,7 @@ public sealed class ZoneAdminService(IAppDbContext db, IAuditLogger audit) : IZo
             {
                 errors.Add($"meetingPoints[{i}]", "Name and address are required.");
             }
-            if (!GeoMath.IsInItaly(new Coordinate(point.Latitude, point.Longitude)))
+            if (!GeoMath.IsInServiceArea(new Coordinate(point.Latitude, point.Longitude)))
             {
                 errors.Add($"meetingPoints[{i}]", "Pick the meeting point on the map.");
             }

@@ -10,7 +10,7 @@ public interface IBookingLinks
 {
     string ClientToken(Booking booking);
     bool IsValid(Booking booking, string token);
-    /// <summary>The client's page for paying, checking and downloading the invoice.</summary>
+    /// <summary>The client's page for paying, checking and downloading the invoice, in the client's language.</summary>
     string ManageUrl(Booking booking);
 }
 
@@ -33,5 +33,5 @@ public sealed class BookingLinks(IOptions<LinksOptions> links, IOptions<Payments
             Encoding.UTF8.GetBytes(token));
 
     public string ManageUrl(Booking booking) =>
-        $"{payments.Value.FrontendBaseUrl.TrimEnd('/')}/my-booking/{booking.Reference}/{ClientToken(booking)}";
+        $"{SiteLanguages.BaseUrl(payments.Value.FrontendBaseUrl, booking.Client?.Language)}/my-booking/{booking.Reference}/{ClientToken(booking)}";
 }

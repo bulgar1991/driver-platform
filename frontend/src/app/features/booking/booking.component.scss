@@ -19,6 +19,53 @@
 
   &__map {
     @apply h-72 sm:h-96;
+
+    // Same box as the map, so nothing moves when it loads.
+    &--placeholder {
+      @apply block rounded-sm border border-ink-600 bg-ink-900;
+      background-image: linear-gradient(
+        100deg,
+        transparent 30%,
+        rgb(255 255 255 / 0.04) 50%,
+        transparent 70%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.6s linear infinite;
+    }
+  }
+
+  // The map with its "Set From / Set To" switch on top and the hint under it.
+  &__map-wrap {
+    @apply relative flex flex-col gap-2;
+  }
+
+  &__map-tools {
+    @apply absolute left-3 top-3 z-10 flex gap-1 rounded-full border border-ink-500 bg-ink/85 p-1 shadow-lg backdrop-blur;
+  }
+
+  &__map-target {
+    @apply flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-ivory-300 transition-colors duration-300 hover:text-ivory;
+
+    &--active {
+      @apply bg-gold text-ink hover:text-ink;
+    }
+  }
+
+  // Same colours as the map markers: gold for From, light for To.
+  &__map-dot {
+    @apply block h-2.5 w-2.5 rounded-full border-2 border-ink bg-gold;
+  }
+
+  &__map-target--dropoff &__map-dot {
+    @apply bg-ivory;
+  }
+
+  &__map-hint {
+    @apply flex min-h-5 items-center gap-2 text-xs text-ivory-400;
+
+    strong {
+      @apply text-gold;
+    }
   }
 
   &__prices {

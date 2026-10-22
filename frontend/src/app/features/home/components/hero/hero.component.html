@@ -1,23 +1,35 @@
 <section class="hero" aria-labelledby="hero-title">
-  <div class="hero__backdrop" aria-hidden="true"></div>
+  <div class="hero__backdrop">
+    <app-image
+      [image]="images.hero"
+      i18n-alt
+      alt="Black chauffeur-driven car on an Italian road"
+      fit="cover"
+      [priority]="true" />
+  </div>
   <div class="hero__glow hero__glow--one" aria-hidden="true"></div>
   <div class="hero__glow hero__glow--two" aria-hidden="true"></div>
 
   <div class="hero__content">
-    <p class="hero__eyebrow">Private Driver Services · Italy</p>
+    <p class="hero__eyebrow" i18n
+      >Private Driver Services · Italy · France · Switzerland · Germany</p
+    >
     <h1 id="hero-title" class="hero__title">
       Magnus <span class="hero__accent">Drive</span>
     </h1>
     <span class="hero__line" aria-hidden="true"></span>
-    <p class="hero__lead">
+    <p class="hero__lead" i18n>
       Chauffeured transfers from airports, stations and ports to your door, at a
       fixed price, with a driver who meets you.
     </p>
     <div class="hero__actions">
       <a appButton class="hero__cta" routerLink="/book">
-        Book your ride <app-icon name="arrow-right" />
+        <ng-container i18n>Book your ride</ng-container>
+        <app-icon name="arrow-right" />
       </a>
-      <a appButton variant="outline" routerLink="/tariffs">See our tariffs</a>
+      <a appButton variant="outline" routerLink="/tariffs" i18n
+        >See our tariffs</a
+      >
     </div>
   </div>
 

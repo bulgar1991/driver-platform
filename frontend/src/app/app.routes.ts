@@ -1,8 +1,17 @@
 import { Routes } from '@angular/router'
+import { PageSeo } from './core/models'
 import { authGuard } from './core/guards/auth.guard'
 import { guestGuard } from './core/guards/guest.guard'
 import { passwordChangeGuard } from './core/guards/password-change.guard'
 import { PublicLayoutComponent } from './layout/public-layout/public-layout.component'
+
+/** Route data for SeoService. Routes without it are marked noindex (panel, personal links…). */
+const seo = (
+  description: string,
+  schema?: PageSeo['schema']
+): { seo: PageSeo } => ({
+  seo: { description, schema },
+})
 
 export const routes: Routes = [
   {
@@ -11,67 +20,99 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        title: 'Magnus Drive · Private Driver Services',
+        title: $localize`Magnus Drive · Private Driver Services`,
         loadComponent: () =>
           import('./features/home/home.component').then(m => m.HomeComponent),
+        data: seo(
+          $localize`Private transfers with driver in Italy, France, Switzerland and Germany: airports, stations, ports and cities at a fixed price. Your driver meets you on arrival.`,
+          'business'
+        ),
       },
       {
         path: 'book',
-        title: 'Book a ride · Magnus Drive',
+        title: $localize`Book a ride · Magnus Drive`,
         loadComponent: () =>
           import('./features/booking/booking.component').then(
             m => m.BookingComponent
           ),
+        data: seo(
+          $localize`Book a private transfer in Italy, France, Switzerland or Germany: enter from and to, see the route and the fixed price, pay by card or PayPal.`
+        ),
       },
       {
         path: 'services',
-        title: 'Our services · Magnus Drive',
+        title: $localize`Our services · Magnus Drive`,
         loadComponent: () =>
           import('./features/home/components/services-section/services-section.component').then(
             m => m.ServicesSectionComponent
           ),
-        data: { page: true },
+        data: {
+          page: true,
+          ...seo(
+            $localize`Airport and station transfers, business travel, city-to-city rides, Venice, groups and families: chauffeured services across Italy and its neighbours at a fixed price.`
+          ),
+        },
       },
       {
         path: 'tariffs',
-        title: 'Tariffs · Magnus Drive',
+        title: $localize`Tariffs · Magnus Drive`,
         loadComponent: () =>
           import('./features/home/components/tariffs/tariffs.component').then(
             m => m.TariffsComponent
           ),
-        data: { page: true },
+        data: {
+          page: true,
+          ...seo(
+            $localize`Transfer prices: base fare and price per km for sedan, SUV and van, night and holiday surcharges, return discount. VAT included, no hidden fees.`
+          ),
+        },
       },
       {
         path: 'drivers',
-        title: 'For drivers · Magnus Drive',
+        title: $localize`For drivers · Magnus Drive`,
         loadComponent: () =>
           import('./features/home/components/drivers-join/drivers-join.component').then(
             m => m.DriversJoinComponent
           ),
-        data: { page: true },
+        data: {
+          page: true,
+          ...seo(
+            $localize`Licensed NCC driver in Italy? Drive with Magnus Drive: rides sent to your phone, commission agreed upfront, the area you choose. Apply in two minutes.`
+          ),
+        },
       },
       {
         path: 'reviews',
-        title: 'Reviews · Magnus Drive',
+        title: $localize`Reviews · Magnus Drive`,
         loadComponent: () =>
           import('./features/home/components/testimonials/testimonials.component').then(
             m => m.TestimonialsComponent
           ),
-        data: { page: true },
+        data: {
+          page: true,
+          ...seo(
+            $localize`What clients say about their Magnus Drive transfers: reviews from real rides, published with their consent.`
+          ),
+        },
       },
       {
         path: 'partners',
-        title: 'Partners · Magnus Drive',
+        title: $localize`Partners · Magnus Drive`,
         loadComponent: () =>
           import('./features/home/components/partners/partners.component').then(
             m => m.PartnersComponent
           ),
-        data: { page: true },
+        data: {
+          page: true,
+          ...seo(
+            $localize`Hotels, travel agencies and businesses work with Magnus Drive: partner rates, a booking API and monthly invoicing for transfers in Italy and Europe.`
+          ),
+        },
       },
       {
         // Signed link from the confirmation: pay, check the status, download the invoice.
         path: 'my-booking/:reference/:token',
-        title: 'Your booking · Magnus Drive',
+        title: $localize`Your booking · Magnus Drive`,
         loadComponent: () =>
           import('./features/my-booking/my-booking.component').then(
             m => m.MyBookingComponent
@@ -79,26 +120,36 @@ export const routes: Routes = [
       },
       {
         path: 'privacy',
-        title: 'Privacy policy · Magnus Drive',
+        title: $localize`Privacy policy · Magnus Drive`,
         loadComponent: () =>
           import('./features/legal/legal.component').then(
             m => m.LegalComponent
           ),
-        data: { page: 'privacy' },
+        data: {
+          page: 'privacy',
+          ...seo(
+            $localize`How Magnus Drive collects, uses and protects your personal data when you book a transfer, under the GDPR.`
+          ),
+        },
       },
       {
         path: 'terms',
-        title: 'Terms of service · Magnus Drive',
+        title: $localize`Terms of service · Magnus Drive`,
         loadComponent: () =>
           import('./features/legal/legal.component').then(
             m => m.LegalComponent
           ),
-        data: { page: 'terms' },
+        data: {
+          page: 'terms',
+          ...seo(
+            $localize`Terms for booking private transfers with Magnus Drive: how bookings, fixed prices and payment work, and what each side is responsible for.`
+          ),
+        },
       },
       {
         // One-time review link sent after the ride.
         path: 'review/:token',
-        title: 'Rate your ride · Magnus Drive',
+        title: $localize`Rate your ride · Magnus Drive`,
         loadComponent: () =>
           import('./features/review/review.component').then(
             m => m.ReviewComponent
@@ -107,7 +158,7 @@ export const routes: Routes = [
       {
         // Development stand-in for Stripe's payment page.
         path: 'dev/payment/:sessionId',
-        title: 'Test payment · Magnus Drive',
+        title: $localize`Test payment · Magnus Drive`,
         loadComponent: () =>
           import('./features/dev-payment/dev-payment.component').then(
             m => m.DevPaymentComponent
@@ -150,7 +201,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        title: 'Not found · Magnus Drive',
+        title: $localize`Not found · Magnus Drive`,
         loadComponent: () =>
           import('./features/not-found/not-found.component').then(
             m => m.NotFoundComponent

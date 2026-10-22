@@ -51,7 +51,8 @@ public sealed class PaymentService(
             throw new RequestValidationException("reference", "Pay the outbound booking; the return trip is included.");
         }
 
-        var client = outbound.Client ?? await db.Clients.FirstAsync(c => c.Id == outbound.ClientId, cancellationToken);
+        // Loaded here if needed: the return link to the client's page is in the client's language.
+        var client = outbound.Client ??= await db.Clients.FirstAsync(c => c.Id == outbound.ClientId, cancellationToken);
         var legs = await db.LoadLegsAsync(outbound, cancellationToken);
         var payment = new Payment
         {

@@ -26,6 +26,12 @@ import { IconComponent } from '@/shared/components/icon/icon.component'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewComponent {
+  protected readonly t = {
+    stars: (n: number) =>
+      n === 1 ? $localize`1 star` : $localize`${n}:count: stars`,
+    sending: $localize`Sending…`,
+    send: $localize`Send review`,
+  }
   readonly token = input.required<string>()
 
   private readonly api = inject(DriverPortalService)
@@ -61,7 +67,7 @@ export class ReviewComponent {
 
   protected submit(): void {
     if (!this.rating()) {
-      this.error.set('Choose from 1 to 5 stars.')
+      this.error.set($localize`Choose from 1 to 5 stars.`)
       return
     }
     this.sending.set(true)

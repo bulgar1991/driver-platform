@@ -40,6 +40,12 @@ Run each with a real driver and car, on the phone the driver will use. Tick when
 ## D. Technical go-live
 
 - [ ] `./deploy/smoke-test.sh https://DOMAIN` passes.
+- [ ] Google Search Console (and Bing Webmaster Tools): domain verified, `https://DOMAIN/sitemap.xml`
+      submitted; the home page tested with the Rich Results Test; a link shared on WhatsApp shows
+      the preview.
+- [ ] Translations reviewed by native speakers (Italian, German, French:
+      `frontend/src/locale/messages.*.json`), and the legal pages in each language by the lawyer.
+- [ ] Real logo: replace `frontend/src/assets/brand/icon.svg` and run `npm run images`.
 - [ ] Bootstrap admin values removed from `.env`; admin password changed; dispatchers created.
 - [ ] First backup present, copied off the server, **restore drill done**.
 - [ ] Uptime monitor alerting the right phone.

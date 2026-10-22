@@ -1,4 +1,5 @@
-# Personal pages (client booking, driver shifts, reviews) and the panel are not for search engines.
+# Personal pages (client booking, driver shifts, reviews) and the panel are not for search engines,
+# in any language (Italian at the root, /en, /de, /fr).
 User-agent: *
 Disallow: /admin
 Disallow: /login
@@ -7,3 +8,9 @@ Disallow: /driver/
 Disallow: /review/
 Disallow: /dev/
 Disallow: /api/
+Disallow: /*/admin
+Disallow: /*/login
+Disallow: /*/my-booking/
+Disallow: /*/driver/
+Disallow: /*/review/
+Disallow: /*/dev/

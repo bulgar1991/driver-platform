@@ -17,14 +17,15 @@ import { filter } from 'rxjs'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { LogoComponent } from '@/shared/components/logo/logo.component'
+import { LanguageSwitchComponent } from '../language-switch/language-switch.component'
 
 /** Pages of the public site (each section also appears on the home page). */
 export const SITE_PAGES = [
-  { label: 'Services', path: '/services' },
-  { label: 'Tariffs', path: '/tariffs' },
-  { label: 'For drivers', path: '/drivers' },
-  { label: 'Reviews', path: '/reviews' },
-  { label: 'Partners', path: '/partners' },
+  { label: $localize`Services`, path: '/services' },
+  { label: $localize`Tariffs`, path: '/tariffs' },
+  { label: $localize`For drivers`, path: '/drivers' },
+  { label: $localize`Reviews`, path: '/reviews' },
+  { label: $localize`Partners`, path: '/partners' },
 ]
 
 @Component({
@@ -35,6 +36,7 @@ export const SITE_PAGES = [
     ButtonComponent,
     IconComponent,
     LogoComponent,
+    LanguageSwitchComponent,
   ],
   templateUrl: './site-header.component.html',
   styleUrl: './site-header.component.scss',
@@ -45,6 +47,10 @@ export class SiteHeaderComponent {
   protected readonly pages = SITE_PAGES
   protected readonly scrolled = signal(false)
   protected readonly open = signal(false)
+  protected readonly menuLabels = {
+    open: $localize`Open menu`,
+    close: $localize`Close menu`,
+  }
 
   constructor() {
     const destroyRef = inject(DestroyRef)

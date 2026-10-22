@@ -19,12 +19,16 @@ import { RevealDirective } from '@/shared/directives/reveal.directive'
 import { DRIVER_BENEFITS, LANGUAGES } from '../../home.content'
 
 const LICENCES: { value: DriverLicenceKind; label: string; hint: string }[] = [
-  { value: 'Ncc', label: 'NCC licence', hint: 'Noleggio con conducente' },
-  { value: 'Taxi', label: 'Taxi licence', hint: 'Licenza taxi' },
+  {
+    value: 'Ncc',
+    label: $localize`NCC licence`,
+    hint: 'Noleggio con conducente',
+  },
+  { value: 'Taxi', label: $localize`Taxi licence`, hint: 'Licenza taxi' },
   {
     value: 'ProfessionalOnly',
-    label: 'CAP / KB only',
-    hint: 'Professional certificate, no licence yet',
+    label: $localize`CAP / KB only`,
+    hint: $localize`Professional certificate, no licence yet`,
   },
 ]
 
@@ -45,6 +49,14 @@ const LICENCES: { value: DriverLicenceKind; label: string; hint: string }[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DriversJoinComponent {
+  /** Texts used in template expressions (the i18n attribute only covers static text). */
+  protected readonly t = {
+    required: $localize`Required`,
+    phone: $localize`With country code, e.g. +39 333 123 4567`,
+    email: $localize`Enter a valid email`,
+    sending: $localize`Sending…`,
+    send: $localize`Send my application`,
+  }
   /** The section is the whole page. */
   readonly page = input(false)
   private readonly site = inject(SiteService)

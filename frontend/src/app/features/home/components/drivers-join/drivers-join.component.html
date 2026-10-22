@@ -1,13 +1,14 @@
 <section id="drivers" class="drivers-join" aria-labelledby="drivers-title">
   <div class="drivers-join__inner page page__section">
     <div class="drivers-join__intro">
-      <p class="eyebrow" appReveal>For Drivers</p>
+      <p class="eyebrow" appReveal i18n>For Drivers</p>
       @if (page()) {
         <h1
           id="drivers-title"
           class="drivers-join__title"
           appReveal
-          [delay]="80">
+          [delay]="80"
+          i18n="@@drivers.title">
           Do you want to <span class="drivers-join__accent">earn with us?</span>
         </h1>
       } @else {
@@ -15,11 +16,12 @@
           id="drivers-title"
           class="drivers-join__title"
           appReveal
-          [delay]="80">
+          [delay]="80"
+          i18n="@@drivers.title">
           Do you want to <span class="drivers-join__accent">earn with us?</span>
         </h2>
       }
-      <p class="drivers-join__lead" appReveal [delay]="160">
+      <p class="drivers-join__lead" appReveal [delay]="160" i18n>
         We work with licensed NCC and taxi drivers across Italy, with or without
         their own car. Tell us about you; we answer within a few days.
       </p>
@@ -47,13 +49,18 @@
           <span class="drivers-join__done-badge"
             ><app-icon name="check"
           /></span>
-          <h3 class="drivers-join__panel-title"
-            >Thank you, {{ form.controls.firstName.value }}!</h3
-          >
-          <p class="drivers-join__muted"
-            >We received your application and will contact you at
-            {{ form.controls.phone.value }}.</p
-          >
+          <h3 class="drivers-join__panel-title" i18n>
+            Thank you,
+            {{
+              form.controls.firstName.value  // i18n(ph="name")
+            }}!
+          </h3>
+          <p class="drivers-join__muted" i18n>
+            We received your application and will contact you at
+            {{
+              form.controls.phone.value  // i18n(ph="phone")
+            }}.
+          </p>
         </div>
       } @else {
         <form
@@ -61,16 +68,17 @@
           [formGroup]="form"
           (ngSubmit)="submit()"
           novalidate>
-          <h3 class="drivers-join__panel-title">Apply in two minutes</h3>
+          <h3 class="drivers-join__panel-title" i18n>Apply in two minutes</h3>
           @if (error(); as message) {
             <p class="alert alert--error" role="alert">{{ message }}</p>
           }
 
           <div class="drivers-join__row">
             <app-form-field
+              i18n-label
               label="First name"
               for="djFirst"
-              [error]="invalid('firstName') ? 'Required' : null">
+              [error]="invalid('firstName') ? t.required : null">
               <input
                 id="djFirst"
                 class="input"
@@ -78,9 +86,10 @@
                 formControlName="firstName" />
             </app-form-field>
             <app-form-field
+              i18n-label
               label="Last name"
               for="djLast"
-              [error]="invalid('lastName') ? 'Required' : null">
+              [error]="invalid('lastName') ? t.required : null">
               <input
                 id="djLast"
                 class="input"
@@ -90,11 +99,10 @@
           </div>
           <div class="drivers-join__row">
             <app-form-field
+              i18n-label
               label="Mobile (WhatsApp)"
               for="djPhone"
-              [error]="
-                invalid('phone') ? 'With country code, e.g. +39 …' : null
-              ">
+              [error]="invalid('phone') ? t.phone : null">
               <input
                 id="djPhone"
                 class="input"
@@ -103,9 +111,10 @@
                 formControlName="phone" />
             </app-form-field>
             <app-form-field
+              i18n-label
               label="Email"
               for="djEmail"
-              [error]="invalid('email') ? 'Enter a valid email' : null">
+              [error]="invalid('email') ? t.email : null">
               <input
                 id="djEmail"
                 class="input"
@@ -115,9 +124,10 @@
             </app-form-field>
           </div>
           <app-form-field
+            i18n-label
             label="City where you drive"
             for="djCity"
-            [error]="invalid('city') ? 'Required' : null">
+            [error]="invalid('city') ? t.required : null">
             <input
               id="djCity"
               class="input"
@@ -126,7 +136,7 @@
           </app-form-field>
 
           <fieldset class="drivers-join__fieldset">
-            <legend class="drivers-join__legend">Licence</legend>
+            <legend class="drivers-join__legend" i18n>Licence</legend>
             <div class="drivers-join__options">
               @for (l of licences; track l.value) {
                 <label
@@ -147,6 +157,7 @@
           </fieldset>
 
           <app-counter
+            i18n-label
             label="Years as a professional driver"
             [min]="0"
             [max]="60"
@@ -158,10 +169,13 @@
               type="checkbox"
               formControlName="hasOwnVehicle" />
             <span class="drivers-join__switch-track" aria-hidden="true"></span>
-            I have my own car
+            <ng-container i18n>I have my own car</ng-container>
           </label>
           @if (form.controls.hasOwnVehicle.value) {
-            <app-form-field label="Car (make, model, year)" for="djVehicle">
+            <app-form-field
+              i18n-label
+              label="Car (make, model, year)"
+              for="djVehicle">
               <input
                 id="djVehicle"
                 class="input drivers-join__appear"
@@ -171,7 +185,9 @@
           }
 
           <fieldset class="drivers-join__fieldset">
-            <legend class="drivers-join__legend">Languages you speak</legend>
+            <legend class="drivers-join__legend" i18n
+              >Languages you speak</legend
+            >
             <div class="drivers-join__chips">
               @for (lang of languages; track lang.code) {
                 <button
@@ -190,7 +206,10 @@
             </div>
           </fieldset>
 
-          <app-form-field label="Anything else? (optional)" for="djMessage">
+          <app-form-field
+            i18n-label
+            label="Anything else? (optional)"
+            for="djMessage">
             <textarea
               id="djMessage"
               class="input"
@@ -211,7 +230,7 @@
               class="drivers-join__checkbox"
               type="checkbox"
               formControlName="privacyConsent" />
-            <span
+            <span i18n
               >I agree that my details are kept to evaluate my application, as
               described in the
               <a
@@ -223,13 +242,13 @@
             >
           </label>
           @if (invalid('privacyConsent')) {
-            <p class="drivers-join__error" role="alert"
+            <p class="drivers-join__error" role="alert" i18n
               >Please accept to continue.</p
             >
           }
 
           <button appButton type="submit" [block]="true" [disabled]="sending()">
-            {{ sending() ? 'Sending…' : 'Send my application' }}
+            {{ sending() ? t.sending : t.send }}
           </button>
         </form>
       }

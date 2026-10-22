@@ -39,14 +39,14 @@ export class PriceSummaryComponent {
     const vehicle = this.vehicle()
     const legs: LegView[] = [
       {
-        title: quote.return ? 'Outbound' : 'Your ride',
+        title: quote.return ? $localize`Outbound` : $localize`Your ride`,
         leg: quote.outbound,
         price: vehicle?.outbound ?? null,
       },
     ]
     if (quote.return) {
       legs.push({
-        title: 'Return',
+        title: $localize`Return`,
         leg: quote.return,
         price: vehicle?.return ?? null,
       })

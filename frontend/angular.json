@@ -45,13 +45,22 @@
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
-              "zone.js"
+              "zone.js",
+              "@angular/localize/init"
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets",
+                "ignore": [
+                  "images/src/**",
+                  "icons/**"
+                ]
+              },
               "src/exit_iframe.html",
               "src/manifest.webmanifest",
               "src/robots.txt"
@@ -70,7 +79,11 @@
             ],
             "allowedCommonJsDependencies": [
               "leaflet"
-            ]
+            ],
+            "server": "src/main.server.ts",
+            "outputMode": "static",
+            "localize": true,
+            "i18nMissingTranslation": "error"
           },
           "configurations": {
             "production": {
@@ -100,7 +113,10 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "localize": [
+                "it"
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -153,6 +169,26 @@
               "src/**/*.ts",
               "src/**/*.html"
             ]
+          }
+        }
+      },
+      "i18n": {
+        "sourceLocale": {
+          "code": "en",
+          "subPath": "en"
+        },
+        "locales": {
+          "it": {
+            "translation": "src/locale/messages.it.json",
+            "subPath": ""
+          },
+          "de": {
+            "translation": "src/locale/messages.de.json",
+            "subPath": "de"
+          },
+          "fr": {
+            "translation": "src/locale/messages.fr.json",
+            "subPath": "fr"
           }
         }
       }

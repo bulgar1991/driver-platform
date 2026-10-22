@@ -1,17 +1,17 @@
 <section class="my-booking page">
   @if (loading()) {
-    <p class="my-booking__muted">Loading your booking…</p>
+    <p class="my-booking__muted" i18n>Loading your booking…</p>
   } @else if (notFound()) {
     <div class="my-booking__empty">
-      <h1 class="heading heading--md">Booking not found</h1>
-      <p class="my-booking__muted">
-        Check that you opened the full link from your email.
-      </p>
-      <a appButton variant="outline" routerLink="/">Back to home</a>
+      <h1 class="heading heading--md" i18n>Booking not found</h1>
+      <p class="my-booking__muted" i18n
+        >Check that you opened the full link from your email.</p
+      >
+      <a appButton variant="outline" routerLink="/" i18n>Back to home</a>
     </div>
   } @else if (booking(); as b) {
     <header class="my-booking__header">
-      <p class="eyebrow">Your booking</p>
+      <p class="eyebrow" i18n>Your booking</p>
       <h1 class="heading heading--lg">
         <span class="heading__accent">{{ b.reference }}</span>
       </h1>
@@ -30,7 +30,7 @@
     }
 
     @if (waitingForPayment()) {
-      <p class="alert alert--info" role="status">
+      <p class="alert alert--info" role="status" i18n>
         Confirming your payment with the bank… this takes a few seconds.
       </p>
     } @else if (b.canPay) {
@@ -40,25 +40,31 @@
             @if (
               b.payment?.status === 'Failed' || b.payment?.status === 'Pending'
             ) {
-              The payment was not completed.
+              <ng-container i18n>The payment was not completed.</ng-container>
             } @else {
-              Your ride is reserved. Pay to confirm it.
+              <ng-container i18n
+                >Your ride is reserved. Pay to confirm it.</ng-container
+              >
             }
           </p>
-          <p class="my-booking__muted">
-            Card or PayPal on Stripe's secure page. The price stays fixed.
-          </p>
+          <p class="my-booking__muted" i18n
+            >Card or PayPal on Stripe's secure page. The price stays fixed.</p
+          >
         </div>
         <button appButton type="button" [disabled]="paying()" (click)="pay()">
           <app-icon name="lock" />
-          {{ paying() ? 'Opening…' : 'Pay ' + (b.total | money: b.currency) }}
+          {{
+            paying() ? t.opening : t.pay((b.total | money: b.currency) ?? '')
+          }}
         </button>
       </div>
     } @else if (paidOk() && b.status !== 'Cancelled') {
-      <p class="alert alert--info" role="status">
-        Thank you, {{ b.clientName }}. Your ride is confirmed; the confirmation
-        and invoice were sent by email. We will send the driver's details before
-        the ride.
+      <p class="alert alert--info" role="status" i18n>
+        Thank you,
+        {{
+          b.clientName  // i18n(ph="name")
+        }}. Your ride is confirmed; the confirmation and invoice were sent by
+        email. We will send the driver's details before the ride.
       </p>
     }
 
@@ -68,7 +74,12 @@
           <span class="my-booking__ref">{{ leg.reference }}</span>
           <span class="my-booking__when">
             <app-icon class="my-booking__icon" name="calendar" />
-            {{ leg.pickupAt | date: 'EEE d MMM y, HH:mm' }} (Italian time)
+            <ng-container i18n
+              >{{
+                leg.pickupAt | date: 'EEE d MMM y, HH:mm' // i18n(ph="date")
+              }}
+              (local time)</ng-container
+            >
           </span>
           <span class="my-booking__route">
             {{ leg.pickupMeetingPoint?.name ?? leg.pickupAddress }} →
@@ -86,28 +97,39 @@
 
     <dl class="my-booking__facts">
       <div class="my-booking__fact">
-        <dt>Vehicle</dt>
+        <dt i18n>Vehicle</dt>
         <dd>{{ vehicles[b.vehicleCategory].title }}</dd>
       </div>
       <div class="my-booking__fact">
-        <dt>Total</dt>
+        <dt i18n>Total</dt>
         <dd>
           {{ b.total | money: b.currency }}
-          <span class="my-booking__muted"
-            >incl. VAT {{ b.vatRatePercent }}%</span
+          <span class="my-booking__muted" i18n
+            >incl. VAT
+            {{
+              b.vatRatePercent  // i18n(ph="rate")
+            }}%</span
           >
         </dd>
       </div>
       @if (b.payment; as p) {
         <div class="my-booking__fact">
-          <dt>Payment</dt>
+          <dt i18n>Payment</dt>
           <dd>
             {{ paymentLabel[p.status] }}
-            @if (p.method) {
-              · {{ p.method === 'PayPal' ? 'PayPal' : 'card' }}
+            @if (p.method === 'PayPal') {
+              · PayPal
+            } @else if (p.method) {
+              · <ng-container i18n="payment method">card</ng-container>
             }
             @if (p.refundedAmount > 0) {
-              · {{ p.refundedAmount | money: b.currency }} refunded
+              ·
+              <ng-container i18n
+                >{{
+                  p.refundedAmount | money: b.currency // i18n(ph="amount")
+                }}
+                refunded</ng-container
+              >
             }
           </dd>
         </div>
@@ -116,16 +138,19 @@
 
     @if (b.invoices.length) {
       <section class="my-booking__documents">
-        <h2 class="my-booking__subtitle">Documents</h2>
+        <h2 class="my-booking__subtitle" i18n>Documents</h2>
         @for (invoice of b.invoices; track invoice.number) {
           <a
             class="my-booking__document"
             [href]="invoiceUrl(invoice.number)"
             download>
             <app-icon class="my-booking__icon" name="download" />
-            {{ invoice.type === 'Invoice' ? 'Invoice' : 'Credit note' }}
-            {{ invoice.number }} ·
-            {{ invoice.totalAmount | money: b.currency }}
+            @if (invoice.type === 'Invoice') {
+              <ng-container i18n>Invoice</ng-container>
+            } @else {
+              <ng-container i18n>Credit note</ng-container>
+            }
+            {{ invoice.number }} · {{ invoice.totalAmount | money: b.currency }}
           </a>
         }
       </section>

@@ -21,20 +21,20 @@ import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { VEHICLE_INFO } from '../booking/vehicle-info'
 
 const STATUS_LABEL: Record<BookingStatus, string> = {
-  AwaitingPayment: 'Awaiting payment',
-  New: 'Confirmed',
-  Assigned: 'Driver assigned',
-  PickedUp: 'On the way',
-  Completed: 'Completed',
-  Cancelled: 'Cancelled',
+  AwaitingPayment: $localize`Awaiting payment`,
+  New: $localize`Confirmed`,
+  Assigned: $localize`Driver assigned`,
+  PickedUp: $localize`On the way`,
+  Completed: $localize`Completed`,
+  Cancelled: $localize`Cancelled`,
 }
 
 const PAYMENT_LABEL: Record<PaymentStatus, string> = {
-  Pending: 'Payment not completed',
-  Succeeded: 'Paid',
-  Failed: 'Payment not completed',
-  Refunded: 'Refunded',
-  PartiallyRefunded: 'Partly refunded',
+  Pending: $localize`Payment not completed`,
+  Succeeded: $localize`Paid`,
+  Failed: $localize`Payment not completed`,
+  Refunded: $localize`Refunded`,
+  PartiallyRefunded: $localize`Partly refunded`,
 }
 
 /** How long to wait for Stripe's webhook after the client comes back from the payment page. */
@@ -69,6 +69,10 @@ export class MyBookingComponent {
   protected readonly vehicles = VEHICLE_INFO
   protected readonly statusLabel = STATUS_LABEL
   protected readonly paymentLabel = PAYMENT_LABEL
+  protected readonly t = {
+    opening: $localize`Opening…`,
+    pay: (amount: string) => $localize`Pay ${amount}:amount:`,
+  }
 
   protected readonly paidOk = computed(() => {
     const status = this.booking()?.payment?.status
@@ -101,7 +105,7 @@ export class MyBookingComponent {
         this.error.set(
           problemMessage(
             err,
-            'The payment page could not be opened. Please try again.'
+            $localize`The payment page could not be opened. Please try again.`
           )
         )
       },

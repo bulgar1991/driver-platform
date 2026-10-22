@@ -1,0 +1,86 @@
+// Block: image — blurred preview → sharp image. Only opacity and filter change, on the GPU.
+:host {
+  @apply relative block overflow-hidden bg-ink-800;
+
+  // The preview, scaled up a little so the blurred edges stay outside the box.
+  &::before {
+    content: '';
+    @apply absolute inset-0 bg-cover bg-center;
+    background-image: var(--placeholder, none);
+    filter: blur(16px);
+    transform: scale(1.1);
+    transition: opacity 0.6s ease-out;
+  }
+
+  // A soft light passing over the box while it loads.
+  &::after {
+    content: '';
+    @apply pointer-events-none absolute inset-0;
+    background: linear-gradient(
+      100deg,
+      transparent 30%,
+      rgb(255 255 255 / 0.06) 50%,
+      transparent 70%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s linear infinite;
+    transition: opacity 0.4s;
+  }
+}
+
+:host(.image--cover) {
+  @apply absolute inset-0;
+}
+
+.image__img {
+  @apply relative block h-full w-full object-contain opacity-0;
+  filter: blur(12px);
+  transform: scale(1.02);
+  transition:
+    opacity 0.7s ease-out,
+    filter 0.9s ease-out,
+    transform 0.9s ease-out;
+}
+
+:host(.image--cover) .image__img {
+  @apply object-cover;
+}
+
+:host(.image--loaded) {
+  &::before,
+  &::after {
+    @apply opacity-0;
+  }
+
+  .image__img {
+    @apply opacity-100;
+    filter: none;
+    transform: none;
+  }
+}
+
+// Without the image, the preview stays, without the shimmer.
+:host(.image--failed)::after {
+  @apply hidden;
+}
+
+// No scripts (some crawlers, reader modes): show the image as is.
+@media (scripting: none) {
+  .image__img {
+    @apply opacity-100;
+    filter: none;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host::after {
+    animation: none;
+  }
+
+  .image__img {
+    transition: opacity 0.3s;
+    filter: none;
+    transform: none;
+  }
+}

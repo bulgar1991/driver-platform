@@ -96,7 +96,7 @@ public sealed class ReviewService(
         await db.SaveChangesAsync(cancellationToken);
 
         await notifications.SendReviewRequestAsync(
-            booking, $"{site.Value.FrontendBaseUrl.TrimEnd('/')}/review/{token}", channel, cancellationToken);
+            booking, $"{SiteLanguages.BaseUrl(site.Value.FrontendBaseUrl, booking.Client.Language)}/review/{token}", channel, cancellationToken);
     }
 
     public async Task<ReviewPage> GetAsync(string token, CancellationToken cancellationToken)

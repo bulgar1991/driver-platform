@@ -1,25 +1,37 @@
 <form class="details-step" (submit)="submit($event)" novalidate>
   <fieldset class="details-step__group" [formGroup]="details()">
-    <legend class="details-step__legend">Options</legend>
+    <legend class="details-step__legend" i18n>Options</legend>
 
     <p class="details-step__hint">
-      Child seats
+      <ng-container i18n>Child seats</ng-container>
       @if (options()?.extras?.ChildSeat; as price) {
-        · {{ price | money }} each
+        ·
+        <ng-container i18n
+          >{{
+            price | money // i18n(ph="price")
+          }}
+          each</ng-container
+        >
       }
     </p>
     <app-counter
+      i18n-label
       label="Infant seat"
+      i18n-hint
       hint="Group 0+, 0–13 kg"
       [max]="3"
       formControlName="infantSeats" />
     <app-counter
+      i18n-label
       label="Child seat"
+      i18n-hint
       hint="Group 1, 9–18 kg"
       [max]="3"
       formControlName="toddlerSeats" />
     <app-counter
+      i18n-label
       label="Booster"
+      i18n-hint
       hint="Group 2/3, 15–36 kg"
       [max]="3"
       formControlName="boosterSeats" />
@@ -30,7 +42,7 @@
         type="checkbox"
         formControlName="nameSign" />
       <span>
-        Name sign in arrivals
+        <ng-container i18n>Name sign in arrivals</ng-container>
         @if (options()?.extras?.NameSign; as price) {
           <span class="details-step__price">+{{ price | money }}</span>
         }
@@ -38,24 +50,28 @@
     </label>
     @if (details().controls.nameSign.value) {
       <app-form-field
+        i18n-label
         label="Name on the sign"
         for="nameSignText"
         [error]="detailsError('nameSignText')">
         <input
           id="nameSignText"
           class="input"
+          i18n-placeholder
           placeholder="Your name if left empty"
           formControlName="nameSignText" />
       </app-form-field>
     }
 
     <app-form-field
+      i18n-label
       label="Flight or ship number"
       for="flightNumber"
       [error]="detailsError('flightNumber')">
       <input
         id="flightNumber"
         class="input"
+        i18n-placeholder
         placeholder="Optional — we track delays"
         autocomplete="off"
         formControlName="flightNumber" />
@@ -67,9 +83,10 @@
           class="details-step__checkbox"
           type="checkbox"
           formControlName="returnNameSign" />
-        <span>Name sign on the return trip</span>
+        <span i18n>Name sign on the return trip</span>
       </label>
       <app-form-field
+        i18n-label
         label="Return flight or ship number"
         for="returnFlightNumber"
         [error]="detailsError('returnFlightNumber')">
@@ -81,7 +98,7 @@
       </app-form-field>
     }
 
-    <app-form-field label="Notes for the driver" for="notes">
+    <app-form-field i18n-label label="Notes for the driver" for="notes">
       <textarea
         id="notes"
         class="input details-step__notes"
@@ -91,9 +108,10 @@
   </fieldset>
 
   <fieldset class="details-step__group" [formGroup]="contact()">
-    <legend class="details-step__legend">Your details</legend>
+    <legend class="details-step__legend" i18n>Your details</legend>
     <div class="details-step__row">
       <app-form-field
+        i18n-label
         label="First name"
         for="firstName"
         [error]="contactError('firstName')">
@@ -104,6 +122,7 @@
           formControlName="firstName" />
       </app-form-field>
       <app-form-field
+        i18n-label
         label="Last name"
         for="lastName"
         [error]="contactError('lastName')">
@@ -115,7 +134,11 @@
       </app-form-field>
     </div>
     <div class="details-step__row">
-      <app-form-field label="Email" for="email" [error]="contactError('email')">
+      <app-form-field
+        i18n-label
+        label="Email"
+        for="email"
+        [error]="contactError('email')">
         <input
           id="email"
           class="input"
@@ -124,6 +147,7 @@
           formControlName="email" />
       </app-form-field>
       <app-form-field
+        i18n-label
         label="Mobile phone"
         for="phone"
         [error]="contactError('phone')">
@@ -142,7 +166,7 @@
         class="details-step__checkbox"
         type="checkbox"
         formControlName="gdprConsent" />
-      <span>
+      <span i18n>
         I agree that my details are used to arrange this ride, as described in
         the
         <a class="details-step__link" routerLink="/privacy" target="_blank"
@@ -154,28 +178,33 @@
       </span>
     </label>
     @if (contactError('gdprConsent')) {
-      <p class="details-step__error" role="alert">
-        Please accept to continue.
-      </p>
+      <p class="details-step__error" role="alert" i18n
+        >Please accept to continue.</p
+      >
     }
     <label class="details-step__toggle">
       <input
         class="details-step__checkbox"
         type="checkbox"
         formControlName="marketingConsent" />
-      <span>Send me occasional offers (optional).</span>
+      <span i18n>Send me occasional offers (optional).</span>
     </label>
   </fieldset>
 
   <div class="details-step__actions">
     <button appButton type="button" variant="ghost" (click)="back.emit()">
-      Change car
+      <ng-container i18n>Change car</ng-container>
     </button>
     <button appButton type="submit" [disabled]="loading() || !vehicle()">
       @if (loading()) {
-        Booking…
+        <ng-container i18n>Booking…</ng-container>
       } @else {
-        Book and pay · {{ vehicle()?.total | money }}
+        <ng-container i18n
+          >Book and pay ·
+          {{
+            vehicle()?.total | money // i18n(ph="total")
+          }}</ng-container
+        >
       }
     </button>
   </div>

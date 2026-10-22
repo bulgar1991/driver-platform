@@ -1,11 +1,17 @@
-<section id="partners" class="partners" aria-label="Our partners and clients">
+<section
+  id="partners"
+  class="partners"
+  i18n-aria-label
+  aria-label="Our partners and clients">
   <div class="page page__section partners__inner">
     <app-section-heading
+      i18n-eyebrow
       eyebrow="Our partners"
+      i18n-title
       title="And clients"
       [level]="page() ? 1 : 2"
       appReveal />
-    <p class="partners__lead" appReveal [delay]="80">
+    <p class="partners__lead" appReveal [delay]="80" i18n>
       Hotels, agencies and cruise companies book for their guests through our
       partner API or the panel, with agreed rates and monthly invoicing.
     </p>
@@ -18,12 +24,11 @@
           <li
             class="partners__item partners__item--logo"
             [attr.aria-hidden]="i >= logos.length / 2 ? 'true' : null">
-            <img
+            <app-image
               class="partners__logo"
-              [src]="logo.logo"
+              [image]="logo.logo"
               [alt]="logo.name"
-              loading="lazy"
-              decoding="async" />
+              sizes="160px" />
           </li>
         }
       } @else {
@@ -43,7 +48,7 @@
   </div>
 
   <div class="page partners__cta" appReveal [delay]="200">
-    <p class="partners__cta-text"
+    <p class="partners__cta-text" i18n
       >Want to offer Magnus Drive to your guests or clients?</p
     >
     <div class="partners__cta-actions">
@@ -51,7 +56,8 @@
         <a
           class="partners__cta-link"
           [href]="'mailto:' + contactEmail + '?subject=Partnership'">
-          <app-icon name="mail" /> Become a partner
+          <app-icon name="mail" />
+          <ng-container i18n>Become a partner</ng-container>
         </a>
       }
       <a
@@ -59,7 +65,8 @@
         [href]="docsUrl"
         target="_blank"
         rel="noopener">
-        <app-icon name="link" /> Partner API description
+        <app-icon name="link" />
+        <ng-container i18n>Partner API description</ng-container>
       </a>
     </div>
   </div>

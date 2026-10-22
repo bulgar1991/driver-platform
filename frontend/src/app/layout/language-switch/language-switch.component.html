@@ -1,0 +1,14 @@
+<nav class="language-switch" i18n-aria-label aria-label="Language">
+  @for (l of links(); track l.code) {
+    <a
+      class="language-switch__link"
+      [class.language-switch__link--active]="l.code === current.code"
+      [href]="l.href"
+      [attr.hreflang]="l.code"
+      [attr.lang]="l.code"
+      [attr.aria-current]="l.code === current.code ? 'true' : null"
+      [title]="l.name">
+      {{ variant() === 'menu' ? l.name : l.code.toUpperCase() }}
+    </a>
+  }
+</nav>

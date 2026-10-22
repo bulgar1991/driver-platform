@@ -27,6 +27,10 @@ export class TripStepComponent {
   readonly options = input<BookingOptions | null>(null)
 
   protected readonly minDate = todayInItaly()
+  protected readonly t = {
+    pickAddress: $localize`Pick an address from the list`,
+    returnMissing: $localize`Enter the return date and time`,
+  }
 
   protected invalid(name: keyof TripForm['controls']): boolean {
     const control = this.form().controls[name]

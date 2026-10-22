@@ -4,14 +4,13 @@
   aria-labelledby="welcome-title">
   <div class="welcome__media" appReveal="left">
     <div class="welcome__frame">
-      <img
+      <app-image
         class="welcome__image"
-        src="/assets/images/hero.jpg"
+        [image]="images.hero"
+        i18n-alt
         alt="Black Mercedes with a chauffeur in Italy"
-        loading="lazy"
-        decoding="async"
-        width="1254"
-        height="470" />
+        fit="cover"
+        sizes="(min-width: 1024px) 560px, 100vw" />
     </div>
     <span
       class="welcome__corner welcome__corner--top"

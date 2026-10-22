@@ -19,7 +19,8 @@ backup job. Files: `deploy/docker-compose.yml`, `deploy/Caddyfile`, `deploy/.env
 ## 2. DNS
 
 Point the domain (e.g. `magnusdrive.it`) at the server with an A (and AAAA) record. Caddy gets the
-certificate from Let's Encrypt on the first request.
+certificate from Let's Encrypt on the first request. `SITE_DOMAIN` in `.env` is also built into the
+site (canonical links, link previews, `sitemap.xml`): after changing it, rebuild with `--build`.
 
 ## 3. Configuration
 

@@ -4,13 +4,13 @@
 
   &__backdrop {
     @apply absolute inset-0 -z-20;
-    background: url('/assets/images/hero.jpg') center / cover no-repeat;
     animation: slow-zoom 24s ease-in-out infinite alternate;
     will-change: transform;
 
+    // The dark wash over the photo stays above the image.
     &::after {
       content: '';
-      @apply absolute inset-0;
+      @apply absolute inset-0 z-10;
       background:
         radial-gradient(
           ellipse at 50% 30%,

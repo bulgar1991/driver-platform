@@ -23,11 +23,15 @@ import {
 export class StatusBadgeComponent {
   readonly kind = input<'booking' | 'shift'>('booking')
   readonly status = input.required<BookingStatus | AssignmentStatus>()
+  /** Text to show instead of the panel's (English) label, e.g. a translated one on the driver's page. */
+  readonly text = input<string | null>(null)
 
-  protected readonly label = computed(() =>
-    this.kind() === 'booking'
-      ? BOOKING_STATUS_LABEL[this.status() as BookingStatus]
-      : SHIFT_STATUS_LABEL[this.status() as AssignmentStatus]
+  protected readonly label = computed(
+    () =>
+      this.text() ??
+      (this.kind() === 'booking'
+        ? BOOKING_STATUS_LABEL[this.status() as BookingStatus]
+        : SHIFT_STATUS_LABEL[this.status() as AssignmentStatus])
   )
 
   protected readonly tone = computed(() =>

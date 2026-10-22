@@ -1,24 +1,12 @@
-import { Component, input } from '@angular/core'
 import { provideHttpClient } from '@angular/common/http'
 import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing'
-import { TestBed } from '@angular/core/testing'
+import { DeferBlockBehavior, TestBed } from '@angular/core/testing'
 import { provideRouter } from '@angular/router'
 import { Quote } from '@/core/models'
-import { MapComponent } from '@/shared/components/map/map.component'
 import { BookingComponent } from './booking.component'
-
-/** Leaflet is not needed to test the form. */
-@Component({ selector: 'app-map', template: '' })
-class MapStubComponent {
-  readonly markers = input<unknown>()
-  readonly path = input<unknown>()
-  readonly zones = input<unknown>()
-  readonly fitPoints = input<unknown>()
-  readonly locked = input<unknown>()
-}
 
 const quote = (): Quote => ({
   outbound: {
@@ -67,19 +55,19 @@ const quote = (): Quote => ({
 describe('BookingComponent', () => {
   let http: HttpTestingController
 
-  beforeEach(() => {
-    vi.useFakeTimers()
+  beforeEach(async () => {
     TestBed.configureTestingModule({
+      // The map (Leaflet) is deferred; it is not needed to test the form, so it never loads.
+      deferBlockBehavior: DeferBlockBehavior.Manual,
+      imports: [BookingComponent],
       providers: [
         provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
       ],
     })
-    TestBed.overrideComponent(BookingComponent, {
-      remove: { imports: [MapComponent] },
-      add: { imports: [MapStubComponent] },
-    })
+    await TestBed.compileComponents()
+    vi.useFakeTimers()
     http = TestBed.inject(HttpTestingController)
   })
 

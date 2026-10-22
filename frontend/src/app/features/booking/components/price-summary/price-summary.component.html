@@ -15,10 +15,20 @@
         {{ item.leg.dropoffMeetingPoint?.name ?? item.leg.dropoff.address }}
       </p>
       <p class="price-summary__meta">
-        {{ item.leg.distanceKm }} km · about
-        {{ item.leg.durationMinutes | duration }}
+        <ng-container i18n
+          >{{
+            item.leg.distanceKm // i18n(ph="km")
+          }}
+          km · about
+          {{
+            item.leg.durationMinutes | duration // i18n(ph="duration")
+          }}</ng-container
+        >
         @if (item.leg.routeIsEstimate) {
-          · estimated
+          ·
+          <ng-container i18n="route distance is an estimate"
+            >estimated</ng-container
+          >
         }
       </p>
 
@@ -40,7 +50,7 @@
         </ul>
       } @else if (item.leg.surcharges.length) {
         <p class="price-summary__meta">
-          Includes
+          <ng-container i18n>Includes</ng-container>
           @for (s of item.leg.surcharges; track s.name; let last = $last) {
             {{ s.name }}{{ last ? '' : ', ' }}
           }
@@ -52,10 +62,20 @@
   @if (vehicle(); as v) {
     <div class="price-summary__total">
       <span>
-        Total · {{ title() }}
-        <span class="price-summary__vat">
-          incl. VAT {{ quote().vatRatePercent }}%
-          {{ v.vatIncluded | money: quote().currency }}
+        <ng-container i18n
+          >Total ·
+          {{
+            title() // i18n(ph="vehicle")
+          }}</ng-container
+        >
+        <span class="price-summary__vat" i18n>
+          incl. VAT
+          {{
+            quote().vatRatePercent  // i18n(ph="rate")
+          }}%
+          {{
+            v.vatIncluded | money: quote().currency // i18n(ph="amount")
+          }}
         </span>
       </span>
       <span class="price-summary__amount">
@@ -63,6 +83,8 @@
       </span>
     </div>
   } @else {
-    <p class="price-summary__meta">Choose a vehicle to see the full price.</p>
+    <p class="price-summary__meta" i18n
+      >Choose a vehicle to see the full price.</p
+    >
   }
 </section>

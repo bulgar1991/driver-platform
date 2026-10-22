@@ -13,11 +13,13 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop'
 import { RouterLink } from '@angular/router'
 import { catchError, of } from 'rxjs'
+import { VehicleCategory } from '@/core/models'
 import { SiteService } from '@/core/services/site.service'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { SectionHeadingComponent } from '@/shared/components/section-heading/section-heading.component'
 import { RevealDirective } from '@/shared/directives/reveal.directive'
+import { VEHICLE_TEXT } from '../../home.content'
 
 const AUTOPLAY_MS = 6000
 const SWIPE_PX = 50
@@ -46,6 +48,16 @@ export class TestimonialsComponent {
   /** The section is the whole page. */
   readonly page = input(false)
   protected readonly stars = [1, 2, 3, 4, 5]
+  protected readonly labels = {
+    position: (n: number, total: number) =>
+      $localize`${n}:position: of ${total}:total:`,
+    rating: (stars: number) => $localize`${stars}:stars: out of 5`,
+    show: (n: number) => $localize`Show review ${n}:number:`,
+  }
+
+  protected vehicleName(category: string): string {
+    return VEHICLE_TEXT[category as VehicleCategory]?.title ?? category
+  }
   protected readonly items = toSignal(
     inject(SiteService)
       .testimonials()

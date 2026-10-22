@@ -1,0 +1,14 @@
+<img
+  #img
+  class="image__img"
+  [src]="src()"
+  [attr.srcset]="asset()?.srcset ?? null"
+  [attr.sizes]="asset()?.srcset ? sizes() : null"
+  [attr.width]="asset()?.width ?? null"
+  [attr.height]="asset()?.height ?? null"
+  [alt]="alt()"
+  [attr.loading]="priority() ? 'eager' : 'lazy'"
+  [attr.fetchpriority]="priority() ? 'high' : null"
+  decoding="async"
+  (load)="onLoad()"
+  (error)="onError()" />

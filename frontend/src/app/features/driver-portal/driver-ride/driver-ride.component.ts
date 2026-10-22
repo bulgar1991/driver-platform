@@ -6,7 +6,12 @@ import {
   input,
   output,
 } from '@angular/core'
-import { DriverBookingView, LatLng, MapMarker } from '@/core/models'
+import {
+  DriverBookingView,
+  LatLng,
+  MapMarker,
+  BookingStatus,
+} from '@/core/models'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { MapComponent } from '@/shared/components/map/map.component'
@@ -14,9 +19,9 @@ import { StatusBadgeComponent } from '@/shared/components/status-badge/status-ba
 import { DurationPipe } from '@/shared/pipes/duration.pipe'
 
 const SEAT_LABEL = {
-  Infant: 'infant seat 0+',
-  Toddler: 'child seat gr. 1',
-  Booster: 'booster gr. 2/3',
+  Infant: $localize`infant seat 0+`,
+  Toddler: $localize`child seat gr. 1`,
+  Booster: $localize`booster gr. 2/3`,
 }
 
 export type RideAction = 'pickedUp' | 'completed'
@@ -42,6 +47,15 @@ export class DriverRideComponent {
   readonly action = output<RideAction>()
 
   protected readonly seatLabel = SEAT_LABEL
+  /** The driver's view of a ride's status (the panel's labels are for dispatchers). */
+  protected readonly statusText: Record<BookingStatus, string> = {
+    AwaitingPayment: $localize`Awaiting payment`,
+    New: $localize`:ride status for the driver:Scheduled`,
+    Assigned: $localize`:ride status for the driver:Scheduled`,
+    PickedUp: $localize`On board`,
+    Completed: $localize`Completed`,
+    Cancelled: $localize`Cancelled`,
+  }
 
   /** Where the car stops: the meeting point when the address has no car access. */
   protected readonly pickupStop = computed(
@@ -57,26 +71,26 @@ export class DriverRideComponent {
       {
         position: [this.pickupStop().latitude, this.pickupStop().longitude],
         kind: 'pickup',
-        label: 'Pickup',
+        label: $localize`Pickup`,
       },
       {
         position: [this.dropoffStop().latitude, this.dropoffStop().longitude],
         kind: 'dropoff',
-        label: 'Drop-off',
+        label: $localize`Drop-off`,
       },
     ]
     if (r.pickupMeetingPoint) {
       markers.push({
         position: [r.pickup.latitude, r.pickup.longitude],
         kind: 'meeting',
-        label: "Client's address",
+        label: $localize`Client's address`,
       })
     }
     if (r.dropoffMeetingPoint) {
       markers.push({
         position: [r.dropoff.latitude, r.dropoff.longitude],
         kind: 'meeting',
-        label: "Client's destination",
+        label: $localize`Client's destination`,
       })
     }
     return markers

@@ -11,4 +11,6 @@ public sealed class MapsOptions
     /// <summary>Nominatim's usage policy requires an identifying User-Agent with a contact.</summary>
     public string UserAgent { get; set; } = "MagnusDrive/1.0";
     public int TimeoutSeconds { get; set; } = 8;
+    /// <summary>Countries where addresses are searched and accepted (ISO codes, lower case).</summary>
+    public string[] Countries { get; set; } = ["it", "fr", "de", "ch"];
 }

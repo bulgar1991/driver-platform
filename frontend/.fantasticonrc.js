@@ -5,7 +5,8 @@ module.exports = {
   outputDir: './src/assets/fonts',
   name: 'icons',
   prefix: 'icon',
-  // woff works in every current browser; this ttf2woff2 build cannot produce woff2.
+  // woff works in every current browser (this ttf2woff2 build cannot produce woff2). It is then
+  // embedded in icons.css by scripts/inline-icon-font.mjs.
   fontTypes: ['woff'],
   assetTypes: ['css', 'ts'],
   normalize: true,

@@ -4,5 +4,8 @@
   // Room for the fixed header.
   &__main {
     @apply flex-1 pt-[4.25rem];
+    // Sections that slide in from the side start off-screen: never let them widen the page on
+    // phones. "clip" (unlike "hidden") keeps sticky elements working.
+    overflow-x: clip;
   }
 }

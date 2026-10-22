@@ -20,6 +20,26 @@ check "admin needs login" "$base/api/admin/bookings"                 401
 check "partner needs key" "$base/api/partner/v1/bookings"            401
 check "no dev payments"   "$base/api/dev/payments/x"                 404
 
+check "sitemap"           "$base/sitemap.xml"                        200
+
+# SEO: pages prerendered for this domain, private pages kept out of search results.
+seo() {
+    name="$1"; ok="$2"
+    if [ "$ok" = yes ]; then echo "ok    $name"; else echo "FAIL  $name"; fail=1; fi
+}
+curl -s "$base/tariffs" | grep -q "<link rel=\"canonical\" href=\"$base/tariffs\">" && r=yes || r=no
+seo "tariffs prerendered with canonical $base/tariffs" "$r"
+curl -s "$base/robots.txt" | grep -q "^Sitemap: $base/sitemap.xml" && r=yes || r=no
+seo "robots.txt points to the sitemap" "$r"
+curl -sI "$base/admin" | grep -qi "^x-robots-tag: noindex" && r=yes || r=no
+seo "panel marked noindex" "$r"
+for lang in de fr en; do
+    curl -s "$base/$lang/" | grep -q "<html lang=\"$lang\"" && r=yes || r=no
+    seo "/$lang/ served in $lang" "$r"
+done
+curl -s "$base/" | grep -q '<html lang="it"' && r=yes || r=no
+seo "/ served in Italian" "$r"
+
 headers=$(curl -sI "$base/")
 for h in strict-transport-security content-security-policy x-content-type-options; do
     if echo "$headers" | grep -qi "^$h:"; then echo "ok    header $h"; else echo "FAIL  header $h missing"; fail=1; fi

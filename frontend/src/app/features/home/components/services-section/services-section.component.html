@@ -1,10 +1,13 @@
 <section
   class="services-section"
   [class.services-section--page]="page()"
+  i18n-aria-label
   aria-label="Our services">
   <div class="page page__section">
     <app-section-heading
+      i18n-eyebrow
       eyebrow="What we do"
+      i18n-title
       title="Our Services"
       [level]="page() ? 1 : 2"
       appReveal />
@@ -17,11 +20,11 @@
     </ul>
     <p class="services-section__more" appReveal [delay]="450">
       @if (more()) {
-        <a class="services-section__link" routerLink="/services"
+        <a class="services-section__link" routerLink="/services" i18n
           >All services →</a
         >
       } @else {
-        <a class="services-section__link" routerLink="/tariffs"
+        <a class="services-section__link" routerLink="/tariffs" i18n
           >See our tariffs →</a
         >
       }

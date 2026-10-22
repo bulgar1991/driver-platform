@@ -6,12 +6,13 @@ import {
   ElementRef,
   inject,
   input,
+  LOCALE_ID,
   OnInit,
+  signal,
   viewChild,
 } from '@angular/core'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { FormBuilder } from '@angular/forms'
-import { Router } from '@angular/router'
 import { debounceTime, filter, merge } from 'rxjs'
 import {
   LatLng,
@@ -21,7 +22,10 @@ import {
   VehicleCategory,
   Zone,
 } from '@/core/models'
+import { siteLocale } from '@/core/i18n/locales'
+import { GeoService } from '@/core/services/geo.service'
 import { MapComponent } from '@/shared/components/map/map.component'
+import { DurationPipe } from '@/shared/pipes/duration.pipe'
 import { DetailsStepComponent } from './components/details-step/details-step.component'
 import { MeetingPointPickerComponent } from './components/meeting-point-picker/meeting-point-picker.component'
 import { PriceSummaryComponent } from './components/price-summary/price-summary.component'
@@ -45,6 +49,7 @@ const QUOTE_DEBOUNCE_MS = 500
   selector: 'app-booking',
   imports: [
     DetailsStepComponent,
+    DurationPipe,
     MapComponent,
     MeetingPointPickerComponent,
     PriceSummaryComponent,
@@ -62,10 +67,21 @@ export class BookingComponent implements OnInit {
   readonly embedded = input(false)
 
   protected readonly store = inject(BookingStore)
-  private readonly router = inject(Router)
   private readonly destroyRef = inject(DestroyRef)
   protected readonly forms = createBookingForms(inject(FormBuilder))
   private readonly detailsRef = viewChild<ElementRef<HTMLElement>>('details')
+  private readonly geo = inject(GeoService)
+  /** The site language: emails, messages and links for this booking use it. */
+  private readonly language = siteLocale(inject(LOCALE_ID)).code
+
+  protected readonly mapTargets = [
+    { id: 'pickup', label: $localize`Set From` },
+    { id: 'dropoff', label: $localize`Set To` },
+  ] as const
+  /** Which point a click on the map sets. */
+  protected readonly mapTarget = signal<'pickup' | 'dropoff'>('pickup')
+  protected readonly locating = signal(false)
+  protected readonly mapError = signal<string | null>(null)
 
   private readonly trip = toSignal(this.forms.trip.valueChanges, {
     initialValue: this.forms.trip.value,
@@ -159,6 +175,35 @@ export class BookingComponent implements OnInit {
       .subscribe(() => this.requote())
   }
 
+  /** A click on the map: the address there becomes From or To, then the price follows. */
+  protected placeOnMap([latitude, longitude]: LatLng): void {
+    const target = this.mapTarget()
+    this.locating.set(true)
+    this.mapError.set(null)
+    this.geo.reverse(latitude, longitude).subscribe({
+      next: place => {
+        this.locating.set(false)
+        const control = this.forms.trip.controls[target]
+        control.setValue({
+          address: place.address,
+          latitude: place.latitude,
+          longitude: place.longitude,
+        })
+        control.markAsTouched()
+        // From is set: the next click sets To, unless it is already there.
+        if (target === 'pickup' && !this.forms.trip.controls.dropoff.value) {
+          this.mapTarget.set('dropoff')
+        }
+      },
+      error: () => {
+        this.locating.set(false)
+        this.mapError.set(
+          $localize`No address found there. Try a point on a street in Italy, France, Switzerland or Germany.`
+        )
+      },
+    })
+  }
+
   protected chooseMeetingPoint(
     direction: 'pickup' | 'dropoff',
     name: string
@@ -197,7 +242,7 @@ export class BookingComponent implements OnInit {
       this.forms,
       vehicle.category,
       vehicle.total,
-      browserLanguage()
+      this.language
     )
     this.store.book(request).subscribe({
       next: result => {
@@ -205,7 +250,8 @@ export class BookingComponent implements OnInit {
           // Stripe's hosted page; it sends the client back to their booking page.
           window.location.assign(result.paymentUrl)
         } else {
-          void this.router.navigateByUrl(new URL(result.manageUrl).pathname)
+          // Nothing to pay (a partner booking): the client's page, in the client's language.
+          window.location.assign(result.manageUrl)
         }
       },
       error: () => undefined,
@@ -255,9 +301,4 @@ function legMarkers(leg: QuoteLeg): MapMarker[] {
     add(leg.dropoff, 'dropoff', leg.dropoff.address)
   }
   return markers
-}
-
-function browserLanguage(): string {
-  const lang = (navigator.language ?? 'en').slice(0, 2).toLowerCase()
-  return /^[a-z]{2}$/.test(lang) ? lang : 'en'
 }

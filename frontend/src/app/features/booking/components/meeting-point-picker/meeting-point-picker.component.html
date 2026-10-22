@@ -4,18 +4,33 @@
     <div>
       <h3 class="meeting-point__title">
         @if (noCar()) {
-          {{ zone().name }}: no car access
+          <ng-container i18n
+            >{{
+              zone().name  // i18n(ph="zone")
+            }}: no car access</ng-container
+          >
         } @else {
-          Meeting point · {{ zone().name }}
+          <ng-container i18n
+            >Meeting point ·
+            {{
+              zone().name // i18n(ph="zone")
+            }}</ng-container
+          >
         }
       </h3>
       <p class="meeting-point__text">
-        @if (noCar()) {
-          Cars cannot reach this address. Your driver will
-          {{ direction() === 'pickup' ? 'pick you up' : 'drop you off' }} at the
-          meeting point you choose; the price is calculated from there.
+        @if (noCar() && direction() === 'pickup') {
+          <ng-container i18n>
+            Cars cannot reach this address. Your driver will pick you up at the
+            meeting point you choose; the price is calculated from there.
+          </ng-container>
+        } @else if (noCar()) {
+          <ng-container i18n>
+            Cars cannot reach this address. Your driver will drop you off at the
+            meeting point you choose; the price is calculated from there.
+          </ng-container>
         } @else {
-          Your driver will meet you here.
+          <ng-container i18n>Your driver will meet you here.</ng-container>
         }
       </p>
     </div>

@@ -6,24 +6,29 @@
   <header class="driver-ride__header">
     <span class="driver-ride__time">{{ ride().pickupAt | date: 'HH:mm' }}</span>
     <span class="driver-ride__ref">{{ ride().reference }}</span>
-    <app-status-badge [status]="ride().status" />
+    <app-status-badge
+      [status]="ride().status"
+      [text]="statusText[ride().status]" />
   </header>
 
   <div class="driver-ride__stops">
     <div class="driver-ride__stop">
       <span class="driver-ride__dot driver-ride__dot--pickup"></span>
       <div>
-        <p class="driver-ride__label">Pickup</p>
+        <p class="driver-ride__label" i18n>Pickup</p>
         @if (ride().pickupMeetingPoint; as mp) {
-          <p class="driver-ride__place"
-            >{{ mp.name }}
-            <span class="driver-ride__muted">{{ mp.address }}</span></p
-          >
+          <p class="driver-ride__place">
+            {{ mp.name }}
+            <span class="driver-ride__muted">{{ mp.address }}</span>
+          </p>
           @if (mp.driverInstructions) {
             <p class="driver-ride__note">{{ mp.driverInstructions }}</p>
           }
-          <p class="driver-ride__muted"
-            >Client's address: {{ ride().pickup.address }}</p
+          <p class="driver-ride__muted" i18n
+            >Client's address:
+            {{
+              ride().pickup.address // i18n(ph="address")
+            }}</p
           >
         } @else {
           <p class="driver-ride__place">{{ ride().pickup.address }}</p>
@@ -33,22 +38,26 @@
           [href]="navigateTo(pickupStop())"
           target="_blank"
           rel="noopener">
-          <app-icon class="driver-ride__icon" name="navigate" /> Navigate
+          <app-icon class="driver-ride__icon" name="navigate" />
+          <ng-container i18n>Navigate</ng-container>
         </a>
       </div>
     </div>
     <div class="driver-ride__stop">
       <span class="driver-ride__dot driver-ride__dot--dropoff"></span>
       <div>
-        <p class="driver-ride__label">Drop-off</p>
+        <p class="driver-ride__label" i18n>Drop-off</p>
         @if (ride().dropoffMeetingPoint; as mp) {
-          <p class="driver-ride__place"
-            >{{ mp.name }}
-            <span class="driver-ride__muted">{{ mp.address }}</span></p
-          >
-          <p class="driver-ride__muted"
-            >Client's destination: {{ ride().dropoff.address }}</p
-          >
+          <p class="driver-ride__place">
+            {{ mp.name }}
+            <span class="driver-ride__muted">{{ mp.address }}</span>
+          </p>
+          <p class="driver-ride__muted" i18n>
+            Client's destination:
+            {{
+              ride().dropoff.address // i18n(ph="address")
+            }}
+          </p>
         } @else {
           <p class="driver-ride__place">{{ ride().dropoff.address }}</p>
         }
@@ -57,7 +66,8 @@
           [href]="navigateTo(dropoffStop())"
           target="_blank"
           rel="noopener">
-          <app-icon class="driver-ride__icon" name="navigate" /> Navigate
+          <app-icon class="driver-ride__icon" name="navigate" />
+          <ng-container i18n>Navigate</ng-container>
         </a>
       </div>
     </div>
@@ -68,24 +78,37 @@
     [locked]="true"
     [markers]="markers()"
     [fitPoints]="fit()" />
-  <p class="driver-ride__muted"
-    >{{ ride().distanceKm }} km · about
-    {{ ride().durationMinutes | duration }}</p
-  >
+  <p class="driver-ride__muted" i18n>
+    {{
+      ride().distanceKm // i18n(ph="km")
+    }}
+    km · about
+    {{
+      ride().durationMinutes | duration // i18n(ph="duration")
+    }}
+  </p>
 
   <dl class="driver-ride__facts">
-    <div
-      ><dt>Passengers</dt><dd>{{ ride().passengers }}</dd></div
-    >
-    <div
-      ><dt>Bags</dt
-      ><dd
-        >{{ ride().largeLuggage }} large · {{ ride().smallLuggage }} small</dd
-      ></div
-    >
+    <div>
+      <dt i18n>Passengers</dt>
+      <dd>{{ ride().passengers }}</dd>
+    </div>
+    <div>
+      <dt i18n>Bags</dt>
+      <dd i18n>
+        {{
+          ride().largeLuggage // i18n(ph="large")
+        }}
+        large ·
+        {{
+          ride().smallLuggage // i18n(ph="small")
+        }}
+        small
+      </dd>
+    </div>
     @if (ride().childSeats.length) {
       <div class="driver-ride__fact--alert">
-        <dt>Child seats</dt>
+        <dt i18n>Child seats</dt>
         <dd>
           @for (seat of ride().childSeats; track seat.group) {
             <span>{{ seat.count }} × {{ seatLabel[seat.group] }}</span>
@@ -94,31 +117,36 @@
       </div>
     }
     @if (ride().flightNumber) {
-      <div
-        ><dt>Flight</dt><dd>{{ ride().flightNumber }}</dd></div
-      >
+      <div>
+        <dt i18n>Flight</dt>
+        <dd>{{ ride().flightNumber }}</dd>
+      </div>
     }
     @if (ride().nameSign) {
-      <div class="driver-ride__fact--alert"
-        ><dt>Name sign</dt><dd>{{ ride().nameSignText }}</dd></div
-      >
+      <div class="driver-ride__fact--alert">
+        <dt i18n>Name sign</dt>
+        <dd>{{ ride().nameSignText }}</dd>
+      </div>
     }
   </dl>
 
   <div class="driver-ride__client">
-    <p class="driver-ride__place"
-      >{{ ride().clientName }}
-      <span class="driver-ride__muted"
-        >speaks {{ ride().clientLanguage }}</span
-      ></p
-    >
+    <p class="driver-ride__place">
+      {{ ride().clientName }}
+      <span class="driver-ride__muted" i18n
+        >speaks
+        {{
+          ride().clientLanguage // i18n(ph="language")
+        }}</span
+      >
+    </p>
     <div class="driver-ride__contact">
       <a
         appButton
         size="sm"
         variant="outline"
         [href]="'tel:' + ride().clientPhone"
-        ><app-icon name="phone" /> Call</a
+        ><app-icon name="phone" /> <ng-container i18n>Call</ng-container></a
       >
       <a
         appButton
@@ -142,8 +170,9 @@
       [block]="true"
       [disabled]="busy()"
       (click)="action.emit('pickedUp')"
-      >Client picked up</button
-    >
+      i18n>
+      Client picked up
+    </button>
   } @else if (ride().canComplete) {
     <button
       appButton
@@ -151,7 +180,8 @@
       [block]="true"
       [disabled]="busy()"
       (click)="action.emit('completed')"
-      >Ride completed</button
-    >
+      i18n>
+      Ride completed
+    </button>
   }
 </article>

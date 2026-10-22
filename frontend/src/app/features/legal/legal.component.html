@@ -1,135 +1,135 @@
 <article class="legal page">
-  <p class="legal__draft" role="note"
+  <p class="legal__draft" role="note" i18n
     >Draft — to be completed and reviewed by a lawyer before launch.</p
   >
 
   @if (page() === 'privacy') {
-    <h1 class="heading heading--lg">Privacy policy</h1>
+    <h1 class="heading heading--lg" i18n>Privacy policy</h1>
 
-    <h2 class="legal__title">Who is responsible</h2>
-    <p
+    <h2 class="legal__title" i18n>Who is responsible</h2>
+    <p i18n
       >[Company name, address, VAT number], email [privacy contact] (the
       “controller”).</p
     >
 
-    <h2 class="legal__title">What we collect and why</h2>
+    <h2 class="legal__title" i18n>What we collect and why</h2>
     <ul class="legal__list">
-      <li
+      <li i18n
         ><strong>Booking details</strong> — name, phone, email, language,
         addresses, date and time, passengers, luggage, child seats, flight
         number and notes — to arrange and carry out the ride you book (contract,
         GDPR art. 6(1)(b)).</li
       >
-      <li
+      <li i18n
         ><strong>Payment</strong> — handled by Stripe; we never receive your
         card details, only a payment reference and the method used
         (contract).</li
       >
-      <li
+      <li i18n
         ><strong>Invoices</strong> — kept as required by Italian tax law (legal
         obligation, art. 6(1)(c)).</li
       >
-      <li
+      <li i18n
         ><strong>IP address of the booking</strong> — to prevent fraud and
         handle payment disputes (legitimate interest, art. 6(1)(f)).</li
       >
-      <li
+      <li i18n
         ><strong>Reviews</strong> — your rating and comment, if you choose to
         leave one.</li
       >
-      <li
+      <li i18n
         ><strong>Offers</strong> — only if you tick the box (consent, art.
         6(1)(a)); you can withdraw it at any time.</li
       >
     </ul>
 
-    <h2 class="legal__title">Who receives it</h2>
+    <h2 class="legal__title" i18n>Who receives it</h2>
     <ul class="legal__list">
-      <li
+      <li i18n
         >The driver of your ride: name, phone, pickup details and the options
         you chose.</li
       >
-      <li
+      <li i18n
         >Service providers acting on our behalf: Stripe (payments), Meta
         (WhatsApp messages), [email provider], [hosting provider], and
         OpenStreetMap-based services for address search and routes.</li
       >
-      <li
+      <li i18n
         >The partner or agency you booked through, for bookings made via a
         partner.</li
       >
     </ul>
-    <p
+    <p i18n
       >Some providers may process data outside the EU under the European
       Commission's standard contractual clauses. [List to verify.]</p
     >
 
-    <h2 class="legal__title">How long we keep it</h2>
-    <p
+    <h2 class="legal__title" i18n>How long we keep it</h2>
+    <p i18n
       >Invoices and payment records: 10 years (art. 2220 Civil Code). Booking
       details: [to define, e.g. 24 months after the ride]. IP addresses: [to
       define, e.g. 12 months]. Personal booking links stop showing client
       details shortly after the ride.</p
     >
 
-    <h2 class="legal__title">Your rights</h2>
-    <p
+    <h2 class="legal__title" i18n>Your rights</h2>
+    <p i18n
       >You can ask to access, correct or delete your data, to restrict or object
       to its use, and to receive it in a portable format, by writing to [privacy
       contact]. You can also complain to the Garante per la protezione dei dati
       personali (garanteprivacy.it).</p
     >
   } @else {
-    <h1 class="heading heading--lg">Terms of service</h1>
+    <h1 class="heading heading--lg" i18n>Terms of service</h1>
 
-    <h2 class="legal__title">The service</h2>
-    <p
+    <h2 class="legal__title" i18n>The service</h2>
+    <p i18n
       >Private transfers with driver (NCC) from point A to point B in Italy,
-      operated by [company] or by licensed partner drivers. No hourly hire and
-      no tours.</p
+      France, Switzerland and Germany, operated by [company] or by licensed
+      partner drivers. No hourly hire and no tours.</p
     >
 
-    <h2 class="legal__title">Price</h2>
-    <p
+    <h2 class="legal__title" i18n>Price</h2>
+    <p i18n
       >The price shown before payment is final and includes VAT, the surcharges
       for the date and time, zone access fees and the options you chose. It does
       not change after payment.</p
     >
 
-    <h2 class="legal__title">Meeting points</h2>
-    <p
+    <h2 class="legal__title" i18n>Meeting points</h2>
+    <p i18n
       >Where cars cannot reach your address (for example the historic centre of
       Venice), the driver meets you at the meeting point shown during
       booking.</p
     >
 
-    <h2 class="legal__title">Cancellation and changes</h2>
-    <p
+    <h2 class="legal__title" i18n>Cancellation and changes</h2>
+    <p i18n
       >[To define: free cancellation until … hours before pickup; refund
       percentage after that; no-show rules.]</p
     >
 
-    <h2 class="legal__title">Waiting time and delays</h2>
-    <p
+    <h2 class="legal__title" i18n>Waiting time and delays</h2>
+    <p i18n
       >[To define: included waiting time at airports and at other pickups; what
       happens with flight delays.]</p
     >
 
-    <h2 class="legal__title">Your responsibilities</h2>
-    <p
+    <h2 class="legal__title" i18n>Your responsibilities</h2>
+    <p i18n
       >Give correct passenger, luggage and child-seat numbers and a reachable
       phone number. Child seats are provided as booked.</p
     >
 
-    <h2 class="legal__title">Complaints and law</h2>
-    <p
+    <h2 class="legal__title" i18n>Complaints and law</h2>
+    <p i18n
       >Write to [complaints contact]. Italian law applies; consumers keep the
       protection of the law of their country of residence and may go to the
       court of their place of residence.</p
     >
   }
 
-  <p class="legal__muted">
+  <p class="legal__muted" i18n>
     See also
     @if (page() === 'privacy') {
       <a class="legal__link" routerLink="/terms">terms of service</a>.

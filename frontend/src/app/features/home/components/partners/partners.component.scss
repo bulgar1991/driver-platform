@@ -47,8 +47,9 @@
     }
   }
 
+  // app-image with a plain URL: no preview, a shimmer until the logo has loaded.
   &__logo {
-    @apply max-h-12 max-w-full object-contain opacity-70 grayscale transition duration-300;
+    @apply h-12 w-full bg-transparent opacity-70 grayscale transition duration-300;
   }
 
   &__item:hover &__logo {

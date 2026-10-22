@@ -1,10 +1,14 @@
 <header class="site-header__bar">
   <div class="site-header__inner">
-    <a class="site-header__brand" routerLink="/" aria-label="Magnus Drive home">
+    <a
+      class="site-header__brand"
+      routerLink="/"
+      i18n-aria-label
+      aria-label="Magnus Drive home">
       <app-logo />
     </a>
 
-    <nav class="site-header__nav" aria-label="Main">
+    <nav class="site-header__nav" i18n-aria-label aria-label="Main">
       @for (p of pages; track p.path) {
         <a
           class="site-header__link"
@@ -16,7 +20,8 @@
     </nav>
 
     <div class="site-header__actions">
-      <a appButton size="sm" class="site-header__book" routerLink="/book"
+      <app-language-switch class="site-header__languages" />
+      <a appButton size="sm" class="site-header__book" routerLink="/book" i18n
         >Book a ride</a
       >
       <button
@@ -24,7 +29,7 @@
         class="site-header__toggle"
         [attr.aria-expanded]="open()"
         aria-controls="site-menu"
-        [attr.aria-label]="open() ? 'Close menu' : 'Open menu'"
+        [attr.aria-label]="open() ? menuLabels.close : menuLabels.open"
         (click)="open.set(!open())">
         <app-icon [name]="open() ? 'close' : 'menu'" />
       </button>
@@ -32,7 +37,11 @@
   </div>
 
   @if (open()) {
-    <nav id="site-menu" class="site-header__menu" aria-label="Main">
+    <nav
+      id="site-menu"
+      class="site-header__menu"
+      i18n-aria-label
+      aria-label="Main">
       @for (p of pages; track p.path; let i = $index) {
         <a
           class="site-header__menu-link"
@@ -42,7 +51,8 @@
           >{{ p.label }}</a
         >
       }
-      <a appButton [block]="true" routerLink="/book">Book a ride</a>
+      <a appButton [block]="true" routerLink="/book" i18n>Book a ride</a>
+      <app-language-switch variant="menu" class="site-header__menu-languages" />
     </nav>
   }
 </header>

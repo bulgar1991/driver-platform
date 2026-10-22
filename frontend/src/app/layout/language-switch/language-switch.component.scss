@@ -1,0 +1,29 @@
+:host {
+  @apply block;
+}
+
+// IT · EN · DE · FR: small caps in the bar, the active one in gold.
+.language-switch {
+  @apply flex items-center gap-0.5 rounded-full border border-ink-500 p-0.5;
+
+  &__link {
+    @apply rounded-full px-2 py-1 text-[0.6875rem] font-semibold tracking-wider text-ivory-300 no-underline transition-colors duration-300 hover:text-ivory;
+
+    &--active {
+      @apply bg-gold/15 text-gold hover:text-gold;
+    }
+  }
+}
+
+// Mobile menu: full names in a row that wraps.
+:host(.language-switch--menu) .language-switch {
+  @apply flex-wrap justify-center gap-2 rounded-none border-0 p-0;
+
+  .language-switch__link {
+    @apply border border-ink-500 px-3 py-1.5 text-xs font-normal normal-case tracking-normal;
+  }
+
+  .language-switch__link--active {
+    @apply border-gold;
+  }
+}

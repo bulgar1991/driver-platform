@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { IconComponent } from '@/shared/components/icon/icon.component'
+import { ImageComponent } from '@/shared/components/image/image.component'
 import { SectionHeadingComponent } from '@/shared/components/section-heading/section-heading.component'
 import { RevealDirective } from '@/shared/directives/reveal.directive'
 import { CONTACT, PARTNER_LOGOS, PARTNER_SEGMENTS } from '../../home.content'
@@ -10,7 +11,12 @@ import { CONTACT, PARTNER_LOGOS, PARTNER_SEGMENTS } from '../../home.content'
  */
 @Component({
   selector: 'app-partners',
-  imports: [IconComponent, SectionHeadingComponent, RevealDirective],
+  imports: [
+    IconComponent,
+    ImageComponent,
+    SectionHeadingComponent,
+    RevealDirective,
+  ],
   templateUrl: './partners.component.html',
   styleUrl: './partners.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

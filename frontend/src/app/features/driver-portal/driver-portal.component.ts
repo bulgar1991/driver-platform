@@ -12,7 +12,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Meta } from '@angular/platform-browser'
 import { filter, Observable, Subscription } from 'rxjs'
-import { DriverPortal } from '@/core/models'
+import { DriverPortal, AssignmentStatus } from '@/core/models'
 import { DriverPortalService } from '@/core/services/driver-portal.service'
 import { poll } from '@/core/utils/poll'
 import { problemMessage } from '@/core/utils/problem'
@@ -39,6 +39,18 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DriverPortalComponent {
+  protected readonly t = {
+    confirming: $localize`Confirming…`,
+    confirm: $localize`Confirm this shift`,
+  }
+  protected readonly shiftStatus: Record<AssignmentStatus, string> = {
+    Draft: $localize`Draft`,
+    Sent: $localize`:shift status, not yet confirmed by the driver:New`,
+    Seen: $localize`:shift status, not yet confirmed by the driver:New`,
+    Confirmed: $localize`Confirmed`,
+    Completed: $localize`Completed`,
+    Cancelled: $localize`Cancelled`,
+  }
   readonly token = input.required<string>()
 
   private readonly api = inject(DriverPortalService)

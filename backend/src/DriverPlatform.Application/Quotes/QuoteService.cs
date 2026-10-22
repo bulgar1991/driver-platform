@@ -141,14 +141,14 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
         var to = new Coordinate(dropoff.Latitude, dropoff.Longitude);
         var valid = true;
 
-        if (!GeoMath.IsInItaly(from))
+        if (!GeoMath.IsInServiceArea(from))
         {
-            errors.Add(prefix + "pickup", "We only operate in Italy for now.");
+            errors.Add(prefix + "pickup", "We operate in Italy, France, Germany and Switzerland.");
             valid = false;
         }
-        if (!GeoMath.IsInItaly(to))
+        if (!GeoMath.IsInServiceArea(to))
         {
-            errors.Add(prefix + "dropoff", "We only operate in Italy for now.");
+            errors.Add(prefix + "dropoff", "We operate in Italy, France, Germany and Switzerland.");
             valid = false;
         }
         if (valid && GeoMath.DistanceMeters(from, to) < MinTripMeters)
@@ -161,7 +161,7 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
         var now = clock.GetUtcNow();
         if (utc is null)
         {
-            errors.Add(prefix + "pickupAt", "This time does not exist in Italy (clocks go forward). Pick another time.");
+            errors.Add(prefix + "pickupAt", "This time does not exist locally (clocks go forward). Pick another time.");
             valid = false;
         }
         else if (utc < now.AddHours(settings.MinLeadTimeHours))

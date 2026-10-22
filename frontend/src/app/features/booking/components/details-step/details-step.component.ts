@@ -45,8 +45,8 @@ export class DetailsStepComponent {
       return null
     }
     return control.hasError('pattern')
-      ? 'Letters and digits only, e.g. FR 1234'
-      : 'Too long'
+      ? $localize`Letters and digits only, e.g. FR 1234`
+      : $localize`Too long`
   }
 
   protected contactError(name: keyof ContactForm['controls']): string | null {
@@ -55,14 +55,14 @@ export class DetailsStepComponent {
       return null
     }
     if (control.hasError('required')) {
-      return 'Required'
+      return $localize`Required`
     }
     if (control.hasError('email')) {
-      return 'Enter a valid email'
+      return $localize`Enter a valid email`
     }
     return control.hasError('pattern')
-      ? 'Enter a phone number with the country code, e.g. +39 …'
-      : 'Too long'
+      ? $localize`Enter a phone number with the country code, e.g. +39 333 123 4567`
+      : $localize`Too long`
   }
 
   /** The form spans two form groups, so it handles the native submit itself. */

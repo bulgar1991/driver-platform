@@ -2,7 +2,12 @@
   <header class="driver-portal__bar">
     <app-logo />
     @if (portal(); as p) {
-      <span class="driver-portal__hello">Hi {{ p.driverFirstName }}</span>
+      <span class="driver-portal__hello" i18n
+        >Hi
+        {{
+          p.driverFirstName // i18n(ph="name")
+        }}</span
+      >
     }
   </header>
 
@@ -12,11 +17,11 @@
     }
 
     @if (loading()) {
-      <p class="driver-portal__muted">Loading your shifts…</p>
+      <p class="driver-portal__muted" i18n>Loading your shifts…</p>
     } @else if (invalid()) {
       <div class="driver-portal__empty">
-        <h1 class="heading heading--md">This link is not valid</h1>
-        <p class="driver-portal__muted"
+        <h1 class="heading heading--md" i18n>This link is not valid</h1>
+        <p class="driver-portal__muted" i18n
           >Ask the dispatcher to send you your current link.</p
         >
       </div>
@@ -39,7 +44,10 @@
                 >{{ shift.vehiclePlate }} · {{ shift.vehicleLabel }}</p
               >
             </div>
-            <app-status-badge kind="shift" [status]="shift.status" />
+            <app-status-badge
+              kind="shift"
+              [status]="shift.status"
+              [text]="shiftStatus[shift.status]" />
           </header>
 
           @if (shift.notes) {
@@ -47,7 +55,7 @@
           }
 
           @if (shift.status === 'Cancelled') {
-            <p class="driver-portal__muted"
+            <p class="driver-portal__muted" i18n
               >This shift was cancelled. You don't need to do anything.</p
             >
           } @else {
@@ -58,7 +66,7 @@
                 [block]="true"
                 [disabled]="busy() === shift.id"
                 (click)="confirm(shift.id)">
-                {{ busy() === shift.id ? 'Confirming…' : 'Confirm this shift' }}
+                {{ busy() === shift.id ? t.confirming : t.confirm }}
               </button>
             }
             @for (ride of shift.bookings; track ride.id) {
@@ -71,8 +79,8 @@
         </section>
       } @empty {
         <div class="driver-portal__empty">
-          <h1 class="heading heading--md">No shifts for now</h1>
-          <p class="driver-portal__muted"
+          <h1 class="heading heading--md" i18n>No shifts for now</h1>
+          <p class="driver-portal__muted" i18n
             >New shifts appear here; you also get them on WhatsApp.</p
           >
         </div>
