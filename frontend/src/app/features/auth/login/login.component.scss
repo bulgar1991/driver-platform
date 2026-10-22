@@ -13,4 +13,8 @@
   &__header {
     @apply mb-2 flex flex-col items-center gap-2;
   }
+
+  &__languages {
+    @apply mt-2;
+  }
 }

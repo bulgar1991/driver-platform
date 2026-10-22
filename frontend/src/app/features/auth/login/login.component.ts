@@ -12,6 +12,7 @@ import { AuthService } from '@/core/services/auth.service'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { LogoComponent } from '@/shared/components/logo/logo.component'
+import { LanguageSwitchComponent } from '@/layout/language-switch/language-switch.component'
 
 @Component({
   selector: 'app-login',
@@ -19,6 +20,7 @@ import { LogoComponent } from '@/shared/components/logo/logo.component'
     ReactiveFormsModule,
     ButtonComponent,
     FormFieldComponent,
+    LanguageSwitchComponent,
     LogoComponent,
   ],
   templateUrl: './login.component.html',
