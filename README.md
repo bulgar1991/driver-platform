@@ -26,6 +26,10 @@ The steps follow §8 of the business plan. Each step ends with something that ca
 
 Requirements: .NET 10 SDK, Node 24, PostgreSQL 17.
 
+**Everything at once:** `./dev.sh` from the repository root starts the API, waits until it answers,
+then starts the site in all four languages; their output is marked `[api]` and `[web]`, and
+Ctrl+C stops both. Or start them separately:
+
 ```bash
 # API on http://localhost:5000 — migrates and seeds the database on start (Development only)
 cd backend
