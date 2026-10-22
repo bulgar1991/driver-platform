@@ -1,6 +1,6 @@
 // Serves the built site in all four languages, like Caddy in production (deploy/Caddyfile):
 // Italian at /, English, German and French under /en, /de, /fr; /api goes to the backend.
-// `ng serve` can serve one language only. Used by `npm run start:languages`.
+// `ng serve` can serve one language only. Used by `npm run preview` (production-like: prerendered pages, no live reload).
 import { createReadStream, existsSync, statSync } from 'node:fs'
 import http from 'node:http'
 import { extname, join, normalize } from 'node:path'
@@ -77,7 +77,7 @@ http
     }
     const file = resolve(url.pathname)
     if (!file || !isFile(file)) {
-      res.writeHead(404).end('Not built yet: run npm run start:languages.')
+      res.writeHead(404).end('Not built yet: run npm run preview.')
       return
     }
     res.writeHead(200, {

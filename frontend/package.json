@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --configuration development",
-    "start:languages": "ng build --configuration development --localize --watch & node scripts/serve-languages.mjs",
+    "start": "node scripts/dev-languages.mjs",
+    "start:it": "ng serve --configuration development",
+    "preview": "ng build --configuration development --localize && node scripts/serve-languages.mjs",
     "start:stage": "ng serve --configuration staging",
     "start:prod": "ng serve --configuration production",
     "start:local": "ng serve --configuration local",

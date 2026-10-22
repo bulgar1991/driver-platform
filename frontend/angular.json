@@ -44,10 +44,7 @@
             "outputPath": "dist/frontend",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": [
-              "zone.js",
-              "@angular/localize/init"
-            ],
+            "polyfills": ["zone.js", "@angular/localize/init"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -56,10 +53,7 @@
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets",
-                "ignore": [
-                  "images/src/**",
-                  "icons/**"
-                ]
+                "ignore": ["images/src/**", "icons/**"]
               },
               "src/exit_iframe.html",
               "src/manifest.webmanifest",
@@ -77,9 +71,7 @@
               "src/polyfills/hasOwn.js",
               "src/polyfills/arrayAt.js"
             ],
-            "allowedCommonJsDependencies": [
-              "leaflet"
-            ],
+            "allowedCommonJsDependencies": ["leaflet"],
             "server": "src/main.server.ts",
             "outputMode": "static",
             "localize": true,
@@ -114,9 +106,19 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
-              "localize": [
-                "it"
-              ]
+              "localize": ["it"]
+            },
+            "development-en": {
+              "localize": ["en"],
+              "baseHref": "/en/"
+            },
+            "development-de": {
+              "localize": ["de"],
+              "baseHref": "/de/"
+            },
+            "development-fr": {
+              "localize": ["fr"],
+              "baseHref": "/fr/"
             }
           },
           "defaultConfiguration": "production"
@@ -139,6 +141,21 @@
             "local": {
               "buildTarget": "frontend:build:development",
               "proxyConfig": "proxy.local.json"
+            },
+            "development-en": {
+              "buildTarget": "frontend:build:development,development-en",
+              "proxyConfig": "proxy.dev.json",
+              "servePath": "/en/"
+            },
+            "development-de": {
+              "buildTarget": "frontend:build:development,development-de",
+              "proxyConfig": "proxy.dev.json",
+              "servePath": "/de/"
+            },
+            "development-fr": {
+              "buildTarget": "frontend:build:development,development-fr",
+              "proxyConfig": "proxy.dev.json",
+              "servePath": "/fr/"
             }
           },
           "options": {
@@ -165,10 +182,7 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       },
@@ -196,9 +210,7 @@
   },
   "cli": {
     "analytics": false,
-    "schematicCollections": [
-      "@angular-eslint/schematics"
-    ],
+    "schematicCollections": ["@angular-eslint/schematics"],
     "cache": {
       "enabled": false
     }
