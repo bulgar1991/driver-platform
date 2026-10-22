@@ -8,11 +8,21 @@
       </p>
       <p class="price-summary__place">
         <span class="price-summary__dot price-summary__dot--pickup"></span>
-        {{ item.leg.pickupMeetingPoint?.name ?? item.leg.pickup.address }}
+        {{
+          item.leg.pickupMeetingPoint
+            ? (item.leg.pickupMeetingPoint.name
+              | translated: item.leg.pickupMeetingPoint.nameTranslations)
+            : item.leg.pickup.address
+        }}
       </p>
       <p class="price-summary__place">
         <span class="price-summary__dot price-summary__dot--dropoff"></span>
-        {{ item.leg.dropoffMeetingPoint?.name ?? item.leg.dropoff.address }}
+        {{
+          item.leg.dropoffMeetingPoint
+            ? (item.leg.dropoffMeetingPoint.name
+              | translated: item.leg.dropoffMeetingPoint.nameTranslations)
+            : item.leg.dropoff.address
+        }}
       </p>
       <p class="price-summary__meta">
         <ng-container i18n

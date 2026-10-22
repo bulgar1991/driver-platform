@@ -73,7 +73,7 @@ public static class PriceCalculator
         foreach (var zone in input.FeeZones.Where(z => z.AccessFee > 0))
         {
             zoneFeesTotal += zone.AccessFee;
-            lines.Add(new PriceLine { Kind = PriceLineKind.ZoneFee, Label = texts.ZoneAccess(zone.Name), Amount = zone.AccessFee });
+            lines.Add(new PriceLine { Kind = PriceLineKind.ZoneFee, Label = texts.ZoneAccess(zone.DisplayName(texts)), Amount = zone.AccessFee });
         }
 
         var extrasTotal = 0m;

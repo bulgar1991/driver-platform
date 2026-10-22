@@ -18,14 +18,16 @@ import {
   LatLng,
   MapMarker,
   MapZone,
+  MeetingPoint,
   QuoteLeg,
   VehicleCategory,
   Zone,
 } from '@/core/models'
-import { siteLocale } from '@/core/i18n/locales'
+import { SiteLocale, siteLocale } from '@/core/i18n/locales'
 import { GeoService } from '@/core/services/geo.service'
 import { MapComponent } from '@/shared/components/map/map.component'
 import { DurationPipe } from '@/shared/pipes/duration.pipe'
+import { pickTranslation } from '@/shared/pipes/translated.pipe'
 import { DetailsStepComponent } from './components/details-step/details-step.component'
 import { MeetingPointPickerComponent } from './components/meeting-point-picker/meeting-point-picker.component'
 import { PriceSummaryComponent } from './components/price-summary/price-summary.component'
@@ -96,7 +98,7 @@ export class BookingComponent implements OnInit {
   protected readonly markers = computed<MapMarker[]>(() => {
     const quote = this.store.quote()
     if (quote) {
-      return legMarkers(quote.outbound)
+      return legMarkers(quote.outbound, this.language)
     }
     const { pickup, dropoff } = this.trip()
     const markers: MapMarker[] = []
@@ -271,7 +273,9 @@ export class BookingComponent implements OnInit {
   }
 }
 
-function legMarkers(leg: QuoteLeg): MapMarker[] {
+function legMarkers(leg: QuoteLeg, language: SiteLocale['code']): MapMarker[] {
+  const name = (point: MeetingPoint) =>
+    pickTranslation(point.name, point.nameTranslations, language)
   const markers: MapMarker[] = []
   const add = (
     point: { latitude: number; longitude: number },
@@ -284,7 +288,7 @@ function legMarkers(leg: QuoteLeg): MapMarker[] {
     add(
       leg.pickupMeetingPoint,
       'pickup',
-      `Pickup: ${leg.pickupMeetingPoint.name}`
+      $localize`Pickup: ${name(leg.pickupMeetingPoint)}:place:`
     )
     add(leg.pickup, 'meeting', leg.pickup.address)
   } else {
@@ -294,7 +298,7 @@ function legMarkers(leg: QuoteLeg): MapMarker[] {
     add(
       leg.dropoffMeetingPoint,
       'dropoff',
-      `Drop-off: ${leg.dropoffMeetingPoint.name}`
+      $localize`Drop-off: ${name(leg.dropoffMeetingPoint)}:place:`
     )
     add(leg.dropoff, 'meeting', leg.dropoff.address)
   } else {

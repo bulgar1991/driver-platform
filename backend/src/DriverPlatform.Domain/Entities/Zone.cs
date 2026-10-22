@@ -7,7 +7,9 @@ namespace DriverPlatform.Domain.Entities;
 /// <summary>A circle or polygon on the map with local rules, configured without code changes.</summary>
 public class Zone : Entity
 {
+    /// <summary>In English; clients see <see cref="NameTranslations"/> in their language.</summary>
     public string Name { get; set; } = "";
+    public Translations? NameTranslations { get; set; }
     public ZoneType Type { get; set; }
     public ZoneShape Shape { get; set; }
     public double? CenterLatitude { get; set; }

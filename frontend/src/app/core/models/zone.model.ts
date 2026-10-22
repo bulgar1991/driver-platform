@@ -1,4 +1,4 @@
-import { MeetingPoint } from './geo.model'
+import { MeetingPoint, Translations } from './geo.model'
 
 export type ZoneType =
   'NoCarAccess' | 'LimitedTraffic' | 'Airport' | 'TrainStation' | 'Port'
@@ -13,7 +13,10 @@ export interface PolygonPoint {
 /** A circle or polygon on the map with local rules (Venice, ZTL, airports). */
 export interface Zone {
   id: string
+  /** In the client's language from the public API; in English in the admin API. */
   name: string
+  /** Only present in the admin API. */
+  nameTranslations?: Translations | null
   type: ZoneType
   shape: ZoneShape
   centerLatitude: number | null

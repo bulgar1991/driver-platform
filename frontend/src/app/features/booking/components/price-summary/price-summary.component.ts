@@ -10,6 +10,7 @@ import { IconComponent } from '@/shared/components/icon/icon.component'
 import { DurationPipe } from '@/shared/pipes/duration.pipe'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { VEHICLE_INFO } from '../../vehicle-info'
+import { TranslatedPipe } from '@/shared/pipes/translated.pipe'
 
 interface LegView {
   title: string
@@ -20,7 +21,7 @@ interface LegView {
 /** Route and price breakdown, shown next to the map. */
 @Component({
   selector: 'app-price-summary',
-  imports: [DatePipe, DurationPipe, IconComponent, MoneyPipe],
+  imports: [DatePipe, DurationPipe, IconComponent, MoneyPipe, TranslatedPipe],
   templateUrl: './price-summary.component.html',
   styleUrl: './price-summary.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

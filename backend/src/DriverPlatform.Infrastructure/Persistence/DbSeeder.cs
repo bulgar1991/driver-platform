@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using DriverPlatform.Application.Abstractions;
 using DriverPlatform.Application.DriverPortal;
 using DriverPlatform.Application.Pricing;
@@ -224,12 +225,29 @@ public sealed class DbSeeder(
     }
 
     /// <summary>
-    /// Italian, German and French for the texts seeded above, keyed by the English text. Filled in
+    /// Italian, German and French for the names and texts seeded above, keyed by the English text. Filled in
     /// only where nothing is translated yet, so it also reaches older databases and never
     /// overwrites what the staff typed.
     /// </summary>
     private static readonly Dictionary<string, Translations> SeededTranslations = new()
     {
+        // Zones and meeting points (Piazzale Roma and Tronchetto are the same in every language).
+        ["Venice historic centre"] = new() { It = "Centro storico di Venezia", De = "Altstadt von Venedig", Fr = "Centre historique de Venise" },
+        ["Rome ZTL (historic centre)"] = new() { It = "ZTL di Roma (centro storico)", De = "ZTL Rom (Altstadt)", Fr = "ZTL de Rome (centre historique)" },
+        ["Milan Area C"] = new() { It = "Area C di Milano", De = "Mailand Area C", Fr = "Area C de Milan" },
+        ["Florence ZTL"] = new() { It = "ZTL di Firenze", De = "ZTL Florenz", Fr = "ZTL de Florence" },
+        ["Rome Fiumicino Airport (FCO)"] = new() { It = "Aeroporto di Roma Fiumicino (FCO)", De = "Flughafen Rom-Fiumicino (FCO)", Fr = "Aéroport de Rome-Fiumicino (FCO)" },
+        ["Venice Marco Polo Airport (VCE)"] = new() { It = "Aeroporto di Venezia Marco Polo (VCE)", De = "Flughafen Venedig Marco Polo (VCE)", Fr = "Aéroport de Venise Marco-Polo (VCE)" },
+        ["Milan Malpensa Airport (MXP)"] = new() { It = "Aeroporto di Milano Malpensa (MXP)", De = "Flughafen Mailand-Malpensa (MXP)", Fr = "Aéroport de Milan-Malpensa (MXP)" },
+        ["Florence Airport (FLR)"] = new() { It = "Aeroporto di Firenze (FLR)", De = "Flughafen Florenz (FLR)", Fr = "Aéroport de Florence (FLR)" },
+        ["Naples Airport (NAP)"] = new() { It = "Aeroporto di Napoli (NAP)", De = "Flughafen Neapel (NAP)", Fr = "Aéroport de Naples (NAP)" },
+        ["Venice cruise terminal (Marittima)"] = new() { It = "Terminal crociere di Venezia (Marittima)", De = "Kreuzfahrtterminal Venedig (Marittima)", Fr = "Terminal de croisière de Venise (Marittima)" },
+        ["Venezia Mestre station"] = new() { It = "Stazione di Venezia Mestre", De = "Bahnhof Venezia Mestre", Fr = "Gare de Venezia Mestre" },
+        ["Fiumicino Terminal 3 arrivals"] = new() { It = "Fiumicino Terminal 3, arrivi", De = "Fiumicino Terminal 3, Ankunft", Fr = "Fiumicino Terminal 3, arrivées" },
+        ["Marco Polo arrivals hall"] = new() { It = "Marco Polo, sala arrivi", De = "Marco Polo, Ankunftshalle", Fr = "Marco Polo, hall des arrivées" },
+        ["Malpensa Terminal 1 arrivals"] = new() { It = "Malpensa Terminal 1, arrivi", De = "Malpensa Terminal 1, Ankunft", Fr = "Malpensa Terminal 1, arrivées" },
+        ["Florence Airport arrivals"] = new() { It = "Aeroporto di Firenze, arrivi", De = "Flughafen Florenz, Ankunft", Fr = "Aéroport de Florence, arrivées" },
+        ["Naples Airport arrivals"] = new() { It = "Aeroporto di Napoli, arrivi", De = "Flughafen Neapel, Ankunft", Fr = "Aéroport de Naples, arrivées" },
         ["Weekend (Fri–Sun)"] = new() { It = "Weekend (ven–dom)", De = "Wochenende (Fr–So)", Fr = "Week-end (ven–dim)" },
         ["Night 22:00–06:00"] = new() { It = "Notte 22:00–06:00", De = "Nacht 22:00–06:00", Fr = "Nuit 22h00–06h00" },
         ["Peak season (July–August)"] = new() { It = "Alta stagione (luglio–agosto)", De = "Hochsaison (Juli–August)", Fr = "Haute saison (juillet–août)" },
@@ -262,6 +280,10 @@ public sealed class DbSeeder(
         }
         foreach (var zone in await db.Zones.ToListAsync(cancellationToken))
         {
+            if (zone.NameTranslations is null && SeededTranslations.TryGetValue(zone.Name, out var name))
+            {
+                zone.NameTranslations = Copy(name);
+            }
             var points = zone.MeetingPoints.Select(Translated).ToList();
             if (points.Any(p => p is not null))
             {
@@ -271,24 +293,34 @@ public sealed class DbSeeder(
         }
     }
 
-    private static MeetingPoint? Translated(MeetingPoint point) =>
-        point.ClientInstructionsTranslations is null
-        && point.ClientInstructions is { } text
-        && SeededTranslations.TryGetValue(text, out var translations)
-            ? new MeetingPoint
-            {
-                Name = point.Name,
-                Address = point.Address,
-                Latitude = point.Latitude,
-                Longitude = point.Longitude,
-                ClientInstructions = point.ClientInstructions,
-                ClientInstructionsTranslations = Copy(translations),
-                DriverInstructions = point.DriverInstructions,
-            }
-            : null;
+    /// <summary>A copy with the missing seeded translations filled in; null when nothing changes.</summary>
+    private static MeetingPoint? Translated(MeetingPoint point)
+    {
+        var name = point.NameTranslations is null && SeededTranslations.TryGetValue(point.Name, out var n) ? n : null;
+        var instructions = point.ClientInstructionsTranslations is null
+            && point.ClientInstructions is { } text
+            && SeededTranslations.TryGetValue(text, out var i) ? i : null;
+        if (name is null && instructions is null)
+        {
+            return null;
+        }
+        return new MeetingPoint
+        {
+            Name = point.Name,
+            NameTranslations = Copy(name ?? point.NameTranslations),
+            Address = point.Address,
+            Latitude = point.Latitude,
+            Longitude = point.Longitude,
+            ClientInstructions = point.ClientInstructions,
+            ClientInstructionsTranslations = Copy(instructions ?? point.ClientInstructionsTranslations),
+            DriverInstructions = point.DriverInstructions,
+        };
+    }
 
-    // Each owner needs its own instance: the airports share one text.
-    private static Translations Copy(Translations t) => new() { It = t.It, De = t.De, Fr = t.Fr };
+    // Each owner needs its own instance: the airports share one text, and a saved one cannot move
+    // to the new meeting point.
+    [return: NotNullIfNotNull(nameof(t))]
+    private static Translations? Copy(Translations? t) => t is null ? null : new() { It = t.It, De = t.De, Fr = t.Fr };
 
     private static PolygonPoint Point(double latitude, double longitude) => new() { Latitude = latitude, Longitude = longitude };
 

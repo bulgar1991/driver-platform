@@ -53,6 +53,33 @@ public sealed class LanguageTests
     }
 
     [Fact]
+    public async Task Zone_and_meeting_point_names_are_translated_but_the_english_name_stays_the_key()
+    {
+        using var factory = new ApiFactory();
+        var florenceStation = new PointInput { Address = "Firenze SMN", Latitude = 43.7764, Longitude = 11.2480 };
+        var trip = TestData.Trip(TestData.VeniceRialto, florenceStation) with { PickupMeetingPoint = "Venice cruise terminal (Marittima)" };
+
+        var german = await Client(factory, "de").QuoteAsync(trip);
+
+        Assert.Equal("Altstadt von Venedig", german.Outbound.PickupZone?.Name);
+        var point = german.Outbound.PickupMeetingPoint!;
+        Assert.Equal("Venice cruise terminal (Marittima)", point.Name);
+        Assert.Equal("Kreuzfahrtterminal Venedig (Marittima)", point.NameTranslations?.De);
+        Assert.Contains(german.Vehicles[0].Outbound.Lines, l => l.Label == "Zufahrt ZTL Florenz");
+    }
+
+    [Fact]
+    public async Task Address_search_finds_meeting_points_by_their_translated_name()
+    {
+        using var factory = new ApiFactory();
+
+        var places = await factory.CreateClient()
+            .GetFromJsonAsync<List<Application.Geo.PlaceDto>>("/api/geo/search?q=Flughafen%20Neapel&lang=de", TestData.Json);
+
+        Assert.Equal("Flughafen Neapel, Ankunft · Flughafen Neapel (NAP)", places![0].Label);
+    }
+
+    [Fact]
     public async Task Errors_are_translated_and_unknown_languages_get_english()
     {
         using var factory = new ApiFactory();

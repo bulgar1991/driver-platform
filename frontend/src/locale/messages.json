@@ -46,6 +46,8 @@
     "343675304084484511": "Set From",
     "2184544827372079065": "Set To",
     "5382946496391277744": "No address found there. Try a point on a street in Italy, France, Switzerland or Germany.",
+    "2740205381328469482": "Pickup: {$place}",
+    "2969266255546781210": "Drop-off: {$place}",
     "8643016893245510953": "No address found",
     "4041533800184463490": "Address, hotel, airport…",
     "8432562579042371182": "Options",

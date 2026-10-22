@@ -51,13 +51,17 @@
             [checked]="point.name === selected()?.name"
             [disabled]="disabled()"
             (change)="changed.emit(point.name)" />
-          <span class="meeting-point__name">{{ point.name }}</span>
+          <span class="meeting-point__name">{{
+            point.name | translated: point.nameTranslations
+          }}</span>
           <span class="meeting-point__address">{{ point.address }}</span>
         </label>
       }
     </div>
   } @else if (selected(); as point) {
-    <p class="meeting-point__name">{{ point.name }}</p>
+    <p class="meeting-point__name">
+      {{ point.name | translated: point.nameTranslations }}
+    </p>
   }
 
   @if (selected() | instructions; as instructions) {

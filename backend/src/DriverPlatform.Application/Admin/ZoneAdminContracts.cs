@@ -7,6 +7,7 @@ namespace DriverPlatform.Application.Admin;
 public sealed record ZoneAdminDto(
     Guid Id,
     string Name,
+    Translations NameTranslations,
     ZoneType Type,
     ZoneShape Shape,
     double? CenterLatitude,
@@ -21,6 +22,8 @@ public sealed record ZoneRequest
 {
     [Required, MaxLength(120)]
     public required string Name { get; init; }
+    /// <summary>The name clients see in Italian, German and French; blank ones show the English name.</summary>
+    public Translations? NameTranslations { get; init; }
     public ZoneType Type { get; init; }
     public ZoneShape Shape { get; init; }
     public double? CenterLatitude { get; init; }

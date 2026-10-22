@@ -87,7 +87,7 @@ public sealed class NotificationService(
             var client = booking.Client;
             var t = Texts.For(client.Language);
             var pickup = t.ShortDateTime(ItalyTime.ToLocal(booking.PickupAt));
-            var where = booking.PickupMeetingPoint?.Name ?? booking.Pickup.Address;
+            var where = booking.PickupMeetingPoint?.DisplayName(t) ?? booking.Pickup.Address;
             var details = $"{driver.FirstName}, {driver.Phone}, {car} ({vehicle.PlateNumber})";
             var manage = bookingLinks.ManageUrl(booking.ReturnOfBookingId is null ? booking : await OutboundAsync(booking, cancellationToken));
 

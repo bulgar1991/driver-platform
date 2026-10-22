@@ -1,6 +1,7 @@
 import { inject, LOCALE_ID, Pipe, PipeTransform } from '@angular/core'
 import { siteLocale } from '@/core/i18n/locales'
 import { MeetingPoint } from '@/core/models'
+import { pickTranslation } from './translated.pipe'
 
 /** A meeting point's instructions in the site language; the English text when not translated. */
 @Pipe({ name: 'instructions' })
@@ -11,10 +12,10 @@ export class InstructionsPipe implements PipeTransform {
     if (!point?.clientInstructions) {
       return null
     }
-    const translated =
-      this.language === 'en'
-        ? null
-        : point.clientInstructionsTranslations?.[this.language]
-    return translated?.trim() || point.clientInstructions
+    return pickTranslation(
+      point.clientInstructions,
+      point.clientInstructionsTranslations,
+      this.language
+    )
   }
 }

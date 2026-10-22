@@ -1798,7 +1798,32 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                                         .HasConstraintName("fk_bookings_bookings_meeting_point_booking_id");
                                 });
 
+                            b1.OwnsOne("DriverPlatform.Domain.ValueObjects.Translations", "NameTranslations", b2 =>
+                                {
+                                    b2.Property<Guid>("MeetingPointBookingId");
+
+                                    b2.Property<string>("De")
+                                        .HasMaxLength(500);
+
+                                    b2.Property<string>("Fr")
+                                        .HasMaxLength(500);
+
+                                    b2.Property<string>("It")
+                                        .HasMaxLength(500);
+
+                                    b2.HasKey("MeetingPointBookingId")
+                                        .HasName("pk_bookings");
+
+                                    b2.ToTable("bookings");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("MeetingPointBookingId")
+                                        .HasConstraintName("fk_bookings_bookings_meeting_point_booking_id");
+                                });
+
                             b1.Navigation("ClientInstructionsTranslations");
+
+                            b1.Navigation("NameTranslations");
                         });
 
                     b.OwnsOne("DriverPlatform.Domain.ValueObjects.GeoPoint", "Pickup", b1 =>
@@ -1888,7 +1913,32 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                                         .HasConstraintName("fk_bookings_bookings_meeting_point_booking_id");
                                 });
 
+                            b1.OwnsOne("DriverPlatform.Domain.ValueObjects.Translations", "NameTranslations", b2 =>
+                                {
+                                    b2.Property<Guid>("MeetingPointBookingId");
+
+                                    b2.Property<string>("De")
+                                        .HasMaxLength(500);
+
+                                    b2.Property<string>("Fr")
+                                        .HasMaxLength(500);
+
+                                    b2.Property<string>("It")
+                                        .HasMaxLength(500);
+
+                                    b2.HasKey("MeetingPointBookingId")
+                                        .HasName("pk_bookings");
+
+                                    b2.ToTable("bookings");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("MeetingPointBookingId")
+                                        .HasConstraintName("fk_bookings_bookings_meeting_point_booking_id");
+                                });
+
                             b1.Navigation("ClientInstructionsTranslations");
+
+                            b1.Navigation("NameTranslations");
                         });
 
                     b.OwnsMany("DriverPlatform.Domain.ValueObjects.ChildSeatRequest", "ChildSeats", b1 =>
@@ -2292,7 +2342,60 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                                         .HasConstraintName("fk_zones_zones_meeting_point_zone_id_meeting_point__synthesized_ord");
                                 });
 
+                            b1.OwnsOne("DriverPlatform.Domain.ValueObjects.Translations", "NameTranslations", b2 =>
+                                {
+                                    b2.Property<Guid>("MeetingPointZoneId");
+
+                                    b2.Property<int>("MeetingPoint__synthesizedOrdinal");
+
+                                    b2.Property<string>("De")
+                                        .HasMaxLength(500);
+
+                                    b2.Property<string>("Fr")
+                                        .HasMaxLength(500);
+
+                                    b2.Property<string>("It")
+                                        .HasMaxLength(500);
+
+                                    b2.HasKey("MeetingPointZoneId", "MeetingPoint__synthesizedOrdinal")
+                                        .HasName("pk_zones");
+
+                                    b2.ToTable("zones");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("MeetingPointZoneId", "MeetingPoint__synthesizedOrdinal")
+                                        .HasConstraintName("fk_zones_zones_meeting_point_zone_id_meeting_point__synthesized_ord");
+                                });
+
                             b1.Navigation("ClientInstructionsTranslations");
+
+                            b1.Navigation("NameTranslations");
+                        });
+
+                    b.OwnsOne("DriverPlatform.Domain.ValueObjects.Translations", "NameTranslations", b1 =>
+                        {
+                            b1.Property<Guid>("ZoneId");
+
+                            b1.Property<string>("De")
+                                .HasMaxLength(500);
+
+                            b1.Property<string>("Fr")
+                                .HasMaxLength(500);
+
+                            b1.Property<string>("It")
+                                .HasMaxLength(500);
+
+                            b1.HasKey("ZoneId");
+
+                            b1.ToTable("zones");
+
+                            b1
+                                .ToJson("name_translations")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ZoneId")
+                                .HasConstraintName("fk_zones_zones_id");
                         });
 
                     b.OwnsMany("DriverPlatform.Domain.ValueObjects.PolygonPoint", "Polygon", b1 =>
@@ -2320,6 +2423,8 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         });
 
                     b.Navigation("MeetingPoints");
+
+                    b.Navigation("NameTranslations");
 
                     b.Navigation("Polygon");
                 });

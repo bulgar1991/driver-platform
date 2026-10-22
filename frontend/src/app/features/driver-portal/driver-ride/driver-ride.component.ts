@@ -17,6 +17,7 @@ import { IconComponent } from '@/shared/components/icon/icon.component'
 import { MapComponent } from '@/shared/components/map/map.component'
 import { StatusBadgeComponent } from '@/shared/components/status-badge/status-badge.component'
 import { DurationPipe } from '@/shared/pipes/duration.pipe'
+import { TranslatedPipe } from '@/shared/pipes/translated.pipe'
 
 const SEAT_LABEL = {
   Infant: $localize`infant seat 0+`,
@@ -31,6 +32,7 @@ export type RideAction = 'pickedUp' | 'completed'
   selector: 'app-driver-ride',
   imports: [
     DatePipe,
+    TranslatedPipe,
     ButtonComponent,
     IconComponent,
     MapComponent,

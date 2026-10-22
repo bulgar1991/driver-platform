@@ -26,11 +26,13 @@ internal sealed class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.OwnsOne(b => b.PickupMeetingPoint, m =>
         {
             m.ToJson();
+            m.OwnsOne(p => p.NameTranslations);
             m.OwnsOne(p => p.ClientInstructionsTranslations);
         });
         builder.OwnsOne(b => b.DropoffMeetingPoint, m =>
         {
             m.ToJson();
+            m.OwnsOne(p => p.NameTranslations);
             m.OwnsOne(p => p.ClientInstructionsTranslations);
         });
         builder.OwnsMany(b => b.ChildSeats, s => s.ToJson());

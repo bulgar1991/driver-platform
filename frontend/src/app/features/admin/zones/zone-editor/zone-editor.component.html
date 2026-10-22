@@ -29,7 +29,7 @@
   </div>
 
   <app-form-field
-    label="Name"
+    label="Name – English"
     for="zoneName"
     [error]="
       form.controls.name.touched && form.controls.name.invalid
@@ -38,6 +38,21 @@
     ">
     <input id="zoneName" class="input" formControlName="name" />
   </app-form-field>
+
+  <!-- What clients on the Italian, German and French site see; blank shows the English name. -->
+  <div class="zone-editor__translations">
+    @for (lang of nameLanguages; track lang.control) {
+      <app-form-field
+        [label]="'Name – ' + lang.name"
+        [for]="'zoneName' + lang.code">
+        <input
+          [id]="'zoneName' + lang.code"
+          class="input"
+          placeholder="Blank: the English name"
+          [formControlName]="lang.control" />
+      </app-form-field>
+    }
+  </div>
 
   <div class="zone-editor__row">
     <app-form-field label="Type" for="zoneType">
@@ -139,7 +154,7 @@
     @for (point of meetingPoints.controls; track point; let i = $index) {
       <fieldset class="zone-editor__point" [formGroupName]="i">
         <div class="zone-editor__row">
-          <app-form-field label="Name" [for]="'mpName' + i">
+          <app-form-field label="Name – English" [for]="'mpName' + i">
             <input [id]="'mpName' + i" class="input" formControlName="name" />
           </app-form-field>
           <app-form-field label="Address" [for]="'mpAddress' + i">
@@ -148,6 +163,19 @@
               class="input"
               formControlName="address" />
           </app-form-field>
+        </div>
+        <div class="zone-editor__translations">
+          @for (lang of nameLanguages; track lang.control) {
+            <app-form-field
+              [label]="'Name – ' + lang.name"
+              [for]="'mpName' + lang.code + i">
+              <input
+                [id]="'mpName' + lang.code + i"
+                class="input"
+                placeholder="Blank: the English name"
+                [formControlName]="lang.control" />
+            </app-form-field>
+          }
         </div>
         <app-form-field
           label="Client instructions – English"

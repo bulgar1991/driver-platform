@@ -18,7 +18,7 @@
         <p class="driver-ride__label" i18n>Pickup</p>
         @if (ride().pickupMeetingPoint; as mp) {
           <p class="driver-ride__place">
-            {{ mp.name }}
+            {{ mp.name | translated: mp.nameTranslations }}
             <span class="driver-ride__muted">{{ mp.address }}</span>
           </p>
           @if (mp.driverInstructions) {
@@ -49,7 +49,7 @@
         <p class="driver-ride__label" i18n>Drop-off</p>
         @if (ride().dropoffMeetingPoint; as mp) {
           <p class="driver-ride__place">
-            {{ mp.name }}
+            {{ mp.name | translated: mp.nameTranslations }}
             <span class="driver-ride__muted">{{ mp.address }}</span>
           </p>
           <p class="driver-ride__muted" i18n>

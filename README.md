@@ -398,12 +398,12 @@ The admin panel stays in English.
   in `backend/src/DriverPlatform.Application/Localization/`: one class per language, so a missing
   text does not compile. The site sends its language in `Accept-Language`; emails and messages use
   the language stored with the client. Price lines are saved on the booking in that language.
-- **Texts typed in the panel:** surcharge names and meeting point client instructions have Italian,
-  German and French fields; a blank one shows the English text. The starting surcharges, holidays
-  and meeting points come translated.
-- **Still in English:** the admin panel, zone and meeting point names (place names such as
-  "Florence ZTL"), the "Partner rate" line, and the generic form checks (a missing field) that the
-  site already checks before sending. The invoice PDF layout is Italian and English, with the lines
+- **Texts typed in the panel:** surcharge names, zone names, meeting point names and meeting point
+  client instructions have Italian, German and French fields; a blank one shows the English text.
+  The English meeting point name stays its key (bookings and requests use it). The starting
+  surcharges, holidays, zones and meeting points come translated.
+- **Still in English:** the admin panel, the "Partner rate" line, and the generic form checks (a
+  missing field) that the site already checks before sending. The invoice PDF layout is Italian and English, with the lines
   in the client's language.
 
 ### SEO

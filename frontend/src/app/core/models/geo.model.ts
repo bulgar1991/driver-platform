@@ -13,7 +13,9 @@ export interface Translations {
 
 /** A place reachable by car where the client is picked up or dropped off. */
 export interface MeetingPoint extends GeoPoint {
+  /** In English; it also identifies the point. Clients see {@link nameTranslations}. */
   name: string
+  nameTranslations?: Translations | null
   /** In English; clients read {@link clientInstructionsTranslations} in their language. */
   clientInstructions?: string | null
   clientInstructionsTranslations?: Translations | null

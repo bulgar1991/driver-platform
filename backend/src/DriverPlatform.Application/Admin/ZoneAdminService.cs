@@ -106,6 +106,7 @@ public sealed class ZoneAdminService(IAppDbContext db, IAuditLogger audit) : IZo
     {
         var circle = request.Shape == ZoneShape.Circle;
         zone.Name = request.Name.Trim();
+        zone.NameTranslations = request.NameTranslations.Cleaned();
         zone.Type = request.Type;
         zone.Shape = request.Shape;
         zone.CenterLatitude = circle ? request.CenterLatitude : null;
@@ -117,6 +118,7 @@ public sealed class ZoneAdminService(IAppDbContext db, IAuditLogger audit) : IZo
         zone.MeetingPoints = request.MeetingPoints.Select(m => new MeetingPoint
         {
             Name = m.Name.Trim(),
+            NameTranslations = m.NameTranslations.Cleaned(),
             Address = m.Address.Trim(),
             Latitude = m.Latitude,
             Longitude = m.Longitude,
@@ -127,6 +129,6 @@ public sealed class ZoneAdminService(IAppDbContext db, IAuditLogger audit) : IZo
     }
 
     private static ZoneAdminDto ToDto(Zone z) => new(
-        z.Id, z.Name, z.Type, z.Shape, z.CenterLatitude, z.CenterLongitude, z.RadiusMeters,
+        z.Id, z.Name, z.NameTranslations ?? new Translations(), z.Type, z.Shape, z.CenterLatitude, z.CenterLongitude, z.RadiusMeters,
         z.Polygon, z.AccessFee, z.MeetingPoints, z.IsActive);
 }

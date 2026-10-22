@@ -22,6 +22,6 @@ public static class BookingMapping
     public static string Describe(this Booking b, Texts texts) => texts.Transfer(
         b.Reference,
         ItalyTime.ToLocal(b.PickupAt),
-        b.PickupMeetingPoint?.Name ?? b.Pickup.Address,
-        b.DropoffMeetingPoint?.Name ?? b.Dropoff.Address);
+        b.PickupMeetingPoint?.DisplayName(texts) ?? b.Pickup.Address,
+        b.DropoffMeetingPoint?.DisplayName(texts) ?? b.Dropoff.Address);
 }

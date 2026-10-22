@@ -25,6 +25,7 @@ import {
   MeetingPoint,
   PolygonPoint,
   Zone,
+  Translations,
   ZoneRequest,
   ZoneShape,
   ZoneType,
@@ -41,6 +42,9 @@ import { zonePoints } from '../zone-points'
 
 type MeetingPointForm = FormGroup<{
   name: FormControl<string>
+  nameIt: FormControl<string>
+  nameDe: FormControl<string>
+  nameFr: FormControl<string>
   address: FormControl<string>
   latitude: FormControl<number | null>
   longitude: FormControl<number | null>
@@ -80,6 +84,11 @@ export class ZoneEditorComponent {
   private readonly fb = inject(FormBuilder).nonNullable
 
   protected readonly types = ZONE_TYPES
+  protected readonly nameLanguages = [
+    { code: 'It', name: 'Italian', control: 'nameIt' },
+    { code: 'De', name: 'German', control: 'nameDe' },
+    { code: 'Fr', name: 'French', control: 'nameFr' },
+  ] as const
   protected readonly instructionLanguages = [
     { code: 'It', name: 'Italian', control: 'clientInstructionsIt' },
     { code: 'De', name: 'German', control: 'clientInstructionsDe' },
@@ -93,6 +102,9 @@ export class ZoneEditorComponent {
 
   protected readonly form = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(120)]],
+    nameIt: ['', Validators.maxLength(120)],
+    nameDe: ['', Validators.maxLength(120)],
+    nameFr: ['', Validators.maxLength(120)],
     type: this.fb.control<ZoneType>('LimitedTraffic'),
     shape: this.fb.control<ZoneShape>('Circle'),
     centerLatitude: this.fb.control<number | null>(null),
@@ -242,20 +254,23 @@ export class ZoneEditorComponent {
       return
     }
     const v = this.form.getRawValue()
+    const { nameIt, nameDe, nameFr, ...zoneValue } = v
     const request: ZoneRequest = {
-      ...v,
+      ...zoneValue,
       name: v.name.trim(),
+      nameTranslations: translations(nameIt, nameDe, nameFr),
       meetingPoints: v.meetingPoints.map((m): MeetingPoint => ({
         name: m.name.trim(),
+        nameTranslations: translations(m.nameIt, m.nameDe, m.nameFr),
         address: m.address.trim(),
         latitude: m.latitude ?? 0,
         longitude: m.longitude ?? 0,
         clientInstructions: m.clientInstructions.trim() || null,
-        clientInstructionsTranslations: {
-          it: m.clientInstructionsIt.trim() || null,
-          de: m.clientInstructionsDe.trim() || null,
-          fr: m.clientInstructionsFr.trim() || null,
-        },
+        clientInstructionsTranslations: translations(
+          m.clientInstructionsIt,
+          m.clientInstructionsDe,
+          m.clientInstructionsFr
+        ),
         driverInstructions: m.driverInstructions.trim() || null,
       })),
     }
@@ -286,6 +301,9 @@ export class ZoneEditorComponent {
     }
     this.form.reset({
       name: zone?.name ?? '',
+      nameIt: zone?.nameTranslations?.it ?? '',
+      nameDe: zone?.nameTranslations?.de ?? '',
+      nameFr: zone?.nameTranslations?.fr ?? '',
       type: zone?.type ?? 'LimitedTraffic',
       shape: zone?.shape ?? 'Circle',
       centerLatitude: zone?.centerLatitude ?? null,
@@ -313,6 +331,9 @@ export class ZoneEditorComponent {
         point?.longitude ?? null,
         Validators.required
       ),
+      nameIt: [point?.nameTranslations?.it ?? '', Validators.maxLength(120)],
+      nameDe: [point?.nameTranslations?.de ?? '', Validators.maxLength(120)],
+      nameFr: [point?.nameTranslations?.fr ?? '', Validators.maxLength(120)],
       clientInstructions: [point?.clientInstructions ?? ''],
       clientInstructionsIt: [point?.clientInstructionsTranslations?.it ?? ''],
       clientInstructionsDe: [point?.clientInstructionsTranslations?.de ?? ''],
@@ -333,4 +354,12 @@ export class ZoneEditorComponent {
 
 function round(value: number): number {
   return Math.round(value * 1e5) / 1e5
+}
+
+function translations(it: string, de: string, fr: string): Translations {
+  return {
+    it: it.trim() || null,
+    de: de.trim() || null,
+    fr: fr.trim() || null,
+  }
 }

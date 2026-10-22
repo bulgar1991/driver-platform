@@ -201,7 +201,7 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
         var noCar = containing.FirstOrDefault(z => z.Type == ZoneType.NoCarAccess);
         if (noCar is { MeetingPoints.Count: 0 })
         {
-            errors.Add(field, texts.NoMeetingPointYet(noCar.Name));
+            errors.Add(field, texts.NoMeetingPointYet(noCar.DisplayName(texts)));
             return (noCar, null);
         }
 
@@ -218,7 +218,7 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
             var chosen = zone.MeetingPoints.FirstOrDefault(m => string.Equals(m.Name, requested.Trim(), StringComparison.OrdinalIgnoreCase));
             if (chosen is null)
             {
-                errors.Add(field, texts.NotAMeetingPoint(requested, zone.Name));
+                errors.Add(field, texts.NotAMeetingPoint(requested, zone.DisplayName(texts)));
             }
             return (zone, chosen);
         }
@@ -238,7 +238,7 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
 
         var leg = new QuoteLeg(
             plan.Pickup, plan.Dropoff, plan.PickupLocal, plan.PickupUtc,
-            ToDto(plan.PickupZone), ToDto(plan.DropoffZone),
+            ToDto(plan.PickupZone, texts), ToDto(plan.DropoffZone, texts),
             plan.PickupMeetingPoint, plan.DropoffMeetingPoint,
             Math.Round(route.DistanceKm, 1, MidpointRounding.AwayFromZero), route.DurationMinutes, route.IsEstimate, route.Path,
             matched.Select(s => new SurchargeDto(s.NameTranslations.Pick(s.Name, texts.Language), s.Percent)).ToList(),
@@ -257,7 +257,8 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
         ? new Coordinate(point.Latitude, point.Longitude)
         : new Coordinate(meetingPoint.Latitude, meetingPoint.Longitude);
 
-    internal static ZoneDto? ToDto(Zone? zone) => zone is null ? null : new ZoneDto(
-        zone.Id, zone.Name, zone.Type, zone.Shape, zone.CenterLatitude, zone.CenterLongitude, zone.RadiusMeters,
+    /// <summary>The zone name in the client's language; its meeting points carry their translations (the English name identifies them).</summary>
+    internal static ZoneDto? ToDto(Zone? zone, Texts texts) => zone is null ? null : new ZoneDto(
+        zone.Id, zone.DisplayName(texts), zone.Type, zone.Shape, zone.CenterLatitude, zone.CenterLongitude, zone.RadiusMeters,
         zone.Polygon, zone.AccessFee, zone.MeetingPoints);
 }

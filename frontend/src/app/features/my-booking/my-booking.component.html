@@ -82,8 +82,19 @@
             >
           </span>
           <span class="my-booking__route">
-            {{ leg.pickupMeetingPoint?.name ?? leg.pickupAddress }} →
-            {{ leg.dropoffMeetingPoint?.name ?? leg.dropoffAddress }}
+            {{
+              leg.pickupMeetingPoint
+                ? (leg.pickupMeetingPoint.name
+                  | translated: leg.pickupMeetingPoint.nameTranslations)
+                : leg.pickupAddress
+            }}
+            →
+            {{
+              leg.dropoffMeetingPoint
+                ? (leg.dropoffMeetingPoint.name
+                  | translated: leg.dropoffMeetingPoint.nameTranslations)
+                : leg.dropoffAddress
+            }}
           </span>
           @if (leg.pickupMeetingPoint | instructions; as text) {
             <span class="my-booking__note">{{ text }}</span>
