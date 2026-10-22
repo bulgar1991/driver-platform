@@ -9,7 +9,11 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop'
 import { NavigationEnd, Router } from '@angular/router'
 import { filter, map } from 'rxjs'
-import { SITE_LOCALES, siteLocale } from '@/core/i18n/locales'
+import {
+  SITE_LOCALES,
+  siteLocale,
+  stripLocalePrefix,
+} from '@/core/i18n/locales'
 
 /**
  * IT · EN · DE · FR. Each language is its own build, so the links are plain links (a full page
@@ -37,8 +41,9 @@ export class LanguageSwitchComponent {
   )
 
   protected readonly links = computed(() => {
-    // The router's URL has no language prefix; the query (if any) is kept.
-    const path = this.url() === '/' ? '' : this.url()
+    // The query (if any) is kept; a stray language prefix is dropped, so they never pile up.
+    const url = stripLocalePrefix(this.url())
+    const path = url === '/' ? '' : url
     return SITE_LOCALES.map(l => ({ ...l, href: `${l.prefix}${path}` || '/' }))
   })
 }

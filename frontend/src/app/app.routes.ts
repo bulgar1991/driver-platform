@@ -2,6 +2,7 @@ import { Routes } from '@angular/router'
 import { PageSeo } from './core/models'
 import { authGuard } from './core/guards/auth.guard'
 import { guestGuard } from './core/guards/guest.guard'
+import { localePrefixGuard } from './core/guards/locale-prefix.guard'
 import { passwordChangeGuard } from './core/guards/password-change.guard'
 import { PublicLayoutComponent } from './layout/public-layout/public-layout.component'
 
@@ -194,6 +195,12 @@ export const routes: Routes = [
       import('./features/driver-portal/driver-portal.component').then(
         m => m.DriverPortalComponent
       ),
+  },
+  {
+    // /de/tariffs on the Italian dev server → /tariffs.
+    path: '**',
+    canMatch: [localePrefixGuard],
+    children: [],
   },
   {
     path: '**',
