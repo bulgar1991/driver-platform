@@ -1,40 +1,52 @@
 <div class="bookings">
   <header class="bookings__header">
     <div>
-      <p class="eyebrow">Dispatch</p>
-      <h1 class="heading heading--lg">Bookings</h1>
+      <p class="eyebrow"><ng-container i18n>Dispatch</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Bookings</ng-container></h1
+      >
     </div>
     @if (selectedBookings().length) {
       <button appButton size="sm" type="button" (click)="planShift()">
-        <app-icon name="route" /> Plan shift with
-        {{ selectedBookings().length }}
+        <app-icon name="route" />&ngsp;<ng-container i18n
+          >Plan shift with {{ selectedBookings().length }}</ng-container
+        >
       </button>
     }
   </header>
 
   <form class="bookings__filters" [formGroup]="filters">
     <label class="bookings__filter">
-      <span class="bookings__filter-label">From</span>
+      <span class="bookings__filter-label"
+        ><ng-container i18n>From</ng-container></span
+      >
       <input class="input bookings__input" type="date" formControlName="from" />
     </label>
     <label class="bookings__filter">
-      <span class="bookings__filter-label">To</span>
+      <span class="bookings__filter-label"
+        ><ng-container i18n>To</ng-container></span
+      >
       <input class="input bookings__input" type="date" formControlName="to" />
     </label>
     <label class="bookings__filter">
-      <span class="bookings__filter-label">Status</span>
+      <span class="bookings__filter-label"
+        ><ng-container i18n>Status</ng-container></span
+      >
       <select class="input bookings__input" formControlName="status">
-        <option value="">All</option>
+        <option value=""><ng-container i18n>All</ng-container></option>
         @for (s of statuses; track s[0]) {
           <option [value]="s[0]">{{ s[1] }}</option>
         }
       </select>
     </label>
     <label class="bookings__filter bookings__filter--grow">
-      <span class="bookings__filter-label">Search</span>
+      <span class="bookings__filter-label"
+        ><ng-container i18n>Search</ng-container></span
+      >
       <input
         class="input bookings__input"
         type="search"
+        i18n-placeholder
         placeholder="Reference, name, phone, flight"
         formControlName="search" />
     </label>
@@ -42,15 +54,17 @@
       <input
         class="bookings__checkbox"
         type="checkbox"
-        formControlName="unassigned" />
-      Only to assign
+        formControlName="unassigned" />&ngsp;<ng-container i18n
+        >Only to assign</ng-container
+      >
     </label>
     <label class="bookings__check">
       <input
         class="bookings__checkbox"
         type="checkbox"
-        formControlName="includeUnpaid" />
-      Show unpaid
+        formControlName="includeUnpaid" />&ngsp;<ng-container i18n
+        >Show unpaid</ng-container
+      >
     </label>
   </form>
 
@@ -62,14 +76,18 @@
     <table class="bookings__table">
       <thead>
         <tr>
-          <th><span class="bookings__sr">Select</span></th>
-          <th>Pickup</th>
-          <th>Booking</th>
-          <th>Route</th>
-          <th>Client</th>
-          <th>Trip</th>
-          <th>Shift</th>
-          <th>Price</th>
+          <th
+            ><span class="bookings__sr"
+              ><ng-container i18n>Select</ng-container></span
+            ></th
+          >
+          <th><ng-container i18n>Pickup</ng-container></th>
+          <th><ng-container i18n>Booking</ng-container></th>
+          <th><ng-container i18n>Route</ng-container></th>
+          <th><ng-container i18n>Client</ng-container></th>
+          <th><ng-container i18n>Trip</ng-container></th>
+          <th><ng-container i18n>Shift</ng-container></th>
+          <th><ng-container i18n>Price</ng-container></th>
         </tr>
       </thead>
       <tbody>
@@ -84,7 +102,7 @@
                   class="bookings__checkbox"
                   type="checkbox"
                   [checked]="selected().has(b.id)"
-                  [attr.aria-label]="'Select ' + b.reference"
+                  [attr.aria-label]="tx.select(b.reference)"
                   (change)="toggle(b)" />
               }
             </td>
@@ -115,12 +133,16 @@
               <span class="bookings__muted">{{ b.clientPhone }}</span>
             </td>
             <td class="bookings__nowrap">
-              {{ b.vehicleCategory }}
+              {{ text.categories[b.vehicleCategory] }}
               <span class="bookings__muted">
-                {{ b.passengers }} pax ·
-                {{ b.largeLuggage + b.smallLuggage }} bags
+                <ng-container i18n
+                  >{{ b.passengers }} pax ·
+                  {{ b.largeLuggage + b.smallLuggage }} bags</ng-container
+                >&ngsp;
                 @if (b.childSeats) {
-                  · {{ b.childSeats }} child seat
+                  <ng-container i18n
+                    >· {{ b.childSeats }} child seat</ng-container
+                  >
                 }
                 @if (b.flightNumber) {
                   · {{ b.flightNumber }}
@@ -139,9 +161,15 @@
           </tr>
         } @empty {
           <tr>
-            <td colspan="8" class="bookings__muted">{{
-              loading() ? 'Loading…' : 'No bookings match these filters.'
-            }}</td>
+            <td colspan="8" class="bookings__muted">
+              @if (loading()) {
+                <ng-container i18n>Loading…</ng-container>
+              } @else {
+                <ng-container i18n
+                  >No bookings match these filters.</ng-container
+                >
+              }
+            </td>
           </tr>
         }
       </tbody>
@@ -149,7 +177,7 @@
   </div>
 
   @if (pages() > 1) {
-    <nav class="bookings__pager" aria-label="Pages">
+    <nav class="bookings__pager" i18n-aria-label aria-label="Pages">
       <button
         appButton
         size="sm"
@@ -157,10 +185,13 @@
         type="button"
         [disabled]="page() === 1"
         (click)="goToPage(page() - 1)"
-        >Previous</button
+        ><ng-container i18n>Previous</ng-container></button
       >
       <span class="bookings__muted"
-        >Page {{ page() }} of {{ pages() }} · {{ total() }} bookings</span
+        ><ng-container i18n
+          >Page {{ page() }} of {{ pages() }} ·
+          {{ total() }} bookings</ng-container
+        ></span
       >
       <button
         appButton
@@ -169,7 +200,7 @@
         type="button"
         [disabled]="page() === pages()"
         (click)="goToPage(page() + 1)"
-        >Next</button
+        ><ng-container i18n>Next</ng-container></button
       >
     </nav>
   }
@@ -180,6 +211,7 @@
   styleClass="bookings__drawer"
   [visible]="openId() !== null"
   (visibleChange)="$event || openId.set(null)"
+  i18n-header
   header="Booking">
   @if (openId(); as id) {
     <app-booking-detail [bookingId]="id" (changed)="onChanged()" />

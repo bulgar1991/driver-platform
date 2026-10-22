@@ -26,6 +26,7 @@ import { IconComponent } from '@/shared/components/icon/icon.component'
 import { StatusBadgeComponent } from '@/shared/components/status-badge/status-badge.component'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { BookingDetailComponent } from './booking-detail/booking-detail.component'
+import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
 const PAGE_SIZE = 50
 
@@ -47,6 +48,11 @@ const PAGE_SIZE = 50
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BookingsComponent {
+  protected readonly text = ADMIN_TEXT
+  protected readonly tx = {
+    select: (reference: string) => $localize`Select ${reference}:reference:`,
+  }
+
   /** Query params from the dashboard links. */
   readonly unassigned = input<string | undefined>(undefined)
   readonly status = input<BookingStatus | undefined>(undefined)

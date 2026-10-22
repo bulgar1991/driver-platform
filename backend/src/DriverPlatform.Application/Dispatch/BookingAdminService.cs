@@ -5,6 +5,7 @@ using DriverPlatform.Application.Reviews;
 using DriverPlatform.Domain.Entities;
 using DriverPlatform.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.Dispatch;
 
@@ -84,11 +85,11 @@ public sealed class BookingAdminService(IAppDbContext db, IReviewService reviews
         var booking = await FindAsync(id, cancellationToken);
         if (!Allowed[booking.Status].Contains(request.Status))
         {
-            throw new RequestValidationException("status", $"A booking that is {booking.Status} cannot become {request.Status}.");
+            throw new RequestValidationException("status", Texts.Current.BookingStatusChange(booking.Status, request.Status));
         }
         if (request.Status == BookingStatus.Cancelled && string.IsNullOrWhiteSpace(request.Reason))
         {
-            throw new RequestValidationException("reason", "Say why the booking is cancelled.");
+            throw new RequestValidationException("reason", Texts.Current.SayWhyBookingCancelled);
         }
 
         var previous = booking.Status;
@@ -141,7 +142,7 @@ public sealed class BookingAdminService(IAppDbContext db, IReviewService reviews
 
     private async Task<Booking> FindAsync(Guid id, CancellationToken cancellationToken) =>
         await Query().FirstOrDefaultAsync(b => b.Id == id, cancellationToken)
-        ?? throw new NotFoundException("Booking not found.");
+        ?? throw new NotFoundException(Texts.Current.BookingNotFound);
 
     private async Task<BookingDetail> ToDetailAsync(Booking b, CancellationToken cancellationToken)
     {

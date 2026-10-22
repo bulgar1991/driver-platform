@@ -22,6 +22,11 @@ import { IconComponent } from '@/shared/components/icon/icon.component'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewsComponent implements OnInit {
+  protected readonly tx = {
+    rating: (rating: number | null) =>
+      rating ? $localize`${rating}:rating: of 5` : $localize`Not rated yet`,
+  }
+
   private readonly api = inject(AdminFleetService)
 
   protected readonly stars = [1, 2, 3, 4, 5]

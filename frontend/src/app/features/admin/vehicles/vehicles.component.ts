@@ -16,6 +16,7 @@ import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
+import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
 const CATEGORIES: {
   value: VehicleCategory
@@ -23,9 +24,14 @@ const CATEGORIES: {
   seats: number
   luggage: number
 }[] = [
-  { value: 'Sedan', label: 'Sedan (1–3)', seats: 3, luggage: 3 },
-  { value: 'Estate', label: 'Estate / SUV (1–4)', seats: 4, luggage: 5 },
-  { value: 'Van', label: 'Van (5–8)', seats: 7, luggage: 8 },
+  { value: 'Sedan', label: $localize`Sedan (1–3)`, seats: 3, luggage: 3 },
+  {
+    value: 'Estate',
+    label: $localize`Estate / SUV (1–4)`,
+    seats: 4,
+    luggage: 5,
+  },
+  { value: 'Van', label: $localize`Van (5–8)`, seats: 7, luggage: 8 },
 ]
 
 /** Business plan §7: category, seats, luggage, child seats, insurance, inspection, service and mileage. */
@@ -44,6 +50,13 @@ const CATEGORIES: {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VehiclesComponent implements OnInit {
+  protected readonly text = ADMIN_TEXT
+  protected readonly tx = {
+    editVehicle: $localize`Edit vehicle`,
+    newVehicle: $localize`New vehicle`,
+    plateHint: $localize`e.g. GA123BC`,
+  }
+
   private readonly api = inject(AdminFleetService)
   private readonly fb = inject(FormBuilder).nonNullable
 

@@ -17,6 +17,7 @@ import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
+import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
 /** Business plan §6: companies and Booking that send bookings through the API. */
 @Component({
@@ -34,6 +35,12 @@ import { IconComponent } from '@/shared/components/icon/icon.component'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PartnersComponent implements OnInit {
+  protected readonly text = ADMIN_TEXT
+  protected readonly tx = {
+    newPartner: $localize`New partner`,
+    httpsOnly: $localize`Use an https:// address`,
+  }
+
   protected readonly api = inject(AdminPartnersService)
   private readonly fb = inject(FormBuilder).nonNullable
 
@@ -113,7 +120,7 @@ export class PartnersComponent implements OnInit {
           if (!this.editing()) {
             this.editing.set(saved)
             this.notice.set(
-              'Partner saved. Create the API key below and send it to their developers.'
+              $localize`Partner saved. Create the API key below and send it to their developers.`
             )
           } else {
             this.editing.set(undefined)
@@ -133,8 +140,8 @@ export class PartnersComponent implements OnInit {
         this.newKey.set(key.apiKey)
         this.notice.set(
           partner.apiKeyPrefix
-            ? 'New key created; the old one no longer works.'
-            : 'Key created.'
+            ? $localize`New key created; the old one no longer works.`
+            : $localize`Key created.`
         )
         this.load()
       },
@@ -149,7 +156,7 @@ export class PartnersComponent implements OnInit {
         next: () => {
           this.newKey.set(null)
           this.notice.set(
-            'Key revoked: the partner can no longer call the API.'
+            $localize`Key revoked: the partner can no longer call the API.`
           )
           this.editing.set({ ...partner, apiKeyPrefix: null })
           this.load()
@@ -167,7 +174,7 @@ export class PartnersComponent implements OnInit {
           this.secret.set(r.secret)
           if (rotate) {
             this.notice.set(
-              'New webhook secret: the partner must update it on their side.'
+              $localize`New webhook secret: the partner must update it on their side.`
             )
           }
         },
@@ -178,8 +185,8 @@ export class PartnersComponent implements OnInit {
 
   protected copy(value: string): void {
     void navigator.clipboard?.writeText(value).then(
-      () => this.notice.set('Copied.'),
-      () => this.notice.set('Select the text and copy it.')
+      () => this.notice.set($localize`Copied.`),
+      () => this.notice.set($localize`Select the text and copy it.`)
     )
   }
 

@@ -29,6 +29,8 @@ import {
   DAYS,
   SurchargeFormComponent,
 } from './surcharge-form/surcharge-form.component'
+import { ADMIN_TEXT } from '@/features/admin/admin-texts'
+import { TranslatedPipe } from '@/shared/pipes/translated.pipe'
 
 type RateForm = FormGroup<{
   category: FormControl<VehicleCategory>
@@ -44,9 +46,9 @@ type ExtraForm = FormGroup<{
 }>
 
 const EXTRA_LABELS: Record<ExtraType, string> = {
-  ChildSeat: 'Child seat (each)',
-  ExtraLuggage: 'Extra large bag (beyond one per passenger)',
-  NameSign: 'Name sign',
+  ChildSeat: $localize`Child seat (each)`,
+  ExtraLuggage: $localize`Extra large bag (beyond one per passenger)`,
+  NameSign: $localize`Name sign`,
 }
 
 /** Business plan §4: tariffs per km, day surcharges and fixed extras, editable without code. */
@@ -58,12 +60,29 @@ const EXTRA_LABELS: Record<ExtraType, string> = {
     ButtonComponent,
     IconComponent,
     SurchargeFormComponent,
+    TranslatedPipe,
   ],
   templateUrl: './pricing.component.html',
   styleUrl: './pricing.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PricingComponent implements OnInit {
+  protected readonly tx = {
+    baseFee: (category: string) => $localize`${category}:category: base fee`,
+    pricePerKm: (category: string) =>
+      $localize`${category}:category: price per km`,
+    passengers: (category: string) =>
+      $localize`${category}:category: passengers`,
+    largeBags: (category: string) =>
+      $localize`${category}:category: large bags`,
+    edit: (name: string) => $localize`Edit ${name}:name:`,
+    delete: (name: string) => $localize`Delete ${name}:name:`,
+    editSurcharge: $localize`Edit surcharge`,
+    newSurcharge: $localize`New surcharge`,
+  }
+  protected readonly categoryLabel = (category: VehicleCategory) =>
+    ADMIN_TEXT.categories[category]
+
   private readonly api = inject(AdminPricingService)
   private readonly fb = inject(FormBuilder).nonNullable
 
@@ -115,7 +134,7 @@ export class PricingComponent implements OnInit {
     const { category, ...rate } = group.getRawValue()
     this.run(`rate-${category}`, this.api.updateRate(category, rate), () => {
       group.markAsPristine()
-      this.notify(`${category} tariff saved.`)
+      this.notify($localize`${category} tariff saved.`)
     })
   }
 
@@ -128,7 +147,7 @@ export class PricingComponent implements OnInit {
     const { type, amount } = group.getRawValue()
     this.run(`extra-${type}`, this.api.updateExtra(type, amount), () => {
       group.markAsPristine()
-      this.notify(`${EXTRA_LABELS[type]} saved.`)
+      this.notify($localize`${EXTRA_LABELS[type]} saved.`)
     })
   }
 
@@ -142,7 +161,7 @@ export class PricingComponent implements OnInit {
       this.api.updateSettings(this.settings.getRawValue()),
       () => {
         this.settings.markAsPristine()
-        this.notify('Settings saved.')
+        this.notify($localize`Settings saved.`)
       }
     )
   }
@@ -162,7 +181,7 @@ export class PricingComponent implements OnInit {
         rule ? list.map(r => (r.id === saved.id ? saved : r)) : [...list, saved]
       )
       this.dialogOpen.set(false)
-      this.notify(`“${saved.name}” saved.`)
+      this.notify($localize`“${saved.name}” saved.`)
     })
   }
 
@@ -182,7 +201,7 @@ export class PricingComponent implements OnInit {
     this.run(`delete-${rule.id}`, this.api.deleteSurcharge(rule.id), () => {
       this.surcharges.update(list => list.filter(r => r.id !== rule.id))
       this.confirmDelete.set(null)
-      this.notify(`“${rule.name}” deleted.`)
+      this.notify($localize`“${rule.name}” deleted.`)
     })
   }
 
@@ -196,17 +215,22 @@ export class PricingComponent implements OnInit {
       case 'DateRange': {
         const format = (date: string | null) =>
           date
-            ? new Date(`${date}T12:00:00`).toLocaleDateString('en-GB', {
-                day: 'numeric',
-                month: 'short',
-                ...(rule.repeatsYearly ? {} : { year: 'numeric' }),
-              })
+            ? new Date(`${date}T12:00:00`).toLocaleDateString(
+                $localize.locale ?? 'en-GB',
+                {
+                  day: 'numeric',
+                  month: 'short',
+                  ...(rule.repeatsYearly ? {} : { year: 'numeric' }),
+                }
+              )
             : '?'
         const range =
           rule.startDate === rule.endDate
             ? format(rule.startDate)
             : `${format(rule.startDate)} – ${format(rule.endDate)}`
-        return rule.repeatsYearly ? `${range}, every year` : range
+        return rule.repeatsYearly
+          ? $localize`${range}:range:, every year`
+          : range
       }
       default:
         return `${rule.startTime?.slice(0, 5)}–${rule.endTime?.slice(0, 5)}`

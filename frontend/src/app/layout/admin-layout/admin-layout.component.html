@@ -3,6 +3,7 @@
     <button
       type="button"
       class="admin-layout__backdrop"
+      i18n-aria-label
       aria-label="Close menu"
       (click)="menuOpen.set(false)"></button>
   }
@@ -11,9 +12,11 @@
     [class.admin-layout__sidebar--open]="menuOpen()">
     <div class="admin-layout__brand">
       <app-logo />
-      <span class="admin-layout__badge">Panel</span>
+      <span class="admin-layout__badge"
+        ><ng-container i18n>Panel</ng-container></span
+      >
     </div>
-    <nav class="admin-layout__nav" aria-label="Management">
+    <nav class="admin-layout__nav" i18n-aria-label aria-label="Management">
       @for (item of navigation(); track item.path) {
         <a
           class="admin-layout__link"
@@ -33,6 +36,7 @@
       <button
         type="button"
         class="admin-layout__menu-button"
+        i18n-aria-label
         aria-label="Toggle menu"
         (click)="toggleMenu()">
         <app-icon [name]="menuOpen() ? 'close' : 'menu'" />
@@ -41,14 +45,20 @@
         <a
           class="admin-layout__user"
           routerLink="/admin/account"
+          i18n-title
           title="My account">
           <span class="admin-layout__user-name">{{ user.fullName }}</span>
-          <span class="admin-layout__user-role">{{ user.role }}</span>
+          <span class="admin-layout__user-role">{{
+            roleLabels[user.role]
+          }}</span>
         </a>
       }
+      <app-language-switch class="admin-layout__languages" />
       <button type="button" class="admin-layout__logout" (click)="logout()">
         <app-icon name="logout" />
-        <span class="admin-layout__logout-label">Sign out</span>
+        <span class="admin-layout__logout-label"
+          ><ng-container i18n>Sign out</ng-container></span
+        >
       </button>
     </header>
     <main class="admin-layout__content">

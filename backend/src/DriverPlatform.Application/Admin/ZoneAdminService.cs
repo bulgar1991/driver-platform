@@ -5,6 +5,7 @@ using DriverPlatform.Domain.Entities;
 using DriverPlatform.Domain.Enums;
 using DriverPlatform.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
+using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.Admin;
 
@@ -41,7 +42,7 @@ public sealed class ZoneAdminService(IAppDbContext db, IAuditLogger audit) : IZo
     {
         Validate(request);
         var zone = await db.Zones.FirstOrDefaultAsync(z => z.Id == id, cancellationToken)
-            ?? throw new NotFoundException("Zone not found.");
+            ?? throw new NotFoundException(Texts.Current.ZoneNotFound);
         Apply(zone, request);
 
         audit.Log("zone.updated", nameof(Zone), id.ToString(), request);
@@ -52,7 +53,7 @@ public sealed class ZoneAdminService(IAppDbContext db, IAuditLogger audit) : IZo
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
         var zone = await db.Zones.FirstOrDefaultAsync(z => z.Id == id, cancellationToken)
-            ?? throw new NotFoundException("Zone not found.");
+            ?? throw new NotFoundException(Texts.Current.ZoneNotFound);
         db.Zones.Remove(zone);
 
         audit.Log("zone.deleted", nameof(Zone), id.ToString(), new { zone.Name, zone.Type });
@@ -67,7 +68,7 @@ public sealed class ZoneAdminService(IAppDbContext db, IAuditLogger audit) : IZo
             if (request is not { CenterLatitude: { } lat, CenterLongitude: { } lng, RadiusMeters: not null }
                 || !GeoMath.IsInServiceArea(new Coordinate(lat, lng)))
             {
-                errors.Add("center", "Pick the centre on the map and set a radius.");
+                errors.Add("center", Texts.Current.PickCentre);
             }
         }
         else if (request.Polygon.Count < 3)
@@ -76,7 +77,7 @@ public sealed class ZoneAdminService(IAppDbContext db, IAuditLogger audit) : IZo
         }
         else if (request.Polygon.Any(p => !GeoMath.IsInServiceArea(new Coordinate(p.Latitude, p.Longitude))))
         {
-            errors.Add("polygon", "All points must be in the service area (Italy, France, Germany, Switzerland).");
+            errors.Add("polygon", Texts.Current.PolygonOutsideServiceArea);
         }
 
         if (request.Type == ZoneType.NoCarAccess && request.MeetingPoints.Count == 0)
@@ -88,16 +89,16 @@ public sealed class ZoneAdminService(IAppDbContext db, IAuditLogger audit) : IZo
             var point = request.MeetingPoints[i];
             if (string.IsNullOrWhiteSpace(point.Name) || string.IsNullOrWhiteSpace(point.Address))
             {
-                errors.Add($"meetingPoints[{i}]", "Name and address are required.");
+                errors.Add($"meetingPoints[{i}]", Texts.Current.MeetingPointNameAndAddress);
             }
             if (!GeoMath.IsInServiceArea(new Coordinate(point.Latitude, point.Longitude)))
             {
-                errors.Add($"meetingPoints[{i}]", "Pick the meeting point on the map.");
+                errors.Add($"meetingPoints[{i}]", Texts.Current.PlaceMeetingPoint);
             }
         }
         if (request.MeetingPoints.GroupBy(m => m.Name.Trim(), StringComparer.OrdinalIgnoreCase).Any(g => g.Count() > 1))
         {
-            errors.Add("meetingPoints", "Meeting point names must be unique within the zone.");
+            errors.Add("meetingPoints", Texts.Current.MeetingPointNamesUnique);
         }
         errors.ThrowIfAny();
     }

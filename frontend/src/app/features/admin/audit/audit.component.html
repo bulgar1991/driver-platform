@@ -1,13 +1,17 @@
 <div class="audit">
   <header class="audit__header">
     <div>
-      <p class="eyebrow">Administration</p>
-      <h1 class="heading heading--lg">Audit log</h1>
+      <p class="eyebrow"><ng-container i18n>Administration</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Audit log</ng-container></h1
+      >
     </div>
     <input
       class="input audit__search"
       type="search"
+      i18n-placeholder
       placeholder="Search action, person, reference…"
+      i18n-aria-label
       aria-label="Search the audit log"
       [formControl]="search" />
   </header>
@@ -32,15 +36,18 @@
           <span class="audit__ip">{{ e.ipAddress }}</span>
         </button>
         @if (expanded() === e.id) {
-          <pre class="audit__changes"
-            >{{ e.entityType }} {{ e.entityId }}
-{{ e.changes ?? '(no details)' }}</pre>
+          <pre class="audit__changes">{{ e.entityType }} {{ e.entityId }}
+@if (e.changes) {{{ e.changes }}} @else {<ng-container i18n>(no details)</ng-container>}</pre>
         }
       </li>
     } @empty {
-      <li class="audit__muted">{{
-        loading() ? 'Loading…' : 'Nothing found.'
-      }}</li>
+      <li class="audit__muted">
+        @if (loading()) {
+          <ng-container i18n>Loading…</ng-container>
+        } @else {
+          <ng-container i18n>Nothing found.</ng-container>
+        }
+      </li>
     }
   </ul>
   @if (next()) {
@@ -51,7 +58,7 @@
       type="button"
       [disabled]="loading()"
       (click)="load(true)"
-      >Older entries</button
+      ><ng-container i18n>Older entries</ng-container></button
     >
   }
 </div>

@@ -39,6 +39,7 @@ import { IconComponent } from '@/shared/components/icon/icon.component'
 import { MapComponent } from '@/shared/components/map/map.component'
 import { ZONE_TYPES } from '../zone-labels'
 import { zonePoints } from '../zone-points'
+import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
 type MeetingPointForm = FormGroup<{
   name: FormControl<string>
@@ -72,6 +73,13 @@ type ClickMode = 'shape' | number
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ZoneEditorComponent {
+  protected readonly text = ADMIN_TEXT
+  protected readonly tx = {
+    nameIn: (language: string) => $localize`Name – ${language}:language:`,
+    instructionsIn: (language: string) =>
+      $localize`Client instructions – ${language}:language:`,
+  }
+
   /** null creates a new zone. */
   readonly zone = input<Zone | null>(null)
   readonly otherZones = input<Zone[]>([])
@@ -85,14 +93,14 @@ export class ZoneEditorComponent {
 
   protected readonly types = ZONE_TYPES
   protected readonly nameLanguages = [
-    { code: 'It', name: 'Italian', control: 'nameIt' },
-    { code: 'De', name: 'German', control: 'nameDe' },
-    { code: 'Fr', name: 'French', control: 'nameFr' },
+    { code: 'It', name: $localize`Italian`, control: 'nameIt' },
+    { code: 'De', name: $localize`German`, control: 'nameDe' },
+    { code: 'Fr', name: $localize`French`, control: 'nameFr' },
   ] as const
   protected readonly instructionLanguages = [
-    { code: 'It', name: 'Italian', control: 'clientInstructionsIt' },
-    { code: 'De', name: 'German', control: 'clientInstructionsDe' },
-    { code: 'Fr', name: 'French', control: 'clientInstructionsFr' },
+    { code: 'It', name: $localize`Italian`, control: 'clientInstructionsIt' },
+    { code: 'De', name: $localize`German`, control: 'clientInstructionsDe' },
+    { code: 'Fr', name: $localize`French`, control: 'clientInstructionsFr' },
   ] as const
   protected readonly saving = signal(false)
   protected readonly error = signal<string | null>(null)
@@ -137,7 +145,7 @@ export class ZoneEditorComponent {
       ...others,
       {
         zone: {
-          name: v.name || 'New zone',
+          name: v.name || $localize`New zone`,
           type: v.type,
           shape: v.shape,
           centerLatitude: v.centerLatitude,
@@ -158,7 +166,7 @@ export class ZoneEditorComponent {
       .map(m => ({
         position: [m.latitude!, m.longitude!],
         kind: 'meeting',
-        label: m.name || 'Meeting point',
+        label: m.name || $localize`Meeting point`,
       }))
     if (v.shape === 'Polygon') {
       markers.push(
@@ -179,11 +187,11 @@ export class ZoneEditorComponent {
   protected readonly clickHint = computed(() => {
     const mode = this.clickMode()
     if (mode !== 'shape') {
-      return `Click on the map to place meeting point ${mode + 1}.`
+      return $localize`Click on the map to place meeting point ${mode + 1}:number:.`
     }
     return this.value().shape === 'Circle'
-      ? 'Click on the map to set the centre.'
-      : 'Click on the map to add a corner; use “Undo” to remove the last one.'
+      ? $localize`Click on the map to set the centre.`
+      : $localize`Click on the map to add a corner; use “Undo” to remove the last one.`
   })
 
   constructor() {

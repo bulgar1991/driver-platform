@@ -1,11 +1,15 @@
 <div class="staff">
   <header class="staff__header">
     <div>
-      <p class="eyebrow">Administration</p>
-      <h1 class="heading heading--lg">Staff</h1>
+      <p class="eyebrow"><ng-container i18n>Administration</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Staff</ng-container></h1
+      >
     </div>
     <button appButton size="sm" type="button" (click)="open(null)"
-      ><app-icon name="plus" /> New account</button
+      ><app-icon name="plus" />&ngsp;<ng-container i18n
+        >New account</ng-container
+      ></button
     >
   </header>
 
@@ -22,15 +26,19 @@
   @if (temporary(); as t) {
     <div class="alert alert--info staff__temporary" role="status">
       <p
-        >Temporary password for <strong>{{ t.email }}</strong
-        >, shown only now. Give it in person or by phone; it must be changed at
-        the first sign-in.</p
+        ><ng-container i18n>Temporary password for</ng-container
+        >&ngsp;<strong>{{ t.email }}</strong
+        ><ng-container i18n
+          >, shown only now. Give it in person or by phone; it must be changed
+          at the first sign-in.</ng-container
+        ></p
       >
       <div class="staff__secret">
         <input
           class="input staff__mono"
           readonly
           [value]="t.password"
+          i18n-aria-label
           aria-label="Temporary password"
           (focus)="$any($event.target).select()" />
         <button
@@ -39,7 +47,7 @@
           variant="outline"
           type="button"
           (click)="copy(t.password)"
-          >Copy</button
+          ><ng-container i18n>Copy</ng-container></button
         >
         <button
           appButton
@@ -47,7 +55,7 @@
           variant="ghost"
           type="button"
           (click)="temporary.set(null)"
-          >Done</button
+          ><ng-container i18n>Done</ng-container></button
         >
       </div>
     </div>
@@ -57,8 +65,15 @@
     <table class="staff__table">
       <thead>
         <tr
-          ><th>Name</th><th>Role</th><th>Last sign-in</th><th>Status</th
-          ><th><span class="staff__sr">Actions</span></th></tr
+          ><th><ng-container i18n>Name</ng-container></th
+          ><th><ng-container i18n>Role</ng-container></th
+          ><th><ng-container i18n>Last sign-in</ng-container></th
+          ><th><ng-container i18n>Status</ng-container></th
+          ><th
+            ><span class="staff__sr"
+              ><ng-container i18n>Actions</ng-container></span
+            ></th
+          ></tr
         >
       </thead>
       <tbody>
@@ -68,22 +83,31 @@
               >{{ s.fullName
               }}<span class="staff__muted">{{ s.email }}</span></td
             >
-            <td>{{ s.role }}</td>
+            <td>{{ text.roles[s.role] }}</td>
             <td>{{
               s.lastLoginAt ? (s.lastLoginAt | date: 'd MMM y, HH:mm') : 'Never'
             }}</td>
             <td>
               <span
                 class="staff__badge"
-                [class.staff__badge--off]="!s.isActive"
-                >{{ s.isActive ? 'Active' : 'Inactive' }}</span
-              >
+                [class.staff__badge--off]="!s.isActive">
+                @if (s.isActive) {
+                  <ng-container i18n>Active</ng-container>
+                } @else {
+                  <ng-container i18n>Inactive</ng-container>
+                }
+              </span>
               @if (s.mustChangePassword) {
-                <span class="staff__muted">temporary password</span>
+                <span class="staff__muted"
+                  ><ng-container i18n>temporary password</ng-container></span
+                >
               }
               @if (s.lockedUntil) {
                 <span class="staff__warning"
-                  >locked until {{ s.lockedUntil | date: 'HH:mm' }}</span
+                  ><ng-container i18n
+                    >locked until
+                    {{ s.lockedUntil | date: 'HH:mm' }}</ng-container
+                  ></span
                 >
               }
             </td>
@@ -94,7 +118,7 @@
                 variant="ghost"
                 type="button"
                 (click)="open(s)"
-                >Edit</button
+                ><ng-container i18n>Edit</ng-container></button
               >
               <button
                 appButton
@@ -102,15 +126,19 @@
                 variant="ghost"
                 type="button"
                 (click)="reset(s)"
-                >Reset password</button
+                ><ng-container i18n>Reset password</ng-container></button
               >
             </td>
           </tr>
         } @empty {
           <tr
-            ><td colspan="5" class="staff__muted">{{
-              loading() ? 'Loading…' : 'No accounts.'
-            }}</td></tr
+            ><td colspan="5" class="staff__muted">
+              @if (loading()) {
+                <ng-container i18n>Loading…</ng-container>
+              } @else {
+                <ng-container i18n>No accounts.</ng-container>
+              }
+            </td></tr
           >
         }
       </tbody>
@@ -119,7 +147,7 @@
 </div>
 
 <p-dialog
-  [header]="editing() ? 'Edit account' : 'New account'"
+  [header]="editing() ? tx.editAccount : tx.newAccount"
   [modal]="true"
   [draggable]="false"
   styleClass="staff__dialog"
@@ -127,32 +155,39 @@
   (visibleChange)="$event || editing.set(undefined)">
   <form class="staff__form" [formGroup]="form" (ngSubmit)="save()" novalidate>
     <app-form-field
+      i18n-label
       label="Email"
       for="sEmail"
       [error]="
         form.controls.email.touched && form.controls.email.invalid
-          ? 'Enter a valid email'
+          ? text.validEmail
           : null
       ">
       <input id="sEmail" class="input" type="email" formControlName="email" />
     </app-form-field>
     <app-form-field
+      i18n-label
       label="Full name"
       for="sName"
       [error]="
         form.controls.fullName.touched && form.controls.fullName.invalid
-          ? 'Required'
+          ? text.required
           : null
       ">
       <input id="sName" class="input" formControlName="fullName" />
     </app-form-field>
-    <app-form-field label="Role" for="sRole">
+    <app-form-field i18n-label label="Role" for="sRole">
       <select id="sRole" class="input" formControlName="role">
         <option value="Dispatcher"
-          >Dispatcher: bookings, shifts, drivers, vehicles</option
+          ><ng-container i18n
+            >Dispatcher: bookings, shifts, drivers, vehicles</ng-container
+          ></option
         >
         <option value="Admin"
-          >Admin: everything, including prices, payments and staff</option
+          ><ng-container i18n
+            >Admin: everything, including prices, payments and
+            staff</ng-container
+          ></option
         >
       </select>
     </app-form-field>
@@ -162,14 +197,22 @@
           class="staff__checkbox"
           type="checkbox"
           formControlName="isActive"
-          [attr.disabled]="editing()?.id === me()?.id ? true : null" />
-        Active
+          [attr.disabled]="
+            editing()?.id === me()?.id ? true : null
+          " />&ngsp;<ng-container i18n>Active</ng-container>
       </label>
       <p class="staff__muted"
-        >Changing the role or deactivating signs the person out at once.</p
+        ><ng-container i18n
+          >Changing the role or deactivating signs the person out at
+          once.</ng-container
+        ></p
       >
     } @else {
-      <p class="staff__muted">A temporary password is shown after saving.</p>
+      <p class="staff__muted"
+        ><ng-container i18n
+          >A temporary password is shown after saving.</ng-container
+        ></p
+      >
     }
     <div class="staff__dialog-actions">
       <button
@@ -177,11 +220,15 @@
         type="button"
         variant="ghost"
         (click)="editing.set(undefined)"
-        >Cancel</button
+        ><ng-container i18n>Cancel</ng-container></button
       >
-      <button appButton type="submit" [disabled]="saving()">{{
-        saving() ? 'Saving…' : 'Save'
-      }}</button>
+      <button appButton type="submit" [disabled]="saving()">
+        @if (saving()) {
+          <ng-container i18n>Saving…</ng-container>
+        } @else {
+          <ng-container i18n>Save</ng-container>
+        }
+      </button>
     </div>
   </form>
 </p-dialog>

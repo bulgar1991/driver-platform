@@ -5,9 +5,12 @@
       <app-status-badge [status]="b.status" />
       @if (b.source !== 'Website') {
         <span class="booking-detail__muted">
-          via {{ b.partnerName ?? b.source }}
+          <ng-container i18n>via {{ b.partnerName ?? b.source }}</ng-container
+          >&ngsp;
           @if (b.externalReference) {
-            · their ref. {{ b.externalReference }}
+            <ng-container i18n
+              >· their ref. {{ b.externalReference }}</ng-container
+            >
           }
         </span>
       }
@@ -22,12 +25,14 @@
         b.pickupAt | date: 'EEEE d MMMM y, HH:mm'
       }}</p>
       <dl class="booking-detail__facts">
-        <dt>Pickup</dt>
+        <dt><ng-container i18n>Pickup</ng-container></dt>
         <dd>
           @if (b.pickupMeetingPoint; as mp) {
             <strong>{{ mp.name }}</strong> · {{ mp.address }}
             <span class="booking-detail__muted"
-              >Client's address: {{ b.pickup.address }}</span
+              ><ng-container i18n
+                >Client's address: {{ b.pickup.address }}</ng-container
+              ></span
             >
             @if (mp.driverInstructions) {
               <span class="booking-detail__note">{{
@@ -38,91 +43,118 @@
             {{ b.pickup.address }}
           }
         </dd>
-        <dt>Drop-off</dt>
+        <dt><ng-container i18n>Drop-off</ng-container></dt>
         <dd>
           @if (b.dropoffMeetingPoint; as mp) {
             <strong>{{ mp.name }}</strong> · {{ mp.address }}
             <span class="booking-detail__muted"
-              >Client's address: {{ b.dropoff.address }}</span
+              ><ng-container i18n
+                >Client's address: {{ b.dropoff.address }}</ng-container
+              ></span
             >
           } @else {
             {{ b.dropoff.address }}
           }
         </dd>
-        <dt>Route</dt>
-        <dd>{{ b.distanceKm }} km · {{ b.durationMinutes | duration }}</dd>
-        <dt>Passengers</dt>
+        <dt><ng-container i18n>Route</ng-container></dt>
+        <dd
+          ><ng-container i18n
+            >{{ b.distanceKm }} km ·
+            {{ b.durationMinutes | duration }}</ng-container
+          ></dd
+        >
+        <dt><ng-container i18n>Passengers</ng-container></dt>
         <dd>
-          {{ b.passengers }} · {{ b.largeLuggage }} large +
-          {{ b.smallLuggage }} small bags
+          <ng-container i18n
+            >{{ b.passengers }} · {{ b.largeLuggage }} large +
+            {{ b.smallLuggage }} small bags</ng-container
+          >&ngsp;
           @for (seat of b.childSeats; track seat.group) {
             <span class="booking-detail__muted"
-              >{{ seat.count }} × {{ groupLabel[seat.group] }}</span
+              ><ng-container i18n
+                >{{ seat.count }} × {{ groupLabel[seat.group] }}</ng-container
+              ></span
             >
           }
         </dd>
-        <dt>Vehicle</dt>
-        <dd>{{ b.vehicleCategory }}</dd>
+        <dt><ng-container i18n>Vehicle</ng-container></dt>
+        <dd>{{ text.categories[b.vehicleCategory] }}</dd>
         @if (b.flightNumber) {
-          <dt>Flight</dt>
+          <dt><ng-container i18n>Flight</ng-container></dt>
           <dd>{{ b.flightNumber }}</dd>
         }
         @if (b.nameSign) {
-          <dt>Name sign</dt>
+          <dt><ng-container i18n>Name sign</ng-container></dt>
           <dd>{{ b.nameSignText }}</dd>
         }
         @if (b.clientNotes) {
-          <dt>Client notes</dt>
+          <dt><ng-container i18n>Client notes</ng-container></dt>
           <dd>{{ b.clientNotes }}</dd>
         }
         @if (b.linkedReference) {
-          <dt>Linked ride</dt>
-          <dd>{{ b.linkedReference }} (outbound / return)</dd>
+          <dt><ng-container i18n>Linked ride</ng-container></dt>
+          <dd
+            ><ng-container i18n
+              >{{ b.linkedReference }} (outbound / return)</ng-container
+            ></dd
+          >
         }
       </dl>
     </section>
 
     <section class="booking-detail__section">
-      <h3 class="booking-detail__subtitle">Client</h3>
+      <h3 class="booking-detail__subtitle"
+        ><ng-container i18n>Client</ng-container></h3
+      >
       <p>{{ b.client.name }}</p>
       <p class="booking-detail__contact">
         <a [href]="'tel:' + b.client.phone">{{ b.client.phone }}</a>
         @if (b.client.email) {
           · <a [href]="'mailto:' + b.client.email">{{ b.client.email }}</a>
         }
-        · speaks {{ b.client.language }}
+        &ngsp;<ng-container i18n>· speaks {{ b.client.language }}</ng-container>
       </p>
     </section>
 
     <section class="booking-detail__section">
-      <h3 class="booking-detail__subtitle">Shift</h3>
+      <h3 class="booking-detail__subtitle"
+        ><ng-container i18n>Shift</ng-container></h3
+      >
       @if (b.driverName) {
         <p>{{ b.driverName }} · {{ b.vehiclePlate }}</p>
       } @else {
-        <p class="booking-detail__muted">Not in a shift yet.</p>
+        <p class="booking-detail__muted"
+          ><ng-container i18n>Not in a shift yet.</ng-container></p
+        >
       }
       <a
         class="booking-detail__link"
         routerLink="/admin/shifts"
         [queryParams]="{ date: b.pickupAt.slice(0, 10) }"
-        >Open shifts of that day →</a
+        ><ng-container i18n>Open shifts of that day →</ng-container></a
       >
     </section>
 
     <section class="booking-detail__section">
-      <h3 class="booking-detail__subtitle">Price</h3>
+      <h3 class="booking-detail__subtitle"
+        ><ng-container i18n>Price</ng-container></h3
+      >
       <p>
         {{ b.totalPrice | money: b.currency }}
         <span class="booking-detail__muted"
-          >Payment: {{ b.paymentStatus ?? 'none' }}</span
+          ><ng-container i18n
+            >Payment: {{ b.paymentStatus ?? 'none' }}</ng-container
+          ></span
         >
       </p>
       @if (b.status === 'Cancelled') {
         <p class="booking-detail__muted">
-          Cancelled: {{ b.cancellationReason }}.
+          <ng-container i18n
+            >Cancelled: {{ b.cancellationReason }}.</ng-container
+          >&ngsp;
           @if (isAdmin && b.paymentStatus === 'Succeeded') {
             <a class="booking-detail__link" routerLink="/admin/payments"
-              >Refund in Payments →</a
+              ><ng-container i18n>Refund in Payments →</ng-container></a
             >
           }
         </p>
@@ -131,7 +163,7 @@
 
     <section class="booking-detail__section">
       <label class="booking-detail__subtitle" for="internalNotes"
-        >Internal notes</label
+        ><ng-container i18n>Internal notes</ng-container></label
       >
       <textarea
         id="internalNotes"
@@ -145,7 +177,7 @@
         type="button"
         [disabled]="busy() || notes === (b.internalNotes ?? '')"
         (click)="saveNotes()"
-        >Save notes</button
+        ><ng-container i18n>Save notes</ng-container></button
       >
     </section>
 
@@ -154,8 +186,10 @@
         @if (cancelling()) {
           <input
             class="input"
+            i18n-placeholder
             placeholder="Reason for cancelling"
             [(ngModel)]="cancelReason"
+            i18n-aria-label
             aria-label="Reason for cancelling" />
           <div class="booking-detail__buttons">
             <button
@@ -164,7 +198,7 @@
               variant="ghost"
               type="button"
               (click)="cancelling.set(false)"
-              >Keep</button
+              ><ng-container i18n>Keep</ng-container></button
             >
             <button
               appButton
@@ -173,11 +207,14 @@
               type="button"
               [disabled]="busy()"
               (click)="setStatus('Cancelled')"
-              >Cancel booking</button
+              ><ng-container i18n>Cancel booking</ng-container></button
             >
           </div>
           <p class="booking-detail__muted"
-            >Cancelling does not refund: refunds are made in Payments.</p
+            ><ng-container i18n
+              >Cancelling does not refund: refunds are made in
+              Payments.</ng-container
+            ></p
           >
         } @else {
           <div class="booking-detail__buttons">
@@ -189,7 +226,7 @@
                 type="button"
                 [disabled]="busy()"
                 (click)="setStatus('PickedUp')"
-                >Picked up</button
+                ><ng-container i18n>Picked up</ng-container></button
               >
             }
             @if (actions().completed) {
@@ -199,7 +236,7 @@
                 type="button"
                 [disabled]="busy()"
                 (click)="setStatus('Completed')"
-                >Completed</button
+                ><ng-container i18n>Completed</ng-container></button
               >
             }
             @if (actions().cancel) {
@@ -209,7 +246,7 @@
                 variant="ghost"
                 type="button"
                 (click)="cancelling.set(true)"
-                >Cancel…</button
+                ><ng-container i18n>Cancel…</ng-container></button
               >
             }
           </div>
@@ -220,5 +257,7 @@
 } @else if (error(); as message) {
   <p class="alert alert--error" role="alert">{{ message }}</p>
 } @else {
-  <p class="booking-detail__muted">Loading…</p>
+  <p class="booking-detail__muted"
+    ><ng-container i18n>Loading…</ng-container></p
+  >
 }

@@ -9,6 +9,7 @@ using DriverPlatform.Application.Notifications;
 using DriverPlatform.Domain.Entities;
 using DriverPlatform.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.Payments;
 
@@ -55,17 +56,17 @@ public sealed class PaymentAdminService(
     {
         var payment = await db.Payments.Include(p => p.Booking).ThenInclude(b => b.Client)
             .FirstOrDefaultAsync(p => p.Id == paymentId, cancellationToken)
-            ?? throw new NotFoundException("Payment not found.");
+            ?? throw new NotFoundException(Texts.Current.PaymentNotFound);
         if (payment.Status is not (PaymentStatus.Succeeded or PaymentStatus.PartiallyRefunded) || payment.ProviderTransactionId is null)
         {
-            throw new ConflictException("Only paid payments can be refunded.");
+            throw new ConflictException(Texts.Current.OnlyPaidRefundable);
         }
 
         var left = payment.Amount - payment.RefundedAmount;
         var amount = request.Amount ?? left;
         if (amount <= 0 || amount > left)
         {
-            throw new RequestValidationException("amount", $"Refund between €0.01 and €{left.ToString("0.00", CultureInfo.InvariantCulture)}.");
+            throw new RequestValidationException("amount", Texts.Current.RefundRange(Texts.Current.Money(left)));
         }
 
         var refund = new Refund
@@ -108,14 +109,14 @@ public sealed class PaymentAdminService(
     public async Task<InvoiceFile> GetInvoicePdfAsync(Guid invoiceId, CancellationToken cancellationToken)
     {
         var invoice = await db.Invoices.AsNoTracking().FirstOrDefaultAsync(i => i.Id == invoiceId, cancellationToken)
-            ?? throw new NotFoundException("Invoice not found.");
+            ?? throw new NotFoundException(Texts.Current.InvoiceNotFound);
         return new InvoiceFile($"{invoice.Number}.pdf", invoice.Pdf ?? []);
     }
 
     public async Task ResendInvoiceAsync(Guid invoiceId, CancellationToken cancellationToken)
     {
         var invoice = await db.Invoices.FirstOrDefaultAsync(i => i.Id == invoiceId, cancellationToken)
-            ?? throw new NotFoundException("Invoice not found.");
+            ?? throw new NotFoundException(Texts.Current.InvoiceNotFound);
         var outbound = await db.Bookings.Include(b => b.Client).FirstAsync(b => b.Id == invoice.BookingId, cancellationToken);
         if (invoice.Type == InvoiceType.Invoice)
         {
@@ -133,7 +134,7 @@ public sealed class PaymentAdminService(
     {
         if (to < from)
         {
-            throw new RequestValidationException("to", "The end date is before the start date.");
+            throw new RequestValidationException("to", Texts.Current.EndBeforeStart);
         }
         var start = ItalyTime.ToUtc(from.ToDateTime(TimeOnly.MinValue))!.Value;
         var end = ItalyTime.ToUtc(to.AddDays(1).ToDateTime(TimeOnly.MinValue))!.Value;

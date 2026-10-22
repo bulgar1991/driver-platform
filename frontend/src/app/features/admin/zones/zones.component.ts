@@ -17,6 +17,7 @@ import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { ZoneEditorComponent } from './zone-editor/zone-editor.component'
 import { ZONE_TYPE_LABEL } from './zone-labels'
 import { zonePoints } from './zone-points'
+import { TranslatedPipe } from '@/shared/pipes/translated.pipe'
 
 /** Business plan §5: circles and polygons with local rules, configured without code. */
 @Component({
@@ -27,6 +28,7 @@ import { zonePoints } from './zone-points'
     MapComponent,
     MoneyPipe,
     ZoneEditorComponent,
+    TranslatedPipe,
   ],
   templateUrl: './zones.component.html',
   styleUrl: './zones.component.scss',

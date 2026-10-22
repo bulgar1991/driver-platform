@@ -7,6 +7,7 @@ using DriverPlatform.Application.Pricing;
 using DriverPlatform.Domain.Entities;
 using DriverPlatform.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.Dispatch;
 
@@ -58,7 +59,7 @@ public sealed class ShiftService(
         var shift = await FindAsync(id, cancellationToken);
         if (!Open.Contains(shift.Status))
         {
-            throw new ConflictException($"A {shift.Status.ToString().ToLowerInvariant()} shift cannot be changed.");
+            throw new ConflictException(Texts.Current.ShiftLocked(shift.Status));
         }
         return await SaveAsync(shift, request, isNew: false, cancellationToken);
     }
@@ -100,11 +101,11 @@ public sealed class ShiftService(
             case AssignmentStatus.Cancelled when Open.Contains(shift.Status):
                 if (string.IsNullOrWhiteSpace(request.Reason))
                 {
-                    throw new RequestValidationException("reason", "Say why the shift is cancelled.");
+                    throw new RequestValidationException("reason", Texts.Current.SayWhyShiftCancelled);
                 }
                 if (bookings.Any(b => b.Status is BookingStatus.PickedUp or BookingStatus.Completed))
                 {
-                    throw new ConflictException("The driver has already picked up a client on this shift.");
+                    throw new ConflictException(Texts.Current.AlreadyPickedUp);
                 }
                 // The rides themselves still happen: they go back to the list of bookings to assign.
                 foreach (var booking in bookings.Where(b => b.Status == BookingStatus.Assigned))
@@ -121,7 +122,7 @@ public sealed class ShiftService(
                 }
                 break;
             default:
-                throw new RequestValidationException("status", $"A {shift.Status} shift cannot become {request.Status}.");
+                throw new RequestValidationException("status", Texts.Current.ShiftStatusChange(shift.Status, request.Status));
         }
 
         shift.Status = request.Status;
@@ -210,15 +211,15 @@ public sealed class ShiftService(
 
         if (driver is not { IsActive: true })
         {
-            errors.Add("driverId", "Choose an active driver.");
+            errors.Add("driverId", Texts.Current.ChooseActiveDriver);
         }
         if (vehicle is not { IsActive: true })
         {
-            errors.Add("vehicleId", "Choose an active vehicle.");
+            errors.Add("vehicleId", Texts.Current.ChooseActiveVehicle);
         }
         if (bookings.Count != ids.Count || ids.Count == 0)
         {
-            errors.Add("bookingIds", "Choose one or more existing bookings.");
+            errors.Add("bookingIds", Texts.Current.ChooseBookings);
         }
         foreach (var booking in bookings)
         {
@@ -249,11 +250,11 @@ public sealed class ShiftService(
             var previousEnd = ordered[i - 1].PickupAt.AddMinutes(ordered[i - 1].DurationMinutes);
             if (ordered[i].PickupAt < previousEnd)
             {
-                errors.Add("bookingIds", $"{ordered[i].Reference} starts before {ordered[i - 1].Reference} ends.");
+                errors.Add("bookingIds", Texts.Current.StartsBeforeEnds(ordered[i].Reference, ordered[i - 1].Reference));
             }
             else if (ordered[i].PickupAt < previousEnd + Buffer)
             {
-                warnings.Add($"Only {(int)(ordered[i].PickupAt - previousEnd).TotalMinutes} min between {ordered[i - 1].Reference} and {ordered[i].Reference}, plus the drive to the next pickup.");
+                warnings.Add(Texts.Current.TightGap((int)(ordered[i].PickupAt - previousEnd).TotalMinutes, ordered[i - 1].Reference, ordered[i].Reference));
             }
         }
         errors.ThrowIfAny();
@@ -338,11 +339,11 @@ public sealed class ShiftService(
         var problems = DocumentRules.ExpiredOn(driver, lastDate);
         if (!driver.IsAvailable)
         {
-            problems.Add("Marked as not available");
+            problems.Add(Texts.Current.MarkedNotAvailable);
         }
         if (busy.Drivers.Contains(driver.Id))
         {
-            problems.Add("Already on another shift at this time");
+            problems.Add(Texts.Current.OnAnotherShift);
         }
         return problems;
     }
@@ -374,7 +375,7 @@ public sealed class ShiftService(
         }
         if (busy.Vehicles.Contains(vehicle.Id))
         {
-            problems.Add("Already on another shift at this time");
+            problems.Add(Texts.Current.OnAnotherShift);
         }
         return problems.Distinct().ToList();
     }
@@ -394,7 +395,7 @@ public sealed class ShiftService(
 
     private async Task<Assignment> FindAsync(Guid id, CancellationToken cancellationToken) =>
         await Query().FirstOrDefaultAsync(a => a.Id == id, cancellationToken)
-        ?? throw new NotFoundException("Shift not found.");
+        ?? throw new NotFoundException(Texts.Current.ShiftNotFound);
 
     private async Task<ShiftDto> ToDtoAsync(Assignment shift, CancellationToken cancellationToken) =>
         ToDto(shift, await MessagesAsync([shift.Id], cancellationToken));

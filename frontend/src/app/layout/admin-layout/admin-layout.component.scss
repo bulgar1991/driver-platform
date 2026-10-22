@@ -57,6 +57,10 @@
     @apply text-[10px] uppercase tracking-widest text-gold;
   }
 
+  &__languages {
+    @apply hidden sm:flex;
+  }
+
   &__logout {
     @apply flex items-center gap-2 text-ivory-200 transition hover:text-gold;
   }

@@ -1,12 +1,16 @@
 <div class="pricing">
   <header class="pricing__header">
-    <p class="eyebrow">Administration</p>
-    <h1 class="heading heading--lg">Pricing</h1>
+    <p class="eyebrow"><ng-container i18n>Administration</ng-container></p>
+    <h1 class="heading heading--lg"
+      ><ng-container i18n>Pricing</ng-container></h1
+    >
     <p class="pricing__intro">
-      Price = base fee + km × rate, then the day surcharges, which are added
-      together (Saturday night = weekend + night). Extras and zone fees are
-      fixed amounts. All prices include VAT. Changes apply to new quotes only;
-      booked rides keep their price.
+      <ng-container i18n
+        >Price = base fee + km × rate, then the day surcharges, which are added
+        together (Saturday night = weekend + night). Extras and zone fees are
+        fixed amounts. All prices include VAT. Changes apply to new quotes only;
+        booked rides keep their price.</ng-container
+      >
     </p>
   </header>
 
@@ -21,20 +25,26 @@
   }
 
   @if (loading()) {
-    <p class="pricing__muted">Loading…</p>
+    <p class="pricing__muted"><ng-container i18n>Loading…</ng-container></p>
   } @else {
     <section class="pricing__card">
-      <h2 class="pricing__title">Vehicle tariffs</h2>
+      <h2 class="pricing__title"
+        ><ng-container i18n>Vehicle tariffs</ng-container></h2
+      >
       <div class="pricing__table-wrap">
         <table class="pricing__table">
           <thead>
             <tr>
-              <th>Category</th>
-              <th>Base fee (€)</th>
-              <th>Per km (€)</th>
-              <th>Passengers</th>
-              <th>Large bags</th>
-              <th><span class="pricing__sr">Save</span></th>
+              <th><ng-container i18n>Category</ng-container></th>
+              <th><ng-container i18n>Base fee (€)</ng-container></th>
+              <th><ng-container i18n>Per km (€)</ng-container></th>
+              <th><ng-container i18n>Passengers</ng-container></th>
+              <th><ng-container i18n>Large bags</ng-container></th>
+              <th
+                ><span class="pricing__sr"
+                  ><ng-container i18n>Save</ng-container></span
+                ></th
+              >
             </tr>
           </thead>
           <tbody>
@@ -44,7 +54,9 @@
               let i = $index
             ) {
               <tr [formGroup]="group">
-                <th scope="row">{{ group.controls.category.value }}</th>
+                <th scope="row">{{
+                  categoryLabel(group.controls.category.value)
+                }}</th>
                 <td
                   ><input
                     class="input pricing__number"
@@ -53,7 +65,7 @@
                     min="0"
                     formControlName="baseFee"
                     [attr.aria-label]="
-                      group.controls.category.value + ' base fee'
+                      tx.baseFee(categoryLabel(group.controls.category.value))
                     "
                 /></td>
                 <td
@@ -64,7 +76,9 @@
                     min="0"
                     formControlName="pricePerKm"
                     [attr.aria-label]="
-                      group.controls.category.value + ' price per km'
+                      tx.pricePerKm(
+                        categoryLabel(group.controls.category.value)
+                      )
                     "
                 /></td>
                 <td
@@ -75,7 +89,9 @@
                     max="8"
                     formControlName="maxPassengers"
                     [attr.aria-label]="
-                      group.controls.category.value + ' passengers'
+                      tx.passengers(
+                        categoryLabel(group.controls.category.value)
+                      )
                     "
                 /></td>
                 <td
@@ -86,7 +102,7 @@
                     max="16"
                     formControlName="maxLuggage"
                     [attr.aria-label]="
-                      group.controls.category.value + ' large bags'
+                      tx.largeBags(categoryLabel(group.controls.category.value))
                     "
                 /></td>
                 <td>
@@ -99,7 +115,7 @@
                       saving() === 'rate-' + group.controls.category.value
                     "
                     (click)="saveRate(i)"
-                    >Save</button
+                    ><ng-container i18n>Save</ng-container></button
                   >
                 </td>
               </tr>
@@ -111,19 +127,23 @@
 
     <section class="pricing__card">
       <div class="pricing__title-row">
-        <h2 class="pricing__title">Surcharges</h2>
+        <h2 class="pricing__title"
+          ><ng-container i18n>Surcharges</ng-container></h2
+        >
         <button
           appButton
           size="sm"
           variant="outline"
           type="button"
           (click)="openSurcharge(null)">
-          <app-icon name="plus" /> Add
+          <app-icon name="plus" />&ngsp;<ng-container i18n>Add</ng-container>
         </button>
       </div>
       <p class="pricing__muted">
-        Weekend, public holidays, night, peak season and events. Every rule that
-        matches the pickup time is added.
+        <ng-container i18n
+          >Weekend, public holidays, night, peak season and events. Every rule
+          that matches the pickup time is added.</ng-container
+        >
       </p>
       <ul class="pricing__rules">
         @for (rule of surcharges(); track rule.id) {
@@ -131,7 +151,9 @@
             class="pricing__rule"
             [class.pricing__rule--inactive]="!rule.isActive">
             <div class="pricing__rule-text">
-              <span class="pricing__rule-name">{{ rule.name }}</span>
+              <span class="pricing__rule-name">{{
+                rule.name | translated: rule.nameTranslations
+              }}</span>
               <span class="pricing__rule-when">{{ describe(rule) }}</span>
             </div>
             <span class="pricing__rule-percent">+{{ rule.percent }}%</span>
@@ -143,12 +165,14 @@
                   [checked]="rule.isActive"
                   [disabled]="saving() === 'toggle-' + rule.id"
                   (change)="toggleSurcharge(rule)" />
-                <span class="pricing__sr">Active</span>
+                <span class="pricing__sr"
+                  ><ng-container i18n>Active</ng-container></span
+                >
               </label>
               <button
                 type="button"
                 class="pricing__icon-button"
-                [attr.aria-label]="'Edit ' + rule.name"
+                [attr.aria-label]="tx.edit(rule.name)"
                 (click)="openSurcharge(rule)">
                 <app-icon name="edit" />
               </button>
@@ -159,7 +183,7 @@
                   variant="outline"
                   type="button"
                   (click)="deleteSurcharge(rule)"
-                  >Delete</button
+                  ><ng-container i18n>Delete</ng-container></button
                 >
                 <button
                   appButton
@@ -167,13 +191,13 @@
                   variant="ghost"
                   type="button"
                   (click)="confirmDelete.set(null)"
-                  >Keep</button
+                  ><ng-container i18n>Keep</ng-container></button
                 >
               } @else {
                 <button
                   type="button"
                   class="pricing__icon-button pricing__icon-button--danger"
-                  [attr.aria-label]="'Delete ' + rule.name"
+                  [attr.aria-label]="tx.delete(rule.name)"
                   (click)="confirmDelete.set(rule.id)">
                   <app-icon name="trash" />
                 </button>
@@ -181,14 +205,16 @@
             </div>
           </li>
         } @empty {
-          <li class="pricing__muted">No surcharges yet.</li>
+          <li class="pricing__muted"
+            ><ng-container i18n>No surcharges yet.</ng-container></li
+          >
         }
       </ul>
     </section>
 
     <div class="pricing__grid">
       <section class="pricing__card">
-        <h2 class="pricing__title">Extras</h2>
+        <h2 class="pricing__title"><ng-container i18n>Extras</ng-container></h2>
         <ul class="pricing__list">
           @for (
             group of extras.controls;
@@ -212,7 +238,7 @@
                 type="button"
                 [disabled]="group.pristine"
                 (click)="saveExtra(i)"
-                >Save</button
+                ><ng-container i18n>Save</ng-container></button
               >
             </li>
           }
@@ -220,11 +246,15 @@
       </section>
 
       <section class="pricing__card" [formGroup]="settings">
-        <h2 class="pricing__title">General</h2>
+        <h2 class="pricing__title"
+          ><ng-container i18n>General</ng-container></h2
+        >
         <ul class="pricing__list">
           <li class="pricing__list-item">
             <label class="pricing__label" for="vat"
-              >VAT included (%) · confirm with the accountant</label
+              ><ng-container i18n
+                >VAT included (%) · confirm with the accountant</ng-container
+              ></label
             >
             <input
               id="vat"
@@ -236,7 +266,7 @@
           </li>
           <li class="pricing__list-item">
             <label class="pricing__label" for="returnDiscount"
-              >Return trip discount (%)</label
+              ><ng-container i18n>Return trip discount (%)</ng-container></label
             >
             <input
               id="returnDiscount"
@@ -248,7 +278,9 @@
           </li>
           <li class="pricing__list-item">
             <label class="pricing__label" for="leadTime"
-              >Book at least (hours ahead)</label
+              ><ng-container i18n
+                >Book at least (hours ahead)</ng-container
+              ></label
             >
             <input
               id="leadTime"
@@ -265,7 +297,7 @@
           type="button"
           [disabled]="settings.pristine || saving() === 'settings'"
           (click)="saveSettings()"
-          >Save settings</button
+          ><ng-container i18n>Save settings</ng-container></button
         >
       </section>
     </div>
@@ -273,7 +305,7 @@
 </div>
 
 <p-dialog
-  [header]="editing() ? 'Edit surcharge' : 'New surcharge'"
+  [header]="editing() ? tx.editSurcharge : tx.newSurcharge"
   [modal]="true"
   [draggable]="false"
   [dismissableMask]="true"

@@ -1,21 +1,21 @@
 import { AssignmentStatus, BookingStatus } from '../models'
 
 export const BOOKING_STATUS_LABEL: Record<BookingStatus, string> = {
-  AwaitingPayment: 'Awaiting payment',
-  New: 'To assign',
-  Assigned: 'Assigned',
-  PickedUp: 'Picked up',
-  Completed: 'Completed',
-  Cancelled: 'Cancelled',
+  AwaitingPayment: $localize`Awaiting payment`,
+  New: $localize`To assign`,
+  Assigned: $localize`Assigned`,
+  PickedUp: $localize`Picked up`,
+  Completed: $localize`Completed`,
+  Cancelled: $localize`Cancelled`,
 }
 
 export const SHIFT_STATUS_LABEL: Record<AssignmentStatus, string> = {
-  Draft: 'Draft',
-  Sent: 'Sent to driver',
-  Seen: 'Seen by driver',
-  Confirmed: 'Confirmed',
-  Completed: 'Completed',
-  Cancelled: 'Cancelled',
+  Draft: $localize`Draft`,
+  Sent: $localize`Sent to driver`,
+  Seen: $localize`Seen by driver`,
+  Confirmed: $localize`Confirmed`,
+  Completed: $localize`Completed`,
+  Cancelled: $localize`Cancelled`,
 }
 
 /** Colour family for a status badge. */

@@ -9,6 +9,8 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router'
 import { AuthService } from '@/core/services/auth.service'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { LogoComponent } from '@/shared/components/logo/logo.component'
+import { StaffRole } from '@/core/models'
+import { LanguageSwitchComponent } from '../language-switch/language-switch.component'
 import { ADMIN_NAVIGATION } from './admin-navigation'
 
 @Component({
@@ -18,6 +20,7 @@ import { ADMIN_NAVIGATION } from './admin-navigation'
     RouterLink,
     RouterLinkActive,
     IconComponent,
+    LanguageSwitchComponent,
     LogoComponent,
   ],
   templateUrl: './admin-layout.component.html',
@@ -29,6 +32,10 @@ export class AdminLayoutComponent {
 
   protected readonly user = this.auth.currentUser
   protected readonly menuOpen = signal(false)
+  protected readonly roleLabels: Record<StaffRole, string> = {
+    Admin: $localize`Admin`,
+    Dispatcher: $localize`Dispatcher`,
+  }
   protected readonly navigation = computed(() =>
     ADMIN_NAVIGATION.filter(
       item => !item.roles || this.auth.hasRole(...item.roles)

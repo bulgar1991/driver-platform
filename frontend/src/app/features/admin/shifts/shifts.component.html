@@ -1,13 +1,16 @@
 <div class="shifts">
   <header class="shifts__header">
     <div>
-      <p class="eyebrow">Dispatch</p>
-      <h1 class="heading heading--lg">Shifts</h1>
+      <p class="eyebrow"><ng-container i18n>Dispatch</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Shifts</ng-container></h1
+      >
     </div>
     <div class="shifts__day">
       <button
         type="button"
         class="shifts__nav"
+        i18n-aria-label
         aria-label="Previous day"
         (click)="shiftDay(-1)"
         >‹</button
@@ -15,18 +18,22 @@
       <input
         class="input shifts__date"
         type="date"
+        i18n-aria-label
         aria-label="Day"
         [ngModel]="day()"
         (ngModelChange)="changeDay($event)" />
       <button
         type="button"
         class="shifts__nav"
+        i18n-aria-label
         aria-label="Next day"
         (click)="shiftDay(1)"
         >›</button
       >
       <button appButton size="sm" type="button" (click)="newShift()"
-        ><app-icon name="plus" /> New shift</button
+        ><app-icon name="plus" />&ngsp;<ng-container i18n
+          >New shift</ng-container
+        ></button
       >
     </div>
   </header>
@@ -50,7 +57,11 @@
 
   <div class="shifts__layout">
     <section class="shifts__queue">
-      <h2 class="shifts__title">To assign · {{ unassigned().length }}</h2>
+      <h2 class="shifts__title"
+        ><ng-container i18n
+          >To assign · {{ unassigned().length }}</ng-container
+        ></h2
+      >
       <ul class="shifts__list">
         @for (b of unassigned(); track b.id) {
           <li class="shifts__booking">
@@ -59,8 +70,10 @@
               <span class="shifts__ref">{{ b.reference }}</span>
               {{ b.pickupLabel }} → {{ b.dropoffLabel }}
               <span class="shifts__muted"
-                >{{ b.vehicleCategory }} · {{ b.passengers }} pax ·
-                {{ b.clientName }}</span
+                ><ng-container i18n
+                  >{{ text.categories[b.vehicleCategory] }} ·
+                  {{ b.passengers }} pax · {{ b.clientName }}</ng-container
+                ></span
               >
             </span>
             <button
@@ -68,22 +81,31 @@
               size="sm"
               variant="ghost"
               type="button"
-              [attr.aria-label]="'New shift with ' + b.reference"
+              [attr.aria-label]="tx.newShiftWith(b.reference)"
               (click)="newShift([b.id])"
-              >Assign</button
+              ><ng-container i18n>Assign</ng-container></button
             >
           </li>
         } @empty {
-          <li class="shifts__muted">{{
-            loading() ? 'Loading…' : 'Nothing left to assign on this day.'
-          }}</li>
+          <li class="shifts__muted">
+            @if (loading()) {
+              <ng-container i18n>Loading…</ng-container>
+            } @else {
+              <ng-container i18n
+                >Nothing left to assign on this day.</ng-container
+              >
+            }
+          </li>
         }
       </ul>
     </section>
 
     <section class="shifts__board">
       <h2 class="shifts__title"
-        >{{ day() | date: 'EEEE d MMMM' }} · {{ shifts().length }} shifts</h2
+        ><ng-container i18n
+          >{{ day() | date: 'EEEE d MMMM' }} ·
+          {{ shifts().length }} shifts</ng-container
+        ></h2
       >
       <div class="shifts__cards">
         @for (s of shifts(); track s.id) {
@@ -93,7 +115,9 @@
             (edit)="editShift($event)"
             (statusChange)="onStatusChange($event)" />
         } @empty {
-          <p class="shifts__muted">No shifts yet on this day.</p>
+          <p class="shifts__muted"
+            ><ng-container i18n>No shifts yet on this day.</ng-container></p
+          >
         }
       </div>
     </section>
@@ -101,7 +125,7 @@
 </div>
 
 <p-dialog
-  [header]="editing() ? 'Edit shift' : 'New shift'"
+  [header]="editing() ? tx.editShift : tx.newShift"
   [modal]="true"
   [draggable]="false"
   styleClass="shifts__dialog"

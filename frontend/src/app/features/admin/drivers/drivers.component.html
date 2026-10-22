@@ -1,8 +1,10 @@
 <div class="fleet">
   <header class="fleet__header">
     <div>
-      <p class="eyebrow">Fleet</p>
-      <h1 class="heading heading--lg">Drivers</h1>
+      <p class="eyebrow"><ng-container i18n>Fleet</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Drivers</ng-container></h1
+      >
     </div>
     <div class="fleet__tools">
       <label class="fleet__check">
@@ -10,11 +12,14 @@
           class="fleet__checkbox"
           type="checkbox"
           [checked]="showInactive()"
-          (change)="toggleInactive()" />
-        Show inactive
+          (change)="toggleInactive()" />&ngsp;<ng-container i18n
+          >Show inactive</ng-container
+        >
       </label>
       <button appButton size="sm" type="button" (click)="open(null)"
-        ><app-icon name="plus" /> New driver</button
+        ><app-icon name="plus" />&ngsp;<ng-container i18n
+          >New driver</ng-container
+        ></button
       >
     </div>
   </header>
@@ -27,12 +32,12 @@
     <table class="fleet__table">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Contact</th>
-          <th>Languages</th>
-          <th>Next expiry</th>
-          <th>Rides</th>
-          <th>Status</th>
+          <th><ng-container i18n>Name</ng-container></th>
+          <th><ng-container i18n>Contact</ng-container></th>
+          <th><ng-container i18n>Languages</ng-container></th>
+          <th><ng-container i18n>Next expiry</ng-container></th>
+          <th><ng-container i18n>Rides</ng-container></th>
+          <th><ng-container i18n>Status</ng-container></th>
         </tr>
       </thead>
       <tbody>
@@ -67,7 +72,9 @@
                 </span>
                 <span class="fleet__muted">{{ documentLabel[doc.type] }}</span>
               } @else {
-                <span class="fleet__warning">No dates on file</span>
+                <span class="fleet__warning"
+                  ><ng-container i18n>No dates on file</ng-container></span
+                >
               }
             </td>
             <td class="fleet__nowrap">
@@ -76,10 +83,12 @@
                 @if (d.rating) {
                   ★ {{ d.rating }} ({{ d.ratingCount }})
                 } @else {
-                  no reviews
+                  <ng-container i18n>no reviews</ng-container>
                 }
                 @if (d.cancelledShifts) {
-                  · {{ d.cancelledShifts }} cancelled
+                  <ng-container i18n
+                    >· {{ d.cancelledShifts }} cancelled</ng-container
+                  >
                 }
               </span>
             </td>
@@ -87,21 +96,25 @@
               <span
                 class="fleet__badge"
                 [class.fleet__badge--off]="!d.isActive || !d.isAvailable">
-                {{
-                  !d.isActive
-                    ? 'Inactive'
-                    : d.isAvailable
-                      ? 'Available'
-                      : 'Not available'
-                }}
+                @if (!d.isActive) {
+                  <ng-container i18n>Inactive</ng-container>
+                } @else if (d.isAvailable) {
+                  <ng-container i18n>Available</ng-container>
+                } @else {
+                  <ng-container i18n>Not available</ng-container>
+                }
               </span>
             </td>
           </tr>
         } @empty {
           <tr>
-            <td colspan="6" class="fleet__muted">{{
-              loading() ? 'Loading…' : 'No drivers yet.'
-            }}</td>
+            <td colspan="6" class="fleet__muted">
+              @if (loading()) {
+                <ng-container i18n>Loading…</ng-container>
+              } @else {
+                <ng-container i18n>No drivers yet.</ng-container>
+              }
+            </td>
           </tr>
         }
       </tbody>
@@ -110,7 +123,7 @@
 </div>
 
 <p-dialog
-  [header]="editing() ? 'Edit driver' : 'New driver'"
+  [header]="editing() ? tx.editDriver : tx.newDriver"
   [modal]="true"
   [draggable]="false"
   styleClass="fleet__dialog"
@@ -122,60 +135,69 @@
     }
     <div class="fleet__grid">
       <app-form-field
+        i18n-label
         label="First name"
         for="dFirst"
         [error]="
           form.controls.firstName.touched && form.controls.firstName.invalid
-            ? 'Required'
+            ? text.required
             : null
         ">
         <input id="dFirst" class="input" formControlName="firstName" />
       </app-form-field>
       <app-form-field
+        i18n-label
         label="Last name"
         for="dLast"
         [error]="
           form.controls.lastName.touched && form.controls.lastName.invalid
-            ? 'Required'
+            ? text.required
             : null
         ">
         <input id="dLast" class="input" formControlName="lastName" />
       </app-form-field>
       <app-form-field
+        i18n-label
         label="Mobile (WhatsApp)"
         for="dPhone"
         [error]="
           form.controls.phone.touched && form.controls.phone.invalid
-            ? 'With country code, e.g. +39 333 123 4567'
+            ? tx.phoneHint
             : null
         ">
         <input id="dPhone" class="input" type="tel" formControlName="phone" />
       </app-form-field>
       <app-form-field
+        i18n-label
         label="Email"
         for="dEmail"
         [error]="
           form.controls.email.touched && form.controls.email.invalid
-            ? 'Enter a valid email'
+            ? text.validEmail
             : null
         ">
         <input id="dEmail" class="input" type="email" formControlName="email" />
       </app-form-field>
-      <app-form-field label="Languages (comma separated)" for="dLang">
+      <app-form-field
+        i18n-label
+        label="Languages (comma separated)"
+        for="dLang">
         <input
           id="dLang"
           class="input"
           formControlName="languages"
+          i18n-placeholder
           placeholder="it, en, fr" />
       </app-form-field>
-      <app-form-field label="Preferred areas" for="dAreas">
+      <app-form-field i18n-label label="Preferred areas" for="dAreas">
         <input
           id="dAreas"
           class="input"
           formControlName="preferredAreas"
+          i18n-placeholder
           placeholder="Venezia, Mestre" />
       </app-form-field>
-      <app-form-field label="Commission (%)" for="dCommission">
+      <app-form-field i18n-label label="Commission (%)" for="dCommission">
         <input
           id="dCommission"
           class="input"
@@ -189,21 +211,25 @@
           ><input
             class="fleet__checkbox"
             type="checkbox"
-            formControlName="isActive" />
-          Active</label
+            formControlName="isActive" />&ngsp;<ng-container i18n
+            >Active</ng-container
+          ></label
         >
         <label class="fleet__check"
           ><input
             class="fleet__checkbox"
             type="checkbox"
-            formControlName="isAvailable" />
-          Available for shifts</label
+            formControlName="isAvailable" />&ngsp;<ng-container i18n
+            >Available for shifts</ng-container
+          ></label
         >
       </div>
     </div>
 
     <fieldset class="fleet__documents" formArrayName="documents">
-      <legend class="fleet__legend">Documents</legend>
+      <legend class="fleet__legend"
+        ><ng-container i18n>Documents</ng-container></legend
+      >
       @for (
         doc of form.controls.documents.controls;
         track doc;
@@ -213,7 +239,7 @@
           <select
             class="input"
             formControlName="type"
-            [attr.aria-label]="'Document ' + (i + 1) + ' type'">
+            [attr.aria-label]="tx.documentType(i + 1)">
             @for (t of documentTypes; track t.value) {
               <option [value]="t.value">{{ t.label }}</option>
             }
@@ -221,17 +247,18 @@
           <input
             class="input"
             formControlName="number"
+            i18n-placeholder
             placeholder="Number"
-            [attr.aria-label]="'Document ' + (i + 1) + ' number'" />
+            [attr.aria-label]="tx.documentNumber(i + 1)" />
           <input
             class="input"
             type="date"
             formControlName="expiresOn"
-            [attr.aria-label]="'Document ' + (i + 1) + ' expiry date'" />
+            [attr.aria-label]="tx.documentExpiry(i + 1)" />
           <button
             type="button"
             class="fleet__icon-button"
-            [attr.aria-label]="'Remove document ' + (i + 1)"
+            [attr.aria-label]="tx.removeDocument(i + 1)"
             (click)="removeDocument(i)"
             ><app-icon name="trash"
           /></button>
@@ -243,25 +270,34 @@
         variant="ghost"
         type="button"
         (click)="addDocument()"
-        ><app-icon name="plus" /> Add document</button
+        ><app-icon name="plus" />&ngsp;<ng-container i18n
+          >Add document</ng-container
+        ></button
       >
       <p class="fleet__muted"
-        >A driver with an expired document cannot be put on a shift for that
-        day. Scans can be attached in a later step.</p
+        ><ng-container i18n
+          >A driver with an expired document cannot be put on a shift for that
+          day. Scans can be attached in a later step.</ng-container
+        ></p
       >
     </fieldset>
 
     @if (link(); as url) {
       <section class="fleet__link">
-        <p class="fleet__legend">Personal link</p>
+        <p class="fleet__legend"
+          ><ng-container i18n>Personal link</ng-container></p
+        >
         <p class="fleet__muted"
-          >All the driver's shifts, without a password. It is sent with every
-          shift.</p
+          ><ng-container i18n
+            >All the driver's shifts, without a password. It is sent with every
+            shift.</ng-container
+          ></p
         >
         <input
           class="input fleet__link-input"
           readonly
           [value]="url"
+          i18n-aria-label
           aria-label="Driver's personal link"
           (focus)="$any($event.target).select()" />
         <div class="fleet__link-actions">
@@ -271,7 +307,9 @@
             variant="outline"
             type="button"
             (click)="copyLink()"
-            ><app-icon name="link" /> Copy</button
+            ><app-icon name="link" />&ngsp;<ng-container i18n
+              >Copy</ng-container
+            ></button
           >
           <button
             appButton
@@ -279,7 +317,7 @@
             variant="ghost"
             type="button"
             (click)="rotateLink()"
-            >Make a new link</button
+            ><ng-container i18n>Make a new link</ng-container></button
           >
           @if (linkMessage(); as m) {
             <span class="fleet__muted">{{ m }}</span>
@@ -288,7 +326,7 @@
       </section>
     }
 
-    <app-form-field label="Notes" for="dNotes">
+    <app-form-field i18n-label label="Notes" for="dNotes">
       <textarea
         id="dNotes"
         class="input"
@@ -302,11 +340,15 @@
         type="button"
         variant="ghost"
         (click)="editing.set(undefined)"
-        >Cancel</button
+        ><ng-container i18n>Cancel</ng-container></button
       >
-      <button appButton type="submit" [disabled]="saving()">{{
-        saving() ? 'Saving…' : 'Save driver'
-      }}</button>
+      <button appButton type="submit" [disabled]="saving()">
+        @if (saving()) {
+          <ng-container i18n>Saving…</ng-container>
+        } @else {
+          <ng-container i18n>Save driver</ng-container>
+        }
+      </button>
     </div>
   </form>
 </p-dialog>

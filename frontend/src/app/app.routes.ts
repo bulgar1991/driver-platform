@@ -169,7 +169,7 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    title: 'Sign in · Magnus Drive',
+    title: $localize`Sign in · Magnus Drive`,
     canActivate: [guestGuard],
     loadComponent: () =>
       import('./features/auth/login/login.component').then(
@@ -190,7 +190,7 @@ export const routes: Routes = [
   {
     // Personal driver link with all assigned shifts (step 5).
     path: 'driver/:token',
-    title: 'My shifts · Magnus Drive',
+    title: $localize`My shifts · Magnus Drive`,
     loadComponent: () =>
       import('./features/driver-portal/driver-portal.component').then(
         m => m.DriverPortalComponent

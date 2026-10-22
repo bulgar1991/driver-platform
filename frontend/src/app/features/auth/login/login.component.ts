@@ -43,9 +43,9 @@ export class LoginComponent {
       return null
     }
     if (control.hasError('required')) {
-      return 'Required'
+      return $localize`Required`
     }
-    return control.hasError('email') ? 'Enter a valid email' : null
+    return control.hasError('email') ? $localize`Enter a valid email` : null
   }
 
   protected submit(): void {
@@ -75,12 +75,12 @@ function loginErrorMessage(err: unknown): string {
   const status = err instanceof HttpErrorResponse ? err.status : 0
   switch (status) {
     case 401:
-      return 'Invalid email or password.'
+      return $localize`Invalid email or password.`
     case 423:
-      return 'Too many failed attempts. The account is locked for 15 minutes.'
+      return $localize`Too many failed attempts. The account is locked for 15 minutes.`
     case 429:
-      return 'Too many attempts. Wait a minute and try again.'
+      return $localize`Too many attempts. Wait a minute and try again.`
     default:
-      return 'Could not reach the server. Try again.'
+      return $localize`Could not reach the server. Try again.`
   }
 }

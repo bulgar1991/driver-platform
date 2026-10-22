@@ -4,11 +4,11 @@ using DriverPlatform.Domain.Enums;
 namespace DriverPlatform.Application.Localization;
 
 /// <summary>
-/// What clients (and drivers) read from the backend, in the languages of the site: emails, price
-/// lines and error messages. Each language is a subclass, so a missing text does not compile.
-/// The staff panel stays in English.
+/// What clients, drivers and staff read from the backend, in the languages of the site: emails,
+/// price lines and error messages (the admin ones are in Texts.Admin.cs). Each language is a
+/// subclass, so a missing text does not compile.
 /// </summary>
-public abstract class Texts
+public abstract partial class Texts
 {
     public static readonly Texts English = new EnglishTexts();
     public static readonly Texts Italian = new ItalianTexts();

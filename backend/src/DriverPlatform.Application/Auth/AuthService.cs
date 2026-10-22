@@ -2,6 +2,7 @@ using DriverPlatform.Application.Abstractions;
 using DriverPlatform.Application.Common;
 using DriverPlatform.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.Auth;
 
@@ -60,14 +61,14 @@ public sealed class AuthService(
     public async Task<LoginResponse> ChangePasswordAsync(Guid userId, ChangePasswordRequest request, CancellationToken cancellationToken)
     {
         var user = await db.StaffUsers.FirstOrDefaultAsync(u => u.Id == userId && u.IsActive, cancellationToken)
-            ?? throw new NotFoundException("User not found.");
+            ?? throw new NotFoundException(Texts.Current.UserNotFound);
         if (!passwordHasher.Verify(request.CurrentPassword, user.PasswordHash))
         {
-            throw new RequestValidationException("currentPassword", "The current password is not correct.");
+            throw new RequestValidationException("currentPassword", Texts.Current.CurrentPasswordWrong);
         }
         if (request.NewPassword == request.CurrentPassword)
         {
-            throw new RequestValidationException("newPassword", "Choose a different password.");
+            throw new RequestValidationException("newPassword", Texts.Current.ChooseDifferentPassword);
         }
         PasswordPolicy.Validate(request.NewPassword, user.Email);
 

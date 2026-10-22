@@ -4,16 +4,18 @@
   (ngSubmit)="submit()"
   novalidate>
   <app-form-field
+    i18n-label
     label="Name – English"
     for="surchargeName"
     [error]="
       form.controls.name.touched && form.controls.name.invalid
-        ? 'Required'
+        ? text.required
         : null
     ">
     <input
       id="surchargeName"
       class="input"
+      i18n-placeholder
       placeholder="e.g. Venice Carnival 2027"
       formControlName="name" />
   </app-form-field>
@@ -22,11 +24,12 @@
   <div class="surcharge-form__translations">
     @for (lang of nameLanguages; track lang.control) {
       <app-form-field
-        [label]="'Name – ' + lang.name"
+        [label]="tx.nameIn(lang.name)"
         [for]="'surchargeName' + lang.code">
         <input
           [id]="'surchargeName' + lang.code"
           class="input"
+          i18n-placeholder
           placeholder="Blank: the English name"
           [formControlName]="lang.control" />
       </app-form-field>
@@ -34,14 +37,14 @@
   </div>
 
   <div class="surcharge-form__row">
-    <app-form-field label="Applies on" for="surchargeKind">
+    <app-form-field i18n-label label="Applies on" for="surchargeKind">
       <select id="surchargeKind" class="input" formControlName="kind">
         @for (kind of kinds; track kind.value) {
           <option [value]="kind.value">{{ kind.label }}</option>
         }
       </select>
     </app-form-field>
-    <app-form-field label="Increase (%)" for="surchargePercent">
+    <app-form-field i18n-label label="Increase (%)" for="surchargePercent">
       <input
         id="surchargePercent"
         class="input"
@@ -55,7 +58,11 @@
 
   @switch (form.controls.kind.value) {
     @case ('DaysOfWeek') {
-      <div class="surcharge-form__days" role="group" aria-label="Days">
+      <div
+        class="surcharge-form__days"
+        role="group"
+        i18n-aria-label
+        aria-label="Days">
         @for (day of days; track day.value) {
           <label class="surcharge-form__day">
             <input
@@ -70,14 +77,14 @@
     }
     @case ('DateRange') {
       <div class="surcharge-form__row">
-        <app-form-field label="From" for="startDate">
+        <app-form-field i18n-label label="From" for="startDate">
           <input
             id="startDate"
             class="input"
             type="date"
             formControlName="startDate" />
         </app-form-field>
-        <app-form-field label="To (inclusive)" for="endDate">
+        <app-form-field i18n-label label="To (inclusive)" for="endDate">
           <input
             id="endDate"
             class="input"
@@ -89,20 +96,21 @@
         <input
           class="surcharge-form__checkbox"
           type="checkbox"
-          formControlName="repeatsYearly" />
-        Every year on these dates
+          formControlName="repeatsYearly" />&ngsp;<ng-container i18n
+          >Every year on these dates</ng-container
+        >
       </label>
     }
     @case ('TimeOfDay') {
       <div class="surcharge-form__row">
-        <app-form-field label="From" for="startTime">
+        <app-form-field i18n-label label="From" for="startTime">
           <input
             id="startTime"
             class="input"
             type="time"
             formControlName="startTime" />
         </app-form-field>
-        <app-form-field label="Until" for="endTime">
+        <app-form-field i18n-label label="Until" for="endTime">
           <input
             id="endTime"
             class="input"
@@ -111,14 +119,19 @@
         </app-form-field>
       </div>
       <p class="surcharge-form__hint">
-        Uses the pickup time. A range such as 22:00–06:00 runs over midnight.
+        <ng-container i18n
+          >Uses the pickup time. A range such as 22:00–06:00 runs over
+          midnight.</ng-container
+        >
       </p>
     }
   }
 
   @if (form.touched && form.errors) {
     <p class="surcharge-form__error" role="alert">
-      Fill in the days, dates or times for this rule.
+      <ng-container i18n
+        >Fill in the days, dates or times for this rule.</ng-container
+      >
     </p>
   }
 
@@ -126,16 +139,21 @@
     <input
       class="surcharge-form__checkbox"
       type="checkbox"
-      formControlName="isActive" />
-    Active
+      formControlName="isActive" />&ngsp;<ng-container i18n
+      >Active</ng-container
+    >
   </label>
 
   <div class="surcharge-form__actions">
     <button appButton type="button" variant="ghost" (click)="cancelled.emit()">
-      Cancel
+      <ng-container i18n>Cancel</ng-container>
     </button>
     <button appButton type="submit" [disabled]="saving()">
-      {{ saving() ? 'Saving…' : 'Save' }}
+      @if (saving()) {
+        <ng-container i18n>Saving…</ng-container>
+      } @else {
+        <ng-container i18n>Save</ng-container>
+      }
     </button>
   </div>
 </form>

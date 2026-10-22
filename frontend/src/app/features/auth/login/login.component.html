@@ -2,14 +2,18 @@
   <form class="login__card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
     <div class="login__header">
       <app-logo size="lg" />
-      <p class="eyebrow">Management panel</p>
+      <p class="eyebrow"><ng-container i18n>Management panel</ng-container></p>
     </div>
 
     @if (error(); as message) {
       <p class="alert alert--error" role="alert">{{ message }}</p>
     }
 
-    <app-form-field label="Email" for="email" [error]="fieldError('email')">
+    <app-form-field
+      i18n-label
+      label="Email"
+      for="email"
+      [error]="fieldError('email')">
       <input
         id="email"
         class="input"
@@ -20,6 +24,7 @@
     </app-form-field>
 
     <app-form-field
+      i18n-label
       label="Password"
       for="password"
       [error]="fieldError('password')">
@@ -33,7 +38,11 @@
     </app-form-field>
 
     <button appButton type="submit" [block]="true" [disabled]="submitting()">
-      {{ submitting() ? 'Signing in…' : 'Sign in' }}
+      @if (submitting()) {
+        <ng-container i18n>Signing in…</ng-container>
+      } @else {
+        <ng-container i18n>Sign in</ng-container>
+      }
     </button>
   </form>
 </div>

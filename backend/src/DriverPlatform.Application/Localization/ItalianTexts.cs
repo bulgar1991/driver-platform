@@ -4,7 +4,7 @@ using DriverPlatform.Domain.Enums;
 namespace DriverPlatform.Application.Localization;
 
 /// <summary>Formal "Lei", as on the site.</summary>
-internal sealed class ItalianTexts : Texts
+internal sealed partial class ItalianTexts : Texts
 {
     public override string Language => "it";
     public override CultureInfo Culture { get; } = CultureInfo.GetCultureInfo("it-IT");

@@ -17,6 +17,7 @@ import { AuthService } from '@/core/services/auth.service'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
+import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
 function sameAsNew(group: AbstractControl): ValidationErrors | null {
   const { newPassword, confirm } = group.value as {
@@ -35,6 +36,12 @@ function sameAsNew(group: AbstractControl): ValidationErrors | null {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccountComponent {
+  protected readonly text = ADMIN_TEXT
+  protected readonly tx = {
+    minLength: $localize`At least 12 characters`,
+    passwordsDiffer: $localize`The two passwords differ`,
+  }
+
   private readonly auth = inject(AuthService)
   private readonly router = inject(Router)
 

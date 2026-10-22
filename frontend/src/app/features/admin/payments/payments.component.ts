@@ -18,22 +18,23 @@ import { ButtonComponent } from '@/shared/components/button/button.component'
 import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
+import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
 const STATUSES: { value: PaymentStatus | null; label: string }[] = [
-  { value: null, label: 'All' },
-  { value: 'Succeeded', label: 'Paid' },
-  { value: 'Pending', label: 'Pending' },
-  { value: 'Failed', label: 'Not completed' },
-  { value: 'PartiallyRefunded', label: 'Partly refunded' },
-  { value: 'Refunded', label: 'Refunded' },
+  { value: null, label: $localize`All` },
+  { value: 'Succeeded', label: $localize`Paid` },
+  { value: 'Pending', label: $localize`Pending` },
+  { value: 'Failed', label: $localize`Not completed` },
+  { value: 'PartiallyRefunded', label: $localize`Partly refunded` },
+  { value: 'Refunded', label: $localize`Refunded` },
 ]
 
 const STATUS_LABEL: Record<PaymentStatus, string> = {
-  Pending: 'Pending',
-  Succeeded: 'Paid',
-  Failed: 'Not completed',
-  PartiallyRefunded: 'Partly refunded',
-  Refunded: 'Refunded',
+  Pending: $localize`Pending`,
+  Succeeded: $localize`Paid`,
+  Failed: $localize`Not completed`,
+  PartiallyRefunded: $localize`Partly refunded`,
+  Refunded: $localize`Refunded`,
 }
 
 /** Business plan §5: payments, invoices, refunds with credit notes, export for the accountant. */
@@ -53,6 +54,12 @@ const STATUS_LABEL: Record<PaymentStatus, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaymentsComponent implements OnInit {
+  protected readonly text = ADMIN_TEXT
+  protected readonly tx = {
+    emailAgain: (invoice: string) => $localize`Email ${invoice}:invoice: again`,
+    refundLimit: $localize`Up to what is left to refund`,
+  }
+
   private readonly api = inject(AdminPaymentsService)
   private readonly fb = inject(FormBuilder).nonNullable
 
@@ -129,7 +136,7 @@ export class PaymentsComponent implements OnInit {
           )
           this.refunding.set(null)
           this.notify(
-            `Refunded ${v.amount.toFixed(2)} € on ${updated.bookingReference}; the credit note was emailed.`
+            $localize`Refunded ${v.amount.toFixed(2)} € on ${updated.bookingReference}; the credit note was emailed.`
           )
         },
         error: err => this.notify(problemMessage(err), true),
@@ -145,7 +152,7 @@ export class PaymentsComponent implements OnInit {
 
   protected resend(invoice: InvoiceSummary): void {
     this.api.resend(invoice.id).subscribe({
-      next: () => this.notify(`${invoice.number} sent again.`),
+      next: () => this.notify($localize`${invoice.number} sent again.`),
       error: err => this.notify(problemMessage(err), true),
     })
   }

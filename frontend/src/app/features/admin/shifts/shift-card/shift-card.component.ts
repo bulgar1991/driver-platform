@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms'
 import { AssignmentStatus, Shift } from '@/core/models'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { StatusBadgeComponent } from '@/shared/components/status-badge/status-badge.component'
+import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
 export interface ShiftStatusChange {
   shift: Shift
@@ -26,6 +27,15 @@ export interface ShiftStatusChange {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShiftCardComponent {
+  protected readonly text = ADMIN_TEXT
+  protected readonly tx = {
+    messageStatus: {
+      Sent: '✓',
+      Failed: $localize`✗ failed`,
+      Skipped: $localize`– skipped`,
+    } as Record<string, string>,
+  }
+
   readonly shift = input.required<Shift>()
   readonly busy = input(false)
   readonly edit = output<Shift>()
@@ -39,7 +49,7 @@ export class ShiftCardComponent {
   )
 
   protected readonly sendLabel = computed(() =>
-    this.shift().sentAt ? 'Send again' : 'Send to driver'
+    this.shift().sentAt ? $localize`Send again` : $localize`Send to driver`
   )
 
   protected change(status: AssignmentStatus): void {

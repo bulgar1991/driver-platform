@@ -3,7 +3,7 @@ using DriverPlatform.Domain.Enums;
 
 namespace DriverPlatform.Application.Localization;
 
-internal sealed class EnglishTexts : Texts
+internal sealed partial class EnglishTexts : Texts
 {
     public override string Language => "en";
     // Irish English: euros and day-first dates.

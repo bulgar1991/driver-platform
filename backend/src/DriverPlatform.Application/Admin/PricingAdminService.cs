@@ -5,6 +5,7 @@ using DriverPlatform.Domain.Entities;
 using DriverPlatform.Domain.Enums;
 using DriverPlatform.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
+using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.Admin;
 
@@ -103,7 +104,7 @@ public sealed class PricingAdminService(IAppDbContext db, IAuditLogger audit) : 
     {
         Validate(request);
         var rule = await db.SurchargeRules.FirstOrDefaultAsync(r => r.Id == id, cancellationToken)
-            ?? throw new NotFoundException("Surcharge not found.");
+            ?? throw new NotFoundException(Texts.Current.SurchargeNotFound);
         Apply(rule, request);
 
         audit.Log("pricing.surcharge_updated", nameof(SurchargeRule), id.ToString(), request);
@@ -114,7 +115,7 @@ public sealed class PricingAdminService(IAppDbContext db, IAuditLogger audit) : 
     public async Task DeleteSurchargeAsync(Guid id, CancellationToken cancellationToken)
     {
         var rule = await db.SurchargeRules.FirstOrDefaultAsync(r => r.Id == id, cancellationToken)
-            ?? throw new NotFoundException("Surcharge not found.");
+            ?? throw new NotFoundException(Texts.Current.SurchargeNotFound);
         db.SurchargeRules.Remove(rule);
 
         audit.Log("pricing.surcharge_deleted", nameof(SurchargeRule), id.ToString(), new { rule.Name, rule.Percent });
@@ -127,19 +128,19 @@ public sealed class PricingAdminService(IAppDbContext db, IAuditLogger audit) : 
         switch (request.Kind)
         {
             case SurchargeKind.DaysOfWeek when request.DaysOfWeek.Count == 0:
-                errors.Add("daysOfWeek", "Pick at least one day.");
+                errors.Add("daysOfWeek", Texts.Current.PickADay);
                 break;
             case SurchargeKind.DateRange when request.StartDate is null || request.EndDate is null:
-                errors.Add("startDate", "Enter both dates.");
+                errors.Add("startDate", Texts.Current.EnterBothDates);
                 break;
             case SurchargeKind.DateRange when !request.RepeatsYearly && request.EndDate < request.StartDate:
-                errors.Add("endDate", "The end date is before the start date.");
+                errors.Add("endDate", Texts.Current.EndBeforeStart);
                 break;
             case SurchargeKind.TimeOfDay when request.StartTime is null || request.EndTime is null:
-                errors.Add("startTime", "Enter both times.");
+                errors.Add("startTime", Texts.Current.EnterBothTimes);
                 break;
             case SurchargeKind.TimeOfDay when request.StartTime == request.EndTime:
-                errors.Add("endTime", "Start and end time are the same.");
+                errors.Add("endTime", Texts.Current.SameStartAndEnd);
                 break;
         }
         errors.ThrowIfAny();

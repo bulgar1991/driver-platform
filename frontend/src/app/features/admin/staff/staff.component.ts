@@ -16,6 +16,7 @@ import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
+import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
 /** Panel accounts: admins and dispatchers. New accounts and resets get a temporary password shown once. */
 @Component({
@@ -33,6 +34,12 @@ import { IconComponent } from '@/shared/components/icon/icon.component'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StaffComponent implements OnInit {
+  protected readonly text = ADMIN_TEXT
+  protected readonly tx = {
+    editAccount: $localize`Edit account`,
+    newAccount: $localize`New account`,
+  }
+
   private readonly api = inject(AdminStaffService)
   private readonly fb = inject(FormBuilder).nonNullable
   protected readonly me = inject(AuthService).currentUser
@@ -92,7 +99,7 @@ export class StaffComponent implements OnInit {
         .subscribe({
           next: () => {
             this.editing.set(undefined)
-            this.notify(`${v.fullName} saved.`)
+            this.notify($localize`${v.fullName} saved.`)
             this.load()
           },
           error: err => this.notify(problemMessage(err), true),

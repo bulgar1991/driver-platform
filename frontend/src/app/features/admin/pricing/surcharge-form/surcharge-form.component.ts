@@ -21,21 +21,22 @@ import {
 } from '@/core/models'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
+import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
 export const DAYS: { value: DayOfWeek; label: string }[] = [
-  { value: 'Monday', label: 'Mon' },
-  { value: 'Tuesday', label: 'Tue' },
-  { value: 'Wednesday', label: 'Wed' },
-  { value: 'Thursday', label: 'Thu' },
-  { value: 'Friday', label: 'Fri' },
-  { value: 'Saturday', label: 'Sat' },
-  { value: 'Sunday', label: 'Sun' },
+  { value: 'Monday', label: $localize`Mon` },
+  { value: 'Tuesday', label: $localize`Tue` },
+  { value: 'Wednesday', label: $localize`Wed` },
+  { value: 'Thursday', label: $localize`Thu` },
+  { value: 'Friday', label: $localize`Fri` },
+  { value: 'Saturday', label: $localize`Sat` },
+  { value: 'Sunday', label: $localize`Sun` },
 ]
 
 export const KINDS: { value: SurchargeKind; label: string }[] = [
-  { value: 'DaysOfWeek', label: 'Days of the week' },
-  { value: 'DateRange', label: 'Dates (holidays, events, season)' },
-  { value: 'TimeOfDay', label: 'Time of day' },
+  { value: 'DaysOfWeek', label: $localize`Days of the week` },
+  { value: 'DateRange', label: $localize`Dates (holidays, events, season)` },
+  { value: 'TimeOfDay', label: $localize`Time of day` },
 ]
 
 /** Fields needed by the chosen kind must be filled in. */
@@ -59,6 +60,11 @@ function kindFieldsValidator(group: AbstractControl): ValidationErrors | null {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SurchargeFormComponent {
+  protected readonly text = ADMIN_TEXT
+  protected readonly tx = {
+    nameIn: (language: string) => $localize`Name – ${language}:language:`,
+  }
+
   readonly rule = input<SurchargeRule | null>(null)
   readonly saving = input(false)
   readonly saved = output<SurchargeRuleRequest>()
@@ -67,9 +73,9 @@ export class SurchargeFormComponent {
   protected readonly days = DAYS
   protected readonly kinds = KINDS
   protected readonly nameLanguages = [
-    { code: 'It', name: 'Italian', control: 'nameIt' },
-    { code: 'De', name: 'German', control: 'nameDe' },
-    { code: 'Fr', name: 'French', control: 'nameFr' },
+    { code: 'It', name: $localize`Italian`, control: 'nameIt' },
+    { code: 'De', name: $localize`German`, control: 'nameDe' },
+    { code: 'Fr', name: $localize`French`, control: 'nameFr' },
   ] as const
 
   private readonly fb = inject(FormBuilder).nonNullable

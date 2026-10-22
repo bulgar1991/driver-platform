@@ -1,9 +1,16 @@
 <form class="zone-editor" [formGroup]="form" (ngSubmit)="save()" novalidate>
   <header class="zone-editor__header">
-    <h2 class="zone-editor__title">{{ zone() ? 'Edit zone' : 'New zone' }}</h2>
+    <h2 class="zone-editor__title">
+      @if (zone()) {
+        <ng-container i18n>Edit zone</ng-container>
+      } @else {
+        <ng-container i18n>New zone</ng-container>
+      }
+    </h2>
     <button
       type="button"
       class="zone-editor__close"
+      i18n-aria-label
       aria-label="Close"
       (click)="closed.emit()">
       <app-icon name="close" />
@@ -29,11 +36,12 @@
   </div>
 
   <app-form-field
+    i18n-label
     label="Name – English"
     for="zoneName"
     [error]="
       form.controls.name.touched && form.controls.name.invalid
-        ? 'Required'
+        ? text.required
         : null
     ">
     <input id="zoneName" class="input" formControlName="name" />
@@ -43,11 +51,12 @@
   <div class="zone-editor__translations">
     @for (lang of nameLanguages; track lang.control) {
       <app-form-field
-        [label]="'Name – ' + lang.name"
+        [label]="tx.nameIn(lang.name)"
         [for]="'zoneName' + lang.code">
         <input
           [id]="'zoneName' + lang.code"
           class="input"
+          i18n-placeholder
           placeholder="Blank: the English name"
           [formControlName]="lang.control" />
       </app-form-field>
@@ -55,17 +64,19 @@
   </div>
 
   <div class="zone-editor__row">
-    <app-form-field label="Type" for="zoneType">
+    <app-form-field i18n-label label="Type" for="zoneType">
       <select id="zoneType" class="input" formControlName="type">
         @for (type of types; track type.value) {
           <option [value]="type.value">{{ type.label }}</option>
         }
       </select>
     </app-form-field>
-    <app-form-field label="Shape" for="zoneShape">
+    <app-form-field i18n-label label="Shape" for="zoneShape">
       <select id="zoneShape" class="input" formControlName="shape">
-        <option value="Circle">Circle</option>
-        <option value="Polygon">Polygon</option>
+        <option value="Circle"><ng-container i18n>Circle</ng-container></option>
+        <option value="Polygon"
+          ><ng-container i18n>Polygon</ng-container></option
+        >
       </select>
     </app-form-field>
   </div>
@@ -73,7 +84,7 @@
 
   @if (form.controls.shape.value === 'Circle') {
     <div class="zone-editor__row">
-      <app-form-field label="Radius (m)" for="radius">
+      <app-form-field i18n-label label="Radius (m)" for="radius">
         <input
           id="radius"
           class="input"
@@ -84,19 +95,21 @@
           formControlName="radiusMeters" />
       </app-form-field>
       <p class="zone-editor__coords">
-        Centre:
+        <ng-container i18n>Centre:</ng-container>&ngsp;
         @if (form.controls.centerLatitude.value !== null) {
           {{ form.controls.centerLatitude.value }},
           {{ form.controls.centerLongitude.value }}
         } @else {
-          not set
+          <ng-container i18n>not set</ng-container>
         }
       </p>
     </div>
   } @else {
     <div class="zone-editor__polygon">
       <span class="zone-editor__muted"
-        >{{ form.controls.polygon.value.length }} corners</span
+        ><ng-container i18n
+          >{{ form.controls.polygon.value.length }} corners</ng-container
+        ></span
       >
       <button
         appButton
@@ -105,7 +118,7 @@
         type="button"
         [disabled]="!form.controls.polygon.value.length"
         (click)="undoPoint()"
-        >Undo</button
+        ><ng-container i18n>Undo</ng-container></button
       >
       <button
         appButton
@@ -114,13 +127,13 @@
         type="button"
         [disabled]="!form.controls.polygon.value.length"
         (click)="clearPolygon()"
-        >Clear</button
+        ><ng-container i18n>Clear</ng-container></button
       >
     </div>
   }
 
   <div class="zone-editor__row">
-    <app-form-field label="Access fee (€)" for="accessFee">
+    <app-form-field i18n-label label="Access fee (€)" for="accessFee">
       <input
         id="accessFee"
         class="input"
@@ -134,30 +147,36 @@
       <input
         class="zone-editor__checkbox"
         type="checkbox"
-        formControlName="isActive" />
-      Active
+        formControlName="isActive" />&ngsp;<ng-container i18n
+        >Active</ng-container
+      >
     </label>
   </div>
 
   <section class="zone-editor__points" formArrayName="meetingPoints">
     <div class="zone-editor__points-header">
-      <h3 class="zone-editor__subtitle">Meeting points</h3>
+      <h3 class="zone-editor__subtitle"
+        ><ng-container i18n>Meeting points</ng-container></h3
+      >
       <button
         appButton
         size="sm"
         variant="outline"
         type="button"
         (click)="addMeetingPoint()">
-        <app-icon name="plus" /> Add
+        <app-icon name="plus" />&ngsp;<ng-container i18n>Add</ng-container>
       </button>
     </div>
     @for (point of meetingPoints.controls; track point; let i = $index) {
       <fieldset class="zone-editor__point" [formGroupName]="i">
         <div class="zone-editor__row">
-          <app-form-field label="Name – English" [for]="'mpName' + i">
+          <app-form-field
+            i18n-label
+            label="Name – English"
+            [for]="'mpName' + i">
             <input [id]="'mpName' + i" class="input" formControlName="name" />
           </app-form-field>
-          <app-form-field label="Address" [for]="'mpAddress' + i">
+          <app-form-field i18n-label label="Address" [for]="'mpAddress' + i">
             <input
               [id]="'mpAddress' + i"
               class="input"
@@ -167,17 +186,19 @@
         <div class="zone-editor__translations">
           @for (lang of nameLanguages; track lang.control) {
             <app-form-field
-              [label]="'Name – ' + lang.name"
+              [label]="tx.nameIn(lang.name)"
               [for]="'mpName' + lang.code + i">
               <input
                 [id]="'mpName' + lang.code + i"
                 class="input"
+                i18n-placeholder
                 placeholder="Blank: the English name"
                 [formControlName]="lang.control" />
             </app-form-field>
           }
         </div>
         <app-form-field
+          i18n-label
           label="Client instructions – English"
           [for]="'mpClient' + i">
           <textarea
@@ -190,18 +211,20 @@
         <div class="zone-editor__translations">
           @for (lang of instructionLanguages; track lang.control) {
             <app-form-field
-              [label]="'Client instructions – ' + lang.name"
+              [label]="tx.instructionsIn(lang.name)"
               [for]="'mpClient' + lang.code + i">
               <textarea
                 [id]="'mpClient' + lang.code + i"
                 class="input"
                 rows="2"
                 [formControlName]="lang.control"
+                i18n-placeholder
                 placeholder="Blank: the English text"></textarea>
             </app-form-field>
           }
         </div>
         <app-form-field
+          i18n-label
           label="Instructions for the driver"
           [for]="'mpDriver' + i">
           <textarea
@@ -216,7 +239,9 @@
               {{ point.controls.latitude.value }},
               {{ point.controls.longitude.value }}
             } @else {
-              <span class="zone-editor__missing">Not placed on the map</span>
+              <span class="zone-editor__missing"
+                ><ng-container i18n>Not placed on the map</ng-container></span
+              >
             }
           </span>
           <button
@@ -227,7 +252,11 @@
             [attr.aria-pressed]="clickMode() === i"
             (click)="clickMode.set(clickMode() === i ? 'shape' : i)">
             <app-icon name="pin" />
-            {{ clickMode() === i ? 'Click the map…' : 'Place on map' }}
+            @if (clickMode() === i) {
+              <ng-container i18n>Click the map…</ng-container>
+            } @else {
+              <ng-container i18n>Place on map</ng-container>
+            }
           </button>
           <button
             appButton
@@ -235,13 +264,18 @@
             variant="ghost"
             type="button"
             (click)="removeMeetingPoint(i)">
-            <app-icon name="trash" /> Remove
+            <app-icon name="trash" />&ngsp;<ng-container i18n
+              >Remove</ng-container
+            >
           </button>
         </div>
       </fieldset>
     } @empty {
       <p class="zone-editor__muted">
-        None. A no-car zone needs at least one place reachable by car.
+        <ng-container i18n
+          >None. A no-car zone needs at least one place reachable by
+          car.</ng-container
+        >
       </p>
     }
   </section>
@@ -250,15 +284,14 @@
     @if (zone()) {
       @if (confirmDelete()) {
         <span class="zone-editor__confirm">
-          Delete this zone?
-          <button
+          <ng-container i18n>Delete this zone?</ng-container>&ngsp;<button
             appButton
             size="sm"
             variant="outline"
             type="button"
             [disabled]="saving()"
             (click)="remove()"
-            >Delete</button
+            ><ng-container i18n>Delete</ng-container></button
           >
           <button
             appButton
@@ -266,7 +299,7 @@
             variant="ghost"
             type="button"
             (click)="confirmDelete.set(false)"
-            >Keep</button
+            ><ng-container i18n>Keep</ng-container></button
           >
         </span>
       } @else {
@@ -276,12 +309,18 @@
           variant="ghost"
           type="button"
           (click)="confirmDelete.set(true)">
-          <app-icon name="trash" /> Delete
+          <app-icon name="trash" />&ngsp;<ng-container i18n
+            >Delete</ng-container
+          >
         </button>
       }
     }
     <button appButton type="submit" [disabled]="saving() || form.pristine">
-      {{ saving() ? 'Saving…' : 'Save zone' }}
+      @if (saving()) {
+        <ng-container i18n>Saving…</ng-container>
+      } @else {
+        <ng-container i18n>Save zone</ng-container>
+      }
     </button>
   </div>
 </form>

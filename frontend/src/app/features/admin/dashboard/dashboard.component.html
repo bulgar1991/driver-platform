@@ -1,8 +1,11 @@
 <section class="dashboard">
   <header class="dashboard__header">
-    <p class="eyebrow">Dashboard</p>
+    <p class="eyebrow"><ng-container i18n>Dashboard</ng-container></p>
     <h1 class="heading heading--lg">
-      Welcome, <span class="heading__accent">{{ user()?.fullName }}</span>
+      <ng-container i18n>Welcome,</ng-container>&ngsp;<span
+        class="heading__accent"
+        >{{ user()?.fullName }}</span
+      >
     </h1>
   </header>
 
@@ -28,7 +31,9 @@
   @if (data(); as d) {
     <div class="dashboard__columns">
       <section class="dashboard__card">
-        <h2 class="dashboard__title">Next rides to assign</h2>
+        <h2 class="dashboard__title"
+          ><ng-container i18n>Next rides to assign</ng-container></h2
+        >
         <ul class="dashboard__list">
           @for (b of d.nextUnassigned; track b.id) {
             <li class="dashboard__row">
@@ -40,20 +45,29 @@
                 {{ b.pickupLabel }} → {{ b.dropoffLabel }}
               </span>
               <span class="dashboard__meta"
-                >{{ b.vehicleCategory }} · {{ b.passengers }} pax</span
+                ><ng-container i18n
+                  >{{ text.categories[b.vehicleCategory] }} ·
+                  {{ b.passengers }} pax</ng-container
+                ></span
               >
             </li>
           } @empty {
             <li class="dashboard__muted"
-              >Every ride in the next 48 hours has a driver.</li
+              ><ng-container i18n
+                >Every ride in the next 48 hours has a driver.</ng-container
+              ></li
             >
           }
         </ul>
-        <a class="dashboard__more" routerLink="/admin/shifts">Plan shifts →</a>
+        <a class="dashboard__more" routerLink="/admin/shifts"
+          ><ng-container i18n>Plan shifts →</ng-container></a
+        >
       </section>
 
       <section class="dashboard__card">
-        <h2 class="dashboard__title">Documents expiring</h2>
+        <h2 class="dashboard__title"
+          ><ng-container i18n>Documents expiring</ng-container></h2
+        >
         <ul class="dashboard__list">
           @for (a of d.documentAlerts; track a.ownerId + a.document) {
             <li
@@ -72,13 +86,19 @@
                 >
                 {{ a.document }}
               </span>
-              <span class="dashboard__meta">{{
-                a.expired ? 'Expired' : 'Expires soon'
-              }}</span>
+              <span class="dashboard__meta">
+                @if (a.expired) {
+                  <ng-container i18n>Expired</ng-container>
+                } @else {
+                  <ng-container i18n>Expires soon</ng-container>
+                }
+              </span>
             </li>
           } @empty {
             <li class="dashboard__muted"
-              >No document expires in the next 30 days.</li
+              ><ng-container i18n
+                >No document expires in the next 30 days.</ng-container
+              ></li
             >
           }
         </ul>

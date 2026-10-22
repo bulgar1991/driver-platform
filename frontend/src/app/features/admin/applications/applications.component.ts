@@ -10,6 +10,7 @@ import { finalize } from 'rxjs'
 import { DriverApplication, DriverApplicationStatus } from '@/core/models'
 import { SiteService } from '@/core/services/site.service'
 import { problemMessage } from '@/core/utils/problem'
+import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
 const STATUSES: DriverApplicationStatus[] = [
   'New',
@@ -27,6 +28,24 @@ const STATUSES: DriverApplicationStatus[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ApplicationsComponent implements OnInit {
+  protected readonly text = ADMIN_TEXT
+
+  /** "NCC licence · 5 years · own car: Mercedes E-Class". */
+  protected facts(a: DriverApplication): string {
+    const licence =
+      a.licence === 'ProfessionalOnly'
+        ? $localize`CAP/KB only`
+        : a.licence === 'Ncc'
+          ? $localize`NCC licence`
+          : $localize`Taxi licence`
+    const years = $localize`${a.yearsExperience}:years: years`
+    const car = a.hasOwnVehicle
+      ? a.vehicle
+        ? $localize`own car: ${a.vehicle}:vehicle:`
+        : $localize`own car`
+      : $localize`no own car`
+    return `${licence} · ${years} · ${car}`
+  }
   private readonly site = inject(SiteService)
   protected readonly statuses = STATUSES
   protected readonly filter = signal<DriverApplicationStatus | null>('New')

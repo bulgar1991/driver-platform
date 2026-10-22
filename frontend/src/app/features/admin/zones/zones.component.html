@@ -1,8 +1,10 @@
 <div class="zones">
   <header class="zones__header">
     <div>
-      <p class="eyebrow">Administration</p>
-      <h1 class="heading heading--lg">Zones</h1>
+      <p class="eyebrow"><ng-container i18n>Administration</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Zones</ng-container></h1
+      >
     </div>
     <button
       appButton
@@ -10,7 +12,7 @@
       variant="outline"
       type="button"
       (click)="selected.set(null)">
-      <app-icon name="plus" /> New zone
+      <app-icon name="plus" />&ngsp;<ng-container i18n>New zone</ng-container>
     </button>
   </header>
 
@@ -21,7 +23,7 @@
   <div class="zones__layout">
     <ul class="zones__list">
       @if (loading()) {
-        <li class="zones__muted">Loading…</li>
+        <li class="zones__muted"><ng-container i18n>Loading…</ng-container></li>
       }
       @for (zone of zones(); track zone.id) {
         <li>
@@ -31,7 +33,9 @@
             [class.zones__item--selected]="selected()?.id === zone.id"
             [class.zones__item--inactive]="!zone.isActive"
             (click)="selected.set(zone)">
-            <span class="zones__name">{{ zone.name }}</span>
+            <span class="zones__name">{{
+              zone.name | translated: zone.nameTranslations
+            }}</span>
             <span class="zones__meta">
               <span
                 class="zones__chip"
@@ -42,18 +46,25 @@
                 {{ zone.accessFee | money }}
               }
               @if (zone.meetingPoints.length) {
-                · {{ zone.meetingPoints.length }} meeting
-                {{ zone.meetingPoints.length === 1 ? 'point' : 'points' }}
+                <ng-container i18n
+                  >·
+                  {zone.meetingPoints.length, plural,
+                    =1 {1 meeting point}
+                    other {{{ zone.meetingPoints.length }} meeting points}
+                  }</ng-container
+                >
               }
               @if (!zone.isActive) {
-                · inactive
+                <ng-container i18n>· inactive</ng-container>
               }
             </span>
           </button>
         </li>
       } @empty {
         @if (!loading()) {
-          <li class="zones__muted">No zones yet.</li>
+          <li class="zones__muted"
+            ><ng-container i18n>No zones yet.</ng-container></li
+          >
         }
       }
     </ul>
@@ -73,8 +84,10 @@
           [zones]="mapZones()"
           [fitPoints]="fitPoints()" />
         <p class="zones__muted">
-          Red: no car access · amber: limited traffic (ZTL) · blue: airports,
-          stations and ports. Select a zone to edit it.
+          <ng-container i18n
+            >Red: no car access · amber: limited traffic (ZTL) · blue: airports,
+            stations and ports. Select a zone to edit it.</ng-container
+          >
         </p>
       }
     </div>

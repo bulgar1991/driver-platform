@@ -26,6 +26,8 @@ import {
   ShiftStatusChange,
 } from './shift-card/shift-card.component'
 import { ShiftEditorComponent } from './shift-editor/shift-editor.component'
+import { SHIFT_STATUS_LABEL } from '@/core/utils/status-labels'
+import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
 /** One day of dispatch: the rides still to assign on the left, the shifts on the right. */
 @Component({
@@ -44,6 +46,14 @@ import { ShiftEditorComponent } from './shift-editor/shift-editor.component'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShiftsComponent {
+  protected readonly text = ADMIN_TEXT
+  protected readonly tx = {
+    editShift: $localize`Edit shift`,
+    newShift: $localize`New shift`,
+    newShiftWith: (reference: string) =>
+      $localize`New shift with ${reference}:reference:`,
+  }
+
   /** Query params: the day, and bookings ticked on the Bookings page. */
   readonly date = input<string | undefined>(undefined)
   readonly bookings = input<string | undefined>(undefined)
@@ -121,7 +131,7 @@ export class ShiftsComponent {
   protected onSaved(result: ShiftResult): void {
     this.closeEditor()
     this.message.set({
-      text: `Shift for ${result.shift.driverName} saved.`,
+      text: $localize`Shift for ${result.shift.driverName}:driver: saved.`,
       error: false,
       warnings: result.warnings,
     })
@@ -138,8 +148,8 @@ export class ShiftsComponent {
           this.message.set({
             text:
               change.status === 'Sent'
-                ? `Shift sent to ${change.shift.driverName} on WhatsApp and email. The card shows what was delivered.`
-                : `Shift for ${change.shift.driverName}: ${change.status.toLowerCase()}.`,
+                ? $localize`Shift sent to ${change.shift.driverName}:driver: on WhatsApp and email. The card shows what was delivered.`
+                : $localize`Shift for ${change.shift.driverName}:driver:: ${SHIFT_STATUS_LABEL[change.status]}:status:.`,
             error: false,
           })
           this.reload()

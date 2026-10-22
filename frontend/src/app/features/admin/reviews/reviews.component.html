@@ -1,15 +1,19 @@
 <div class="reviews">
   <header class="reviews__header">
     <div>
-      <p class="eyebrow">Quality</p>
-      <h1 class="heading heading--lg">Reviews</h1>
+      <p class="eyebrow"><ng-container i18n>Quality</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Reviews</ng-container></h1
+      >
     </div>
     <label class="reviews__filter">
-      <span class="reviews__label">Driver</span>
+      <span class="reviews__label"
+        ><ng-container i18n>Driver</ng-container></span
+      >
       <select
         class="input reviews__select"
         (change)="filter($any($event.target).value)">
-        <option value="">All drivers</option>
+        <option value=""><ng-container i18n>All drivers</ng-container></option>
         @for (d of drivers(); track d.id) {
           <option [value]="d.id"
             >{{ d.firstName }} {{ d.lastName
@@ -28,15 +32,16 @@
     @if (average(); as avg) {
       <span class="reviews__average">★ {{ avg.toFixed(1) }}</span>
     }
-    {{ answered().length }} reviews from {{ reviews().length }} requests
+    &ngsp;<ng-container i18n
+      >{{ answered().length }} reviews from
+      {{ reviews().length }} requests</ng-container
+    >
   </p>
 
   <ul class="reviews__list">
     @for (r of reviews(); track r.id) {
       <li class="reviews__item">
-        <div
-          class="reviews__stars"
-          [attr.aria-label]="r.rating ? r.rating + ' of 5' : 'Not rated yet'">
+        <div class="reviews__stars" [attr.aria-label]="tx.rating(r.rating)">
           @if (r.rating) {
             @for (star of stars; track star) {
               <app-icon
@@ -46,7 +51,9 @@
             }
           } @else {
             <span class="reviews__muted"
-              >Waiting · sent by {{ r.channel }}</span
+              ><ng-container i18n
+                >Waiting · sent by {{ r.channel }}</ng-container
+              ></span
             >
           }
         </div>
@@ -55,17 +62,25 @@
             <p class="reviews__comment">“{{ r.comment }}”</p>
           }
           <p class="reviews__muted">
-            {{ r.clientName }} · {{ r.bookingReference }} ·
-            {{ r.pickupAt | date: 'd MMM y' }} · driver {{ r.driverName }}
+            <ng-container i18n
+              >{{ r.clientName }} · {{ r.bookingReference }} ·
+              {{ r.pickupAt | date: 'd MMM y' }} · driver
+              {{ r.driverName }}</ng-container
+            >
           </p>
         </div>
       </li>
     } @empty {
-      <li class="reviews__muted">{{
-        loading()
-          ? 'Loading…'
-          : 'No reviews yet. They are requested automatically after each completed ride.'
-      }}</li>
+      <li class="reviews__muted">
+        @if (loading()) {
+          <ng-container i18n>Loading…</ng-container>
+        } @else {
+          <ng-container i18n
+            >No reviews yet. They are requested automatically after each
+            completed ride.</ng-container
+          >
+        }
+      </li>
     }
   </ul>
 </div>

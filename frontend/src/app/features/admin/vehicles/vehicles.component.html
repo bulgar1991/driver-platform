@@ -1,8 +1,10 @@
 <div class="fleet">
   <header class="fleet__header">
     <div>
-      <p class="eyebrow">Fleet</p>
-      <h1 class="heading heading--lg">Vehicles</h1>
+      <p class="eyebrow"><ng-container i18n>Fleet</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Vehicles</ng-container></h1
+      >
     </div>
     <div class="fleet__tools">
       <label class="fleet__check">
@@ -10,11 +12,14 @@
           class="fleet__checkbox"
           type="checkbox"
           [checked]="showInactive()"
-          (change)="toggleInactive()" />
-        Show inactive
+          (change)="toggleInactive()" />&ngsp;<ng-container i18n
+          >Show inactive</ng-container
+        >
       </label>
       <button appButton size="sm" type="button" (click)="open(null)"
-        ><app-icon name="plus" /> New vehicle</button
+        ><app-icon name="plus" />&ngsp;<ng-container i18n
+          >New vehicle</ng-container
+        ></button
       >
     </div>
   </header>
@@ -27,12 +32,12 @@
     <table class="fleet__table">
       <thead>
         <tr>
-          <th>Plate</th>
-          <th>Car</th>
-          <th>Capacity</th>
-          <th>Insurance</th>
-          <th>Inspection</th>
-          <th>Status</th>
+          <th><ng-container i18n>Plate</ng-container></th>
+          <th><ng-container i18n>Car</ng-container></th>
+          <th><ng-container i18n>Capacity</ng-container></th>
+          <th><ng-container i18n>Insurance</ng-container></th>
+          <th><ng-container i18n>Inspection</ng-container></th>
+          <th><ng-container i18n>Status</ng-container></th>
         </tr>
       </thead>
       <tbody>
@@ -49,14 +54,21 @@
             <td>
               {{ v.make }} {{ v.model }}
               <span class="fleet__muted"
-                >{{ v.category }}{{ v.color ? ' · ' + v.color : '' }} ·
-                {{ v.mileageKm }} km</span
+                ><ng-container i18n
+                  >{{ text.categories[v.category]
+                  }}{{ v.color ? ' · ' + v.color : '' }} ·
+                  {{ v.mileageKm }} km</ng-container
+                ></span
               >
             </td>
             <td>
-              {{ v.seats }} seats · {{ v.luggageCapacity }} bags
-              <span class="fleet__muted"
-                >{{ v.childSeatsAvailable }} child seats</span
+              <ng-container i18n
+                >{{ v.seats }} seats ·
+                {{ v.luggageCapacity }} bags</ng-container
+              >&ngsp;<span class="fleet__muted"
+                ><ng-container i18n
+                  >{{ v.childSeatsAvailable }} child seats</ng-container
+                ></span
               >
             </td>
             <td
@@ -82,16 +94,24 @@
             <td>
               <span
                 class="fleet__badge"
-                [class.fleet__badge--off]="!v.isActive"
-                >{{ v.isActive ? 'Active' : 'Inactive' }}</span
-              >
+                [class.fleet__badge--off]="!v.isActive">
+                @if (v.isActive) {
+                  <ng-container i18n>Active</ng-container>
+                } @else {
+                  <ng-container i18n>Inactive</ng-container>
+                }
+              </span>
             </td>
           </tr>
         } @empty {
           <tr>
-            <td colspan="6" class="fleet__muted">{{
-              loading() ? 'Loading…' : 'No vehicles yet.'
-            }}</td>
+            <td colspan="6" class="fleet__muted">
+              @if (loading()) {
+                <ng-container i18n>Loading…</ng-container>
+              } @else {
+                <ng-container i18n>No vehicles yet.</ng-container>
+              }
+            </td>
           </tr>
         }
       </tbody>
@@ -100,7 +120,7 @@
 </div>
 
 <p-dialog
-  [header]="editing() ? 'Edit vehicle' : 'New vehicle'"
+  [header]="editing() ? tx.editVehicle : tx.newVehicle"
   [modal]="true"
   [draggable]="false"
   styleClass="fleet__dialog"
@@ -112,11 +132,12 @@
     }
     <div class="fleet__grid">
       <app-form-field
+        i18n-label
         label="Plate"
         for="vPlate"
         [error]="
           form.controls.plateNumber.touched && form.controls.plateNumber.invalid
-            ? 'e.g. GA123BC'
+            ? tx.plateHint
             : null
         ">
         <input
@@ -124,7 +145,7 @@
           class="input fleet__upper"
           formControlName="plateNumber" />
       </app-form-field>
-      <app-form-field label="Category" for="vCategory">
+      <app-form-field i18n-label label="Category" for="vCategory">
         <select
           id="vCategory"
           class="input"
@@ -136,29 +157,31 @@
         </select>
       </app-form-field>
       <app-form-field
+        i18n-label
         label="Make"
         for="vMake"
         [error]="
           form.controls.make.touched && form.controls.make.invalid
-            ? 'Required'
+            ? text.required
             : null
         ">
         <input id="vMake" class="input" formControlName="make" />
       </app-form-field>
       <app-form-field
+        i18n-label
         label="Model"
         for="vModel"
         [error]="
           form.controls.model.touched && form.controls.model.invalid
-            ? 'Required'
+            ? text.required
             : null
         ">
         <input id="vModel" class="input" formControlName="model" />
       </app-form-field>
-      <app-form-field label="Colour" for="vColor">
+      <app-form-field i18n-label label="Colour" for="vColor">
         <input id="vColor" class="input" formControlName="color" />
       </app-form-field>
-      <app-form-field label="Mileage (km)" for="vKm">
+      <app-form-field i18n-label label="Mileage (km)" for="vKm">
         <input
           id="vKm"
           class="input"
@@ -166,7 +189,7 @@
           min="0"
           formControlName="mileageKm" />
       </app-form-field>
-      <app-form-field label="Passenger seats" for="vSeats">
+      <app-form-field i18n-label label="Passenger seats" for="vSeats">
         <input
           id="vSeats"
           class="input"
@@ -175,7 +198,7 @@
           max="8"
           formControlName="seats" />
       </app-form-field>
-      <app-form-field label="Large bags" for="vLuggage">
+      <app-form-field i18n-label label="Large bags" for="vLuggage">
         <input
           id="vLuggage"
           class="input"
@@ -184,7 +207,7 @@
           max="16"
           formControlName="luggageCapacity" />
       </app-form-field>
-      <app-form-field label="Child seats on board" for="vChild">
+      <app-form-field i18n-label label="Child seats on board" for="vChild">
         <input
           id="vChild"
           class="input"
@@ -193,21 +216,24 @@
           max="4"
           formControlName="childSeatsAvailable" />
       </app-form-field>
-      <app-form-field label="Insurance expires" for="vInsurance">
+      <app-form-field i18n-label label="Insurance expires" for="vInsurance">
         <input
           id="vInsurance"
           class="input"
           type="date"
           formControlName="insuranceExpiresOn" />
       </app-form-field>
-      <app-form-field label="Inspection (revisione) due" for="vInspection">
+      <app-form-field
+        i18n-label
+        label="Inspection (revisione) due"
+        for="vInspection">
         <input
           id="vInspection"
           class="input"
           type="date"
           formControlName="inspectionExpiresOn" />
       </app-form-field>
-      <app-form-field label="Next service" for="vService">
+      <app-form-field i18n-label label="Next service" for="vService">
         <input
           id="vService"
           class="input"
@@ -219,10 +245,14 @@
       ><input
         class="fleet__checkbox"
         type="checkbox"
-        formControlName="isActive" />
-      Active</label
+        formControlName="isActive" />&ngsp;<ng-container i18n
+        >Active</ng-container
+      ></label
     >
-    <app-form-field label="Notes (condition, cleaning…)" for="vNotes">
+    <app-form-field
+      i18n-label
+      label="Notes (condition, cleaning…)"
+      for="vNotes">
       <textarea
         id="vNotes"
         class="input"
@@ -235,11 +265,15 @@
         type="button"
         variant="ghost"
         (click)="editing.set(undefined)"
-        >Cancel</button
+        ><ng-container i18n>Cancel</ng-container></button
       >
-      <button appButton type="submit" [disabled]="saving()">{{
-        saving() ? 'Saving…' : 'Save vehicle'
-      }}</button>
+      <button appButton type="submit" [disabled]="saving()">
+        @if (saving()) {
+          <ng-container i18n>Saving…</ng-container>
+        } @else {
+          <ng-container i18n>Save vehicle</ng-container>
+        }
+      </button>
     </div>
   </form>
 </p-dialog>

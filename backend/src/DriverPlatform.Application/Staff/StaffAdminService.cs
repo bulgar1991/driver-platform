@@ -5,6 +5,7 @@ using DriverPlatform.Application.Common;
 using DriverPlatform.Domain.Entities;
 using DriverPlatform.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.Staff;
 
@@ -55,7 +56,7 @@ public sealed class StaffAdminService(
         var email = request.Email.Trim().ToLowerInvariant();
         if (await db.StaffUsers.AnyAsync(u => u.Email == email, cancellationToken))
         {
-            throw new RequestValidationException("email", "There is already an account with this email.");
+            throw new RequestValidationException("email", Texts.Current.EmailTaken);
         }
         var password = PasswordPolicy.Temporary();
         var user = new StaffUser
@@ -78,11 +79,11 @@ public sealed class StaffAdminService(
         var losesAdmin = user is { Role: StaffRole.Admin, IsActive: true } && (request.Role != StaffRole.Admin || !request.IsActive);
         if (losesAdmin && !await db.StaffUsers.AnyAsync(u => u.Id != id && u.Role == StaffRole.Admin && u.IsActive, cancellationToken))
         {
-            throw new ConflictException("This is the last active admin. Make someone else admin first.");
+            throw new ConflictException(Texts.Current.LastAdmin);
         }
         if (id == currentUser.StaffUserId && !request.IsActive)
         {
-            throw new ConflictException("You cannot deactivate your own account.");
+            throw new ConflictException(Texts.Current.CannotDeactivateSelf);
         }
 
         var signOut = user.Role != request.Role || user.IsActive != request.IsActive;
@@ -117,7 +118,7 @@ public sealed class StaffAdminService(
 
     private async Task<StaffUser> FindAsync(Guid id, CancellationToken cancellationToken) =>
         await db.StaffUsers.FirstOrDefaultAsync(u => u.Id == id, cancellationToken)
-        ?? throw new NotFoundException("User not found.");
+        ?? throw new NotFoundException(Texts.Current.UserNotFound);
 
     private static StaffDto ToDto(StaffUser u) => new(
         u.Id, u.Email, u.FullName, u.Role, u.IsActive, u.MustChangePassword, u.LastLoginAt, u.LockedUntil, u.CreatedAt);

@@ -3,28 +3,28 @@ import { ZoneType } from '@/core/models'
 export const ZONE_TYPES: { value: ZoneType; label: string; hint: string }[] = [
   {
     value: 'NoCarAccess',
-    label: 'No car access',
-    hint: 'e.g. Venice. Pickups and drop-offs move to a meeting point.',
+    label: $localize`No car access`,
+    hint: $localize`e.g. Venice. Pickups and drop-offs move to a meeting point.`,
   },
   {
     value: 'LimitedTraffic',
-    label: 'Limited traffic (ZTL)',
-    hint: 'The access fee is added once when the ride starts or ends inside.',
+    label: $localize`Limited traffic (ZTL)`,
+    hint: $localize`The access fee is added once when the ride starts or ends inside.`,
   },
   {
     value: 'Airport',
-    label: 'Airport',
-    hint: 'Pickups use the meeting point and show its instructions.',
+    label: $localize`Airport`,
+    hint: $localize`Pickups use the meeting point and show its instructions.`,
   },
   {
     value: 'TrainStation',
-    label: 'Train station',
-    hint: 'Pickups use the meeting point and show its instructions.',
+    label: $localize`Train station`,
+    hint: $localize`Pickups use the meeting point and show its instructions.`,
   },
   {
     value: 'Port',
-    label: 'Port',
-    hint: 'Pickups use the meeting point and show its instructions.',
+    label: $localize`Port`,
+    hint: $localize`Pickups use the meeting point and show its instructions.`,
   },
 ]
 

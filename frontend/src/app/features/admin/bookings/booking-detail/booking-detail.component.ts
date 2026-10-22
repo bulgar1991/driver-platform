@@ -20,11 +20,12 @@ import { ButtonComponent } from '@/shared/components/button/button.component'
 import { StatusBadgeComponent } from '@/shared/components/status-badge/status-badge.component'
 import { DurationPipe } from '@/shared/pipes/duration.pipe'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
+import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
 const GROUP_LABEL = {
-  Infant: 'infant seat',
-  Toddler: 'child seat',
-  Booster: 'booster',
+  Infant: $localize`infant seat`,
+  Toddler: $localize`child seat`,
+  Booster: $localize`booster`,
 }
 
 /** Everything about one booking, with the status changes a dispatcher may make. */
@@ -44,6 +45,7 @@ const GROUP_LABEL = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BookingDetailComponent {
+  protected readonly text = ADMIN_TEXT
   readonly bookingId = input.required<string>()
   readonly changed = output<BookingDetail>()
 
@@ -86,7 +88,7 @@ export class BookingDetailComponent {
   protected setStatus(status: BookingStatus): void {
     const reason = status === 'Cancelled' ? this.cancelReason.trim() : undefined
     if (status === 'Cancelled' && !reason) {
-      this.error.set('Say why the booking is cancelled.')
+      this.error.set($localize`Say why the booking is cancelled.`)
       return
     }
     this.run(this.api.setBookingStatus(this.bookingId(), status, reason))

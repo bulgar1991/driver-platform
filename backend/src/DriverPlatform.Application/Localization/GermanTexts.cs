@@ -4,7 +4,7 @@ using DriverPlatform.Domain.Enums;
 namespace DriverPlatform.Application.Localization;
 
 /// <summary>Formal "Sie", as on the site.</summary>
-internal sealed class GermanTexts : Texts
+internal sealed partial class GermanTexts : Texts
 {
     public override string Language => "de";
     public override CultureInfo Culture { get; } = CultureInfo.GetCultureInfo("de-DE");

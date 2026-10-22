@@ -31,7 +31,10 @@
           <span class="shift-card__ref">{{ b.reference }}</span>
           {{ b.pickupLabel }} → {{ b.dropoffLabel }}
           <span class="shift-card__muted"
-            >{{ b.clientName }} · {{ b.passengers }} pax · {{ b.status }}</span
+            ><ng-container i18n
+              >{{ b.clientName }} · {{ b.passengers }} pax ·
+              {{ text.bookingStatus[b.status] }}</ng-container
+            ></span
           >
         </span>
       </li>
@@ -50,13 +53,7 @@
           [class.shift-card__message--failed]="m.status === 'Failed'"
           [attr.title]="m.error">
           {{ m.channel }}
-          {{
-            m.status === 'Sent'
-              ? '✓'
-              : m.status === 'Failed'
-                ? '✗ failed'
-                : '– skipped'
-          }}
+          {{ tx.messageStatus[m.status] }}
           <span class="shift-card__muted">{{
             m.createdAt | date: 'd MMM HH:mm'
           }}</span>
@@ -64,7 +61,9 @@
       }
       @if (shift().seenAt) {
         <li class="shift-card__message"
-          >Seen {{ shift().seenAt | date: 'HH:mm' }}</li
+          ><ng-container i18n
+            >Seen {{ shift().seenAt | date: 'HH:mm' }}</ng-container
+          ></li
         >
       }
     </ul>
@@ -75,7 +74,9 @@
       @if (cancelling()) {
         <input
           class="input shift-card__reason"
+          i18n-placeholder
           placeholder="Reason"
+          i18n-aria-label
           aria-label="Reason for cancelling the shift"
           [(ngModel)]="reason" />
         <button
@@ -84,7 +85,7 @@
           variant="ghost"
           type="button"
           (click)="cancelling.set(false)"
-          >Keep</button
+          ><ng-container i18n>Keep</ng-container></button
         >
         <button
           appButton
@@ -93,7 +94,7 @@
           type="button"
           [disabled]="busy() || !reason.trim()"
           (click)="change('Cancelled')"
-          >Cancel shift</button
+          ><ng-container i18n>Cancel shift</ng-container></button
         >
       } @else {
         <button
@@ -102,7 +103,7 @@
           variant="ghost"
           type="button"
           (click)="edit.emit(shift())"
-          >Edit</button
+          ><ng-container i18n>Edit</ng-container></button
         >
         @if (shift().status !== 'Confirmed') {
           <button
@@ -120,7 +121,7 @@
             type="button"
             [disabled]="busy()"
             (click)="change('Confirmed')"
-            >Confirmed by phone</button
+            ><ng-container i18n>Confirmed by phone</ng-container></button
           >
         } @else {
           <button
@@ -130,7 +131,7 @@
             type="button"
             [disabled]="busy()"
             (click)="change('Draft')"
-            >Reopen</button
+            ><ng-container i18n>Reopen</ng-container></button
           >
         }
         <button
@@ -140,7 +141,7 @@
           type="button"
           [disabled]="busy()"
           (click)="change('Completed')"
-          >Completed</button
+          ><ng-container i18n>Completed</ng-container></button
         >
         <button
           appButton
@@ -148,7 +149,7 @@
           variant="ghost"
           type="button"
           (click)="cancelling.set(true)"
-          >Cancel…</button
+          ><ng-container i18n>Cancel…</ng-container></button
         >
       }
     </footer>

@@ -22,17 +22,18 @@ import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
+import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
 export const DOCUMENT_TYPES: { value: DriverDocumentType; label: string }[] = [
-  { value: 'DrivingLicence', label: 'Driving licence' },
-  { value: 'NccLicence', label: 'NCC licence' },
-  { value: 'TaxiLicence', label: 'Taxi licence' },
+  { value: 'DrivingLicence', label: $localize`Driving licence` },
+  { value: 'NccLicence', label: $localize`NCC licence` },
+  { value: 'TaxiLicence', label: $localize`Taxi licence` },
   {
     value: 'ProfessionalCertificate',
-    label: 'Professional certificate (CAP/KB)',
+    label: $localize`Professional certificate (CAP/KB)`,
   },
-  { value: 'Insurance', label: 'Insurance' },
-  { value: 'CriminalRecord', label: 'Criminal record' },
+  { value: 'Insurance', label: $localize`Insurance` },
+  { value: 'CriminalRecord', label: $localize`Criminal record` },
 ]
 
 type DocumentForm = FormGroup<{
@@ -58,6 +59,17 @@ type DocumentForm = FormGroup<{
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DriversComponent implements OnInit {
+  protected readonly text = ADMIN_TEXT
+  protected readonly tx = {
+    editDriver: $localize`Edit driver`,
+    newDriver: $localize`New driver`,
+    phoneHint: $localize`With country code, e.g. +39 333 123 4567`,
+    documentType: (n: number) => $localize`Document ${n}:number: type`,
+    documentNumber: (n: number) => $localize`Document ${n}:number: number`,
+    documentExpiry: (n: number) => $localize`Document ${n}:number: expiry date`,
+    removeDocument: (n: number) => $localize`Remove document ${n}:number:`,
+  }
+
   private readonly api = inject(AdminFleetService)
   private readonly fb = inject(FormBuilder).nonNullable
 
@@ -140,8 +152,8 @@ export class DriversComponent implements OnInit {
     const url = this.link()
     if (url) {
       void navigator.clipboard?.writeText(url).then(
-        () => this.linkMessage.set('Copied.'),
-        () => this.linkMessage.set('Select the link and copy it.')
+        () => this.linkMessage.set($localize`Copied.`),
+        () => this.linkMessage.set($localize`Select the link and copy it.`)
       )
     }
   }
@@ -154,7 +166,7 @@ export class DriversComponent implements OnInit {
         next: r => {
           this.link.set(r.url)
           this.linkMessage.set(
-            'New link created; the old one no longer works. Send the shifts again to share it.'
+            $localize`New link created; the old one no longer works. Send the shifts again to share it.`
           )
         },
         error: err => this.linkMessage.set(problemMessage(err)),

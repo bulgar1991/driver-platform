@@ -21,6 +21,7 @@ import {
 import { AdminDispatchService } from '@/core/services/admin-dispatch.service'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
+import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
 /**
  * Builds or edits a shift: tick bookings, then pick a driver and a car. The API says who is free
@@ -34,6 +35,7 @@ import { ButtonComponent } from '@/shared/components/button/button.component'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShiftEditorComponent {
+  protected readonly text = ADMIN_TEXT
   /** null: a new shift. */
   readonly shift = input<Shift | null>(null)
   /** Bookings of the day still to assign. */
@@ -103,7 +105,9 @@ export class ShiftEditorComponent {
 
   protected save(): void {
     if (!this.selected().size || !this.driverId() || !this.vehicleId()) {
-      this.error.set('Choose at least one booking, a driver and a car.')
+      this.error.set(
+        $localize`Choose at least one booking, a driver and a car.`
+      )
       return
     }
     const request = {

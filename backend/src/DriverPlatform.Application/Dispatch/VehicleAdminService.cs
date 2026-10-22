@@ -3,6 +3,7 @@ using DriverPlatform.Application.Common;
 using DriverPlatform.Application.Geo;
 using DriverPlatform.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.Dispatch;
 
@@ -39,7 +40,7 @@ public sealed class VehicleAdminService(IAppDbContext db, IAuditLogger audit, Ti
     public async Task<VehicleDto> UpdateAsync(Guid id, VehicleRequest request, CancellationToken cancellationToken)
     {
         var vehicle = await db.Vehicles.FirstOrDefaultAsync(v => v.Id == id, cancellationToken)
-            ?? throw new NotFoundException("Vehicle not found.");
+            ?? throw new NotFoundException(Texts.Current.VehicleNotFound);
         await EnsureUniquePlateAsync(request.PlateNumber, id, cancellationToken);
         Apply(vehicle, request);
 
@@ -53,7 +54,7 @@ public sealed class VehicleAdminService(IAppDbContext db, IAuditLogger audit, Ti
         var normalized = NormalizePlate(plate);
         if (await db.Vehicles.AnyAsync(v => v.PlateNumber == normalized && v.Id != exceptId, cancellationToken))
         {
-            throw new RequestValidationException("plateNumber", "Another vehicle already has this plate.");
+            throw new RequestValidationException("plateNumber", Texts.Current.PlateTaken);
         }
     }
 

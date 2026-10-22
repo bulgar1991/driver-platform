@@ -13,6 +13,7 @@ import { AdminDispatchService } from '@/core/services/admin-dispatch.service'
 import { AuthService } from '@/core/services/auth.service'
 import { poll } from '@/core/utils/poll'
 import { problemMessage } from '@/core/utils/problem'
+import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
 interface Stat {
   label: string
@@ -30,6 +31,7 @@ interface Stat {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
+  protected readonly text = ADMIN_TEXT
   private readonly auth = inject(AuthService)
   protected readonly user = this.auth.currentUser
   protected readonly data = signal<Dashboard | null>(null)
@@ -43,33 +45,37 @@ export class DashboardComponent {
     }
     return [
       {
-        label: 'To assign (next 48 h)',
+        label: $localize`To assign (next 48 h)`,
         value: d.unassignedNext48h,
         link: '/admin/bookings',
         query: { unassigned: '1' },
         alert: d.unassignedNext48h > 0,
       },
-      { label: 'Rides today', value: d.todayRides, link: '/admin/shifts' },
       {
-        label: 'On the road',
+        label: $localize`Rides today`,
+        value: d.todayRides,
+        link: '/admin/shifts',
+      },
+      {
+        label: $localize`On the road`,
         value: d.inProgress,
         link: '/admin/bookings',
         query: { status: 'PickedUp' },
       },
       {
-        label: 'Completed today',
+        label: $localize`Completed today`,
         value: d.todayCompleted,
         link: '/admin/bookings',
         query: { status: 'Completed' },
       },
       {
-        label: 'Shifts to confirm',
+        label: $localize`Shifts to confirm`,
         value: d.shiftsToConfirm,
         link: '/admin/shifts',
         alert: d.shiftsToConfirm > 0,
       },
       {
-        label: 'Awaiting payment',
+        label: $localize`Awaiting payment`,
         value: d.awaitingPayment,
         link: '/admin/bookings',
         query: { status: 'AwaitingPayment' },

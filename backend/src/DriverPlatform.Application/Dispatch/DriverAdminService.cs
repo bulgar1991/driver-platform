@@ -5,6 +5,7 @@ using DriverPlatform.Application.Geo;
 using DriverPlatform.Domain.Entities;
 using DriverPlatform.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.Dispatch;
 
@@ -117,14 +118,14 @@ public sealed class DriverAdminService(IAppDbContext db, IDriverLinks links, IAu
 
     private async Task<Driver> FindAsync(Guid id, CancellationToken cancellationToken) =>
         await db.Drivers.Include(d => d.Documents).FirstOrDefaultAsync(d => d.Id == id, cancellationToken)
-        ?? throw new NotFoundException("Driver not found.");
+        ?? throw new NotFoundException(Texts.Current.DriverNotFound);
 
     private async Task EnsureUniquePhoneAsync(string phone, Guid? exceptId, CancellationToken cancellationToken)
     {
         var normalized = NormalizePhone(phone);
         if (await db.Drivers.AnyAsync(d => d.Phone == normalized && d.Id != exceptId, cancellationToken))
         {
-            throw new RequestValidationException("phone", "Another driver already has this phone number.");
+            throw new RequestValidationException("phone", Texts.Current.PhoneTaken);
         }
     }
 

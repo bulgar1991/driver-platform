@@ -119,7 +119,7 @@ public sealed class DriverApplicationService(
     public async Task<DriverApplicationDto> SetStatusAsync(Guid id, DriverApplicationStatus status, CancellationToken cancellationToken)
     {
         var application = await db.DriverApplications.FirstOrDefaultAsync(a => a.Id == id, cancellationToken)
-            ?? throw new NotFoundException("Application not found.");
+            ?? throw new NotFoundException(Texts.Current.ApplicationNotFound);
         application.Status = status;
         audit.Log("driver_application.status_changed", nameof(DriverApplication), id.ToString(), new { status });
         await db.SaveChangesAsync(cancellationToken);

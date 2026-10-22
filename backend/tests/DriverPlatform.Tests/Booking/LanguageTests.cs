@@ -126,6 +126,24 @@ public sealed class LanguageTests
     }
 
     [Fact]
+    public async Task Admin_errors_follow_the_language_of_the_panel()
+    {
+        using var factory = new ApiFactory();
+        var admin = await factory.CreateAdminClientAsync();
+        admin.DefaultRequestHeaders.AcceptLanguage.ParseAdd("it");
+
+        var response = await admin.PostAsJsonAsync("/api/admin/pricing/surcharges", new Application.Admin.SurchargeRuleRequest
+        {
+            Name = "No days",
+            Kind = SurchargeKind.DaysOfWeek,
+            Percent = 10,
+        }, TestData.Json);
+
+        var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(TestData.Json);
+        Assert.Equal("Scegli almeno un giorno.", problem!.Errors["daysOfWeek"][0]);
+    }
+
+    [Fact]
     public void Every_language_formats_money_its_own_way()
     {
         Assert.Equal("€58.00", Texts.English.Money(58m));

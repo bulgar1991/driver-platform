@@ -4,7 +4,9 @@
   }
 
   <fieldset class="shift-editor__group">
-    <legend class="shift-editor__legend">Bookings</legend>
+    <legend class="shift-editor__legend"
+      ><ng-container i18n>Bookings</ng-container></legend
+    >
     <ul class="shift-editor__bookings">
       @for (b of options(); track b.id) {
         <li>
@@ -23,18 +25,29 @@
               <span class="shift-editor__ref">{{ b.reference }}</span>
               {{ b.pickupLabel }} → {{ b.dropoffLabel }}
               <span class="shift-editor__muted">
-                {{ b.vehicleCategory }} · {{ b.passengers }} pax ·
-                {{ b.largeLuggage + b.smallLuggage }} bags
+                <ng-container i18n
+                  >{{ text.categories[b.vehicleCategory] }} ·
+                  {{ b.passengers }} pax ·
+                  {{ b.largeLuggage + b.smallLuggage }} bags</ng-container
+                >&ngsp;
                 @if (b.childSeats) {
-                  · {{ b.childSeats }} child seat
+                  <ng-container i18n
+                    >· {{ b.childSeats }} child seat</ng-container
+                  >
                 }
-                · about {{ b.durationMinutes }} min
+                &ngsp;<ng-container i18n
+                  >· about {{ b.durationMinutes }} min</ng-container
+                >
               </span>
             </span>
           </label>
         </li>
       } @empty {
-        <li class="shift-editor__muted">No bookings to assign on this day.</li>
+        <li class="shift-editor__muted"
+          ><ng-container i18n
+            >No bookings to assign on this day.</ng-container
+          ></li
+        >
       }
     </ul>
   </fieldset>
@@ -42,12 +55,16 @@
   @if (availability(); as a) {
     <div class="shift-editor__row">
       <label class="shift-editor__field">
-        <span class="shift-editor__legend">Driver</span>
+        <span class="shift-editor__legend"
+          ><ng-container i18n>Driver</ng-container></span
+        >
         <select
           class="input"
           [ngModel]="driverId()"
           (ngModelChange)="driverId.set($event)">
-          <option value="">Choose a driver</option>
+          <option value=""
+            ><ng-container i18n>Choose a driver</ng-container></option
+          >
           @for (d of a.drivers; track d.id) {
             <option [value]="d.id"
               >{{ d.available ? '' : '⚠ ' }}{{ d.name }}</option
@@ -59,16 +76,20 @@
         }
       </label>
       <label class="shift-editor__field">
-        <span class="shift-editor__legend">Car</span>
+        <span class="shift-editor__legend"
+          ><ng-container i18n>Car</ng-container></span
+        >
         <select
           class="input"
           [ngModel]="vehicleId()"
           (ngModelChange)="vehicleId.set($event)">
-          <option value="">Choose a car</option>
+          <option value=""
+            ><ng-container i18n>Choose a car</ng-container></option
+          >
           @for (v of a.vehicles; track v.id) {
             <option [value]="v.id"
               >{{ v.available ? '' : '⚠ ' }}{{ v.plateNumber }} ·
-              {{ v.label }} ({{ v.category }})</option
+              {{ v.label }} ({{ text.categories[v.category] }})</option
             >
           }
         </select>
@@ -80,23 +101,33 @@
   }
 
   <label class="shift-editor__field">
-    <span class="shift-editor__legend">Notes for the driver</span>
+    <span class="shift-editor__legend"
+      ><ng-container i18n>Notes for the driver</ng-container></span
+    >
     <textarea class="input" rows="2" [(ngModel)]="notes"></textarea>
   </label>
 
   @if (shift()?.status === 'Confirmed') {
     <p class="shift-editor__muted"
-      >Saving changes sets the shift back to draft: the driver confirms it
-      again.</p
+      ><ng-container i18n
+        >Saving changes sets the shift back to draft: the driver confirms it
+        again.</ng-container
+      ></p
     >
   }
 
   <div class="shift-editor__actions">
     <button appButton type="button" variant="ghost" (click)="closed.emit()"
-      >Cancel</button
+      ><ng-container i18n>Cancel</ng-container></button
     >
     <button appButton type="button" [disabled]="saving()" (click)="save()">
-      {{ saving() ? 'Saving…' : shift() ? 'Save shift' : 'Create shift' }}
+      @if (saving()) {
+        <ng-container i18n>Saving…</ng-container>
+      } @else if (shift()) {
+        <ng-container i18n>Save shift</ng-container>
+      } @else {
+        <ng-container i18n>Create shift</ng-container>
+      }
     </button>
   </div>
 </div>

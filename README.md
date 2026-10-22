@@ -32,11 +32,14 @@ cd backend
 dotnet tool restore
 dotnet run --project src/DriverPlatform.Api
 
-# Frontend on http://localhost:4200 — /api is proxied to :5000
+# Frontend on http://localhost:4200 in all four languages (/, /en, /de, /fr) — /api is proxied to :5000
 cd frontend
 npm install
 npm start
 ```
+
+Texts and the language switcher work without the API; prices, address search, the booking form,
+reviews and the admin panel need it running.
 
 The development connection string is in `backend/src/DriverPlatform.Api/appsettings.Development.json`
 (`localhost:5432`, user/password `postgres`). Override it with
@@ -376,9 +379,10 @@ Conventions:
 
 ### Languages
 
-The public site and the client/driver pages are in **Italian (default, at `/`), English (`/en`),
-German (`/de`) and French (`/fr`)**, with a switcher in the header, the mobile menu and the footer.
-The admin panel stays in English.
+The whole site, the client and driver pages and the admin panel are in **Italian (default, at `/`),
+English (`/en`), German (`/de`) and French (`/fr`)**, with a switcher in the header, the mobile menu,
+the footer and the panel's top bar (`/admin`, `/en/admin`, `/de/admin`, `/fr/admin`; the sign-in
+stays across languages).
 
 - Angular's built-in i18n: one prerendered build per language (`angular.json` → `i18n`). Texts are
   marked with `i18n` attributes in templates and `$localize` in code; translations are in
@@ -386,10 +390,11 @@ The admin panel stays in English.
 - **After changing or adding a text:** `npm run i18n` extracts the texts and lists what each
   language lacks; add those to the three files. The production build fails if a translation is
   missing, so nothing ships half-translated.
-- `npm start` (`ng serve`) serves Italian only, with live reload; opening `/de/…` there shows the
-  Italian page. **`npm run start:languages`** serves all four at http://localhost:4300 (`/`, `/en`,
-  `/de`, `/fr`, the API proxied to :5000) like the production server: it rebuilds on change
-  (about a minute), then reload the page.
+- `npm start` runs one `ng serve` per language (ports 4201–4204, `scripts/dev-languages.mjs`) behind
+  http://localhost:4200, so the switcher and reloads work as in production, with live reload. It
+  uses about four times the memory of one server; `npm run start:it` serves Italian alone (other
+  languages' URLs then show the Italian page). `npm run preview` builds the prerendered site and
+  serves it at http://localhost:4300 like the production server (no live reload).
 - Prices and dates follow the language ("58,00 €" in Italian, German, French; "€58.00" in English);
   address search returns place names in it ("Mailand" on the German site).
 - Client links (booking page, payment return, review) open in the language the client booked in
@@ -402,8 +407,9 @@ The admin panel stays in English.
   client instructions have Italian, German and French fields; a blank one shows the English text.
   The English meeting point name stays its key (bookings and requests use it). The starting
   surcharges, holidays, zones and meeting points come translated.
-- **Still in English:** the admin panel, the "Partner rate" line, and the generic form checks (a
-  missing field) that the site already checks before sending. The invoice PDF layout is Italian and English, with the lines
+- **Still in English:** the "Partner rate" line, the generic form checks (a missing field) that the
+  site already checks before sending, the email to the office about a new driver application, and
+  the CSV exports for the accountant and partners. The invoice PDF layout is Italian and English, with the lines
   in the client's language.
 
 ### SEO

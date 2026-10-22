@@ -1,8 +1,10 @@
 <div class="partners">
   <header class="partners__header">
     <div>
-      <p class="eyebrow">Integrations</p>
-      <h1 class="heading heading--lg">Partners</h1>
+      <p class="eyebrow"><ng-container i18n>Integrations</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Partners</ng-container></h1
+      >
     </div>
     <div class="partners__tools">
       <a
@@ -10,11 +12,14 @@
         [href]="api.docsUrl"
         target="_blank"
         rel="noopener">
-        <app-icon class="partners__icon" name="link" /> API description
-        (OpenAPI)
+        <app-icon class="partners__icon" name="link" />&ngsp;<ng-container i18n
+          >API description (OpenAPI)</ng-container
+        >
       </a>
       <button appButton size="sm" type="button" (click)="open(null)"
-        ><app-icon name="plus" /> New partner</button
+        ><app-icon name="plus" />&ngsp;<ng-container i18n
+          >New partner</ng-container
+        ></button
       >
     </div>
   </header>
@@ -27,12 +32,12 @@
     <table class="partners__table">
       <thead>
         <tr>
-          <th>Partner</th>
-          <th>API key</th>
-          <th>Rate</th>
-          <th>This month</th>
-          <th>Webhook</th>
-          <th>Status</th>
+          <th><ng-container i18n>Partner</ng-container></th>
+          <th><ng-container i18n>API key</ng-container></th>
+          <th><ng-container i18n>Rate</ng-container></th>
+          <th><ng-container i18n>This month</ng-container></th>
+          <th><ng-container i18n>Webhook</ng-container></th>
+          <th><ng-container i18n>Status</ng-container></th>
         </tr>
       </thead>
       <tbody>
@@ -45,38 +50,65 @@
                 (click)="open(p); $event.stopPropagation()"
                 >{{ p.name }}</button
               >
-              <span class="partners__muted"
-                >{{ p.kind === 'Booking' ? 'Booking.com' : 'Company' }} ·
-                {{ p.contactEmail }}</span
+              <span class="partners__muted">
+                @if (p.kind === 'Booking') {
+                  <ng-container i18n>Booking.com</ng-container>
+                } @else {
+                  <ng-container i18n>Company</ng-container>
+                }
+                · {{ p.contactEmail }}</span
               >
             </td>
             <td>
               @if (p.apiKeyPrefix) {
-                <code class="partners__code">md_{{ p.apiKeyPrefix }}_…</code>
+                <code class="partners__code"
+                  ><ng-container i18n
+                    >md_{{ p.apiKeyPrefix }}_…</ng-container
+                  ></code
+                >
                 <span class="partners__muted">
-                  {{
-                    p.apiKeyLastUsedAt
-                      ? 'used ' + (p.apiKeyLastUsedAt | date: 'd MMM HH:mm')
-                      : 'never used'
-                  }}
+                  @if (p.apiKeyLastUsedAt) {
+                    <ng-container i18n
+                      >used
+                      {{
+                        p.apiKeyLastUsedAt | date: 'd MMM HH:mm'
+                      }}</ng-container
+                    >
+                  } @else {
+                    <ng-container i18n>never used</ng-container>
+                  }
                 </span>
               } @else {
-                <span class="partners__warning">No key</span>
+                <span class="partners__warning"
+                  ><ng-container i18n>No key</ng-container></span
+                >
               }
             </td>
             <td class="partners__nowrap">
               {{ p.priceAdjustmentPercent > 0 ? '+' : ''
               }}{{ p.priceAdjustmentPercent }}%
               <span class="partners__muted"
-                >commission {{ p.commissionPercent }}%</span
+                ><ng-container i18n
+                  >commission {{ p.commissionPercent }}%</ng-container
+                ></span
               >
             </td>
-            <td>{{ p.bookingsThisMonth }} bookings</td>
+            <td
+              ><ng-container i18n
+                >{{ p.bookingsThisMonth }} bookings</ng-container
+              ></td
+            >
             <td>
               @if (p.webhookUrl) {
-                <span [class.partners__danger]="p.webhooksFailing > 0">{{
-                  p.webhooksFailing > 0 ? p.webhooksFailing + ' failing' : 'OK'
-                }}</span>
+                <span [class.partners__danger]="p.webhooksFailing > 0">
+                  @if (p.webhooksFailing > 0) {
+                    <ng-container i18n
+                      >{{ p.webhooksFailing }} failing</ng-container
+                    >
+                  } @else {
+                    OK
+                  }
+                </span>
               } @else {
                 <span class="partners__muted">—</span>
               }
@@ -84,16 +116,24 @@
             <td
               ><span
                 class="partners__badge"
-                [class.partners__badge--off]="!p.isActive"
-                >{{ p.isActive ? 'Active' : 'Inactive' }}</span
-              ></td
+                [class.partners__badge--off]="!p.isActive">
+                @if (p.isActive) {
+                  <ng-container i18n>Active</ng-container>
+                } @else {
+                  <ng-container i18n>Inactive</ng-container>
+                }
+              </span></td
             >
           </tr>
         } @empty {
           <tr
-            ><td colspan="6" class="partners__muted">{{
-              loading() ? 'Loading…' : 'No partners yet.'
-            }}</td></tr
+            ><td colspan="6" class="partners__muted">
+              @if (loading()) {
+                <ng-container i18n>Loading…</ng-container>
+              } @else {
+                <ng-container i18n>No partners yet.</ng-container>
+              }
+            </td></tr
           >
         }
       </tbody>
@@ -102,7 +142,7 @@
 </div>
 
 <p-dialog
-  [header]="editing() ? editing()!.name : 'New partner'"
+  [header]="editing() ? editing()!.name : tx.newPartner"
   [modal]="true"
   [draggable]="false"
   styleClass="partners__dialog"
@@ -121,28 +161,36 @@
     }
     <div class="partners__grid">
       <app-form-field
+        i18n-label
         label="Name"
         for="pName"
         [error]="
           form.controls.name.touched && form.controls.name.invalid
-            ? 'Required'
+            ? text.required
             : null
         ">
         <input id="pName" class="input" formControlName="name" />
       </app-form-field>
-      <app-form-field label="Type" for="pKind">
+      <app-form-field i18n-label label="Type" for="pKind">
         <select id="pKind" class="input" formControlName="kind">
-          <option value="Company">Company (agency, hotel, cruise…)</option>
-          <option value="Booking">Booking.com</option>
+          <option value="Company"
+            ><ng-container i18n
+              >Company (agency, hotel, cruise…)</ng-container
+            ></option
+          >
+          <option value="Booking"
+            ><ng-container i18n>Booking.com</ng-container></option
+          >
         </select>
       </app-form-field>
       <app-form-field
+        i18n-label
         label="Contact email"
         for="pEmail"
         [error]="
           form.controls.contactEmail.touched &&
           form.controls.contactEmail.invalid
-            ? 'Enter a valid email'
+            ? text.validEmail
             : null
         ">
         <input
@@ -152,20 +200,25 @@
           formControlName="contactEmail" />
       </app-form-field>
       <app-form-field
+        i18n-label
         label="Webhook URL (optional)"
         for="pHook"
         [error]="
           form.controls.webhookUrl.touched && form.controls.webhookUrl.invalid
-            ? 'Use an https:// address'
+            ? tx.httpsOnly
             : null
         ">
         <input
           id="pHook"
           class="input"
           formControlName="webhookUrl"
+          i18n-placeholder
           placeholder="https://partner.example/hooks/magnus" />
       </app-form-field>
-      <app-form-field label="Agreed rate (% on public price)" for="pRate">
+      <app-form-field
+        i18n-label
+        label="Agreed rate (% on public price)"
+        for="pRate">
         <input
           id="pRate"
           class="input"
@@ -175,7 +228,7 @@
           step="0.5"
           formControlName="priceAdjustmentPercent" />
       </app-form-field>
-      <app-form-field label="Commission (%)" for="pCommission">
+      <app-form-field i18n-label label="Commission (%)" for="pCommission">
         <input
           id="pCommission"
           class="input"
@@ -191,22 +244,25 @@
         ><input
           class="partners__checkbox"
           type="checkbox"
-          formControlName="monthlyInvoicing" />
-        Monthly invoicing (no online payment)</label
+          formControlName="monthlyInvoicing" />&ngsp;<ng-container i18n
+          >Monthly invoicing (no online payment)</ng-container
+        ></label
       >
       <label class="partners__check"
         ><input
           class="partners__checkbox"
           type="checkbox"
-          formControlName="notifyPassengers" />
-        We message passengers (driver details, review link)</label
+          formControlName="notifyPassengers" />&ngsp;<ng-container i18n
+          >We message passengers (driver details, review link)</ng-container
+        ></label
       >
       <label class="partners__check"
         ><input
           class="partners__checkbox"
           type="checkbox"
-          formControlName="isActive" />
-        Active</label
+          formControlName="isActive" />&ngsp;<ng-container i18n
+          >Active</ng-container
+        ></label
       >
     </div>
     <div class="partners__actions">
@@ -215,24 +271,35 @@
         type="button"
         variant="ghost"
         (click)="editing.set(undefined)"
-        >Close</button
+        ><ng-container i18n>Close</ng-container></button
       >
-      <button appButton type="submit" [disabled]="saving()">{{
-        saving() ? 'Saving…' : 'Save partner'
-      }}</button>
+      <button appButton type="submit" [disabled]="saving()">
+        @if (saving()) {
+          <ng-container i18n>Saving…</ng-container>
+        } @else {
+          <ng-container i18n>Save partner</ng-container>
+        }
+      </button>
     </div>
   </form>
 
   @if (editing(); as p) {
     <section class="partners__section">
-      <h3 class="partners__legend">API key</h3>
+      <h3 class="partners__legend"
+        ><ng-container i18n>API key</ng-container></h3
+      >
       @if (newKey(); as key) {
-        <p class="partners__warning">Copy it now: it is shown only once.</p>
+        <p class="partners__warning"
+          ><ng-container i18n
+            >Copy it now: it is shown only once.</ng-container
+          ></p
+        >
         <div class="partners__secret">
           <input
             class="input partners__mono"
             readonly
             [value]="key"
+            i18n-aria-label
             aria-label="New API key"
             (focus)="$any($event.target).select()" />
           <button
@@ -241,14 +308,17 @@
             variant="outline"
             type="button"
             (click)="copy(key)"
-            >Copy</button
+            ><ng-container i18n>Copy</ng-container></button
           >
         </div>
       } @else if (p.apiKeyPrefix) {
         <p class="partners__muted"
-          >Current key
-          <code class="partners__code">md_{{ p.apiKeyPrefix }}_…</code>, created
-          {{ p.apiKeyCreatedAt | date: 'd MMM y' }}.</p
+          ><ng-container i18n>Current key</ng-container>&ngsp;<code
+            class="partners__code"
+            ><ng-container i18n>md_{{ p.apiKeyPrefix }}_…</ng-container></code
+          ><ng-container i18n
+            >, created {{ p.apiKeyCreatedAt | date: 'd MMM y' }}.</ng-container
+          ></p
         >
       }
       <div class="partners__buttons">
@@ -257,9 +327,13 @@
           size="sm"
           variant="outline"
           type="button"
-          (click)="createKey()"
-          >{{ p.apiKeyPrefix ? 'Replace key' : 'Create API key' }}</button
-        >
+          (click)="createKey()">
+          @if (p.apiKeyPrefix) {
+            <ng-container i18n>Replace key</ng-container>
+          } @else {
+            <ng-container i18n>Create API key</ng-container>
+          }
+        </button>
         @if (p.apiKeyPrefix) {
           <button
             appButton
@@ -267,24 +341,33 @@
             variant="ghost"
             type="button"
             (click)="revokeKey()"
-            >Revoke</button
+            ><ng-container i18n>Revoke</ng-container></button
           >
         }
       </div>
       <p class="partners__muted"
-        >Requests send it in the
-        <code class="partners__code">X-Api-Key</code> header to
-        <code class="partners__code">/api/partner/v1</code>.</p
+        ><ng-container i18n>Requests send it in the</ng-container>&ngsp;<code
+          class="partners__code"
+          ><ng-container i18n>X-Api-Key</ng-container></code
+        >&ngsp;<ng-container i18n>header to</ng-container>&ngsp;<code
+          class="partners__code"
+          ><ng-container i18n>/api/partner/v1</ng-container></code
+        >.</p
       >
     </section>
 
     @if (p.webhookUrl) {
       <section class="partners__section">
-        <h3 class="partners__legend">Webhook</h3>
+        <h3 class="partners__legend"
+          ><ng-container i18n>Webhook</ng-container></h3
+        >
         <p class="partners__muted"
-          >Status changes are POSTed to {{ p.webhookUrl }}, signed with the
-          secret (header
-          <code class="partners__code">MagnusDrive-Signature</code>).</p
+          ><ng-container i18n
+            >Status changes are POSTed to {{ p.webhookUrl }}, signed with the
+            secret (header</ng-container
+          >&ngsp;<code class="partners__code"
+            ><ng-container i18n>MagnusDrive-Signature</ng-container></code
+          >).</p
         >
         @if (secret(); as value) {
           <div class="partners__secret">
@@ -292,6 +375,7 @@
               class="input partners__mono"
               readonly
               [value]="value"
+              i18n-aria-label
               aria-label="Webhook secret"
               (focus)="$any($event.target).select()" />
             <button
@@ -300,7 +384,7 @@
               variant="outline"
               type="button"
               (click)="copy(value)"
-              >Copy</button
+              ><ng-container i18n>Copy</ng-container></button
             >
           </div>
         }
@@ -311,7 +395,7 @@
             variant="ghost"
             type="button"
             (click)="showSecret()"
-            >Show secret</button
+            ><ng-container i18n>Show secret</ng-container></button
           >
           <button
             appButton
@@ -319,7 +403,7 @@
             variant="ghost"
             type="button"
             (click)="showSecret(true)"
-            >New secret</button
+            ><ng-container i18n>New secret</ng-container></button
           >
         </div>
         <ul class="partners__deliveries">
@@ -331,27 +415,32 @@
               >
               {{ d.event }} · {{ d.bookingReference }}
               <span class="partners__muted"
-                >{{ d.createdAt | date: 'd MMM HH:mm'
-                }}{{
-                  d.lastError
-                    ? ' · ' + d.lastError + ' (' + d.attempts + ' tries)'
-                    : ''
-                }}</span
-              >
+                >{{ d.createdAt | date: 'd MMM HH:mm' }}
+                @if (d.lastError) {
+                  <ng-container i18n>
+                    · {{ d.lastError }} ({{ d.attempts }} tries)</ng-container
+                  >
+                }
+              </span>
             </li>
           } @empty {
-            <li class="partners__muted">Nothing sent yet.</li>
+            <li class="partners__muted"
+              ><ng-container i18n>Nothing sent yet.</ng-container></li
+            >
           }
         </ul>
       </section>
     }
 
     <section class="partners__section">
-      <h3 class="partners__legend">Monthly statement</h3>
+      <h3 class="partners__legend"
+        ><ng-container i18n>Monthly statement</ng-container></h3
+      >
       <div class="partners__buttons">
         <input
           class="input partners__month"
           type="month"
+          i18n-aria-label
           aria-label="Month"
           [value]="statementMonth"
           (change)="statementMonth = $any($event.target).value" />
@@ -361,12 +450,16 @@
           variant="outline"
           type="button"
           (click)="downloadStatement()"
-          ><app-icon name="download" /> CSV</button
+          ><app-icon name="download" />&ngsp;<ng-container i18n
+            >CSV</ng-container
+          ></button
         >
       </div>
       <p class="partners__muted"
-        >Rides by pickup date, with price, commission and net. Cancelled rides
-        are listed at zero.</p
+        ><ng-container i18n
+          >Rides by pickup date, with price, commission and net. Cancelled rides
+          are listed at zero.</ng-container
+        ></p
       >
     </section>
   }

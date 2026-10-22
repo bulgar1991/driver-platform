@@ -1,21 +1,23 @@
 <div class="payments">
   <header class="payments__header">
     <div>
-      <p class="eyebrow">Administration</p>
-      <h1 class="heading heading--lg">Payments</h1>
+      <p class="eyebrow"><ng-container i18n>Administration</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Payments</ng-container></h1
+      >
     </div>
     <form
       class="payments__export"
       [formGroup]="exportForm"
       (ngSubmit)="exportCsv()">
-      <app-form-field label="Invoices from" for="exportFrom">
+      <app-form-field i18n-label label="Invoices from" for="exportFrom">
         <input
           id="exportFrom"
           class="input payments__date"
           type="date"
           formControlName="from" />
       </app-form-field>
-      <app-form-field label="To" for="exportTo">
+      <app-form-field i18n-label label="To" for="exportTo">
         <input
           id="exportTo"
           class="input payments__date"
@@ -23,7 +25,9 @@
           formControlName="to" />
       </app-form-field>
       <button appButton size="sm" variant="outline" type="submit">
-        <app-icon name="download" /> CSV for the accountant
+        <app-icon name="download" />&ngsp;<ng-container i18n
+          >CSV for the accountant</ng-container
+        >
       </button>
     </form>
   </header>
@@ -38,7 +42,11 @@
     </p>
   }
 
-  <div class="payments__filters" role="group" aria-label="Filter by status">
+  <div
+    class="payments__filters"
+    role="group"
+    i18n-aria-label
+    aria-label="Filter by status">
     @for (s of statuses; track s.label) {
       <button
         type="button"
@@ -54,13 +62,17 @@
     <table class="payments__table">
       <thead>
         <tr>
-          <th>Booking</th>
-          <th>Client</th>
-          <th>Amount</th>
-          <th>Status</th>
-          <th>Paid</th>
-          <th>Documents</th>
-          <th><span class="payments__sr">Actions</span></th>
+          <th><ng-container i18n>Booking</ng-container></th>
+          <th><ng-container i18n>Client</ng-container></th>
+          <th><ng-container i18n>Amount</ng-container></th>
+          <th><ng-container i18n>Status</ng-container></th>
+          <th><ng-container i18n>Paid</ng-container></th>
+          <th><ng-container i18n>Documents</ng-container></th>
+          <th
+            ><span class="payments__sr"
+              ><ng-container i18n>Actions</ng-container></span
+            ></th
+          >
         </tr>
       </thead>
       <tbody>
@@ -78,7 +90,12 @@
               {{ p.amount | money: p.currency }}
               @if (p.refundedAmount > 0) {
                 <span class="payments__muted"
-                  >−{{ p.refundedAmount | money: p.currency }} refunded</span
+                  ><ng-container i18n
+                    >−{{
+                      p.refundedAmount | money: p.currency
+                    }}
+                    refunded</ng-container
+                  ></span
                 >
               }
             </td>
@@ -117,9 +134,9 @@
                     <button
                       type="button"
                       class="payments__link payments__link--muted"
-                      [attr.aria-label]="'Email ' + invoice.number + ' again'"
+                      [attr.aria-label]="tx.emailAgain(invoice.number)"
                       (click)="resend(invoice)">
-                      resend
+                      <ng-container i18n>resend</ng-container>
                     </button>
                   </span>
                 }
@@ -133,7 +150,7 @@
                   variant="ghost"
                   type="button"
                   (click)="openRefund(p)"
-                  >Refund</button
+                  ><ng-container i18n>Refund</ng-container></button
                 >
               }
             </td>
@@ -141,7 +158,11 @@
         } @empty {
           <tr>
             <td colspan="7" class="payments__muted">
-              {{ loading() ? 'Loading…' : 'No payments yet.' }}
+              @if (loading()) {
+                <ng-container i18n>Loading…</ng-container>
+              } @else {
+                <ng-container i18n>No payments yet.</ng-container>
+              }
             </td>
           </tr>
         }
@@ -151,6 +172,7 @@
 </div>
 
 <p-dialog
+  i18n-header
   header="Refund"
   [modal]="true"
   [draggable]="false"
@@ -165,19 +187,25 @@
       (ngSubmit)="refund()"
       novalidate>
       <p class="payments__muted">
-        {{ p.bookingReference }} · {{ p.clientName }} · paid
-        {{ p.amount | money: p.currency }}
+        <ng-container i18n
+          >{{ p.bookingReference }} · {{ p.clientName }} · paid
+          {{ p.amount | money: p.currency }}</ng-container
+        >&ngsp;
         @if (p.refundedAmount) {
-          , {{ p.refundedAmount | money: p.currency }} already refunded
+          <ng-container i18n
+            >, {{ p.refundedAmount | money: p.currency }} already
+            refunded</ng-container
+          >
         }
       </p>
       <app-form-field
+        i18n-label
         label="Amount (€)"
         for="refundAmount"
         [error]="
           refundForm.controls.amount.touched &&
           refundForm.controls.amount.invalid
-            ? 'Up to what is left to refund'
+            ? tx.refundLimit
             : null
         ">
         <input
@@ -189,30 +217,36 @@
           formControlName="amount" />
       </app-form-field>
       <app-form-field
+        i18n-label
         label="Reason (printed on the credit note)"
         for="refundReason"
         [error]="
           refundForm.controls.reason.touched &&
           refundForm.controls.reason.invalid
-            ? 'Required'
+            ? text.required
             : null
         ">
         <input
           id="refundReason"
           class="input"
           formControlName="reason"
+          i18n-placeholder
           placeholder="e.g. Client cancelled 48 h before" />
       </app-form-field>
       <label class="payments__toggle">
         <input
           class="payments__checkbox"
           type="checkbox"
-          formControlName="cancelBooking" />
-        Also cancel the ride (and its return trip)
+          formControlName="cancelBooking" />&ngsp;<ng-container i18n
+          >Also cancel the ride (and its return trip)</ng-container
+        >
       </label>
       <p class="payments__muted">
-        The money goes back to the client's card or PayPal through Stripe. A
-        credit note is issued and emailed. This cannot be undone.
+        <ng-container i18n
+          >The money goes back to the client's card or PayPal through Stripe. A
+          credit note is issued and emailed. This cannot be
+          undone.</ng-container
+        >
       </p>
       <div class="payments__actions">
         <button
@@ -220,15 +254,19 @@
           type="button"
           variant="ghost"
           (click)="refunding.set(null)"
-          >Cancel</button
+          ><ng-container i18n>Cancel</ng-container></button
         >
         <button appButton type="submit" [disabled]="saving()">
-          {{
-            saving()
-              ? 'Refunding…'
-              : 'Refund ' +
-                (refundForm.controls.amount.value | money: p.currency)
-          }}
+          @if (saving()) {
+            <ng-container i18n>Refunding…</ng-container>
+          } @else {
+            <ng-container i18n
+              >Refund
+              {{
+                refundForm.controls.amount.value | money: p.currency
+              }}</ng-container
+            >
+          }
         </button>
       </div>
     </form>

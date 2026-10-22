@@ -8,6 +8,7 @@ using DriverPlatform.Application.Payments;
 using DriverPlatform.Domain.Entities;
 using DriverPlatform.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.Partners;
 
@@ -202,7 +203,7 @@ public sealed class PartnerAdminService(IAppDbContext db, IPartnerKeys keys, IAu
             && (uri.Scheme == Uri.UriSchemeHttps || (uri.Scheme == Uri.UriSchemeHttp && uri.IsLoopback));
         if (!ok)
         {
-            throw new RequestValidationException("webhookUrl", "Use an https:// address.");
+            throw new RequestValidationException("webhookUrl", Texts.Current.HttpsOnly);
         }
     }
 
@@ -221,7 +222,7 @@ public sealed class PartnerAdminService(IAppDbContext db, IPartnerKeys keys, IAu
 
     private async Task<Partner> FindAsync(Guid id, CancellationToken cancellationToken) =>
         await db.Partners.FirstOrDefaultAsync(p => p.Id == id, cancellationToken)
-        ?? throw new NotFoundException("Partner not found.");
+        ?? throw new NotFoundException(Texts.Current.PartnerNotFound);
 
     private async Task<PartnerDto> ToDtoAsync(Partner p, CancellationToken cancellationToken)
     {

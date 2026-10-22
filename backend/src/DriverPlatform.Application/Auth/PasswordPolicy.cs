@@ -1,4 +1,5 @@
 using DriverPlatform.Application.Common;
+using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.Auth;
 
@@ -17,13 +18,13 @@ public static class PasswordPolicy
         var errors = new ValidationErrors();
         if (password.Length < MinLength)
         {
-            errors.Add("newPassword", $"Use at least {MinLength} characters; a short sentence is easy to remember.");
+            errors.Add("newPassword", Texts.Current.PasswordTooShort(MinLength));
         }
         var lower = password.ToLowerInvariant();
         var local = email.Split('@')[0].ToLowerInvariant();
         if ((local.Length >= 4 && lower.Contains(local)) || Common.Any(lower.Contains) || password.Distinct().Count() < 4)
         {
-            errors.Add("newPassword", "This password is too easy to guess.");
+            errors.Add("newPassword", Texts.Current.PasswordTooEasy);
         }
         errors.ThrowIfAny();
     }
