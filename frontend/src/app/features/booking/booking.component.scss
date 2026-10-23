@@ -76,30 +76,25 @@
     @apply flex flex-col gap-8 pt-8 sm:pt-10;
   }
 
-  // Results on the left, the map beside them from laptops up (it stays in view while scrolling).
   &__layout {
-    @apply grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,23rem)] xl:grid-cols-[minmax(0,1fr)_minmax(0,26rem)];
-  }
-
-  // With the wide map the results take the whole width under it.
-  &__layout--single {
-    @apply lg:grid-cols-1 xl:grid-cols-1;
+    @apply flex flex-col gap-6;
   }
 
   &__results {
     @apply flex min-w-0 scroll-mt-24 flex-col gap-5;
   }
 
-  &__side {
-    @apply min-w-0 lg:sticky lg:top-24 lg:self-start;
+  // The map from edge to edge of the screen, under the search band.
+  &__map-band {
+    @apply border-b border-ink-700;
   }
 
   &__map {
-    @apply h-72 overflow-hidden rounded-lg sm:h-96 lg:h-[28rem];
+    @apply h-80 overflow-hidden rounded-none border-0 sm:h-[28rem] lg:h-[34rem];
 
     // Same box as the map, so nothing moves when it loads.
     &--placeholder {
-      @apply block rounded-sm border border-ink-600 bg-ink-900;
+      @apply block bg-ink-900;
       background-image: linear-gradient(
         100deg,
         transparent 30%,
@@ -116,8 +111,10 @@
     @apply relative flex flex-col gap-2;
   }
 
+  // In line with the page content above and below, not with the screen edge.
   &__map-tools {
-    @apply absolute left-3 top-3 z-10 flex gap-1 rounded-full border border-ink-500 bg-ink/85 p-1 shadow-lg backdrop-blur;
+    left: max(1rem, calc((100% - theme('maxWidth.6xl')) / 2 + 1rem));
+    @apply absolute top-3 z-10 flex gap-1 rounded-full border border-ink-500 bg-ink/85 p-1 shadow-lg backdrop-blur;
   }
 
   &__map-target {
@@ -137,26 +134,8 @@
     @apply bg-ivory;
   }
 
-  // The map from edge to edge of the screen, under the search band (the home page).
-  &__wide-map {
-    @apply border-b border-ink-700;
-
-    .booking__map {
-      @apply h-80 rounded-none border-0 sm:h-[28rem] lg:h-[34rem];
-    }
-
-    // In line with the page content above and below, not with the screen edge.
-    .booking__map-tools {
-      left: max(1rem, calc((100% - theme('maxWidth.6xl')) / 2 + 1rem));
-    }
-
-    .booking__map-hint {
-      @apply mx-auto w-full max-w-6xl px-4 pb-2;
-    }
-  }
-
   &__map-hint {
-    @apply flex min-h-5 items-center gap-2 text-xs text-ivory-400;
+    @apply mx-auto flex min-h-5 w-full max-w-6xl items-center gap-2 px-4 pb-2 text-xs text-ivory-400;
 
     strong {
       @apply text-gold;

@@ -1,5 +1,4 @@
 import {
-  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   computed,
@@ -7,7 +6,6 @@ import {
   effect,
   ElementRef,
   inject,
-  input,
   LOCALE_ID,
   OnInit,
   signal,
@@ -15,7 +13,6 @@ import {
   viewChild,
 } from '@angular/core'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
-import { NgTemplateOutlet } from '@angular/common'
 import { FormBuilder } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router'
 import { debounceTime, filter, merge } from 'rxjs'
@@ -53,10 +50,10 @@ import { CarLoaderComponent } from '@/shared/components/car-loader/car-loader.co
 const QUOTE_DEBOUNCE_MS = 500
 
 /**
- * The booking page, laid out like the big travel sites: the search bar on top, the cars as a list
- * of results next to the map with the route, then options and contact once a car is chosen.
- * A search in the link (tripToParams) fills the bar. With `wideMap` (the home page) the map spans
- * the whole screen under the search bar, with the results below it.
+ * The booking (its own page and the top of the home page), laid out like the big travel sites: the
+ * search bar on top, the map with the route across the whole screen, the cars as a list of results
+ * below it, then options and contact once a car is chosen. A search in the link (tripToParams)
+ * fills the bar.
  */
 @Component({
   selector: 'app-booking',
@@ -67,7 +64,6 @@ const QUOTE_DEBOUNCE_MS = 500
     IconComponent,
     MapComponent,
     MeetingPointPickerComponent,
-    NgTemplateOutlet,
     PriceSummaryComponent,
     SearchBarComponent,
     VehicleCardComponent,
@@ -78,8 +74,6 @@ const QUOTE_DEBOUNCE_MS = 500
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BookingComponent implements OnInit {
-  /** The map across the whole screen under the search bar, instead of beside the results. */
-  readonly wideMap = input(false, { transform: booleanAttribute })
   protected readonly store = inject(BookingStore)
   private readonly destroyRef = inject(DestroyRef)
   private readonly route = inject(ActivatedRoute)
