@@ -12,29 +12,6 @@ import {
  * Everything below is factual for the launch (business plan): keep it that way.
  */
 
-export const TRUST_POINTS: Feature[] = [
-  {
-    icon: 'tag',
-    title: $localize`Fixed price`,
-    text: $localize`Known before you pay, never changed after`,
-  },
-  {
-    icon: 'plane',
-    title: $localize`Flight tracked`,
-    text: $localize`Your driver adjusts to delays`,
-  },
-  {
-    icon: 'shield',
-    title: $localize`Licensed drivers`,
-    text: $localize`NCC licence and insurance checked`,
-  },
-  {
-    icon: 'wallet',
-    title: $localize`Card or PayPal`,
-    text: $localize`Secure payment, invoice by email`,
-  },
-]
-
 export const WELCOME = {
   eyebrow: $localize`Welcome`,
   title: $localize`Arrive like you belong here`,

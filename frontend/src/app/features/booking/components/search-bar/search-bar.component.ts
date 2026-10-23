@@ -16,7 +16,7 @@ import { TripForm } from '../../booking-form'
 
 /**
  * One bar with the whole search, as on the big travel sites: one way or return, from, to, when,
- * passengers and bags, then Search. Used in the home page banner and on top of the booking page.
+ * passengers and bags, then Search. Used on top of the booking, on the home page and on its own page.
  */
 @Component({
   selector: 'app-search-bar',
