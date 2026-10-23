@@ -44,6 +44,38 @@ public sealed class HomePageApiTests
     }
 
     [Fact]
+    public async Task Four_tariffs_cheapest_first()
+    {
+        using var factory = new ApiFactory();
+
+        var options = await factory.CreateClient().GetFromJsonAsync<BookingOptionsResponse>("/api/booking-options", TestData.Json);
+
+        Assert.Equal(
+            [VehicleCategory.Sedan, VehicleCategory.Business, VehicleCategory.Estate, VehicleCategory.Van],
+            options!.Vehicles.Select(v => v.Category));
+    }
+
+    [Fact]
+    public async Task A_database_with_the_first_three_tariffs_gets_business_added_and_keeps_its_own_prices()
+    {
+        using var factory = new ApiFactory();
+        factory.CreateClient(); // starts the app, which seeds the database
+        using var scope = factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.VehicleRates.Remove(await db.VehicleRates.SingleAsync(r => r.Category == VehicleCategory.Business));
+        (await db.VehicleRates.SingleAsync(r => r.Category == VehicleCategory.Sedan)).PricePerKm = 1.99m;
+        await db.SaveChangesAsync();
+        db.ChangeTracker.Clear();
+
+        await scope.ServiceProvider.GetRequiredService<DbSeeder>().SeedAsync();
+
+        var rates = await db.VehicleRates.AsNoTracking().ToListAsync();
+        Assert.Equal(4, rates.Count);
+        Assert.Equal(1.75m, rates.Single(r => r.Category == VehicleCategory.Business).PricePerKm);
+        Assert.Equal(1.99m, rates.Single(r => r.Category == VehicleCategory.Sedan).PricePerKm);
+    }
+
+    [Fact]
     public async Task Driver_application_is_saved_once_and_emailed_to_the_company()
     {
         using var factory = new ApiFactory();

@@ -13,7 +13,7 @@
 
   @if (loading()) {
     <div class="tariffs__grid" aria-busy="true">
-      @for (i of [1, 2, 3]; track i) {
+      @for (i of [1, 2, 3, 4]; track i) {
         <div class="tariffs__card tariffs__card--skeleton"></div>
       }
     </div>
@@ -46,7 +46,7 @@
               ', ' +
               (card.text?.models ?? '')
             "
-            sizes="(min-width: 1024px) 320px, 80vw" />
+            sizes="(min-width: 1024px) 17rem, (min-width: 640px) 45vw, 80vw" />
           <h3 class="tariffs__name">{{ card.text?.title ?? card.category }}</h3>
           <p class="tariffs__description" i18n>
             {{

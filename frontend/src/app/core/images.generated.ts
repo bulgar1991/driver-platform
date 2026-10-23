@@ -2,6 +2,42 @@
 import { ImageAsset } from './models/image.model'
 
 export const IMAGES = {
+  'car-bus': {
+    src: '/assets/images/car-bus-1280.webp',
+    srcset:
+      '/assets/images/car-bus-480.webp 480w, /assets/images/car-bus-960.webp 960w, /assets/images/car-bus-1280.webp 1280w',
+    width: 1280,
+    height: 600,
+    placeholder:
+      'data:image/webp;base64,UklGRnwBAABXRUJQVlA4WAoAAAAQAAAAFwAACgAAQUxQSMoAAAANuTJE9D80cBxAcqTA4Z3I+f/fvPfefqJa501pTiKaVpO2OiKaTlHEBMRCLFq2JIB3HW80Xx3b92zbrnUdBICMFf7oCZ3uYXvqiRvsAgC56l2tYqov0rpdvTKSMH63Ks0tLahNN+XokqgRlFqlpAIAo3TH+feHABuqiIZZMdXi1h3bnQdRDNVm8wg1FCjFOd9wqzYaZpK0RHYpaJGeawbNSTG4woLzrl+7F6BvGexogLJQ2Fr5DWOJQsbAZwC6aVJMbEb+BNC0/CsBVlA4IIwAAADQBACdASoYAAsAPu1iqk2ppaQiMAgBMB2JbAC7LwCfKyIbFb7gR27d1+0ZqXqb4AD4xSFgKxYMlSNKfNW+uy3yvhqP8mkKASV1YgqTRMJnc/oWD5U/KzkTl6AYtH5UBcJTx6W2fLttArdtj3q3nYp6kjZU/kEIgyhsncZ/x4g+nIJVTxC7+SJSrzwAAA==',
+  },
+  'car-business': {
+    src: '/assets/images/car-business-1280.webp',
+    srcset:
+      '/assets/images/car-business-480.webp 480w, /assets/images/car-business-960.webp 960w, /assets/images/car-business-1280.webp 1280w',
+    width: 1280,
+    height: 600,
+    placeholder:
+      'data:image/webp;base64,UklGRnwBAABXRUJQVlA4WAoAAAAQAAAAFwAACgAAQUxQSNMAAAANuTJE9D80cJxtb9s4vSdr7n+07L33foiPcJn44eeU8uNXmgCC6SFA2Z6MiAnIVmDMpFkTwBlct+bIlFnTqmYc7qi2z104tmfHmVVV2vZ6SFJJBECtzp04UE7lRlMT4lPtg14ioA2efkdfPhCx/bWEdd7XqJFgyU9+DgCq6PBrgc87NJnRFWnPAwFIgVTDFTnXKcGJk2LEHRcttJfc+wKIOReaBiIUGuNTaHr0Zpah7ZBMUBQw0ZgWqY0YESWgYXJGCGhsdBg9mAy+oFKqg8IItlEDAFZQOCCCAAAA0AMAnQEqGAALAD7tYqpNqaWkIjAIATAdiWwAnQAZ2YDKfzAl66zwAP6py7exyBLhjZs+6qq8OJM4n7HPxIbgx+Zb5vfHjZuitBPp7yG9ZJQrFpxPiLMkazENv+Jid5P96u4O8R1zMTqHFRg58+WnDKYt2gsH6MmK0qCyWwbSYEoAAA==',
+  },
+  'car-standard': {
+    src: '/assets/images/car-standard-1280.webp',
+    srcset:
+      '/assets/images/car-standard-480.webp 480w, /assets/images/car-standard-960.webp 960w, /assets/images/car-standard-1280.webp 1280w',
+    width: 1280,
+    height: 600,
+    placeholder:
+      'data:image/webp;base64,UklGRpoBAABXRUJQVlA4WAoAAAAQAAAAFwAACgAAQUxQSNMAAAANuTJE9D80kJRtb9w4vTm5/xGzTZzeyyW+H3dbH9LKIPHPyjAoPQP6tyJiArIX7xu4Zdc2mN04NfBkx5YwNAIAweGmR3ceXLiyLyeZ1VspPQOYaCg+Os0u5eEBXrrW5SHIYCXGtQurryE88teeWXeP4BeLqw7n+gKA1uvQvs6IMNG7dTc7MQRAqrLN6QigJnHdSQMq4KVIpQ2PSWUbS3FKAvDStiENc4MZNEbf/Q5NPXxyYhbyIb8iNFY0mQkUS5bNSlOrEiC0hdBIzc0w9Q2o9wAAAFZQOCCgAAAAUAQAnQEqGAALAD7tYqpOKaWkIjAIATAdiWwAnTKAAtlQLNy3iPljjjIWAAD86r7atuiRJVw0cW02JnQsbSFq6oW6qxky5P24AiI92nmlHIvw/b5A8AxKoif/W4r6CzZRB2ONTnRBAcHTAFvioQL6dVKKgFDGkl6XZI8nMvmQI/DV3lt3cue//0cbn3+0T/Q9bqrBv5Ri4Wj8+tskLgAAAA==',
+  },
+  'car-vip': {
+    src: '/assets/images/car-vip-1280.webp',
+    srcset:
+      '/assets/images/car-vip-480.webp 480w, /assets/images/car-vip-960.webp 960w, /assets/images/car-vip-1280.webp 1280w',
+    width: 1280,
+    height: 600,
+    placeholder:
+      'data:image/webp;base64,UklGRooBAABXRUJQVlA4WAoAAAAQAAAAFwAACgAAQUxQSNEAAAANuTJE9D80kBTbbuXY7Zzt/S/QC8g5buKJzt26PE31eBoZxIM/+iA5W0RMwASspIEtac2jO+vSmVPnaJOlZKvo7YABN/y9K/5ECNd+W34iDLzZgEuNt2UAtgOt90pURAR064Lvh8OqGaE7wL5/V61M8qCPsSOCosgwpH2ln8Vq5DJCVRCRkoemYaiz2ESLyxFSVckJGqsNv8KsRHZ5JkOTIXstAlWj4a7klDVzIoihZIGKFNNucqTBwcCFUtUGGhIIkGEskApCc43cRIVV1Bl7AwBWUDggkgAAAFAEAJ0BKhgACwA+7WKpTamlpCIwCAEwHYlsAJ0ygAMNWbkI5KfdeWwDBoAA8fx3TZXrp/Oc17seQ1JbEmfZ1E4j+ixO5ZwhEkSz9GssEhZutCDz52JhvKMmclQirL8Iy41rHeK8B4lGe/j0VRa9xPHG3OfNDmvMnnD3+P+cm7R0Pa1XDJ/2OTEXzEF2EqBm4AAA',
+  },
   hero: {
     src: '/assets/images/hero-1254.webp',
     srcset:

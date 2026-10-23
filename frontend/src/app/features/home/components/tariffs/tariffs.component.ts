@@ -19,7 +19,6 @@ import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { VEHICLE_INFO } from '@/features/booking/vehicle-info'
 import { VEHICLE_TEXT } from '../../home.content'
 
-/** Illustrations in src/assets/images/cars (replace with photos of the real cars when there are some). */
 const EXTRA_LABEL: Record<ExtraType, string> = {
   ChildSeat: $localize`Child seat`,
   NameSign: $localize`Name sign in arrivals`,

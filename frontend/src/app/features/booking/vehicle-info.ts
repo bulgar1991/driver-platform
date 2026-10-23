@@ -1,27 +1,33 @@
-import { VehicleCategory } from '@/core/models'
+import { IMAGES } from '@/core/images.generated'
+import { ImageAsset, VehicleCategory } from '@/core/models'
 
 export interface VehicleInfo {
   title: string
   description: string
-  /** Drawing of the car, 320 × 150. */
-  image: string
+  /** Photo of the car on a transparent 320:150 canvas. */
+  image: ImageAsset
 }
 
-/** Business plan §4: berlină, break / SUV, van. */
+/** The four tariffs: Standard, Business, VIP and Bus. */
 export const VEHICLE_INFO: Record<VehicleCategory, VehicleInfo> = {
   Sedan: {
-    title: $localize`Sedan`,
-    description: $localize`Business sedan, e.g. Mercedes E-Class or similar`,
-    image: '/assets/images/cars/sedan.svg',
+    title: $localize`Standard`,
+    description: $localize`Comfortable sedan, e.g. Toyota Camry or similar`,
+    image: IMAGES['car-standard'],
+  },
+  Business: {
+    title: $localize`Business`,
+    description: $localize`Premium car, e.g. BMW 4 Series or similar`,
+    image: IMAGES['car-business'],
   },
   Estate: {
-    title: $localize`Estate / SUV`,
-    description: $localize`More room for luggage, e.g. Mercedes E-Class Estate`,
-    image: '/assets/images/cars/suv.svg',
+    title: $localize`VIP`,
+    description: $localize`Premium SUV with room for luggage, e.g. BMW X5`,
+    image: IMAGES['car-vip'],
   },
   Van: {
-    title: $localize`Van`,
-    description: $localize`Groups and families, e.g. Mercedes V-Class`,
-    image: '/assets/images/cars/van.svg',
+    title: $localize`Bus`,
+    description: $localize`Groups and families, e.g. Mercedes Sprinter`,
+    image: IMAGES['car-bus'],
   },
 }

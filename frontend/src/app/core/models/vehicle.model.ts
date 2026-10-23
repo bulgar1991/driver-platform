@@ -1,5 +1,5 @@
-/** Sedan 1–3, Estate/SUV 1–4, Van 5–8 passengers. */
-export type VehicleCategory = 'Sedan' | 'Estate' | 'Van'
+/** Shown as Standard 1–3, Business 1–3, VIP (SUV) 1–4 and Bus 5–8 passengers; cheapest first. */
+export type VehicleCategory = 'Sedan' | 'Business' | 'Estate' | 'Van'
 
 export interface VehicleRequest {
   plateNumber: string

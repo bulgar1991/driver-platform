@@ -11,9 +11,10 @@ internal sealed partial class FrenchTexts : Texts
 
     public override string Category(VehicleCategory category) => category switch
     {
-        VehicleCategory.Sedan => "Berline",
-        VehicleCategory.Estate => "Break / SUV",
-        _ => "Van",
+        VehicleCategory.Sedan => "Standard",
+        VehicleCategory.Business => "Business",
+        VehicleCategory.Estate => "VIP",
+        _ => "Bus",
     };
     public override string ReturnDiscount(decimal percent) => $"Trajet retour −{percent.ToString("0.##", Culture)} %";
     public override string ZoneAccess(string zone) => $"Accès {zone}";

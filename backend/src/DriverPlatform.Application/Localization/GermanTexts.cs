@@ -14,9 +14,10 @@ internal sealed partial class GermanTexts : Texts
 
     public override string Category(VehicleCategory category) => category switch
     {
-        VehicleCategory.Sedan => "Limousine",
-        VehicleCategory.Estate => "Kombi / SUV",
-        _ => "Van",
+        VehicleCategory.Sedan => "Standard",
+        VehicleCategory.Business => "Business",
+        VehicleCategory.Estate => "VIP",
+        _ => "Bus",
     };
     public override string ReturnDiscount(decimal percent) => $"Rückfahrt −{percent.ToString("0.##", Culture)}%";
     public override string ZoneAccess(string zone) => $"Zufahrt {zone}";

@@ -9,6 +9,8 @@ import sharp from 'sharp'
 const SOURCE = 'src/assets/images/src'
 const OUTPUT = 'src/assets/images'
 const WIDTHS = [480, 960, 1600]
+// effort 6 is the slowest, smallest WebP; smartSubsample keeps thin coloured edges sharp.
+const WEBP = { quality: 74, alphaQuality: 80, effort: 6, smartSubsample: true }
 
 mkdirSync(OUTPUT, { recursive: true })
 const entries = []
@@ -23,7 +25,7 @@ for (const file of readdirSync(SOURCE)
     await input
       .clone()
       .resize({ width: w })
-      .webp({ quality: 78 })
+      .webp(WEBP)
       .toFile(`${OUTPUT}/${name}-${w}.webp`)
   }
   const tiny = await input
@@ -48,7 +50,7 @@ const ogFile = readdirSync(SOURCE).find(
 )
 await sharp(`${SOURCE}/${ogFile}`)
   .resize({ width: OG.width, height: OG.height, fit: 'cover' })
-  .jpeg({ quality: 82, mozjpeg: true })
+  .jpeg({ quality: 78, mozjpeg: true })
   .toFile(`${OUTPUT}/og.jpg`)
 entries.push({
   name: 'og',
@@ -62,7 +64,7 @@ const ICON = 'src/assets/brand/icon.svg'
 for (const size of [180, 192, 512]) {
   await sharp(ICON)
     .resize(size, size)
-    .png()
+    .png({ compressionLevel: 9, palette: true })
     .toFile(`src/assets/brand/icon-${size}.png`)
 }
 // favicon.ico holding one 32×32 PNG (an ICO header and a single directory entry, then the PNG).

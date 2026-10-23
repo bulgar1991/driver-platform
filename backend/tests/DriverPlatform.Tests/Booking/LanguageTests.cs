@@ -33,8 +33,8 @@ public sealed class LanguageTests
         var english = await factory.CreateClient().QuoteAsync(trip);
 
         var lines = german.Vehicles.Single(v => v.Category == VehicleCategory.Sedan).Outbound.Lines;
-        Assert.StartsWith("Limousine · ", lines[0].Label);
-        Assert.EndsWith(" km", lines[0].Label);
+        // The tariff names are the same in every language; the distance is written the German way.
+        Assert.Matches(@"^Standard · \d+,\d km$", lines[0].Label);
         Assert.Contains(lines, l => l.Label == "Namensschild");
         Assert.Contains(english.Vehicles[0].Outbound.Lines, l => l.Label == "Name sign");
     }
@@ -122,7 +122,7 @@ public sealed class LanguageTests
 
         using var scope = factory.Services.CreateScope();
         var invoice = await scope.ServiceProvider.GetRequiredService<AppDbContext>().Invoices.SingleAsync();
-        Assert.Contains("(Berlina · ", invoice.Lines[0].Description);
+        Assert.Contains("(Standard · ", invoice.Lines[0].Description);
     }
 
     [Fact]

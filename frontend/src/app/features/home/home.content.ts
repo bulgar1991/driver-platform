@@ -81,18 +81,23 @@ export const VEHICLE_TEXT: Partial<
   Record<VehicleCategory, { title: string; models: string; bestFor: string }>
 > = {
   Sedan: {
-    title: $localize`Sedan`,
-    models: $localize`Mercedes E-Class or similar`,
-    bestFor: $localize`Couples and business travellers`,
+    title: $localize`Standard`,
+    models: $localize`Toyota Camry or similar`,
+    bestFor: $localize`Couples and solo travellers`,
+  },
+  Business: {
+    title: $localize`Business`,
+    models: $localize`BMW 4 Series or similar`,
+    bestFor: $localize`Business travellers`,
   },
   Estate: {
-    title: $localize`Estate / SUV`,
-    models: $localize`E-Class Estate or similar`,
+    title: $localize`VIP`,
+    models: $localize`BMW X5 or similar`,
     bestFor: $localize`Families and extra luggage`,
   },
   Van: {
-    title: $localize`Van`,
-    models: $localize`Mercedes V-Class or similar`,
+    title: $localize`Bus`,
+    models: $localize`Mercedes Sprinter or similar`,
     bestFor: $localize`Groups up to 8`,
   },
 }

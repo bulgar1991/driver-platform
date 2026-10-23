@@ -57,16 +57,21 @@ public sealed class DbSeeder(
 
     private async Task SeedPricingAsync(CancellationToken cancellationToken)
     {
-        if (await db.VehicleRates.AnyAsync(cancellationToken))
+        // Starting tariffs (business plan §4) — working assumptions, editable in the admin panel.
+        // A tariff added later (Business) is also added to a database that already has the others.
+        VehicleRate[] tariffs =
+        [
+            new() { Category = VehicleCategory.Sedan, BaseFee = 10m, PricePerKm = 1.60m, MaxPassengers = 3, MaxLuggage = 3 },
+            new() { Category = VehicleCategory.Business, BaseFee = 11m, PricePerKm = 1.75m, MaxPassengers = 3, MaxLuggage = 2 },
+            new() { Category = VehicleCategory.Estate, BaseFee = 12m, PricePerKm = 1.90m, MaxPassengers = 4, MaxLuggage = 5 },
+            new() { Category = VehicleCategory.Van, BaseFee = 15m, PricePerKm = 2.20m, MaxPassengers = 8, MaxLuggage = 8 },
+        ];
+        var existing = await db.VehicleRates.Select(r => r.Category).ToListAsync(cancellationToken);
+        db.VehicleRates.AddRange(tariffs.Where(t => !existing.Contains(t.Category)));
+        if (existing.Count > 0)
         {
             return;
         }
-
-        // Starting tariffs (business plan §4) — working assumptions, editable in the admin panel.
-        db.VehicleRates.AddRange(
-            new VehicleRate { Category = VehicleCategory.Sedan, BaseFee = 10m, PricePerKm = 1.60m, MaxPassengers = 3, MaxLuggage = 3 },
-            new VehicleRate { Category = VehicleCategory.Estate, BaseFee = 12m, PricePerKm = 1.90m, MaxPassengers = 4, MaxLuggage = 5 },
-            new VehicleRate { Category = VehicleCategory.Van, BaseFee = 15m, PricePerKm = 2.20m, MaxPassengers = 8, MaxLuggage = 8 });
 
         db.SurchargeRules.AddRange(
             new SurchargeRule
@@ -409,6 +414,7 @@ public sealed class DbSeeder(
         };
         db.Vehicles.AddRange(
             Car("GA123BC", "Mercedes-Benz", "E-Class", VehicleCategory.Sedan, 3, 3, 1),
+            Car("GD246HL", "BMW", "4 Series", VehicleCategory.Business, 3, 2, 1),
             Car("GB456DE", "Mercedes-Benz", "E-Class Estate", VehicleCategory.Estate, 4, 5, 2),
             Car("GC789FG", "Mercedes-Benz", "V-Class", VehicleCategory.Van, 7, 8, 3));
         logger.LogInformation("Seeded the demo fleet");

@@ -46,7 +46,7 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
     {
         var settings = await db.LoadSettingsAsync(cancellationToken);
         var zones = await db.Zones.AsNoTracking().Where(z => z.IsActive).ToListAsync(cancellationToken);
-        // Enums are stored as text, so sort by enum value in memory (Sedan, Estate, Van).
+        // Enums are stored as text, so sort by enum value in memory (Standard, Business, VIP, Bus).
         var rates = (await db.VehicleRates.AsNoTracking().ToListAsync(cancellationToken)).OrderBy(r => r.Category).ToList();
         var surcharges = await db.SurchargeRules.AsNoTracking().Where(r => r.IsActive).ToListAsync(cancellationToken);
         var extraFees = await db.ExtraFees.AsNoTracking().ToDictionaryAsync(f => f.Type, f => f.Amount, cancellationToken);

@@ -1,7 +1,7 @@
 .tariffs {
   // Cards as in the reference: car, name, description, price per km. Centred, airy.
   &__grid {
-    @apply mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8;
+    @apply mx-auto grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4;
   }
 
   // The same minimum height for the cards and their placeholders, so nothing jumps when the

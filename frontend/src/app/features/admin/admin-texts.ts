@@ -11,9 +11,10 @@ export const ADMIN_TEXT = {
   required: $localize`Required`,
   validEmail: $localize`Enter a valid email`,
   categories: {
-    Sedan: $localize`Sedan`,
-    Estate: $localize`Estate / SUV`,
-    Van: $localize`Van`,
+    Sedan: $localize`Standard`,
+    Business: $localize`Business`,
+    Estate: $localize`VIP`,
+    Van: $localize`Bus`,
   } as Record<VehicleCategory, string>,
   bookingStatus: BOOKING_STATUS_LABEL as Record<BookingStatus, string>,
   roles: {

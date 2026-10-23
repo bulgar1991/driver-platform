@@ -24,14 +24,10 @@ const CATEGORIES: {
   seats: number
   luggage: number
 }[] = [
-  { value: 'Sedan', label: $localize`Sedan (1–3)`, seats: 3, luggage: 3 },
-  {
-    value: 'Estate',
-    label: $localize`Estate / SUV (1–4)`,
-    seats: 4,
-    luggage: 5,
-  },
-  { value: 'Van', label: $localize`Van (5–8)`, seats: 7, luggage: 8 },
+  { value: 'Sedan', label: $localize`Standard (1–3)`, seats: 3, luggage: 3 },
+  { value: 'Business', label: $localize`Business (1–3)`, seats: 3, luggage: 2 },
+  { value: 'Estate', label: $localize`VIP (1–4)`, seats: 4, luggage: 5 },
+  { value: 'Van', label: $localize`Bus (5–8)`, seats: 7, luggage: 8 },
 ]
 
 /** Business plan §7: category, seats, luggage, child seats, insurance, inspection, service and mileage. */

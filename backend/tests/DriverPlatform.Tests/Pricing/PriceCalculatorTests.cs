@@ -78,7 +78,7 @@ public sealed class PriceCalculatorTests
             System.Globalization.CultureInfo.CurrentCulture = new System.Globalization.CultureInfo("it-IT");
             var price = PriceCalculator.Calculate(new PriceInput(Sedan, 13.5m, [Rule("Night", 20.5m)], [], 0, 0, false, Extras));
 
-            Assert.Equal("Sedan · 13.5 km", price.Lines[0].Label);
+            Assert.Equal("Standard · 13.5 km", price.Lines[0].Label);
             Assert.Equal("Night +20.5%", price.Lines[1].Label);
         }
         finally
