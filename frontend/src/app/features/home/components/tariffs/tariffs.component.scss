@@ -1,7 +1,8 @@
 .tariffs {
   // Cards as in the reference: car, name, description, price per km. Centred, airy.
+  // Two per row from tablets up: Standard and Business, then VIP and Bus.
   &__grid {
-    @apply mx-auto grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4;
+    @apply mx-auto grid max-w-4xl grid-cols-1 gap-6 sm:grid-cols-2 lg:gap-8;
   }
 
   // The same minimum height for the cards and their placeholders, so nothing jumps when the
@@ -54,7 +55,7 @@
 
   // The car drives in a little on hover.
   &__car {
-    @apply mb-6 aspect-[320/150] w-full max-w-[17rem] bg-transparent;
+    @apply mb-6 aspect-[320/150] w-full max-w-[22rem] bg-transparent;
     transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
