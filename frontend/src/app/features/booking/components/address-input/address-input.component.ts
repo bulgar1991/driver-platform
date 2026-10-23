@@ -52,6 +52,8 @@ export class AddressInputComponent implements ControlValueAccessor {
   readonly inputId = input.required<string>()
   readonly placeholder = input($localize`Address, hotel, airport…`)
   readonly invalid = input(false)
+  /** The input's own classes: a boxed field by default, `input input--bare` inside the search bar. */
+  readonly inputClass = input('input')
 
   private readonly geo = inject(GeoService)
   private readonly cdr = inject(ChangeDetectorRef)

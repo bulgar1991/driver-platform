@@ -3,16 +3,18 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   ElementRef,
   inject,
-  input,
   LOCALE_ID,
   OnInit,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { FormBuilder } from '@angular/forms'
+import { ActivatedRoute } from '@angular/router'
 import { debounceTime, filter, merge } from 'rxjs'
 import {
   LatLng,
@@ -25,18 +27,21 @@ import {
 } from '@/core/models'
 import { SiteLocale, siteLocale } from '@/core/i18n/locales'
 import { GeoService } from '@/core/services/geo.service'
+import { IconComponent } from '@/shared/components/icon/icon.component'
 import { MapComponent } from '@/shared/components/map/map.component'
 import { DurationPipe } from '@/shared/pipes/duration.pipe'
 import { pickTranslation } from '@/shared/pipes/translated.pipe'
 import { DetailsStepComponent } from './components/details-step/details-step.component'
 import { MeetingPointPickerComponent } from './components/meeting-point-picker/meeting-point-picker.component'
 import { PriceSummaryComponent } from './components/price-summary/price-summary.component'
-import { TripStepComponent } from './components/trip-step/trip-step.component'
+import { SearchBarComponent } from './components/search-bar/search-bar.component'
 import { VehicleCardComponent } from './components/vehicle-card/vehicle-card.component'
 import {
   createBookingForms,
+  DEFAULT_MIN_LEAD_HOURS,
   toBookingRequest,
   toQuoteRequest,
+  tripFromParams,
 } from './booking-form'
 import { BookingStore } from './booking.store'
 import { CarLoaderComponent } from '@/shared/components/car-loader/car-loader.component'
@@ -45,8 +50,9 @@ import { CarLoaderComponent } from '@/shared/components/car-loader/car-loader.co
 const QUOTE_DEBOUNCE_MS = 500
 
 /**
- * The booking form, top to bottom: from / to, the map with the route, the approximate price of each
- * car, then options and contact once a car is chosen. Used on /book and on the home page.
+ * The booking page, laid out like the big travel sites: the search bar on top, the cars as a list
+ * of results next to the map with the route, then options and contact once a car is chosen.
+ * The home page's search bar opens it with the search in the link (tripToParams).
  */
 @Component({
   selector: 'app-booking',
@@ -54,26 +60,28 @@ const QUOTE_DEBOUNCE_MS = 500
     CarLoaderComponent,
     DetailsStepComponent,
     DurationPipe,
+    IconComponent,
     MapComponent,
     MeetingPointPickerComponent,
     PriceSummaryComponent,
-    TripStepComponent,
+    SearchBarComponent,
     VehicleCardComponent,
   ],
   providers: [BookingStore],
   templateUrl: './booking.component.html',
   styleUrl: './booking.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '[class.booking--embedded]': 'embedded()' },
 })
 export class BookingComponent implements OnInit {
-  /** On the home page the title is a section heading, not the page title. */
-  readonly embedded = input(false)
-
   protected readonly store = inject(BookingStore)
   private readonly destroyRef = inject(DestroyRef)
-  protected readonly forms = createBookingForms(inject(FormBuilder))
+  private readonly route = inject(ActivatedRoute)
+  protected readonly forms = createBookingForms(
+    inject(FormBuilder),
+    () => this.store.options()?.minLeadTimeHours ?? DEFAULT_MIN_LEAD_HOURS
+  )
   private readonly detailsRef = viewChild<ElementRef<HTMLElement>>('details')
+  private readonly resultsRef = viewChild<ElementRef<HTMLElement>>('results')
   private readonly geo = inject(GeoService)
   /** The site language: emails, messages and links for this booking use it. */
   private readonly language = siteLocale(inject(LOCALE_ID)).code
@@ -82,6 +90,24 @@ export class BookingComponent implements OnInit {
     { id: 'pickup', label: $localize`Set From` },
     { id: 'dropoff', label: $localize`Set To` },
   ] as const
+  protected readonly steps = [
+    { id: 'trip', label: $localize`Your trip` },
+    { id: 'car', label: $localize`Choose a car` },
+    { id: 'details', label: $localize`Your details` },
+    { id: 'payment', label: $localize`Payment` },
+  ] as const
+  /** Where the client is in `steps`. */
+  protected readonly currentStep = computed(() => {
+    const step = this.store.step()
+    return step === 'done'
+      ? 3
+      : step === 'details'
+        ? 2
+        : this.store.quote()
+          ? 1
+          : 0
+  })
+
   /** Which point a click on the map sets. */
   protected readonly mapTarget = signal<'pickup' | 'dropoff'>('pickup')
   protected readonly locating = signal(false)
@@ -137,6 +163,16 @@ export class BookingComponent implements OnInit {
     ...this.path(),
   ])
 
+  constructor() {
+    // The minimum notice comes with the booking options: check the time again once they are in.
+    effect(() => {
+      this.store.options()
+      untracked(() =>
+        this.forms.trip.updateValueAndValidity({ emitEvent: false })
+      )
+    })
+  }
+
   ngOnInit(): void {
     this.store.loadOptions()
 
@@ -177,6 +213,27 @@ export class BookingComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(() => this.requote())
+
+    // A search from the home page: fill the bar in; the price follows like after any change.
+    const fromLink = tripFromParams(this.route.snapshot.queryParams)
+    if (Object.keys(fromLink).length) {
+      this.forms.trip.patchValue(fromLink)
+    }
+  }
+
+  /** Search pressed: the price now, without waiting, and the results into view on phones. */
+  protected search(): void {
+    if (!this.ready() || this.store.step() === 'done') {
+      return
+    }
+    this.requote()
+    const results = this.resultsRef()?.nativeElement
+    if (
+      results &&
+      results.getBoundingClientRect().top > window.innerHeight * 0.6
+    ) {
+      results.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
   }
 
   /** A click on the map: the address there becomes From or To, then the price follows. */

@@ -4,7 +4,7 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing'
 import { DeferBlockBehavior, TestBed } from '@angular/core/testing'
-import { provideRouter } from '@angular/router'
+import { ActivatedRoute, provideRouter } from '@angular/router'
 import { Quote } from '@/core/models'
 import { BookingComponent } from './booking.component'
 
@@ -53,6 +53,7 @@ const quote = (): Quote => ({
 })
 
 describe('BookingComponent', () => {
+  // Injected only once a test has set its providers (one replaces the route).
   let http: HttpTestingController
 
   beforeEach(async () => {
@@ -68,15 +69,20 @@ describe('BookingComponent', () => {
     })
     await TestBed.compileComponents()
     vi.useFakeTimers()
-    http = TestBed.inject(HttpTestingController)
   })
+
+  const create = () => {
+    const fixture = TestBed.createComponent(BookingComponent)
+    http = TestBed.inject(HttpTestingController)
+    return fixture
+  }
 
   afterEach(() => {
     vi.useRealTimers()
   })
 
   it('shows the approximate price as soon as both addresses are picked, without a button', () => {
-    const fixture = TestBed.createComponent(BookingComponent)
+    const fixture = create()
     fixture.detectChanges()
     http.expectOne('/api/booking-options').flush({
       vehicles: [],
@@ -109,5 +115,34 @@ describe('BookingComponent', () => {
     ).toContain('€58.00')
     expect(fixture.nativeElement.textContent).toContain('30 km')
     http.verify()
+  })
+
+  it('fills the search in from a link from the home page and prices it', () => {
+    TestBed.overrideProvider(ActivatedRoute, {
+      useValue: {
+        snapshot: {
+          queryParams: {
+            from: 'Roma Termini',
+            fromLat: '41.9',
+            fromLng: '12.5',
+            to: 'Fiumicino',
+            toLat: '41.79',
+            toLng: '12.25',
+            date: '2026-12-01',
+            time: '09:30',
+            pax: '3',
+          },
+        },
+      },
+    })
+    const fixture = create()
+    fixture.detectChanges()
+    http.expectOne('/api/booking-options')
+    vi.advanceTimersByTime(500)
+
+    const request = http.expectOne({ method: 'POST', url: '/api/quotes' })
+      .request.body as { pickupAt: string; passengers: number }
+    expect(request.pickupAt).toBe('2026-12-01T09:30:00')
+    expect(request.passengers).toBe(3)
   })
 })

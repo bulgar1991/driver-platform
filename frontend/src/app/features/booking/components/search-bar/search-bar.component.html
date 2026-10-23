@@ -1,0 +1,234 @@
+<form class="search-bar" [formGroup]="form()" novalidate (ngSubmit)="submit()">
+  <div
+    class="search-bar__modes"
+    role="radiogroup"
+    i18n-aria-label
+    aria-label="Trip type">
+    <label
+      class="search-bar__mode"
+      [class.search-bar__mode--active]="!form().controls.returnTrip.value">
+      <input
+        class="search-bar__radio"
+        type="radio"
+        formControlName="returnTrip"
+        [value]="false" />
+      <app-icon class="search-bar__mode-icon" name="arrow-right" />
+      <ng-container i18n>One way</ng-container>
+    </label>
+    <label
+      class="search-bar__mode"
+      [class.search-bar__mode--active]="form().controls.returnTrip.value">
+      <input
+        class="search-bar__radio"
+        type="radio"
+        formControlName="returnTrip"
+        [value]="true" />
+      <app-icon class="search-bar__mode-icon" name="route" />
+      <ng-container i18n>Return</ng-container>
+      @if (returnDiscount(); as discount) {
+        <span class="search-bar__badge">−{{ discount }}%</span>
+      }
+    </label>
+  </div>
+
+  <div class="search-bar__frame">
+    <div
+      class="search-bar__cell search-bar__cell--from"
+      [class.search-bar__cell--invalid]="shows('pickup')">
+      <app-icon class="search-bar__icon" name="pin" />
+      <span class="search-bar__field">
+        <label class="search-bar__label" for="search-pickup" i18n>From</label>
+        <app-address-input
+          inputId="search-pickup"
+          inputClass="input input--bare"
+          i18n-placeholder
+          placeholder="Airport, station, hotel, address…"
+          formControlName="pickup"
+          [invalid]="shows('pickup')" />
+      </span>
+      <button
+        type="button"
+        class="search-bar__swap"
+        i18n-aria-label
+        aria-label="Swap from and to"
+        (click)="swap()">
+        <app-icon name="route" />
+      </button>
+    </div>
+
+    <div
+      class="search-bar__cell search-bar__cell--to"
+      [class.search-bar__cell--invalid]="shows('dropoff')">
+      <app-icon class="search-bar__icon" name="navigate" />
+      <span class="search-bar__field">
+        <label class="search-bar__label" for="search-dropoff" i18n>To</label>
+        <app-address-input
+          inputId="search-dropoff"
+          inputClass="input input--bare"
+          i18n-placeholder
+          placeholder="Where are you going?"
+          formControlName="dropoff"
+          [invalid]="shows('dropoff')" />
+      </span>
+    </div>
+
+    <div
+      class="search-bar__cell search-bar__cell--date"
+      [class.search-bar__cell--invalid]="whenError">
+      <app-icon
+        class="search-bar__icon search-bar__icon--compact"
+        name="calendar" />
+      <span class="search-bar__field">
+        <label class="search-bar__label" for="search-date" i18n>Date</label>
+        <input
+          id="search-date"
+          class="input input--bare"
+          type="date"
+          [min]="minDate"
+          formControlName="date" />
+      </span>
+    </div>
+
+    <div
+      class="search-bar__cell search-bar__cell--time"
+      [class.search-bar__cell--invalid]="whenError">
+      <app-icon
+        class="search-bar__icon search-bar__icon--compact"
+        name="clock" />
+      <span class="search-bar__field">
+        <label class="search-bar__label" for="search-time" i18n>Time</label>
+        <input
+          id="search-time"
+          class="input input--bare"
+          type="time"
+          formControlName="time" />
+      </span>
+    </div>
+
+    <div #people class="search-bar__cell search-bar__cell--people">
+      <button
+        type="button"
+        class="search-bar__people"
+        aria-controls="search-people"
+        [attr.aria-expanded]="peopleOpen()"
+        (click)="peopleOpen.set(!peopleOpen())">
+        <span class="search-bar__field">
+          <span class="search-bar__label" i18n>Travellers</span>
+          <!-- Icons and numbers, short in every language; the words for screen readers. -->
+          <span class="search-bar__value search-bar__counts" aria-hidden="true">
+            <span class="search-bar__count">
+              <app-icon class="search-bar__count-icon" name="users" />
+              {{ passengers }}
+            </span>
+            <span class="search-bar__count">
+              <app-icon class="search-bar__count-icon" name="luggage" />
+              {{ bags }}
+            </span>
+          </span>
+          <span class="sr-only">
+            <ng-container i18n>{passengers, plural,
+              =1 {1 passenger}
+              other {{{ passengers }} passengers}
+            }</ng-container>
+            ·
+            <ng-container i18n>{bags, plural,
+              =0 {no bags}
+              =1 {1 bag}
+              other {{{ bags }} bags}
+            }</ng-container>
+          </span>
+        </span>
+        <app-icon class="search-bar__chevron" name="plus" />
+      </button>
+      @if (peopleOpen()) {
+        <div
+          id="search-people"
+          class="search-bar__popover"
+          role="group"
+          i18n-aria-label
+          aria-label="Passengers and bags">
+          <app-counter
+            i18n-label
+            label="Passengers"
+            [min]="1"
+            [max]="8"
+            formControlName="passengers" />
+          <app-counter
+            i18n-label
+            label="Large bags"
+            i18n-hint
+            hint="Suitcases"
+            [max]="16"
+            formControlName="largeLuggage" />
+          <app-counter
+            i18n-label
+            label="Small bags"
+            i18n-hint
+            hint="Carry-on"
+            [max]="16"
+            formControlName="smallLuggage" />
+          <button
+            type="button"
+            class="search-bar__done"
+            (click)="peopleOpen.set(false)"
+            i18n
+            >Done</button
+          >
+        </div>
+      }
+    </div>
+
+    <button type="submit" class="search-bar__submit">
+      <app-icon name="arrow-right" class="search-bar__submit-icon" />
+      <ng-container i18n>Search</ng-container>
+    </button>
+
+    @if (form().controls.returnTrip.value) {
+      <div class="search-bar__cell search-bar__cell--return-note">
+        <app-icon class="search-bar__icon" name="route" />
+        <span class="search-bar__field">
+          <span class="search-bar__label" i18n>Return trip</span>
+          <span class="search-bar__value" i18n>Back the same way</span>
+        </span>
+      </div>
+      <div
+        class="search-bar__cell search-bar__cell--return-date"
+        [class.search-bar__cell--invalid]="returnError">
+        <app-icon class="search-bar__icon" name="calendar" />
+        <span class="search-bar__field">
+          <label class="search-bar__label" for="search-return-date" i18n
+            >Return date</label
+          >
+          <input
+            id="search-return-date"
+            class="input input--bare"
+            type="date"
+            [min]="form().controls.date.value || minDate"
+            formControlName="returnDate" />
+        </span>
+      </div>
+      <div
+        class="search-bar__cell search-bar__cell--return-time"
+        [class.search-bar__cell--invalid]="returnError">
+        <app-icon class="search-bar__icon" name="clock" />
+        <span class="search-bar__field">
+          <label class="search-bar__label" for="search-return-time" i18n
+            >Return time</label
+          >
+          <input
+            id="search-return-time"
+            class="input input--bare"
+            type="time"
+            formControlName="returnTime" />
+        </span>
+      </div>
+    }
+  </div>
+
+  @if (message; as text) {
+    <p class="search-bar__error" role="alert">
+      <app-icon class="search-bar__error-icon" name="info" />
+      {{ text }}
+    </p>
+  }
+</form>

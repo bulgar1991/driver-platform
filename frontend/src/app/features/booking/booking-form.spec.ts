@@ -1,9 +1,12 @@
 import { TestBed } from '@angular/core/testing'
 import { FormBuilder } from '@angular/forms'
+import { nowInItaly, todayInItaly } from '@/core/utils/italy-time'
 import {
   createBookingForms,
   toBookingRequest,
   toQuoteRequest,
+  tripFromParams,
+  tripToParams,
 } from './booking-form'
 
 const rome = { address: 'Roma Termini', latitude: 41.901, longitude: 12.5016 }
@@ -73,5 +76,60 @@ describe('booking form', () => {
     expect(request.contact.language).toBe('it')
     expect(request.expectedTotal).toBe(58)
     expect(request.nameSignText).toBeNull()
+  })
+
+  it('refuses a pickup sooner than the minimum notice, as the API would', () => {
+    const forms = createBookingForms(TestBed.inject(FormBuilder), () => 3)
+    const [date, time] = nowInItaly(60).split('T')
+    forms.trip.patchValue({ pickup: rome, dropoff: fiumicino, date, time })
+    expect(forms.trip.getError('tooSoon')).toEqual({ hours: 3 })
+
+    forms.trip.patchValue({ date: todayInItaly(2) })
+    expect(forms.trip.valid).toBe(true)
+  })
+
+  it('refuses a return before the outbound trip', () => {
+    const forms = create()
+    forms.trip.patchValue({
+      pickup: rome,
+      dropoff: fiumicino,
+      date: todayInItaly(5),
+      time: '10:00',
+      returnTrip: true,
+      returnDate: todayInItaly(5),
+      returnTime: '09:00',
+    })
+    expect(forms.trip.hasError('returnBeforeOutbound')).toBe(true)
+  })
+
+  it('carries the search in a link and reads it back, ignoring what is malformed', () => {
+    const forms = create()
+    forms.trip.patchValue({
+      pickup: rome,
+      dropoff: fiumicino,
+      date: '2026-11-03',
+      time: '07:15',
+      passengers: 3,
+      largeLuggage: 1,
+      returnTrip: true,
+      returnDate: '2026-11-10',
+      returnTime: '18:00',
+    })
+
+    expect(tripFromParams(tripToParams(forms.trip))).toEqual({
+      pickup: rome,
+      dropoff: fiumicino,
+      date: '2026-11-03',
+      time: '07:15',
+      passengers: 3,
+      largeLuggage: 1,
+      smallLuggage: 0,
+      returnTrip: true,
+      returnDate: '2026-11-10',
+      returnTime: '18:00',
+    })
+    expect(
+      tripFromParams({ from: 'Roma', fromLat: 'x', pax: '40', date: '3 nov' })
+    ).toEqual({})
   })
 })

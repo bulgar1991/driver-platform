@@ -8,7 +8,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop'
 import { RouterLink } from '@angular/router'
 import { catchError, of } from 'rxjs'
-import { ExtraType, VehicleCategory } from '@/core/models'
+import { ExtraType } from '@/core/models'
 import { BookingApiService } from '@/core/services/booking-api.service'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
@@ -16,15 +16,10 @@ import { ImageComponent } from '@/shared/components/image/image.component'
 import { SectionHeadingComponent } from '@/shared/components/section-heading/section-heading.component'
 import { RevealDirective } from '@/shared/directives/reveal.directive'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
+import { VEHICLE_INFO } from '@/features/booking/vehicle-info'
 import { VEHICLE_TEXT } from '../../home.content'
 
 /** Illustrations in src/assets/images/cars (replace with photos of the real cars when there are some). */
-const CAR_IMAGE: Partial<Record<VehicleCategory, string>> = {
-  Sedan: '/assets/images/cars/sedan.svg',
-  Estate: '/assets/images/cars/suv.svg',
-  Van: '/assets/images/cars/van.svg',
-}
-
 const EXTRA_LABEL: Record<ExtraType, string> = {
   ChildSeat: $localize`Child seat`,
   NameSign: $localize`Name sign in arrivals`,
@@ -64,7 +59,7 @@ export class TariffsComponent {
     (this.options()?.vehicles ?? []).map(v => ({
       ...v,
       text: VEHICLE_TEXT[v.category],
-      image: CAR_IMAGE[v.category] ?? CAR_IMAGE.Sedan!,
+      image: (VEHICLE_INFO[v.category] ?? VEHICLE_INFO.Sedan).image,
       featured: v.category === 'Estate',
     }))
   )

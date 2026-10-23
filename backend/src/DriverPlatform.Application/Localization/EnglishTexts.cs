@@ -37,6 +37,7 @@ internal sealed partial class EnglishTexts : Texts
     public override string ChildSeatGroupOnce => "List each child seat group once.";
     public override string OutsideServiceArea => "We operate in Italy, France, Germany and Switzerland.";
     public override string TooClose => "Pickup and drop-off are too close to each other.";
+    public override string PickupTimeRequired => "Enter the pickup date and time.";
     public override string TimeDoesNotExist => "This time does not exist locally (clocks go forward). Pick another time.";
     public override string BookAhead(int hours) => $"Book at least {hours} hours ahead.";
     public override string OneYearAhead => "Bookings open up to one year ahead.";

@@ -2,29 +2,29 @@
   @apply block;
 }
 
-// A column card in the price grid; lifts on hover, glows when chosen.
+// A result row: the car, what it offers, then the price and Select — as on the big travel sites.
 .vehicle-card {
-  @apply flex h-full w-full flex-col items-start gap-3 rounded-md border border-ink-500 bg-ink-800 p-5 text-left disabled:cursor-not-allowed disabled:opacity-50;
-  transition:
-    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 0.35s,
-    box-shadow 0.35s;
+  @apply grid grid-cols-[7.5rem_minmax(0,1fr)] gap-x-4 gap-y-3 rounded-lg border border-ink-500 bg-ink-800 p-4 transition duration-300 sm:grid-cols-[11rem_minmax(0,1fr)] md:grid-cols-[13rem_minmax(0,1fr)_auto] md:items-center md:p-5;
 
-  &:not(:disabled):hover {
+  &:hover {
     @apply border-gold/60;
-    transform: translate3d(0, -4px, 0);
   }
 
   &--selected {
-    @apply border-gold bg-gold/10 shadow-gold;
+    @apply border-gold bg-gold/[0.07] shadow-gold;
   }
 
-  &__icon {
-    @apply h-9 w-9 text-gold;
+  &--unavailable {
+    @apply opacity-60 hover:border-ink-500;
+  }
+
+  // Same shape as the drawings (320 × 150), so the row never moves while one loads.
+  &__image {
+    @apply aspect-[320/150] w-full self-center bg-transparent;
   }
 
   &__body {
-    @apply flex min-w-0 flex-1 flex-col gap-1;
+    @apply flex min-w-0 flex-col gap-1.5;
   }
 
   &__title {
@@ -35,23 +35,56 @@
     @apply text-xs text-ivory-400;
   }
 
-  &__capacity {
-    @apply mt-1 flex gap-4;
+  &__specs {
+    @apply mt-1 flex flex-wrap gap-x-4 gap-y-1;
   }
 
   &__spec {
-    @apply flex items-center gap-1 text-xs text-ivory-200;
+    @apply flex items-center gap-1.5 text-xs text-ivory-200;
   }
 
   &__spec-icon {
-    @apply h-4 w-4;
+    @apply h-4 w-4 text-gold;
+  }
+
+  &__perks {
+    @apply mt-1 hidden flex-col gap-1 sm:flex;
+  }
+
+  &__perk {
+    @apply flex items-center gap-1.5 text-xs text-success;
+  }
+
+  &__perk-icon {
+    @apply h-3.5 w-3.5;
+  }
+
+  // Under the car and its details on phones; a column of its own from tablets up.
+  &__offer {
+    @apply col-span-2 flex items-center justify-between gap-x-4 gap-y-1 border-t border-ink-600 pt-3 md:col-span-1 md:min-w-[10.5rem] md:flex-col md:items-end md:justify-center md:self-stretch md:border-l md:border-t-0 md:pl-5 md:pt-0;
+  }
+
+  &__price-label {
+    @apply hidden text-xs text-ivory-400 md:block;
   }
 
   &__price {
-    @apply mt-auto w-full border-t border-ink-600 pt-3 font-display text-2xl text-gold;
+    @apply font-display text-2xl text-gold md:text-3xl;
+  }
+
+  &__select {
+    @apply flex items-center justify-center gap-1.5 rounded-md bg-gold px-6 py-2.5 text-sm font-semibold text-ink transition duration-300 hover:bg-gold-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-100 md:mt-2 md:w-full;
+  }
+
+  &--selected &__select {
+    @apply bg-transparent text-gold ring-1 ring-inset ring-gold hover:bg-gold/10;
+  }
+
+  &__select-icon {
+    @apply h-4 w-4;
   }
 
   &__reason {
-    @apply block font-sans text-xs font-normal text-ivory-400;
+    @apply text-xs text-ivory-300 md:max-w-[10rem] md:text-right;
   }
 }

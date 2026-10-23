@@ -1,32 +1,71 @@
-<button
-  type="button"
+<article
   class="vehicle-card"
   [class.vehicle-card--selected]="selected()"
-  [disabled]="!vehicle().available"
-  [attr.aria-pressed]="selected()"
-  (click)="chosen.emit()">
-  <app-icon class="vehicle-card__icon" name="car" />
-  <span class="vehicle-card__body">
-    <span class="vehicle-card__title">{{ info().title }}</span>
-    <span class="vehicle-card__description">{{ info().description }}</span>
-    <span class="vehicle-card__capacity">
-      <span class="vehicle-card__spec">
+  [class.vehicle-card--unavailable]="!vehicle().available">
+  <app-image
+    class="vehicle-card__image"
+    [image]="info().image"
+    alt=""
+    sizes="(min-width: 768px) 13rem, 40vw" />
+
+  <div class="vehicle-card__body">
+    <h4 class="vehicle-card__title">{{ info().title }}</h4>
+    <p class="vehicle-card__description">{{ info().description }}</p>
+    <ul class="vehicle-card__specs">
+      <li class="vehicle-card__spec">
         <app-icon class="vehicle-card__spec-icon" name="users" />
-        {{ vehicle().maxPassengers }}
-      </span>
-      <span class="vehicle-card__spec">
+        <ng-container i18n
+          >Up to
+          {{
+            vehicle().maxPassengers // i18n(ph="count")
+          }}
+          passengers</ng-container
+        >
+      </li>
+      <li class="vehicle-card__spec">
         <app-icon class="vehicle-card__spec-icon" name="luggage" />
-        {{ vehicle().maxLuggage }}
-      </span>
-    </span>
-  </span>
-  <span class="vehicle-card__price">
+        <ng-container i18n
+          >{{
+            vehicle().maxLuggage // i18n(ph="count")
+          }}
+          large bags</ng-container
+        >
+      </li>
+    </ul>
+    <ul class="vehicle-card__perks">
+      <li class="vehicle-card__perk">
+        <app-icon class="vehicle-card__perk-icon" name="check" />
+        <ng-container i18n>Fixed price, VAT included</ng-container>
+      </li>
+      <li class="vehicle-card__perk">
+        <app-icon class="vehicle-card__perk-icon" name="check" />
+        <ng-container i18n>Private car with your own driver</ng-container>
+      </li>
+    </ul>
+  </div>
+
+  <div class="vehicle-card__offer">
     @if (vehicle().available) {
-      {{ vehicle().total | money: currency() }}
+      <span class="vehicle-card__price-label" i18n>Total price</span>
+      <span class="vehicle-card__price">{{
+        vehicle().total | money: currency()
+      }}</span>
+      <button
+        type="button"
+        class="vehicle-card__select"
+        [attr.aria-pressed]="selected()"
+        (click)="chosen.emit()">
+        @if (selected()) {
+          <app-icon class="vehicle-card__select-icon" name="check" />
+          <ng-container i18n>Selected</ng-container>
+        } @else {
+          <ng-container i18n>Select</ng-container>
+        }
+      </button>
     } @else {
       <span class="vehicle-card__reason">{{
         vehicle().unavailableReason
       }}</span>
     }
-  </span>
-</button>
+  </div>
+</article>

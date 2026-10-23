@@ -75,6 +75,7 @@ public abstract partial class Texts
     public abstract string ChildSeatGroupOnce { get; }
     public abstract string OutsideServiceArea { get; }
     public abstract string TooClose { get; }
+    public abstract string PickupTimeRequired { get; }
     public abstract string TimeDoesNotExist { get; }
     public abstract string BookAhead(int hours);
     public abstract string OneYearAhead { get; }

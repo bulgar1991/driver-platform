@@ -1,0 +1,162 @@
+:host {
+  @apply block;
+}
+
+// Block: search-bar — the whole search in one gold-framed bar (one way / return above it).
+// Phones: stacked, date and time side by side. Tablets: two rows. Desktops: one row.
+.search-bar {
+  @apply flex flex-col text-left;
+
+  &__modes {
+    @apply mb-3 flex flex-wrap gap-2;
+  }
+
+  &__mode {
+    @apply flex cursor-pointer items-center gap-2 rounded-full border border-ivory/25 bg-ink/60 px-4 py-2 text-sm font-medium text-ivory backdrop-blur transition duration-300 hover:border-gold/60;
+
+    &:has(:focus-visible) {
+      @apply ring-2 ring-gold;
+    }
+
+    &--active {
+      @apply border-gold bg-gold/15 text-gold-100;
+    }
+  }
+
+  &__radio {
+    @apply sr-only;
+  }
+
+  &__mode-icon {
+    @apply h-4 w-4 text-gold;
+  }
+
+  &__badge {
+    @apply rounded-sm bg-gold px-1.5 py-0.5 text-[0.7rem] font-bold text-ink;
+  }
+
+  &__frame {
+    @apply grid grid-cols-2 gap-1 rounded-xl bg-gold-gradient p-1 md:grid-cols-4 lg:grid-cols-[repeat(2,minmax(0,1.1fr))_minmax(9.5rem,0.85fr)_minmax(8.5rem,0.65fr)_minmax(9rem,0.7fr)_auto];
+    box-shadow: 0 18px 50px rgb(0 0 0 / 0.55);
+  }
+
+  &__cell {
+    @apply relative col-span-2 flex min-h-16 min-w-0 items-center gap-3 rounded-lg bg-ink-900 px-4 py-2 lg:gap-2.5 lg:px-3.5 transition-colors duration-200 focus-within:bg-ink-800;
+
+    &--date,
+    &--time,
+    &--return-date,
+    &--return-time {
+      @apply col-span-1;
+    }
+
+    &--people {
+      @apply md:col-span-1;
+    }
+
+    &--return-note {
+      @apply bg-ink-900/90;
+    }
+
+    &--return-time {
+      @apply lg:col-span-3;
+    }
+
+    &--invalid {
+      box-shadow: inset 0 0 0 2px theme('colors.danger');
+    }
+  }
+
+  &__cell--from,
+  &__cell--to {
+    @apply lg:col-span-1;
+  }
+
+  // Room for the swap button on the line between From and To.
+  &__cell--to {
+    @apply md:pl-7;
+  }
+
+  &__icon {
+    @apply h-5 w-5 shrink-0 text-gold;
+
+    // On narrow laptops the date and the time need that room for themselves.
+    &--compact {
+      @apply lg:max-xl:hidden;
+    }
+  }
+
+  &__field {
+    @apply flex min-w-0 flex-1 flex-col gap-0.5;
+
+    // The native date and time pickers' buttons, in gold.
+    ::-webkit-calendar-picker-indicator {
+      @apply cursor-pointer opacity-80;
+      filter: invert(72%) sepia(32%) saturate(560%) hue-rotate(2deg);
+    }
+  }
+
+  &__label {
+    @apply truncate text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-gold-300;
+  }
+
+  &__value {
+    @apply truncate text-[0.95rem] font-medium text-ivory;
+  }
+
+  // Between From and To: under From on phones, on the line between them from tablets up.
+  &__swap {
+    @apply absolute -bottom-[1.15rem] right-5 z-10 flex h-9 w-9 rotate-90 items-center justify-center rounded-full border-2 border-gold-300 bg-ink text-gold transition duration-500 hover:border-gold-100 hover:text-gold-100 md:-right-[1.4rem] md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:rotate-0;
+  }
+
+  &__counts {
+    @apply flex items-center gap-4;
+  }
+
+  &__count {
+    @apply flex items-center gap-1.5 tabular-nums;
+  }
+
+  &__count-icon {
+    @apply h-4 w-4 text-gold;
+  }
+
+  &__chevron {
+    @apply h-4 w-4 shrink-0 text-ivory-400 transition-transform duration-300;
+  }
+
+  &__people[aria-expanded='true'] &__chevron {
+    @apply rotate-45 text-gold;
+  }
+
+  &__people {
+    @apply flex w-full min-w-0 items-center gap-3 self-stretch text-left focus:outline-none;
+  }
+
+  &__popover {
+    @apply absolute right-0 top-[calc(100%+0.5rem)] z-30 flex w-[min(22rem,calc(100vw-2rem))] flex-col gap-3 rounded-lg border border-ink-500 bg-ink-800 p-4;
+    box-shadow: 0 24px 60px rgb(0 0 0 / 0.6);
+    animation: fade-up 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  &__done {
+    @apply self-end rounded-sm bg-gold px-5 py-2 text-sm font-semibold text-ink transition hover:bg-gold-300;
+  }
+
+  &__submit {
+    @apply col-span-2 flex min-h-16 items-center justify-center gap-2 rounded-lg bg-ink px-8 text-sm font-bold uppercase tracking-[0.2em] text-gold transition duration-300 hover:bg-ink-950 hover:text-gold-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold-100 md:col-span-1 lg:px-6 lg:tracking-[0.16em];
+  }
+
+  &__submit-icon {
+    @apply h-4 w-4;
+  }
+
+  &__error {
+    @apply mt-3 flex items-center gap-2 rounded-md border border-danger/50 bg-ink-900/90 px-4 py-2.5 text-sm text-ivory;
+    animation: fade-up 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  &__error-icon {
+    @apply h-4 w-4 shrink-0 text-danger;
+  }
+}

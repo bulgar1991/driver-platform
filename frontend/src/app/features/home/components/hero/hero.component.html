@@ -1,14 +1,17 @@
 <section class="hero" aria-labelledby="hero-title">
-  <div class="hero__backdrop">
-    <app-image
-      [image]="images.hero"
-      i18n-alt
-      alt="Black chauffeur-driven car on an Italian road"
-      fit="cover"
-      [priority]="true" />
+  <!-- Clipped on its own, so the search bar's lists can open past the banner's edge. -->
+  <div class="hero__bg" aria-hidden="true">
+    <div class="hero__backdrop">
+      <app-image
+        [image]="images.hero"
+        i18n-alt
+        alt="Black chauffeur-driven car on an Italian road"
+        fit="cover"
+        [priority]="true" />
+    </div>
+    <div class="hero__glow hero__glow--one"></div>
+    <div class="hero__glow hero__glow--two"></div>
   </div>
-  <div class="hero__glow hero__glow--one" aria-hidden="true"></div>
-  <div class="hero__glow hero__glow--two" aria-hidden="true"></div>
 
   <div class="hero__content">
     <p class="hero__eyebrow" i18n
@@ -22,15 +25,15 @@
       Chauffeured transfers from airports, stations and ports to your door, at a
       fixed price, with a driver who meets you.
     </p>
-    <div class="hero__actions">
-      <a appButton class="hero__cta" routerLink="/book">
-        <ng-container i18n>Book your ride</ng-container>
-        <app-icon name="arrow-right" />
-      </a>
-      <a appButton variant="outline" routerLink="/tariffs" i18n
-        >See our tariffs</a
-      >
-    </div>
+    <app-search-bar
+      class="hero__search"
+      [form]="trip"
+      [returnDiscount]="returnDiscount()"
+      (searched)="search()" />
+    <a class="hero__more" routerLink="/tariffs">
+      <ng-container i18n>See our tariffs</ng-container>
+      <app-icon name="arrow-right" />
+    </a>
   </div>
 
   <ul class="hero__trust">

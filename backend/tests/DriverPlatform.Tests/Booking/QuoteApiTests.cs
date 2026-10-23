@@ -109,6 +109,15 @@ public sealed class QuoteApiTests(ApiFactory factory) : IClassFixture<ApiFactory
     }
 
     [Fact]
+    public async Task A_quote_without_a_date_is_refused_with_a_reason_not_a_crash()
+    {
+        var response = await factory.CreateClient().PostAsJsonAsync("/api/quotes", TestData.Trip() with { PickupAt = default }, TestData.Json);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Contains("Enter the pickup date and time.", await response.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
     public async Task Trips_into_france_switzerland_and_germany_are_quoted()
     {
         foreach (var (name, lat, lng) in new[] { ("Paris", 48.8566, 2.3522), ("Zurich", 47.3769, 8.5417), ("Munich", 48.1351, 11.5820) })

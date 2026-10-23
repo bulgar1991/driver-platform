@@ -161,9 +161,15 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
             valid = false;
         }
 
-        var utc = ItalyTime.ToUtc(pickupLocal);
+        // No date sent: DateTime's default, which is not a time to convert.
+        var utc = pickupLocal == default ? null : ItalyTime.ToUtc(pickupLocal);
         var now = clock.GetUtcNow();
-        if (utc is null)
+        if (pickupLocal == default)
+        {
+            errors.Add(prefix + "pickupAt", texts.PickupTimeRequired);
+            valid = false;
+        }
+        else if (utc is null)
         {
             errors.Add(prefix + "pickupAt", texts.TimeDoesNotExist);
             valid = false;

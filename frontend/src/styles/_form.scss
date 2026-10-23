@@ -13,6 +13,26 @@
   &--invalid {
     @apply border-danger;
   }
+
+  // Inside a box that is the field itself (the search bar): no frame of its own.
+  &--bare {
+    @apply rounded-none border-0 bg-transparent p-0 text-[0.95rem] font-medium;
+
+    &,
+    &:hover,
+    &:focus {
+      @apply border-0 shadow-none outline-none ring-0;
+    }
+  }
+}
+
+// PrimeNG styles its own inputs (the address search): the bare look has to win over its states.
+.p-inputtext.input--bare {
+  &,
+  &:enabled:hover,
+  &:enabled:focus {
+    @apply rounded-none border-0 bg-transparent p-0 shadow-none outline-none;
+  }
 }
 
 // Block: alert — inline message.

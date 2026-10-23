@@ -1,8 +1,9 @@
 <p-autocomplete
   class="address-input"
   styleClass="address-input__control"
-  [inputStyleClass]="invalid() ? 'input input--invalid' : 'input'"
+  [inputStyleClass]="inputClass() + (invalid() ? ' input--invalid' : '')"
   panelStyleClass="address-input__panel"
+  appendTo="body"
   [inputId]="inputId()"
   [placeholder]="placeholder()"
   [suggestions]="suggestions()"

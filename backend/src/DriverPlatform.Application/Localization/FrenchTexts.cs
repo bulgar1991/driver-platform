@@ -37,6 +37,7 @@ internal sealed partial class FrenchTexts : Texts
     public override string ChildSeatGroupOnce => "Indiquez chaque groupe de siège enfant une seule fois.";
     public override string OutsideServiceArea => "Nous opérons en Italie, en France, en Allemagne et en Suisse.";
     public override string TooClose => "Le départ et l'arrivée sont trop proches.";
+    public override string PickupTimeRequired => "Indiquez la date et l'heure de prise en charge.";
     public override string TimeDoesNotExist => "Cette heure n'existe pas (passage à l'heure d'été). Choisissez une autre heure.";
     public override string BookAhead(int hours) => $"Réservez au moins {hours} heures à l'avance.";
     public override string OneYearAhead => "Les réservations sont ouvertes jusqu'à un an à l'avance.";

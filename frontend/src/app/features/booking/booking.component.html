@@ -1,4 +1,39 @@
 <section class="booking" aria-labelledby="booking-title">
+  <div class="booking__band">
+    <div class="booking__band-inner page">
+      <ol class="booking__steps" i18n-aria-label aria-label="Booking steps">
+        @for (step of steps; track step.id; let i = $index) {
+          <li
+            class="booking__step"
+            [class.booking__step--active]="i === currentStep()"
+            [class.booking__step--done]="i < currentStep()"
+            [attr.aria-current]="i === currentStep() ? 'step' : null">
+            <span class="booking__step-number">
+              @if (i < currentStep()) {
+                <app-icon name="check" />
+              } @else {
+                {{ i + 1 }}
+              }
+            </span>
+            <span class="booking__step-label">{{ step.label }}</span>
+          </li>
+        }
+      </ol>
+      <h1
+        id="booking-title"
+        class="booking__title heading heading--lg"
+        i18n="@@booking.title"
+        >Book your <span class="heading__accent">transfer</span></h1
+      >
+      @if (store.step() !== 'done') {
+        <app-search-bar
+          [form]="forms.trip"
+          [returnDiscount]="store.options()?.returnDiscountPercent ?? null"
+          (searched)="search()" />
+      }
+    </div>
+  </div>
+
   <div class="booking__inner page">
     @if (store.step() === 'done' && store.result(); as result) {
       <div class="booking__done" role="status">
@@ -13,188 +48,178 @@
         <p class="booking__note" i18n>Card or PayPal, processed by Stripe.</p>
       </div>
     } @else {
-      <header class="booking__header">
-        <p class="eyebrow" i18n
-          >Fixed price · Italy · France · Switzerland · Germany</p
-        >
-        @if (embedded()) {
-          <h2
-            id="booking-title"
-            class="heading heading--lg"
-            i18n="@@booking.title"
-            >Book your <span class="heading__accent">transfer</span></h2
-          >
-        } @else {
-          <h1
-            id="booking-title"
-            class="heading heading--lg"
-            i18n="@@booking.title"
-            >Book your <span class="heading__accent">transfer</span></h1
-          >
-        }
-      </header>
-
-      <div class="booking__card">
-        <app-trip-step [form]="forms.trip" [options]="store.options()" />
-      </div>
-
-      <!-- Leaflet needs a browser: loaded only there, once the page has settled (not mid-scroll). -->
-      <div class="booking__map-wrap">
-        @defer (on idle) {
-          <app-map
-            class="booking__map"
-            [locked]="true"
-            [clickable]="true"
-            [zoomButtons]="true"
-            [singlePointZoom]="12"
-            [markers]="markers()"
-            [path]="path()"
-            [zones]="zones()"
-            [fitPoints]="fitPoints()"
-            (mapClick)="placeOnMap($event)" />
-        } @placeholder {
-          <div
-            class="booking__map booking__map--placeholder"
-            aria-hidden="true"></div>
-        }
-
-        <!-- Choose which point a click on the map sets. -->
-        <div
-          class="booking__map-tools"
-          role="group"
-          i18n-aria-label
-          aria-label="Set a point on the map">
-          @for (t of mapTargets; track t.id) {
-            <button
-              type="button"
-              class="booking__map-target"
-              [class.booking__map-target--active]="mapTarget() === t.id"
-              [class.booking__map-target--dropoff]="t.id === 'dropoff'"
-              [attr.aria-pressed]="mapTarget() === t.id"
-              (click)="mapTarget.set(t.id)">
-              <span class="booking__map-dot" aria-hidden="true"></span>
-              {{ t.label }}
-            </button>
-          }
-        </div>
-        <p class="booking__map-hint" aria-live="polite">
-          @if (locating()) {
-            <app-car-loader size="sm" aria-hidden="true" />
-            <ng-container i18n>Finding the address…</ng-container>
-          } @else if (mapError(); as message) {
-            {{ message }}
-          } @else {
-            @if (mapTarget() === 'pickup') {
-              <ng-container i18n
-                >Tap the map to set <strong>From</strong></ng-container
-              >
-            } @else {
-              <ng-container i18n
-                >Tap the map to set <strong>To</strong></ng-container
-              >
+      <div class="booking__layout">
+        <div #results class="booking__results">
+          @if (store.quote(); as quote) {
+            @if (quote.outbound.pickupZone?.meetingPoints?.length) {
+              <app-meeting-point-picker
+                direction="pickup"
+                [zone]="quote.outbound.pickupZone!"
+                [selected]="quote.outbound.pickupMeetingPoint"
+                [disabled]="store.loading()"
+                (changed)="chooseMeetingPoint('pickup', $event)" />
+            }
+            @if (quote.outbound.dropoffMeetingPoint) {
+              <app-meeting-point-picker
+                direction="dropoff"
+                [zone]="quote.outbound.dropoffZone!"
+                [selected]="quote.outbound.dropoffMeetingPoint"
+                [disabled]="store.loading()"
+                (changed)="chooseMeetingPoint('dropoff', $event)" />
             }
           }
-        </p>
-      </div>
 
-      @if (store.quote(); as quote) {
-        @if (quote.outbound.pickupZone?.meetingPoints?.length) {
-          <app-meeting-point-picker
-            direction="pickup"
-            [zone]="quote.outbound.pickupZone!"
-            [selected]="quote.outbound.pickupMeetingPoint"
-            [disabled]="store.loading()"
-            (changed)="chooseMeetingPoint('pickup', $event)" />
-        }
-        @if (quote.outbound.dropoffMeetingPoint) {
-          <app-meeting-point-picker
-            direction="dropoff"
-            [zone]="quote.outbound.dropoffZone!"
-            [selected]="quote.outbound.dropoffMeetingPoint"
-            [disabled]="store.loading()"
-            (changed)="chooseMeetingPoint('dropoff', $event)" />
-        }
-      }
-
-      <div class="booking__prices" aria-live="polite">
-        <div class="booking__prices-header">
-          <h3 class="booking__prices-title" i18n>Approximate price</h3>
-          @if (store.loading()) {
-            <span class="booking__status"
-              ><app-car-loader size="sm" aria-hidden="true" />
-              <ng-container i18n>Calculating…</ng-container></span
-            >
-          } @else if (store.quote(); as quote) {
-            <span class="booking__status">
-              <ng-container i18n
-                >{{
-                  quote.outbound.distanceKm // i18n(ph="km")
-                }}
-                km · about
-                {{
-                  quote.outbound.durationMinutes | duration // i18n(ph="duration")
-                }}</ng-container
-              >
-              @if (quote.outbound.surcharges.length === 1) {
-                ·
-                <ng-container i18n
-                  >incl.
-                  {{
-                    quote.outbound.surcharges[0].name // i18n(ph="surcharge")
-                  }}</ng-container
+          <div class="booking__prices" aria-live="polite">
+            <div class="booking__prices-header">
+              <h3 class="booking__prices-title" i18n>Approximate price</h3>
+              @if (store.loading()) {
+                <span class="booking__status"
+                  ><app-car-loader size="sm" aria-hidden="true" />
+                  <ng-container i18n>Calculating…</ng-container></span
                 >
-              } @else if (quote.outbound.surcharges.length > 1) {
-                ·
-                <ng-container i18n
-                  >incl.
-                  {{
-                    quote.outbound.surcharges.length // i18n(ph="count")
-                  }}
-                  surcharges</ng-container
-                >
+              } @else if (store.quote(); as quote) {
+                <span class="booking__status">
+                  <ng-container i18n
+                    >{{
+                      quote.outbound.distanceKm // i18n(ph="km")
+                    }}
+                    km · about
+                    {{
+                      quote.outbound.durationMinutes | duration // i18n(ph="duration")
+                    }}</ng-container
+                  >
+                  @if (quote.outbound.surcharges.length === 1) {
+                    ·
+                    <ng-container i18n
+                      >incl.
+                      {{
+                        quote.outbound.surcharges[0].name // i18n(ph="surcharge")
+                      }}</ng-container
+                    >
+                  } @else if (quote.outbound.surcharges.length > 1) {
+                    ·
+                    <ng-container i18n
+                      >incl.
+                      {{
+                        quote.outbound.surcharges.length // i18n(ph="count")
+                      }}
+                      surcharges</ng-container
+                    >
+                  }
+                </span>
               }
-            </span>
-          }
+            </div>
+
+            @if (store.error(); as error) {
+              <p
+                class="alert"
+                [class.alert--info]="store.priceChanged()"
+                [class.alert--error]="!store.priceChanged()"
+                role="alert"
+                >{{ error }}</p
+              >
+            }
+
+            @if (store.quote(); as quote) {
+              <div
+                class="booking__vehicles"
+                [class.booking__vehicles--busy]="store.loading()">
+                @for (vehicle of quote.vehicles; track vehicle.category) {
+                  <app-vehicle-card
+                    [vehicle]="vehicle"
+                    [currency]="quote.currency"
+                    [selected]="vehicle.category === store.category()"
+                    (chosen)="chooseVehicle(vehicle.category)" />
+                }
+              </div>
+              <p class="booking__note" i18n>
+                For the date, time and passengers above, VAT included. Choose a
+                car to continue; the price is fixed once you book.
+              </p>
+            } @else if (store.loading()) {
+              <div class="booking__vehicles">
+                @for (i of [1, 2, 3]; track i) {
+                  <!-- Same shape as a result row, so nothing moves when the prices arrive. -->
+                  <div class="booking__skeleton" aria-hidden="true">
+                    <span class="booking__skeleton-image"></span>
+                    <span class="booking__skeleton-lines">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </span>
+                    <span class="booking__skeleton-offer"></span>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="booking__hint" i18n>
+                Enter where you start and where you are going, or tap the map:
+                the route and the price appear here.
+              </p>
+            }
+          </div>
         </div>
 
-        @if (store.error(); as error) {
-          <p
-            class="alert"
-            [class.alert--info]="store.priceChanged()"
-            [class.alert--error]="!store.priceChanged()"
-            role="alert"
-            >{{ error }}</p
-          >
-        }
+        <aside class="booking__side">
+          <!-- Leaflet needs a browser: loaded only there, once the page has settled (not mid-scroll). -->
+          <div class="booking__map-wrap">
+            @defer (on idle) {
+              <app-map
+                class="booking__map"
+                [locked]="true"
+                [clickable]="true"
+                [zoomButtons]="true"
+                [singlePointZoom]="12"
+                [markers]="markers()"
+                [path]="path()"
+                [zones]="zones()"
+                [fitPoints]="fitPoints()"
+                (mapClick)="placeOnMap($event)" />
+            } @placeholder {
+              <div
+                class="booking__map booking__map--placeholder"
+                aria-hidden="true"></div>
+            }
 
-        @if (store.quote(); as quote) {
-          <div
-            class="booking__vehicles"
-            [class.booking__vehicles--busy]="store.loading()">
-            @for (vehicle of quote.vehicles; track vehicle.category) {
-              <app-vehicle-card
-                [vehicle]="vehicle"
-                [currency]="quote.currency"
-                [selected]="vehicle.category === store.category()"
-                (chosen)="chooseVehicle(vehicle.category)" />
-            }
+            <!-- Choose which point a click on the map sets. -->
+            <div
+              class="booking__map-tools"
+              role="group"
+              i18n-aria-label
+              aria-label="Set a point on the map">
+              @for (t of mapTargets; track t.id) {
+                <button
+                  type="button"
+                  class="booking__map-target"
+                  [class.booking__map-target--active]="mapTarget() === t.id"
+                  [class.booking__map-target--dropoff]="t.id === 'dropoff'"
+                  [attr.aria-pressed]="mapTarget() === t.id"
+                  (click)="mapTarget.set(t.id)">
+                  <span class="booking__map-dot" aria-hidden="true"></span>
+                  {{ t.label }}
+                </button>
+              }
+            </div>
+            <p class="booking__map-hint" aria-live="polite">
+              @if (locating()) {
+                <app-car-loader size="sm" aria-hidden="true" />
+                <ng-container i18n>Finding the address…</ng-container>
+              } @else if (mapError(); as message) {
+                {{ message }}
+              } @else {
+                @if (mapTarget() === 'pickup') {
+                  <ng-container i18n
+                    >Tap the map to set <strong>From</strong></ng-container
+                  >
+                } @else {
+                  <ng-container i18n
+                    >Tap the map to set <strong>To</strong></ng-container
+                  >
+                }
+              }
+            </p>
           </div>
-          <p class="booking__note" i18n>
-            For the date, time and passengers above, VAT included. Choose a car
-            to continue; the price is fixed once you book.
-          </p>
-        } @else if (store.loading()) {
-          <div class="booking__vehicles">
-            @for (i of [1, 2, 3]; track i) {
-              <div class="booking__skeleton"></div>
-            }
-          </div>
-        } @else {
-          <p class="booking__hint" i18n>
-            Enter where you start and where you are going, or tap the map: the
-            route and the price appear here.
-          </p>
-        }
+        </aside>
       </div>
 
       @if (store.step() === 'details' && store.quote(); as quote) {
