@@ -8,6 +8,7 @@ import {
   inject,
   input,
   output,
+  signal,
   untracked,
   viewChild,
   ViewEncapsulation,
@@ -15,6 +16,11 @@ import {
 import type * as Leaflet from 'leaflet'
 import { LatLng, MapMarker, MapZone, ZoneType } from '@/core/models'
 import { MAP_CONFIG } from '@/core/tokens/map-config.token'
+
+/** How long a "two fingers" / "Ctrl + scroll" hint stays after the last gesture that needs it. */
+const HINT_MS = 1500
+/** Wheel distance for one zoom step with Ctrl / ⌘ (a mouse notch is about 100, a trackpad less). */
+const WHEEL_STEP = 100
 
 const ZONE_MODIFIER: Record<ZoneType, string> = {
   NoCarAccess: 'no-car',
@@ -30,7 +36,10 @@ const ZONE_MODIFIER: Record<ZoneType, string> = {
  */
 @Component({
   selector: 'app-map',
-  template: '<div #canvas class="map__canvas"></div>',
+  template: `<div #canvas class="map__canvas"></div>
+    @if (hint(); as text) {
+      <p class="map__hint" aria-hidden="true">{{ text }}</p>
+    }`,
   styleUrl: './map.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   // Leaflet creates its own DOM, so the BEM styles for markers and shapes must be global.
@@ -39,6 +48,7 @@ const ZONE_MODIFIER: Record<ZoneType, string> = {
     class: 'map',
     '[class.map--clickable]': 'clickable()',
     '[class.map--locked]': 'locked()',
+    '[class.map--cooperative]': 'cooperative()',
   },
 })
 export class MapComponent {
@@ -50,12 +60,22 @@ export class MapComponent {
   readonly clickable = input(false)
   /** A picture of the route: no dragging, zooming or scroll capture (set once, at creation). */
   readonly locked = input(false)
+  /**
+   * A map that can be moved without getting in the way of the page (set once, at creation):
+   * with a mouse it drags, and the wheel zooms once the map is in use (dragged, clicked, + / −)
+   * or with Ctrl / ⌘; on touch screens one finger scrolls the page and two move and zoom the map.
+   */
+  readonly cooperative = input(false)
   /** + / − buttons even on a locked map (zooming without dragging or scroll capture). */
   readonly zoomButtons = input(false)
   /** Zoom used when there is a single point to show (14: streets; 12: the whole city). */
   readonly singlePointZoom = input(14)
   readonly mapClick = output<LatLng>()
 
+  protected readonly hint = signal<string | null>(null)
+  private hintTimer?: ReturnType<typeof setTimeout>
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef)
+  private readonly listeners = new AbortController()
   private readonly config = inject(MAP_CONFIG)
   private readonly canvas =
     viewChild.required<ElementRef<HTMLElement>>('canvas')
@@ -86,29 +106,36 @@ export class MapComponent {
 
     inject(DestroyRef).onDestroy(() => {
       this.destroyed = true
+      this.listeners.abort()
+      clearTimeout(this.hintTimer)
       this.map?.remove()
     })
   }
 
   private create(L: typeof Leaflet): void {
     this.L = L
-    const interactive = !untracked(this.locked)
+    const cooperative = untracked(this.cooperative)
+    const free = !untracked(this.locked) && !cooperative
+    const interactive = free || cooperative
     this.map = L.map(this.canvas().nativeElement, {
       center: this.config.center,
       zoom: this.config.zoom,
       zoomControl: false,
       attributionControl: true,
       dragging: interactive,
-      scrollWheelZoom: interactive,
+      scrollWheelZoom: free,
       touchZoom: interactive,
       doubleClickZoom: interactive,
-      boxZoom: interactive,
+      boxZoom: free,
       keyboard: interactive,
     })
     if (interactive || untracked(this.zoomButtons)) {
       L.control
-        .zoom({ position: interactive ? 'topleft' : 'bottomright' })
+        .zoom({ position: free ? 'topleft' : 'bottomright' })
         .addTo(this.map)
+    }
+    if (cooperative) {
+      this.cooperate(this.map)
     }
     L.tileLayer(this.config.tileUrl, {
       attribution: this.config.attribution,
@@ -139,6 +166,81 @@ export class MapComponent {
       this.map.fitBounds(L.latLngBounds(this.config.area), { padding: [8, 8] })
     }
     this.fit(untracked(this.fitPoints))
+  }
+
+  /** The gestures of a cooperative map: see `cooperative`. */
+  private cooperate(map: Leaflet.Map): void {
+    const host = this.host.nativeElement
+    const signal = this.listeners.signal
+    const mac = /Mac|iPhone|iPad/.test(navigator.userAgent)
+    const hints = {
+      touch: $localize`Use two fingers to move the map`,
+      wheel: mac
+        ? $localize`Use ⌘ + scroll to zoom the map`
+        : $localize`Use Ctrl + scroll to zoom the map`,
+    }
+
+    // Before Leaflet sees the press (capture on the host): a finger never drags the map, so the
+    // page scrolls under it; two fingers pinch and move it (Leaflet's touch zoom). A mouse drags,
+    // and from then on the wheel zooms, until the pointer leaves the map.
+    host.addEventListener(
+      'pointerdown',
+      e => {
+        if (e.pointerType === 'touch') {
+          map.dragging.disable()
+          return
+        }
+        map.dragging.enable()
+        map.scrollWheelZoom.enable()
+        this.showHint(null)
+      },
+      { capture: true, signal }
+    )
+    host.addEventListener('mouseleave', () => map.scrollWheelZoom.disable(), {
+      signal,
+    })
+    host.addEventListener(
+      'touchmove',
+      e => {
+        if (e.touches.length === 1) {
+          this.showHint(hints.touch)
+        }
+      },
+      { passive: true, signal }
+    )
+
+    // Ctrl / ⌘ + wheel (and a trackpad pinch, which reports as one) zooms right away; a plain
+    // wheel scrolls the page until the map is in use, and says how to zoom.
+    let wheel = 0
+    host.addEventListener(
+      'wheel',
+      e => {
+        if (map.scrollWheelZoom.enabled()) {
+          return
+        }
+        if (!e.ctrlKey && !e.metaKey) {
+          this.showHint(hints.wheel)
+          return
+        }
+        e.preventDefault()
+        this.showHint(null)
+        wheel += e.deltaY
+        if (Math.abs(wheel) >= WHEEL_STEP) {
+          const zoom = map.getZoom() + (wheel < 0 ? 1 : -1)
+          wheel = 0
+          map.setZoomAround(map.mouseEventToContainerPoint(e), zoom)
+        }
+      },
+      { passive: false, signal }
+    )
+  }
+
+  private showHint(text: string | null): void {
+    clearTimeout(this.hintTimer)
+    this.hint.set(text)
+    if (text) {
+      this.hintTimer = setTimeout(() => this.hint.set(null), HINT_MS)
+    }
   }
 
   private draw(): void {

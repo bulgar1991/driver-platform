@@ -835,6 +835,9 @@
     "2005818722469409502": "Open menu",
     "4877404103663946356": "Fewer {$label}",
     "2033363785610898529": "More {$label}",
+    "7091554086554402429": "Use two fingers to move the map",
+    "8484794583492506371": "Use ⌘ + scroll to zoom the map",
+    "3025584581693865916": "Use Ctrl + scroll to zoom the map",
     "1913550668122548665": "{$minutes} min",
     "5386830330928988903": "{$hours} h",
     "1479266778526359598": "{$hours} h {$minutes} min"

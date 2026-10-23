@@ -17,6 +17,18 @@
     touch-action: pan-y pinch-zoom;
   }
 
+  // One finger scrolls the page over it (Leaflet would block that while it can drag); two fingers
+  // still reach the map, whose pinch handler stops the page from moving.
+  &--cooperative .leaflet-container {
+    touch-action: pan-x pan-y !important;
+  }
+
+  // "Use two fingers…" / "Ctrl + scroll…": over the whole map, gone after a moment.
+  &__hint {
+    @apply pointer-events-none absolute inset-0 z-[1000] m-0 flex items-center justify-center bg-ink/60 px-6 text-center text-sm font-medium text-ivory;
+    animation: fade-in 0.2s ease-out both;
+  }
+
   // Light OSM tiles turned into a dark, low-contrast basemap.
   &__tiles {
     filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9)
