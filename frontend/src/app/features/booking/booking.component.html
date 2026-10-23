@@ -34,6 +34,12 @@
     </div>
   </div>
 
+  @if (wideMap() && store.step() !== 'done') {
+    <div class="booking__wide-map">
+      <ng-container [ngTemplateOutlet]="mapPanel" />
+    </div>
+  }
+
   <div class="booking__inner page">
     @if (store.step() === 'done' && store.result(); as result) {
       <div class="booking__done" role="status">
@@ -48,7 +54,7 @@
         <p class="booking__note" i18n>Card or PayPal, processed by Stripe.</p>
       </div>
     } @else {
-      <div class="booking__layout">
+      <div class="booking__layout" [class.booking__layout--single]="wideMap()">
         <div #results class="booking__results">
           @if (store.quote(); as quote) {
             @if (quote.outbound.pickupZone?.meetingPoints?.length) {
@@ -160,66 +166,11 @@
           </div>
         </div>
 
-        <aside class="booking__side">
-          <!-- Leaflet needs a browser: loaded only there, once the page has settled (not mid-scroll). -->
-          <div class="booking__map-wrap">
-            @defer (on idle) {
-              <app-map
-                class="booking__map"
-                [locked]="true"
-                [clickable]="true"
-                [zoomButtons]="true"
-                [singlePointZoom]="12"
-                [markers]="markers()"
-                [path]="path()"
-                [zones]="zones()"
-                [fitPoints]="fitPoints()"
-                (mapClick)="placeOnMap($event)" />
-            } @placeholder {
-              <div
-                class="booking__map booking__map--placeholder"
-                aria-hidden="true"></div>
-            }
-
-            <!-- Choose which point a click on the map sets. -->
-            <div
-              class="booking__map-tools"
-              role="group"
-              i18n-aria-label
-              aria-label="Set a point on the map">
-              @for (t of mapTargets; track t.id) {
-                <button
-                  type="button"
-                  class="booking__map-target"
-                  [class.booking__map-target--active]="mapTarget() === t.id"
-                  [class.booking__map-target--dropoff]="t.id === 'dropoff'"
-                  [attr.aria-pressed]="mapTarget() === t.id"
-                  (click)="mapTarget.set(t.id)">
-                  <span class="booking__map-dot" aria-hidden="true"></span>
-                  {{ t.label }}
-                </button>
-              }
-            </div>
-            <p class="booking__map-hint" aria-live="polite">
-              @if (locating()) {
-                <app-car-loader size="sm" aria-hidden="true" />
-                <ng-container i18n>Finding the address…</ng-container>
-              } @else if (mapError(); as message) {
-                {{ message }}
-              } @else {
-                @if (mapTarget() === 'pickup') {
-                  <ng-container i18n
-                    >Tap the map to set <strong>From</strong></ng-container
-                  >
-                } @else {
-                  <ng-container i18n
-                    >Tap the map to set <strong>To</strong></ng-container
-                  >
-                }
-              }
-            </p>
-          </div>
-        </aside>
+        @if (!wideMap()) {
+          <aside class="booking__side">
+            <ng-container [ngTemplateOutlet]="mapPanel" />
+          </aside>
+        }
       </div>
 
       @if (store.step() === 'details' && store.quote(); as quote) {
@@ -243,3 +194,64 @@
     }
   </div>
 </section>
+
+<ng-template #mapPanel>
+  <!-- Leaflet needs a browser: loaded only there, once the page has settled (not mid-scroll). -->
+  <div class="booking__map-wrap">
+    @defer (on idle) {
+      <app-map
+        class="booking__map"
+        [locked]="true"
+        [clickable]="true"
+        [zoomButtons]="true"
+        [singlePointZoom]="12"
+        [markers]="markers()"
+        [path]="path()"
+        [zones]="zones()"
+        [fitPoints]="fitPoints()"
+        (mapClick)="placeOnMap($event)" />
+    } @placeholder {
+      <div
+        class="booking__map booking__map--placeholder"
+        aria-hidden="true"></div>
+    }
+
+    <!-- Choose which point a click on the map sets. -->
+    <div
+      class="booking__map-tools"
+      role="group"
+      i18n-aria-label
+      aria-label="Set a point on the map">
+      @for (t of mapTargets; track t.id) {
+        <button
+          type="button"
+          class="booking__map-target"
+          [class.booking__map-target--active]="mapTarget() === t.id"
+          [class.booking__map-target--dropoff]="t.id === 'dropoff'"
+          [attr.aria-pressed]="mapTarget() === t.id"
+          (click)="mapTarget.set(t.id)">
+          <span class="booking__map-dot" aria-hidden="true"></span>
+          {{ t.label }}
+        </button>
+      }
+    </div>
+    <p class="booking__map-hint" aria-live="polite">
+      @if (locating()) {
+        <app-car-loader size="sm" aria-hidden="true" />
+        <ng-container i18n>Finding the address…</ng-container>
+      } @else if (mapError(); as message) {
+        {{ message }}
+      } @else {
+        @if (mapTarget() === 'pickup') {
+          <ng-container i18n
+            >Tap the map to set <strong>From</strong></ng-container
+          >
+        } @else {
+          <ng-container i18n
+            >Tap the map to set <strong>To</strong></ng-container
+          >
+        }
+      }
+    </p>
+  </div>
+</ng-template>

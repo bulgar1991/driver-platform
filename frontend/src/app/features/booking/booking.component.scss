@@ -81,6 +81,11 @@
     @apply grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,23rem)] xl:grid-cols-[minmax(0,1fr)_minmax(0,26rem)];
   }
 
+  // With the wide map the results take the whole width under it.
+  &__layout--single {
+    @apply lg:grid-cols-1 xl:grid-cols-1;
+  }
+
   &__results {
     @apply flex min-w-0 scroll-mt-24 flex-col gap-5;
   }
@@ -130,6 +135,24 @@
 
   &__map-target--dropoff &__map-dot {
     @apply bg-ivory;
+  }
+
+  // The map from edge to edge of the screen, under the search band (the home page).
+  &__wide-map {
+    @apply border-b border-ink-700;
+
+    .booking__map {
+      @apply h-80 rounded-none border-0 sm:h-[28rem] lg:h-[34rem];
+    }
+
+    // In line with the page content above and below, not with the screen edge.
+    .booking__map-tools {
+      left: max(1rem, calc((100% - theme('maxWidth.6xl')) / 2 + 1rem));
+    }
+
+    .booking__map-hint {
+      @apply mx-auto w-full max-w-6xl px-4 pb-2;
+    }
   }
 
   &__map-hint {
