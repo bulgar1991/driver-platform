@@ -266,7 +266,8 @@ to (no in-page `#anchors`). The header is fixed at the top. **Texts, contacts, p
 ### Launch (step 7)
 
 - **Deployment**: Docker Compose on one server: Caddy (HTTPS, site, `/api` proxy), API, PostgreSQL,
-  daily backups. See [docs/deployment.md](docs/deployment.md).
+  daily backups. See [docs/deployment.md](docs/deployment.md), and for Oracle Cloud's free tier
+  [docs/deploy-oracle.md](docs/deploy-oracle.md).
 - **Security review**: findings, fixes and open items in [docs/security-review.md](docs/security-review.md).
 - **Staff accounts** (Admin → Staff): temporary passwords shown once and changed at first sign-in;
   12+ character passwords; changing a role, deactivating or a new password ends open sessions.

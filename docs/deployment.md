@@ -12,6 +12,7 @@ backup job. Files: `deploy/docker-compose.yml`, `deploy/Caddyfile`, `deploy/.env
 
 - A VPS in the EU, ideally Italy or nearby (Aruba, Hetzner, OVH, DigitalOcean…): 2 vCPU, 4 GB RAM,
   40 GB SSD is plenty to start. Ubuntu 24.04 LTS.
+- Free: Oracle Cloud's Always Free ARM server, step by step in [deploy-oracle.md](deploy-oracle.md).
 - Docker Engine with the compose plugin (`apt install docker.io docker-compose-v2`).
 - Firewall: allow 22 (SSH, keys only), 80 and 443. The database is not exposed.
 - Automatic security updates (`unattended-upgrades`).
