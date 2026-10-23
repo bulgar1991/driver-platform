@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common'
 import {
   ChangeDetectionStrategy,
   Component,
@@ -14,10 +15,14 @@ import {
   siteLocale,
   stripLocalePrefix,
 } from '@/core/i18n/locales'
+import { LanguageCarryService } from '@/core/services/language-carry.service'
 
 /**
  * IT · EN · DE · FR. Each language is its own build, so the links are plain links (a full page
- * load) to the same page under the other prefix.
+ * load) to the same page under the other prefix. To make that feel instant: the other language is
+ * loaded in the background on hover (speculation rules in index.html, or a prefetch where the
+ * browser has none), the pages cross-fade (@view-transition in styles.scss), and the scroll
+ * position and the search carry over (LanguageCarryService).
  */
 @Component({
   selector: 'app-language-switch',
@@ -31,6 +36,9 @@ export class LanguageSwitchComponent {
   readonly variant = input<'bar' | 'menu'>('bar')
 
   private readonly router = inject(Router)
+  private readonly document = inject(DOCUMENT)
+  private readonly carry = inject(LanguageCarryService)
+  private readonly prefetched = new Set<string>()
   protected readonly current = siteLocale(inject(LOCALE_ID))
   private readonly url = toSignal(
     this.router.events.pipe(
@@ -46,4 +54,23 @@ export class LanguageSwitchComponent {
     const path = url === '/' ? '' : url
     return SITE_LOCALES.map(l => ({ ...l, href: `${l.prefix}${path}` || '/' }))
   })
+
+  protected leave(): void {
+    this.carry.save()
+  }
+
+  /** Browsers without speculation rules (Safari, Firefox): at least the page is fetched early. */
+  protected prefetch(href: string): void {
+    const supports = (
+      HTMLScriptElement as { supports?: (type: string) => boolean }
+    ).supports
+    if (supports?.('speculationrules') || this.prefetched.has(href)) {
+      return
+    }
+    this.prefetched.add(href)
+    const link = this.document.createElement('link')
+    link.rel = 'prefetch'
+    link.href = href
+    this.document.head.appendChild(link)
+  }
 }

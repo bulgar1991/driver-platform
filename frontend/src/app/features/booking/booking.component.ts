@@ -14,7 +14,7 @@ import {
 } from '@angular/core'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { FormBuilder } from '@angular/forms'
-import { ActivatedRoute } from '@angular/router'
+import { ActivatedRoute, Params } from '@angular/router'
 import { debounceTime, filter, merge } from 'rxjs'
 import {
   LatLng,
@@ -27,6 +27,7 @@ import {
 } from '@/core/models'
 import { SiteLocale, siteLocale } from '@/core/i18n/locales'
 import { GeoService } from '@/core/services/geo.service'
+import { LanguageCarryService } from '@/core/services/language-carry.service'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { MapComponent } from '@/shared/components/map/map.component'
 import { DurationPipe } from '@/shared/pipes/duration.pipe'
@@ -42,6 +43,7 @@ import {
   toBookingRequest,
   toQuoteRequest,
   tripFromParams,
+  tripToParams,
 } from './booking-form'
 import { BookingStore } from './booking.store'
 import { CarLoaderComponent } from '@/shared/components/car-loader/car-loader.component'
@@ -77,6 +79,7 @@ export class BookingComponent implements OnInit {
   protected readonly store = inject(BookingStore)
   private readonly destroyRef = inject(DestroyRef)
   private readonly route = inject(ActivatedRoute)
+  private readonly carry = inject(LanguageCarryService)
   protected readonly forms = createBookingForms(
     inject(FormBuilder),
     () => this.store.options()?.minLeadTimeHours ?? DEFAULT_MIN_LEAD_HOURS
@@ -219,7 +222,19 @@ export class BookingComponent implements OnInit {
     const fromLink = tripFromParams(this.route.snapshot.queryParams)
     if (Object.keys(fromLink).length) {
       this.forms.trip.patchValue(fromLink)
+    } else {
+      // Or the search typed before switching language, in the same place.
+      void this.carry.take<Params>('trip').then(params => {
+        if (params && !this.forms.trip.dirty) {
+          this.forms.trip.patchValue(tripFromParams(params))
+        }
+      })
     }
+    // What carries over when the visitor switches language: the search, once there is one.
+    const stop = this.carry.provide('trip', () =>
+      this.ready() ? tripToParams(this.forms.trip) : null
+    )
+    this.destroyRef.onDestroy(stop)
   }
 
   /** Search pressed: the price now, without waiting, and the results into view on phones. */

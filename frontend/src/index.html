@@ -18,6 +18,37 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
       rel="stylesheet" />
+    <!-- Switching language loads the other language's page (each is its own build): the browser
+         cross-fades the two instead of flashing white. Here, not in styles.css: the new page must
+         have it the moment it is first shown. Only same-site page loads, so only the switch. -->
+    <style>
+      @view-transition {
+        navigation: auto;
+      }
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation-duration: 0.25s;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        @view-transition {
+          navigation: none;
+        }
+      }
+    </style>
+    <!-- Switching language loads another build: the browser prepares it in the background as soon
+         as the visitor points at a language (Chrome, Edge), so the switch is instant. -->
+    <script type="speculationrules">
+      {
+        "prerender": [
+          {
+            "where": {
+              "selector_matches": ".language-switch__link:not(.language-switch__link--active)"
+            },
+            "eagerness": "moderate"
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <app-root>

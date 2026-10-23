@@ -11,6 +11,15 @@
   }
 }
 
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @keyframes shimmer {
   from {
     background-position: 200% 50%;
@@ -117,6 +126,13 @@
     opacity: 1;
     transform: none !important;
   }
+}
+
+// Just switched language (LanguageCarryService): what was on screen is there already, no fade-up.
+:root[data-language-carried] .reveal {
+  opacity: 1;
+  transform: none;
+  transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
