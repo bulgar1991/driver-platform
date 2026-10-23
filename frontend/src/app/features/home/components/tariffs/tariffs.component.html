@@ -113,15 +113,19 @@
           </ul>
         </div>
       </div>
-      <p class="tariffs__cta" appReveal>
-        <a appButton routerLink="/book" i18n>Get your exact price</a>
-      </p>
-    } @else {
-      <p class="tariffs__more" appReveal>
-        <a class="tariffs__link" routerLink="/tariffs" i18n
-          >Extras, surcharges and return discount →</a
-        >
-      </p>
     }
+  }
+
+  <!-- Outside the loading states: shown from the start, so the page does not jump. -->
+  @if (page()) {
+    <p class="tariffs__cta" appReveal>
+      <a appButton routerLink="/book" i18n>Get your exact price</a>
+    </p>
+  } @else {
+    <p class="tariffs__more" appReveal>
+      <a class="tariffs__link" routerLink="/tariffs" i18n
+        >Extras, surcharges and return discount →</a
+      >
+    </p>
   }
 </section>

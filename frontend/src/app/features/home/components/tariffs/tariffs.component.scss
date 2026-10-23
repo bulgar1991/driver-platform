@@ -4,8 +4,10 @@
     @apply mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8;
   }
 
+  // The same minimum height for the cards and their placeholders, so nothing jumps when the
+  // prices arrive.
   &__card {
-    @apply relative flex list-none flex-col items-center overflow-hidden rounded-md border border-ink-600 bg-ink-900 px-6 pb-9 pt-8 text-center;
+    @apply relative flex min-h-[29rem] list-none flex-col items-center overflow-hidden rounded-md border border-ink-600 bg-ink-900 px-6 pb-9 pt-8 text-center;
     transition:
       transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
       border-color 0.45s,
@@ -28,7 +30,7 @@
     }
 
     &--skeleton {
-      @apply h-[26rem] border-ink-700;
+      @apply border-ink-700;
       background: linear-gradient(
         100deg,
         theme('colors.ink.900') 30%,

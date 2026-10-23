@@ -21,6 +21,7 @@ import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { VEHICLE_INFO } from '../booking/vehicle-info'
 import { InstructionsPipe } from '@/shared/pipes/instructions.pipe'
 import { TranslatedPipe } from '@/shared/pipes/translated.pipe'
+import { CarLoaderComponent } from '@/shared/components/car-loader/car-loader.component'
 
 const STATUS_LABEL: Record<BookingStatus, string> = {
   AwaitingPayment: $localize`Awaiting payment`,
@@ -47,6 +48,7 @@ const POLL_ATTEMPTS = 15
 @Component({
   selector: 'app-my-booking',
   imports: [
+    CarLoaderComponent,
     DatePipe,
     RouterLink,
     ButtonComponent,
@@ -124,6 +126,10 @@ export class MyBookingComponent {
 
   protected invoiceUrl(number: string): string {
     return this.api.invoiceUrl(this.reference(), this.token(), number)
+  }
+
+  protected reload(): void {
+    window.location.reload()
   }
 
   /** After Stripe, the webhook may arrive a moment later: poll until the booking is paid. */

@@ -1,3 +1,14 @@
+// Arial resized to Montserrat's measurements: text keeps its size when the web font arrives,
+// so the sections do not grow or shrink a moment after the page shows.
+@font-face {
+  font-family: 'Montserrat Fallback';
+  src: local('Arial'), local('Helvetica');
+  ascent-override: 84.95%;
+  descent-override: 22.03%;
+  line-gap-override: 0%;
+  size-adjust: 113.39%;
+}
+
 @layer base {
   :root {
     color-scheme: dark;

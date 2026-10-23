@@ -1,6 +1,32 @@
 .testimonials {
+  // The carousel, its loading placeholder and the empty state are the same height.
   &__carousel {
-    @apply relative outline-none;
+    @apply relative min-h-[17.8rem] outline-none;
+  }
+
+  &__loading {
+    @apply grid h-[17.8rem] grid-cols-1 content-start gap-6 min-[720px]:grid-cols-2 min-[1100px]:grid-cols-3;
+  }
+
+  &__ghost {
+    @apply h-[13rem] rounded-md border border-ink-700;
+    background: linear-gradient(
+      100deg,
+      theme('colors.ink.900') 30%,
+      theme('colors.ink.800') 50%,
+      theme('colors.ink.900') 70%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s linear infinite;
+
+    // One card, two from 720px, three from 1100px, as the carousel shows them.
+    &:nth-child(2) {
+      @apply hidden min-[720px]:block;
+    }
+
+    &:nth-child(3) {
+      @apply hidden min-[1100px]:block;
+    }
   }
 
   &__viewport {
@@ -98,7 +124,7 @@
   }
 
   &__empty {
-    @apply mx-auto flex max-w-xl flex-col items-center gap-4 rounded-md border border-dashed border-gold/40 p-10 text-center;
+    @apply mx-auto flex min-h-[17.8rem] max-w-xl flex-col items-center justify-center gap-4 rounded-md border border-dashed border-gold/40 p-10 text-center;
   }
 
   &__empty-icon {

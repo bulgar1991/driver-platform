@@ -79,7 +79,7 @@
         </div>
         <p class="booking__map-hint" aria-live="polite">
           @if (locating()) {
-            <span class="booking__spinner" aria-hidden="true"></span>
+            <app-car-loader size="sm" aria-hidden="true" />
             <ng-container i18n>Finding the address…</ng-container>
           } @else if (mapError(); as message) {
             {{ message }}
@@ -121,7 +121,7 @@
           <h3 class="booking__prices-title" i18n>Approximate price</h3>
           @if (store.loading()) {
             <span class="booking__status"
-              ><span class="booking__spinner" aria-hidden="true"></span>
+              ><app-car-loader size="sm" aria-hidden="true" />
               <ng-container i18n>Calculating…</ng-container></span
             >
           } @else if (store.quote(); as quote) {

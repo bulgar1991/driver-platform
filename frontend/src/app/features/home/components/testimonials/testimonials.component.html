@@ -127,5 +127,12 @@
         >
       </div>
     }
+  } @else {
+    <!-- Loading: cards of the carousel's height, so the page does not jump when they arrive. -->
+    <div class="testimonials__loading" aria-busy="true">
+      @for (i of [1, 2, 3]; track i) {
+        <span class="testimonials__ghost"></span>
+      }
+    </div>
   }
 </section>

@@ -23,11 +23,13 @@ import {
   DriverRideComponent,
   RideAction,
 } from './driver-ride/driver-ride.component'
+import { CarLoaderComponent } from '@/shared/components/car-loader/car-loader.component'
 
 /** /driver/:token — the driver's personal link with every shift sent to them. Refreshes every minute. */
 @Component({
   selector: 'app-driver-portal',
   imports: [
+    CarLoaderComponent,
     DatePipe,
     ButtonComponent,
     LogoComponent,

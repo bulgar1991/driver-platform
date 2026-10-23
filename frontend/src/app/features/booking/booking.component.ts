@@ -39,6 +39,7 @@ import {
   toQuoteRequest,
 } from './booking-form'
 import { BookingStore } from './booking.store'
+import { CarLoaderComponent } from '@/shared/components/car-loader/car-loader.component'
 
 /** Delay after the last change before the price is recalculated. */
 const QUOTE_DEBOUNCE_MS = 500
@@ -50,6 +51,7 @@ const QUOTE_DEBOUNCE_MS = 500
 @Component({
   selector: 'app-booking',
   imports: [
+    CarLoaderComponent,
     DetailsStepComponent,
     DurationPipe,
     MapComponent,

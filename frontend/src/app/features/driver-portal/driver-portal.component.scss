@@ -40,4 +40,8 @@
   &__muted {
     @apply text-xs text-ivory-400;
   }
+
+  &__loader {
+    @apply mx-auto flex py-16;
+  }
 }

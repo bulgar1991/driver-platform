@@ -1,6 +1,9 @@
 <section class="my-booking page">
   @if (loading()) {
-    <p class="my-booking__muted" i18n>Loading your booking…</p>
+    <app-car-loader
+      class="my-booking__loader"
+      i18n-label
+      label="Loading your booking…" />
   } @else if (notFound()) {
     <div class="my-booking__empty">
       <h1 class="heading heading--md" i18n>Booking not found</h1>
@@ -8,6 +11,15 @@
         >Check that you opened the full link from your email.</p
       >
       <a appButton variant="outline" routerLink="/" i18n>Back to home</a>
+    </div>
+  } @else if (!booking() && error(); as message) {
+    <!-- The first load failed (no connection, server down): say so and offer to try again. -->
+    <div class="my-booking__empty">
+      <h1 class="heading heading--md" i18n>Your booking could not be loaded</h1>
+      <p class="alert alert--error" role="alert">{{ message }}</p>
+      <button appButton type="button" variant="outline" (click)="reload()" i18n
+        >Try again</button
+      >
     </div>
   } @else if (booking(); as b) {
     <header class="my-booking__header">

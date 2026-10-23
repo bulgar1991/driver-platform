@@ -17,7 +17,10 @@
     }
 
     @if (loading()) {
-      <p class="driver-portal__muted" i18n>Loading your shifts…</p>
+      <app-car-loader
+        class="driver-portal__loader"
+        i18n-label
+        label="Loading your shifts…" />
     } @else if (invalid()) {
       <div class="driver-portal__empty">
         <h1 class="heading heading--md" i18n>This link is not valid</h1>

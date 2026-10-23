@@ -20,6 +20,94 @@
       rel="stylesheet" />
   </head>
   <body>
-    <app-root></app-root>
+    <app-root>
+      <!-- While the site starts: the same car as CarLoaderComponent. Replaced by the first page. -->
+      <div class="boot">
+        <span
+          class="car-loader car-loader--lg"
+          role="status"
+          aria-label="Magnus Drive">
+          <span class="car-loader__scene">
+            <svg class="car-loader__svg" viewBox="0 0 120 48" focusable="false">
+              <defs>
+                <linearGradient
+                  id="car-loader-beam"
+                  x1="0"
+                  x2="1"
+                  y1="0"
+                  y2="0">
+                  <stop offset="0" stop-color="#C9A45C" stop-opacity="0.55" />
+                  <stop offset="1" stop-color="#C9A45C" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <g class="car-loader__city">
+                <path
+                  d="M0 30 L6 30 L6 24 L10 24 L10 27 L16 27 L16 20 L20 20 L20 26 L27 26 L27 22 L33 22 L33 28 L40 28 L40 18 L43 16 L46 18 L46 27 L54 27 L54 23 L60 23 L60 29 L68 29 L68 21 L74 21 L74 26 L82 26 L82 19 L86 19 L86 25 L94 25 L94 22 L100 22 L100 28 L108 28 L108 24 L114 24 L114 30 L120 30" />
+                <path
+                  d="M0 30 L6 30 L6 24 L10 24 L10 27 L16 27 L16 20 L20 20 L20 26 L27 26 L27 22 L33 22 L33 28 L40 28 L40 18 L43 16 L46 18 L46 27 L54 27 L54 23 L60 23 L60 29 L68 29 L68 21 L74 21 L74 26 L82 26 L82 19 L86 19 L86 25 L94 25 L94 22 L100 22 L100 28 L108 28 L108 24 L114 24 L114 30 L120 30"
+                  transform="translate(120 0)" />
+              </g>
+              <line class="car-loader__speed" x1="4" y1="20" x2="16" y2="20" />
+              <line class="car-loader__speed" x1="2" y1="27" x2="18" y2="27" />
+              <line class="car-loader__speed" x1="6" y1="32" x2="15" y2="32" />
+              <line class="car-loader__road" x1="0" y1="45" x2="120" y2="45" />
+              <line class="car-loader__lane" x1="-8" y1="45" x2="128" y2="45" />
+              <ellipse
+                class="car-loader__shadow"
+                cx="64"
+                cy="44"
+                rx="40"
+                ry="1.6" />
+              <g class="car-loader__body">
+                <path
+                  class="car-loader__beam"
+                  d="M104 27 L120 21 L120 35 L104 31 Z"
+                  fill="url(#car-loader-beam)" />
+                <path
+                  class="car-loader__paint"
+                  d="M24 34 L26 27 Q28 24 34 23 L48 22 L57 14 Q59 13 63 13 L80 13 Q84 13 87 16 L94 22 L100 23.5 Q104 25 104 29 L104 34 Q104 36 102 36 L26 36 Q24 36 24 34 Z" />
+                <path
+                  class="car-loader__window"
+                  d="M54 22 L60 16 L69 16 L69 22 Z" />
+                <path
+                  class="car-loader__window"
+                  d="M72 16 L80 16 Q82 16 84 18 L88 22 L72 22 Z" />
+                <circle class="car-loader__light" cx="102" cy="28" r="1.4" />
+              </g>
+              <g class="car-loader__wheel">
+                <circle class="car-loader__tyre" cx="40" cy="37" r="6" />
+                <line
+                  class="car-loader__spoke"
+                  x1="36"
+                  y1="37"
+                  x2="44"
+                  y2="37" />
+                <line
+                  class="car-loader__spoke"
+                  x1="40"
+                  y1="33"
+                  x2="40"
+                  y2="41" />
+              </g>
+              <g class="car-loader__wheel">
+                <circle class="car-loader__tyre" cx="88" cy="37" r="6" />
+                <line
+                  class="car-loader__spoke"
+                  x1="84"
+                  y1="37"
+                  x2="92"
+                  y2="37" />
+                <line
+                  class="car-loader__spoke"
+                  x1="88"
+                  y1="33"
+                  x2="88"
+                  y2="41" />
+              </g>
+            </svg>
+          </span>
+        </span>
+      </div>
+    </app-root>
   </body>
 </html>

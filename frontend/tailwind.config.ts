@@ -9,7 +9,7 @@ export default {
       colors,
       fontFamily: {
         display: ['Cinzel', 'Georgia', 'serif'],
-        sans: ['Montserrat', 'system-ui', 'sans-serif'],
+        sans: ['Montserrat', 'Montserrat Fallback', 'system-ui', 'sans-serif'],
       },
       screens: {
         xs: '360px',

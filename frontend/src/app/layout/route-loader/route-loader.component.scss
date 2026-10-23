@@ -1,0 +1,40 @@
+// Block: route-loader — a gold road along the top edge with the small car driving across.
+.route-loader {
+  @apply pointer-events-none fixed inset-x-0 top-0 z-[100] h-10 overflow-hidden;
+  background: linear-gradient(to bottom, rgb(11 11 12 / 0.85), transparent);
+  animation: route-loader-in 0.2s ease-out;
+
+  &::after {
+    content: '';
+    @apply absolute inset-x-0 top-0 h-0.5 bg-gold-line;
+  }
+
+  &__car {
+    @apply absolute top-1;
+    --car-loader-width: 3.5rem;
+    animation: route-loader-drive 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+}
+
+@keyframes route-loader-drive {
+  from {
+    transform: translateX(-3rem);
+  }
+
+  to {
+    transform: translateX(100vw);
+  }
+}
+
+@keyframes route-loader-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-loader__car {
+    @apply left-1/2;
+    animation: none;
+  }
+}
