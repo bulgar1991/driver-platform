@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   inject,
   signal,
@@ -12,14 +13,16 @@ import {
   NavigationStart,
   Router,
 } from '@angular/router'
+import { LoadingScreenService } from '@/core/services/loading-screen.service'
 import { CarLoaderComponent } from '@/shared/components/car-loader/car-loader.component'
 
 /** Shown only when the next page takes longer than this, so fast navigation does not flicker. */
 const SHOW_AFTER_MS = 150
 
 /**
- * While the next page loads (its code is fetched the first time), a small car drives along the
- * top edge of the screen.
+ * While the next page loads (its code is fetched the first time), or the page in another language
+ * (LoadingScreenService): the whole screen dims and the gold car drives in the middle, as when the
+ * site starts (index.html).
  */
 @Component({
   selector: 'app-route-loader',
@@ -27,7 +30,7 @@ const SHOW_AFTER_MS = 150
   template: `
     @if (visible()) {
       <div class="route-loader">
-        <app-car-loader class="route-loader__car" size="sm" />
+        <app-car-loader size="lg" />
       </div>
     }
   `,
@@ -35,21 +38,25 @@ const SHOW_AFTER_MS = 150
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RouteLoaderComponent {
-  protected readonly visible = signal(false)
+  private readonly navigating = signal(false)
+  private readonly screen = inject(LoadingScreenService)
+  protected readonly visible = computed(
+    () => this.navigating() || this.screen.visible()
+  )
 
   constructor() {
     let timer: ReturnType<typeof setTimeout> | undefined
     const subscription = inject(Router).events.subscribe(event => {
       if (event instanceof NavigationStart) {
         clearTimeout(timer)
-        timer = setTimeout(() => this.visible.set(true), SHOW_AFTER_MS)
+        timer = setTimeout(() => this.navigating.set(true), SHOW_AFTER_MS)
       } else if (
         event instanceof NavigationEnd ||
         event instanceof NavigationCancel ||
         event instanceof NavigationError
       ) {
         clearTimeout(timer)
-        this.visible.set(false)
+        this.navigating.set(false)
       }
     })
     inject(DestroyRef).onDestroy(() => {

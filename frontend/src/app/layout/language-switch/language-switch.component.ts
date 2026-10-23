@@ -16,13 +16,15 @@ import {
   stripLocalePrefix,
 } from '@/core/i18n/locales'
 import { LanguageCarryService } from '@/core/services/language-carry.service'
+import { LoadingScreenService } from '@/core/services/loading-screen.service'
 
 /**
  * IT · EN · DE · FR. Each language is its own build, so the links are plain links (a full page
  * load) to the same page under the other prefix. To make that feel instant: the other language is
  * loaded in the background on hover (speculation rules in index.html, or a prefetch where the
  * browser has none), the pages cross-fade (@view-transition in styles.scss), and the scroll
- * position and the search carry over (LanguageCarryService).
+ * position and the search carry over (LanguageCarryService). Until the new page is there, the
+ * full-screen car shows, and the cross-fade goes from it to the new page.
  */
 @Component({
   selector: 'app-language-switch',
@@ -38,6 +40,7 @@ export class LanguageSwitchComponent {
   private readonly router = inject(Router)
   private readonly document = inject(DOCUMENT)
   private readonly carry = inject(LanguageCarryService)
+  private readonly loadingScreen = inject(LoadingScreenService)
   private readonly prefetched = new Set<string>()
   protected readonly current = siteLocale(inject(LOCALE_ID))
   private readonly url = toSignal(
@@ -55,8 +58,20 @@ export class LanguageSwitchComponent {
     return SITE_LOCALES.map(l => ({ ...l, href: `${l.prefix}${path}` || '/' }))
   })
 
-  protected leave(): void {
+  protected leave(event: MouseEvent, current: boolean): void {
+    // Ctrl / ⌘ / Shift / middle click opens another tab: this page stays as it is.
+    if (
+      current ||
+      event.button !== 0 ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return
+    }
     this.carry.save()
+    this.loadingScreen.show()
   }
 
   /** Browsers without speculation rules (Safari, Firefox): at least the page is fetched early. */

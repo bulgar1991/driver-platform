@@ -51,9 +51,9 @@
             [fitPoints]="fitPoints()"
             (mapClick)="placeOnMap($event)" />
         } @placeholder {
-          <div
-            class="booking__map booking__map--placeholder"
-            aria-hidden="true"></div>
+          <div class="booking__map booking__map--placeholder">
+            <app-car-loader i18n-label label="Loading the map…" />
+          </div>
         }
 
         <!-- Choose which point a click on the map sets. -->

@@ -16,7 +16,10 @@ import {
 import type * as Leaflet from 'leaflet'
 import { LatLng, MapMarker, MapZone, ZoneType } from '@/core/models'
 import { MAP_CONFIG } from '@/core/tokens/map-config.token'
+import { CarLoaderComponent } from '@/shared/components/car-loader/car-loader.component'
 
+/** The loader gives way after this even if some tiles never arrive (offline, blocked). */
+const TILES_TIMEOUT_MS = 8000
 /** How long a "two fingers" / "Ctrl + scroll" hint stays after the last gesture that needs it. */
 const HINT_MS = 1500
 /** Wheel distance for one zoom step with Ctrl / ⌘ (a mouse notch is about 100, a trackpad less). */
@@ -36,7 +39,13 @@ const ZONE_MODIFIER: Record<ZoneType, string> = {
  */
 @Component({
   selector: 'app-map',
+  imports: [CarLoaderComponent],
   template: `<div #canvas class="map__canvas"></div>
+    @if (loading()) {
+      <div class="map__loading">
+        <app-car-loader [label]="loadingLabel" />
+      </div>
+    }
     @if (hint(); as text) {
       <p class="map__hint" aria-hidden="true">{{ text }}</p>
     }`,
@@ -72,6 +81,9 @@ export class MapComponent {
   readonly singlePointZoom = input(14)
   readonly mapClick = output<LatLng>()
 
+  /** Until the first tiles are drawn: the car over the whole map instead of an empty dark box. */
+  protected readonly loading = signal(true)
+  protected readonly loadingLabel = $localize`Loading the map…`
   protected readonly hint = signal<string | null>(null)
   private hintTimer?: ReturnType<typeof setTimeout>
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef)
@@ -137,11 +149,14 @@ export class MapComponent {
     if (cooperative) {
       this.cooperate(this.map)
     }
-    L.tileLayer(this.config.tileUrl, {
+    const tiles = L.tileLayer(this.config.tileUrl, {
       attribution: this.config.attribution,
       className: 'map__tiles',
       maxZoom: 19,
     }).addTo(this.map)
+    const loaded = () => this.loading.set(false)
+    tiles.once('load', loaded)
+    setTimeout(loaded, TILES_TIMEOUT_MS)
     this.layers = L.layerGroup().addTo(this.map)
     // Without dragging, Leaflet reports the release of a drag as a click: only a press and release
     // at (nearly) the same spot counts.

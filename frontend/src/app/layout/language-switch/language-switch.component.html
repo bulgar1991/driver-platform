@@ -8,7 +8,7 @@
       [attr.lang]="l.code"
       [attr.aria-current]="l.code === current.code ? 'true' : null"
       [title]="l.name"
-      (click)="leave()"
+      (click)="leave($event, l.code === current.code)"
       (pointerenter)="prefetch(l.href)"
       (focus)="prefetch(l.href)">
       {{ variant() === 'menu' ? l.name : l.code.toUpperCase() }}

@@ -508,6 +508,7 @@
     "1525113330046247069": "Could not reach the server. Try again.",
     "7703160219245123286": "Booking steps",
     "booking.title": "Book your {$START_TAG_SPAN}transfer{$CLOSE_TAG_SPAN}",
+    "2930756815128343337": "Loading the map…",
     "6168082764222162269": "Set a point on the map",
     "742213332496487389": "Finding the address…",
     "4133438867923293297": "Tap the map to set {$START_TAG_STRONG}From{$CLOSE_TAG_STRONG}",

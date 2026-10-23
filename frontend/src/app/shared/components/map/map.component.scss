@@ -23,6 +23,12 @@
     touch-action: pan-x pan-y !important;
   }
 
+  // The car over the whole map until its first tiles are drawn.
+  &__loading {
+    @apply absolute inset-0 z-[1000] flex items-center justify-center bg-ink-900;
+    animation: fade-in 0.2s ease-out both;
+  }
+
   // "Use two fingers…" / "Ctrl + scroll…": over the whole map, gone after a moment.
   &__hint {
     @apply pointer-events-none absolute inset-0 z-[1000] m-0 flex items-center justify-center bg-ink/60 px-6 text-center text-sm font-medium text-ivory;
