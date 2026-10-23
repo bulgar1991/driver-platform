@@ -18,10 +18,14 @@ compartment="${OCI_COMPARTMENT_ID:-$(sed -n 's/^tenancy=//p' ~/.oci/config | hea
 
 log() { echo "$(date '+%Y-%m-%d %H:%M:%S')  $*"; }
 
-# Never a second server: stop if one with this name exists already.
-states=$(oci compute instance list --compartment-id "$compartment" --display-name "$name" \
-    --query 'data[*]."lifecycle-state"' --raw-output 2>/dev/null)
-if echo "$states" | grep -q 'RUNNING\|PROVISIONING\|STARTING\|STOPPED\|STOPPING'; then
+# Never a second server: stop if one with this name exists already (also checked before every
+# attempt, since an attempt that timed out may still have created it).
+exists() {
+    states=$(oci compute instance list --compartment-id "$compartment" --display-name "$name" \
+        --query 'data[*]."lifecycle-state"' --raw-output 2>/dev/null)
+    echo "$states" | grep -q 'RUNNING\|PROVISIONING\|STARTING\|STOPPED\|STOPPING'
+}
+if exists; then
     log "$name exists already: see Compute → Instances"
     exit 0
 fi
@@ -35,6 +39,10 @@ log "availability domain $ad, image $image"
 attempt=0
 while :; do
     for shape in $shapes; do
+        if exists; then
+            log "$name exists now: see Compute → Instances for its public IP"
+            exit 0
+        fi
         attempt=$((attempt + 1))
         ocpus=${shape%%:*}
         memory=${shape#*:}
@@ -49,12 +57,16 @@ while :; do
             log "created $name ($ocpus OCPU, $memory GB) after $attempt attempts: public IP $ip"
             exit 0
         fi
-        if echo "$out" | grep -qi 'out of host capacity\|out of capacity\|TooManyRequests\|InternalError'; then
+        if echo "$out" | grep -qi 'out of host capacity\|out of capacity'; then
             log "attempt $attempt ($ocpus OCPU, $memory GB): no capacity yet"
-        else
-            log "attempt $attempt failed for another reason, stopping:"
+        elif echo "$out" | grep -q 'NotAuthenticated\|NotAuthorized\|InvalidParameter\|LimitExceeded\|QuotaExceeded\|CannotParseRequest'; then
+            # Waiting won't fix these: a key, permission, quota or setting to correct.
+            log "attempt $attempt failed, stopping:"
             echo "$out"
             exit 1
+        else
+            # Network timeouts, rate limits, Oracle's temporary errors: try again.
+            log "attempt $attempt ($ocpus OCPU, $memory GB): $(echo "$out" | sed -n 's/.*"message": "\(.*\)",*$/\1/p' | head -1), retrying"
         fi
     done
     sleep "$wait"
