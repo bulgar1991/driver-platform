@@ -8,7 +8,6 @@ import { ReactiveFormsModule } from '@angular/forms'
 import { RouterLink } from '@angular/router'
 import { BookingOptions, VehicleOption } from '@/core/models'
 import { ButtonComponent } from '@/shared/components/button/button.component'
-import { CounterComponent } from '@/shared/components/counter/counter.component'
 import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { ContactForm, DetailsForm } from '../../booking-form'
@@ -20,7 +19,6 @@ import { ContactForm, DetailsForm } from '../../booking-form'
     ReactiveFormsModule,
     RouterLink,
     ButtonComponent,
-    CounterComponent,
     FormFieldComponent,
     MoneyPipe,
   ],
@@ -34,7 +32,6 @@ export class DetailsStepComponent {
   readonly options = input<BookingOptions | null>(null)
   readonly vehicle = input<VehicleOption | null>(null)
   readonly hasReturn = input(false)
-  readonly passengers = input(1)
   readonly loading = input(false)
   readonly back = output()
   readonly submitted = output()

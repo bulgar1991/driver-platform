@@ -11,12 +11,13 @@ import { ReactiveFormsModule } from '@angular/forms'
 import { todayInItaly } from '@/core/utils/italy-time'
 import { CounterComponent } from '@/shared/components/counter/counter.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
+import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { AddressInputComponent } from '../address-input/address-input.component'
-import { TripForm } from '../../booking-form'
+import { childSeatLimit, TripForm } from '../../booking-form'
 
 /**
  * One bar with the whole search, as on the big travel sites: one way or return, from, to, when,
- * passengers and bags, then Search. Used on top of the booking, on the home page and on its own page.
+ * passengers, bags and child seats, then Search. Used on top of the booking, on the home page and on its own page.
  */
 @Component({
   selector: 'app-search-bar',
@@ -25,6 +26,7 @@ import { TripForm } from '../../booking-form'
     AddressInputComponent,
     CounterComponent,
     IconComponent,
+    MoneyPipe,
   ],
   templateUrl: './search-bar.component.html',
   styleUrl: './search-bar.component.scss',
@@ -38,6 +40,8 @@ export class SearchBarComponent {
   readonly form = input.required<TripForm>()
   /** Shown next to "Return" when the return trip is cheaper. */
   readonly returnDiscount = input<number | null>(null)
+  /** Price of one child seat, shown next to them. */
+  readonly childSeatPrice = input<number | null>(null)
   /** Every field is filled and valid. */
   readonly searched = output()
 
@@ -54,6 +58,7 @@ export class SearchBarComponent {
     tooSoonOneHour: $localize`Book at least 1 hour ahead.`,
     tooSoon: (hours: number) =>
       $localize`Book at least ${hours}:hours: hours ahead.`,
+    childSeats: $localize`At most one child seat per passenger, and three per car.`,
   }
 
   protected shows(name: 'pickup' | 'dropoff'): boolean {
@@ -90,6 +95,9 @@ export class SearchBarComponent {
     if (this.shows('pickup') || this.shows('dropoff')) {
       return this.t.pickAddress
     }
+    if (this.form().hasError('childSeats')) {
+      return this.t.childSeats
+    }
     return this.whenError ?? this.returnError
   }
 
@@ -100,6 +108,21 @@ export class SearchBarComponent {
   protected get bags(): number {
     const { largeLuggage, smallLuggage } = this.form().getRawValue()
     return largeLuggage + smallLuggage
+  }
+
+  protected get seats(): number {
+    const { infantSeats, toddlerSeats, boosterSeats } =
+      this.form().getRawValue()
+    return infantSeats + toddlerSeats + boosterSeats
+  }
+
+  /** As many of this kind as there is room left for (one per passenger, three per car). */
+  protected seatMax(
+    name: 'infantSeats' | 'toddlerSeats' | 'boosterSeats'
+  ): number {
+    const own = this.form().controls[name].value
+    const room = childSeatLimit(this.passengers) - this.seats
+    return Math.max(own, own + room)
   }
 
   /** Swaps the two addresses (and their meeting points). */

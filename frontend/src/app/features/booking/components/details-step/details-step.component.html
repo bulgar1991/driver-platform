@@ -2,40 +2,6 @@
   <fieldset class="details-step__group" [formGroup]="details()">
     <legend class="details-step__legend" i18n>Options</legend>
 
-    <p class="details-step__hint">
-      <ng-container i18n>Child seats</ng-container>
-      @if (options()?.extras?.ChildSeat; as price) {
-        ·
-        <ng-container i18n
-          >{{
-            price | money // i18n(ph="price")
-          }}
-          each</ng-container
-        >
-      }
-    </p>
-    <app-counter
-      i18n-label
-      label="Infant seat"
-      i18n-hint
-      hint="Group 0+, 0–13 kg"
-      [max]="3"
-      formControlName="infantSeats" />
-    <app-counter
-      i18n-label
-      label="Child seat"
-      i18n-hint
-      hint="Group 1, 9–18 kg"
-      [max]="3"
-      formControlName="toddlerSeats" />
-    <app-counter
-      i18n-label
-      label="Booster"
-      i18n-hint
-      hint="Group 2/3, 15–36 kg"
-      [max]="3"
-      formControlName="boosterSeats" />
-
     <label class="details-step__toggle">
       <input
         class="details-step__checkbox"

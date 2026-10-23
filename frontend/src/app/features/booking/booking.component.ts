@@ -191,18 +191,9 @@ export class BookingComponent implements OnInit {
       .subscribe(() => dropoffMeetingPoint.setValue(null, { emitEvent: false }))
 
     // The price follows the form: any change of route, time, people or options re-quotes.
-    const {
-      infantSeats,
-      toddlerSeats,
-      boosterSeats,
-      nameSign,
-      returnNameSign,
-    } = this.forms.details.controls
+    const { nameSign, returnNameSign } = this.forms.details.controls
     merge(
       this.forms.trip.valueChanges,
-      infantSeats.valueChanges,
-      toddlerSeats.valueChanges,
-      boosterSeats.valueChanges,
       nameSign.valueChanges,
       returnNameSign.valueChanges
     )

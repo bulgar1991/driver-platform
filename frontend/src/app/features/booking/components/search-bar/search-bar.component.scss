@@ -36,7 +36,7 @@
   }
 
   &__frame {
-    @apply grid grid-cols-2 gap-1 rounded-xl bg-gold-gradient p-1 md:grid-cols-4 lg:grid-cols-[repeat(2,minmax(0,1.1fr))_minmax(9.5rem,0.85fr)_minmax(8.5rem,0.65fr)_minmax(9rem,0.7fr)_auto];
+    @apply grid grid-cols-2 gap-1 rounded-xl bg-gold-gradient p-1 md:grid-cols-4 lg:grid-cols-[repeat(2,minmax(0,1.1fr))_minmax(9.5rem,0.85fr)_minmax(8.5rem,0.65fr)_minmax(10.5rem,0.75fr)_auto];
     box-shadow: 0 18px 50px rgb(0 0 0 / 0.55);
   }
 
@@ -110,11 +110,11 @@
   }
 
   &__counts {
-    @apply flex items-center gap-4;
+    @apply flex items-center gap-2.5;
   }
 
   &__count {
-    @apply flex items-center gap-1.5 tabular-nums;
+    @apply flex items-center gap-1 tabular-nums;
   }
 
   &__count-icon {
@@ -137,6 +137,10 @@
     @apply absolute right-0 top-[calc(100%+0.5rem)] z-30 flex w-[min(22rem,calc(100vw-2rem))] flex-col gap-3 rounded-lg border border-ink-500 bg-ink-800 p-4;
     box-shadow: 0 24px 60px rgb(0 0 0 / 0.6);
     animation: fade-up 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  &__group-title {
+    @apply mt-1 border-t border-ink-600 pt-3 text-xs uppercase tracking-widest text-ivory-200;
   }
 
   &__done {

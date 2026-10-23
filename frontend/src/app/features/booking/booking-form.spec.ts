@@ -26,12 +26,11 @@ describe('booking form', () => {
       dropoff: fiumicino,
       date: '2026-11-03',
       time: '07:15',
-    })
-    forms.details.patchValue({
+      passengers: 3,
       toddlerSeats: 1,
       boosterSeats: 2,
-      nameSign: true,
     })
+    forms.details.patchValue({ nameSign: true })
 
     const request = toQuoteRequest(forms)
 
@@ -111,6 +110,7 @@ describe('booking form', () => {
       time: '07:15',
       passengers: 3,
       largeLuggage: 1,
+      boosterSeats: 1,
       returnTrip: true,
       returnDate: '2026-11-10',
       returnTime: '18:00',
@@ -124,6 +124,7 @@ describe('booking form', () => {
       passengers: 3,
       largeLuggage: 1,
       smallLuggage: 0,
+      boosterSeats: 1,
       returnTrip: true,
       returnDate: '2026-11-10',
       returnTime: '18:00',
@@ -131,5 +132,17 @@ describe('booking form', () => {
     expect(
       tripFromParams({ from: 'Roma', fromLat: 'x', pax: '40', date: '3 nov' })
     ).toEqual({})
+  })
+
+  it('allows one child seat per passenger and three per car, as the API', () => {
+    const forms = create()
+    forms.trip.patchValue({ passengers: 2, infantSeats: 1, boosterSeats: 1 })
+    expect(forms.trip.hasError('childSeats')).toBe(false)
+
+    forms.trip.patchValue({ passengers: 1 })
+    expect(forms.trip.getError('childSeats')).toEqual({ max: 1 })
+
+    forms.trip.patchValue({ passengers: 6, toddlerSeats: 2 })
+    expect(forms.trip.getError('childSeats')).toEqual({ max: 3 })
   })
 })

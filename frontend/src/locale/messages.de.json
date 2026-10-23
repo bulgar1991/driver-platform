@@ -841,6 +841,8 @@
     "7091554086554402429": "Verschieben Sie die Karte mit zwei Fingern",
     "8484794583492506371": "Mit ⌘ + Scrollen zoomen Sie die Karte",
     "3025584581693865916": "Mit Strg + Scrollen zoomen Sie die Karte",
-    "2930756815128343337": "Karte wird geladen…"
+    "2930756815128343337": "Karte wird geladen…",
+    "2325057401188569732": "{VAR_PLURAL, plural, =1 {1 Kindersitz} other {{INTERPOLATION} Kindersitze}}",
+    "5476748122964799194": "Höchstens ein Kindersitz pro Fahrgast und drei pro Fahrzeug."
   }
 }

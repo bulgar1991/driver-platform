@@ -841,6 +841,8 @@
     "7091554086554402429": "Utilisez deux doigts pour déplacer la carte",
     "8484794583492506371": "Utilisez ⌘ + défilement pour zoomer sur la carte",
     "3025584581693865916": "Utilisez Ctrl + défilement pour zoomer sur la carte",
-    "2930756815128343337": "Chargement de la carte…"
+    "2930756815128343337": "Chargement de la carte…",
+    "2325057401188569732": "{VAR_PLURAL, plural, =1 {1 siège enfant} other {{INTERPOLATION} sièges enfant}}",
+    "5476748122964799194": "Au maximum un siège enfant par passager et trois par véhicule."
   }
 }

@@ -124,6 +124,12 @@
               <app-icon class="search-bar__count-icon" name="luggage" />
               {{ bags }}
             </span>
+            @if (seats > 0) {
+              <span class="search-bar__count">
+                <app-icon class="search-bar__count-icon" name="seat" />
+                {{ seats }}
+              </span>
+            }
           </span>
           <span class="sr-only">
             <ng-container i18n>{passengers, plural,
@@ -136,6 +142,13 @@
               =1 {1 bag}
               other {{{ bags }} bags}
             }</ng-container>
+            @if (seats > 0) {
+              ·
+              <ng-container i18n>{seats, plural,
+                =1 {1 child seat}
+                other {{{ seats }} child seats}
+              }</ng-container>
+            }
           </span>
         </span>
         <app-icon class="search-bar__chevron" name="plus" />
@@ -167,6 +180,39 @@
             hint="Carry-on"
             [max]="16"
             formControlName="smallLuggage" />
+          <p class="search-bar__group-title">
+            <ng-container i18n>Child seats</ng-container>
+            @if (childSeatPrice(); as price) {
+              ·
+              <ng-container i18n
+                >{{
+                  price | money // i18n(ph="price")
+                }}
+                each</ng-container
+              >
+            }
+          </p>
+          <app-counter
+            i18n-label
+            label="Infant seat"
+            i18n-hint
+            hint="Group 0+, 0–13 kg"
+            [max]="seatMax('infantSeats')"
+            formControlName="infantSeats" />
+          <app-counter
+            i18n-label
+            label="Child seat"
+            i18n-hint
+            hint="Group 1, 9–18 kg"
+            [max]="seatMax('toddlerSeats')"
+            formControlName="toddlerSeats" />
+          <app-counter
+            i18n-label
+            label="Booster"
+            i18n-hint
+            hint="Group 2/3, 15–36 kg"
+            [max]="seatMax('boosterSeats')"
+            formControlName="boosterSeats" />
           <button
             type="button"
             class="search-bar__done"

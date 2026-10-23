@@ -29,6 +29,9 @@ export type TripForm = FormGroup<{
   passengers: FormControl<number>
   largeLuggage: FormControl<number>
   smallLuggage: FormControl<number>
+  infantSeats: FormControl<number>
+  toddlerSeats: FormControl<number>
+  boosterSeats: FormControl<number>
   returnTrip: FormControl<boolean>
   returnDate: FormControl<string>
   returnTime: FormControl<string>
@@ -37,9 +40,6 @@ export type TripForm = FormGroup<{
 }>
 
 export type DetailsForm = FormGroup<{
-  infantSeats: FormControl<number>
-  toddlerSeats: FormControl<number>
-  boosterSeats: FormControl<number>
   nameSign: FormControl<boolean>
   nameSignText: FormControl<string>
   flightNumber: FormControl<string>
@@ -67,6 +67,24 @@ const FLIGHT_PATTERN = /^[A-Za-z0-9 ]{2,16}$/
 
 /** The API's own default; the booking options bring the real value. */
 export const DEFAULT_MIN_LEAD_HOURS = 2
+
+/** As the API: one child seat per passenger at most, and three per car. */
+export const MAX_CHILD_SEATS = 3
+
+/** How many child seats the trip can have in all, for its number of passengers. */
+export function childSeatLimit(passengers: number): number {
+  return Math.min(passengers, MAX_CHILD_SEATS)
+}
+
+function childSeatValidator(group: AbstractControl): ValidationErrors | null {
+  const { passengers, infantSeats, toddlerSeats, boosterSeats } = (
+    group as TripForm
+  ).getRawValue()
+  const max = childSeatLimit(passengers)
+  return infantSeats + toddlerSeats + boosterSeats > max
+    ? { childSeats: { max } }
+    : null
+}
 
 /** The return date and time are required only when a return trip is asked for. */
 function returnLegValidator(group: AbstractControl): ValidationErrors | null {
@@ -100,7 +118,7 @@ function leadTimeValidator(minLeadHours: () => number) {
   }
 }
 
-/** From, to, when and how many: the search bar on the home page and on the booking page. */
+/** From, to, when and who (passengers, bags, child seats): the search bar on top of the booking. */
 export function createTripForm(
   fb: FormBuilder,
   minLeadHours: () => number = () => DEFAULT_MIN_LEAD_HOURS
@@ -115,13 +133,22 @@ export function createTripForm(
       passengers: nn.control(2, [Validators.min(1), Validators.max(8)]),
       largeLuggage: nn.control(2),
       smallLuggage: nn.control(0),
+      infantSeats: nn.control(0),
+      toddlerSeats: nn.control(0),
+      boosterSeats: nn.control(0),
       returnTrip: nn.control(false),
       returnDate: nn.control(''),
       returnTime: nn.control(''),
       pickupMeetingPoint: fb.control<string | null>(null),
       dropoffMeetingPoint: fb.control<string | null>(null),
     },
-    { validators: [returnLegValidator, leadTimeValidator(minLeadHours)] }
+    {
+      validators: [
+        returnLegValidator,
+        leadTimeValidator(minLeadHours),
+        childSeatValidator,
+      ],
+    }
   )
 }
 
@@ -133,9 +160,6 @@ export function createBookingForms(
   return {
     trip: createTripForm(fb, minLeadHours),
     details: nn.group({
-      infantSeats: nn.control(0),
-      toddlerSeats: nn.control(0),
-      boosterSeats: nn.control(0),
       nameSign: nn.control(false),
       nameSignText: nn.control('', Validators.maxLength(60)),
       flightNumber: nn.control('', Validators.pattern(FLIGHT_PATTERN)),
@@ -163,8 +187,8 @@ export function createBookingForms(
   }
 }
 
-function childSeats(details: DetailsForm): ChildSeatRequest[] {
-  const v = details.getRawValue()
+function childSeats(trip: TripForm): ChildSeatRequest[] {
+  const v = trip.getRawValue()
   const seats: [ChildSeatGroup, number][] = [
     ['Infant', v.infantSeats],
     ['Toddler', v.toddlerSeats],
@@ -185,7 +209,7 @@ export function toQuoteRequest(forms: BookingForms): QuoteRequest {
     passengers: trip.passengers,
     largeLuggage: trip.largeLuggage,
     smallLuggage: trip.smallLuggage,
-    childSeats: childSeats(forms.details),
+    childSeats: childSeats(forms.trip),
     nameSign: details.nameSign,
     pickupMeetingPoint: trip.pickupMeetingPoint,
     dropoffMeetingPoint: trip.dropoffMeetingPoint,
@@ -245,6 +269,9 @@ export function tripToParams(trip: TripForm): Params {
     pax: v.passengers,
     bags: v.largeLuggage,
     small: v.smallLuggage,
+    infant: v.infantSeats || null,
+    toddler: v.toddlerSeats || null,
+    booster: v.boosterSeats || null,
     returnDate: v.returnTrip ? v.returnDate : null,
     returnTime: v.returnTrip ? v.returnTime : null,
   }
@@ -296,6 +323,9 @@ export function tripFromParams(
     passengers: count('pax', 1, 8),
     largeLuggage: count('bags', 0, 16),
     smallLuggage: count('small', 0, 16),
+    infantSeats: count('infant', 0, MAX_CHILD_SEATS),
+    toddlerSeats: count('toddler', 0, MAX_CHILD_SEATS),
+    boosterSeats: count('booster', 0, MAX_CHILD_SEATS),
     returnDate: date('returnDate'),
     returnTime: time('returnTime'),
   }
