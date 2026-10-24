@@ -1,0 +1,45 @@
+// Block: photo-field — picture picker in the Drivers and Vehicles dialogs.
+.photo-field {
+  @apply flex items-center gap-4;
+
+  &__frame {
+    @apply flex h-24 w-32 shrink-0 items-center justify-center overflow-hidden rounded-sm border border-ink-600 bg-ink-800 text-2xl text-ivory-400;
+
+    &--round {
+      @apply h-24 w-24 rounded-full;
+    }
+  }
+
+  &__image {
+    @apply h-full w-full object-cover;
+  }
+
+  &__body {
+    @apply flex min-w-0 flex-col gap-2;
+  }
+
+  &__buttons {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  // The real input stays focusable for keyboards; the button look is on the span.
+  &__choose {
+    @apply relative cursor-pointer;
+
+    &:focus-within {
+      @apply rounded-sm outline outline-2 outline-offset-2 outline-gold;
+    }
+  }
+
+  &__input {
+    @apply absolute inset-0 cursor-pointer opacity-0;
+  }
+
+  &__hint {
+    @apply text-xs text-ivory-400;
+  }
+
+  &__error {
+    @apply text-xs text-danger;
+  }
+}

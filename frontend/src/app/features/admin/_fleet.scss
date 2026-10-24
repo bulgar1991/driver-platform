@@ -42,6 +42,23 @@
     @apply block text-left text-gold hover:underline;
   }
 
+  &__identity {
+    @apply flex items-center gap-3;
+  }
+
+  // Car pictures are wide; people get a round avatar with their initials until there is one.
+  &__thumb {
+    @apply flex h-9 w-12 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-ink-700 text-xs uppercase text-ivory-400;
+
+    &--round {
+      @apply h-9 w-9 rounded-full;
+    }
+  }
+
+  &__thumb-image {
+    @apply h-full w-full object-cover;
+  }
+
   &__upper {
     @apply uppercase;
   }
@@ -96,7 +113,16 @@
   }
 
   &__actions {
-    @apply flex justify-end gap-3;
+    @apply flex flex-wrap items-center justify-end gap-3;
+  }
+
+  // Delete sits apart, on the left, away from Save.
+  &__delete {
+    @apply mr-auto;
+  }
+
+  &__confirm {
+    @apply flex flex-wrap items-center gap-2 text-sm text-ivory;
   }
 
   &__nowrap {

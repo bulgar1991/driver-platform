@@ -34,6 +34,10 @@ public abstract partial class Texts
     public abstract string PhoneTaken { get; }
     public abstract string VehicleNotFound { get; }
     public abstract string PlateTaken { get; }
+    public abstract string VehicleHasShifts { get; }
+    public abstract string DriverHasShifts { get; }
+    public abstract string PhotoTooLarge { get; }
+    public abstract string PhotoNotAnImage { get; }
     public abstract string ZoneNotFound { get; }
     public abstract string PickCentre { get; }
     public abstract string PolygonOutsideServiceArea { get; }

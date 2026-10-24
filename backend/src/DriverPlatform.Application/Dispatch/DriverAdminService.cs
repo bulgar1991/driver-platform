@@ -17,9 +17,12 @@ public interface IDriverAdminService
     Task<DriverDto> UpdateAsync(Guid id, DriverRequest request, CancellationToken cancellationToken);
     Task<DriverLinkResponse> GetLinkAsync(Guid id, CancellationToken cancellationToken);
     Task<DriverLinkResponse> RotateLinkAsync(Guid id, CancellationToken cancellationToken);
+    Task<DriverDto> SetPhotoAsync(Guid id, byte[] data, CancellationToken cancellationToken);
+    Task<DriverDto> RemovePhotoAsync(Guid id, CancellationToken cancellationToken);
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken);
 }
 
-/// <summary>Drivers are deactivated, never deleted: past shifts and reviews keep pointing at them.</summary>
+/// <summary>Drivers with shifts or reviews are deactivated, not deleted: those records keep pointing at them.</summary>
 public sealed class DriverAdminService(IAppDbContext db, IDriverLinks links, IAuditLogger audit, TimeProvider clock) : IDriverAdminService
 {
     public async Task<IReadOnlyList<DriverDto>> ListAsync(bool includeInactive, CancellationToken cancellationToken)
@@ -116,6 +119,44 @@ public sealed class DriverAdminService(IAppDbContext db, IDriverLinks links, IAu
         return await ToDtoAsync(driver, cancellationToken);
     }
 
+    public async Task<DriverDto> SetPhotoAsync(Guid id, byte[] data, CancellationToken cancellationToken)
+    {
+        var driver = await FindAsync(id, cancellationToken);
+        Photos.Remove(db, driver.PhotoId);
+        driver.PhotoId = Photos.Add(db, data).Id;
+
+        audit.Log("driver.photo_set", nameof(Driver), id.ToString(), new { data.Length });
+        await db.SaveChangesAsync(cancellationToken);
+        return await ToDtoAsync(driver, cancellationToken);
+    }
+
+    public async Task<DriverDto> RemovePhotoAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var driver = await FindAsync(id, cancellationToken);
+        Photos.Remove(db, driver.PhotoId);
+        driver.PhotoId = null;
+
+        audit.Log("driver.photo_removed", nameof(Driver), id.ToString());
+        await db.SaveChangesAsync(cancellationToken);
+        return await ToDtoAsync(driver, cancellationToken);
+    }
+
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var driver = await FindAsync(id, cancellationToken);
+        if (await db.Assignments.AnyAsync(a => a.DriverId == id, cancellationToken)
+            || await db.Reviews.AnyAsync(r => r.DriverId == id, cancellationToken))
+        {
+            throw new ConflictException(Texts.Current.DriverHasShifts);
+        }
+        Photos.Remove(db, driver.PhotoId);
+        db.DriverDocuments.RemoveRange(driver.Documents);
+        db.Drivers.Remove(driver);
+
+        audit.Log("driver.deleted", nameof(Driver), id.ToString(), new { driver.FirstName, driver.LastName });
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
     private async Task<Driver> FindAsync(Guid id, CancellationToken cancellationToken) =>
         await db.Drivers.Include(d => d.Documents).FirstOrDefaultAsync(d => d.Id == id, cancellationToken)
         ?? throw new NotFoundException(Texts.Current.DriverNotFound);
@@ -166,7 +207,7 @@ public sealed class DriverAdminService(IAppDbContext db, IDriverLinks links, IAu
 
     private DriverDto ToDto(Driver d, Stats? stats) => new(
         d.Id, d.FirstName, d.LastName, d.Phone, d.Email, d.Languages, d.PreferredAreas, d.CommissionPercent,
-        d.IsActive, d.IsAvailable, d.Notes,
+        d.IsActive, d.IsAvailable, d.Notes, d.PhotoId,
         d.Documents.OrderBy(x => x.Type).Select(x => new DriverDocumentDto { Id = x.Id, Type = x.Type, Number = x.Number, ExpiresOn = x.ExpiresOn }).ToList(),
         DocumentRules.AlertCount(DocumentRules.Dated(d), Today()),
         stats?.Rating,

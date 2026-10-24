@@ -1,0 +1,50 @@
+<div class="photo-field">
+  <div
+    class="photo-field__frame"
+    [class.photo-field__frame--round]="shape() === 'round'">
+    @if (draft().src(); as src) {
+      <img class="photo-field__image" [src]="src" [alt]="alt()" />
+    } @else {
+      <app-icon [name]="shape() === 'round' ? 'users' : 'car'" />
+    }
+  </div>
+  <div class="photo-field__body">
+    <div class="photo-field__buttons">
+      <label class="photo-field__choose">
+        <input
+          class="photo-field__input"
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/heic"
+          [disabled]="busy()"
+          (change)="picked($event)" />
+        <span class="button button--outline button--sm"
+          ><app-icon name="edit" />&ngsp;
+          @if (draft().src()) {
+            <ng-container i18n>Change picture</ng-container>
+          } @else {
+            <ng-container i18n>Add picture</ng-container>
+          }
+        </span>
+      </label>
+      @if (draft().src()) {
+        <button
+          appButton
+          size="sm"
+          variant="ghost"
+          type="button"
+          (click)="remove()"
+          ><app-icon name="trash" />&ngsp;<ng-container i18n
+            >Remove</ng-container
+          ></button
+        >
+      }
+    </div>
+    @if (error(); as message) {
+      <p class="photo-field__error" role="alert">{{ message }}</p>
+    } @else if (draft().change() !== undefined) {
+      <p class="photo-field__hint"
+        ><ng-container i18n>Saved when you save the form.</ng-container></p
+      >
+    }
+  </div>
+</div>

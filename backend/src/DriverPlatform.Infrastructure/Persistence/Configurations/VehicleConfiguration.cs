@@ -11,5 +11,6 @@ internal sealed class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
         builder.Property(v => v.Notes).HasMaxLength(2000);
         builder.Property(v => v.PlateNumber).HasMaxLength(16);
         builder.HasIndex(v => v.PlateNumber).IsUnique();
+        builder.HasOne<Photo>().WithMany().HasForeignKey(v => v.PhotoId).OnDelete(DeleteBehavior.SetNull);
     }
 }

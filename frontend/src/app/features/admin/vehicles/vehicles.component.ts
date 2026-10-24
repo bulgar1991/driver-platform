@@ -8,7 +8,7 @@ import {
 } from '@angular/core'
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Dialog } from 'primeng/dialog'
-import { finalize } from 'rxjs'
+import { finalize, of, switchMap } from 'rxjs'
 import { Vehicle, VehicleCategory } from '@/core/models'
 import { AdminFleetService } from '@/core/services/admin-fleet.service'
 import { todayInItaly } from '@/core/utils/italy-time'
@@ -17,6 +17,8 @@ import { ButtonComponent } from '@/shared/components/button/button.component'
 import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
+import { PhotoDraft } from '@/features/admin/photo-field/photo-draft'
+import { PhotoFieldComponent } from '@/features/admin/photo-field/photo-field.component'
 
 const CATEGORIES: {
   value: VehicleCategory
@@ -40,6 +42,7 @@ const CATEGORIES: {
     ButtonComponent,
     FormFieldComponent,
     IconComponent,
+    PhotoFieldComponent,
   ],
   templateUrl: './vehicles.component.html',
   styleUrl: './vehicles.component.scss',
@@ -51,9 +54,10 @@ export class VehiclesComponent implements OnInit {
     editVehicle: $localize`Edit vehicle`,
     newVehicle: $localize`New vehicle`,
     plateHint: $localize`e.g. GA123BC`,
+    photoAlt: $localize`Vehicle picture`,
   }
 
-  private readonly api = inject(AdminFleetService)
+  protected readonly api = inject(AdminFleetService)
   private readonly fb = inject(FormBuilder).nonNullable
 
   protected readonly categories = CATEGORIES
@@ -66,6 +70,8 @@ export class VehiclesComponent implements OnInit {
   protected readonly editing = signal<Vehicle | null | undefined>(undefined)
   protected readonly saving = signal(false)
   protected readonly formError = signal<string | null>(null)
+  protected readonly confirmDelete = signal(false)
+  protected readonly photo = new PhotoDraft()
 
   protected readonly form = this.fb.group({
     plateNumber: [
@@ -127,6 +133,8 @@ export class VehiclesComponent implements OnInit {
       isActive: vehicle?.isActive ?? true,
       notes: vehicle?.notes ?? '',
     })
+    this.photo.reset(this.api.photoUrl(vehicle?.photoId ?? null))
+    this.confirmDelete.set(false)
     this.editing.set(vehicle)
   }
 
@@ -150,13 +158,46 @@ export class VehiclesComponent implements OnInit {
         },
         this.editing()?.id
       )
-      .pipe(finalize(() => this.saving.set(false)))
+      .pipe(
+        switchMap(saved => {
+          // From here on it exists: if the picture fails, saving again updates it instead of adding a copy.
+          this.editing.set(saved)
+          const photo = this.photo.change()
+          return photo === undefined
+            ? of(saved)
+            : this.api.setVehiclePhoto(saved.id, photo)
+        }),
+        finalize(() => this.saving.set(false))
+      )
       .subscribe({
         next: () => {
           this.editing.set(undefined)
           this.load()
         },
         error: err => this.formError.set(problemMessage(err)),
+      })
+  }
+
+  /** Only for a vehicle never put on a shift; the API says so otherwise. */
+  protected remove(): void {
+    const vehicle = this.editing()
+    if (!vehicle) {
+      return
+    }
+    this.saving.set(true)
+    this.formError.set(null)
+    this.api
+      .deleteVehicle(vehicle.id)
+      .pipe(finalize(() => this.saving.set(false)))
+      .subscribe({
+        next: () => {
+          this.editing.set(undefined)
+          this.load()
+        },
+        error: err => {
+          this.confirmDelete.set(false)
+          this.formError.set(problemMessage(err))
+        },
       })
   }
 

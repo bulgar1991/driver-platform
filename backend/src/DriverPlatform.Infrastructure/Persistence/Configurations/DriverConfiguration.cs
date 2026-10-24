@@ -15,5 +15,6 @@ internal sealed class DriverConfiguration : IEntityTypeConfiguration<Driver>
         builder.HasIndex(d => d.AccessTokenHash).IsUnique();
         builder.Property(d => d.CommissionPercent).HasPrecision(5, 2);
         builder.HasMany(d => d.Documents).WithOne(doc => doc.Driver).OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne<Photo>().WithMany().HasForeignKey(d => d.PhotoId).OnDelete(DeleteBehavior.SetNull);
     }
 }

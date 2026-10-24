@@ -18,6 +18,7 @@ public class Driver : Entity
     public int LinkVersion { get; set; }
     public decimal CommissionPercent { get; set; }
     public string? Notes { get; set; }
+    public Guid? PhotoId { get; set; }
 
     public ICollection<DriverDocument> Documents { get; set; } = [];
     public ICollection<Assignment> Assignments { get; set; } = [];

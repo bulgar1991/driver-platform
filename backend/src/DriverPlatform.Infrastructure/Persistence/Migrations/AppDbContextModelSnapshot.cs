@@ -508,6 +508,10 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(32)")
                         .HasColumnName("phone");
 
+                    b.Property<Guid?>("PhotoId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("photo_id");
+
                     b.PrimitiveCollection<List<string>>("PreferredAreas")
                         .IsRequired()
                         .HasColumnType("text[]")
@@ -523,6 +527,9 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                     b.HasIndex("AccessTokenHash")
                         .IsUnique()
                         .HasDatabaseName("ix_drivers_access_token_hash");
+
+                    b.HasIndex("PhotoId")
+                        .HasDatabaseName("ix_drivers_photo_id");
 
                     b.ToTable("drivers", (string)null);
                 });
@@ -1149,6 +1156,38 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("payments", (string)null);
                 });
 
+            modelBuilder.Entity("DriverPlatform.Domain.Entities.Photo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("content_type");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<byte[]>("Data")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("data");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_photos");
+
+                    b.ToTable("photos", (string)null);
+                });
+
             modelBuilder.Entity("DriverPlatform.Domain.Entities.PricingSettings", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1531,6 +1570,10 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(2000)")
                         .HasColumnName("notes");
 
+                    b.Property<Guid?>("PhotoId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("photo_id");
+
                     b.Property<string>("PlateNumber")
                         .IsRequired()
                         .HasMaxLength(16)
@@ -1547,6 +1590,9 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_vehicles");
+
+                    b.HasIndex("PhotoId")
+                        .HasDatabaseName("ix_vehicles_photo_id");
 
                     b.HasIndex("PlateNumber")
                         .IsUnique()
@@ -2019,6 +2065,15 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("PriceLines");
                 });
 
+            modelBuilder.Entity("DriverPlatform.Domain.Entities.Driver", b =>
+                {
+                    b.HasOne("DriverPlatform.Domain.Entities.Photo", null)
+                        .WithMany()
+                        .HasForeignKey("PhotoId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_drivers_photos_photo_id");
+                });
+
             modelBuilder.Entity("DriverPlatform.Domain.Entities.DriverDocument", b =>
                 {
                     b.HasOne("DriverPlatform.Domain.Entities.Driver", "Driver")
@@ -2276,6 +2331,15 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         });
 
                     b.Navigation("NameTranslations");
+                });
+
+            modelBuilder.Entity("DriverPlatform.Domain.Entities.Vehicle", b =>
+                {
+                    b.HasOne("DriverPlatform.Domain.Entities.Photo", null)
+                        .WithMany()
+                        .HasForeignKey("PhotoId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_vehicles_photos_photo_id");
                 });
 
             modelBuilder.Entity("DriverPlatform.Domain.Entities.Zone", b =>

@@ -31,6 +31,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, TimePro
     public DbSet<NotificationLog> NotificationLogs => Set<NotificationLog>();
     public DbSet<PartnerWebhook> PartnerWebhooks => Set<PartnerWebhook>();
     public DbSet<DriverApplication> DriverApplications => Set<DriverApplication>();
+    public DbSet<Photo> Photos => Set<Photo>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);

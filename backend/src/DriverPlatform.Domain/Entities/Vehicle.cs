@@ -20,4 +20,5 @@ public class Vehicle : Entity
     public int MileageKm { get; set; }
     public bool IsActive { get; set; } = true;
     public string? Notes { get; set; }
+    public Guid? PhotoId { get; set; }
 }

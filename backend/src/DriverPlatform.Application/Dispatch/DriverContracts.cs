@@ -48,6 +48,8 @@ public sealed record DriverDto(
     bool IsActive,
     bool IsAvailable,
     string? Notes,
+    /// <summary>Picture at GET /api/photos/{id}; null when there is none.</summary>
+    Guid? PhotoId,
     IReadOnlyList<DriverDocumentDto> Documents,
     /// <summary>Documents expired or expiring within 30 days.</summary>
     int DocumentAlerts,
@@ -102,4 +104,6 @@ public sealed record VehicleDto(
     int MileageKm,
     bool IsActive,
     string? Notes,
+    /// <summary>Picture at GET /api/photos/{id}; null when there is none.</summary>
+    Guid? PhotoId,
     int DocumentAlerts);

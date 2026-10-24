@@ -44,17 +44,28 @@
         @for (d of drivers(); track d.id) {
           <tr class="fleet__row" (click)="open(d)">
             <td>
-              <button
-                type="button"
-                class="fleet__name"
-                (click)="open(d); $event.stopPropagation()"
-                >{{ d.firstName }} {{ d.lastName }}</button
-              >
-              @if (d.preferredAreas.length) {
-                <span class="fleet__muted">{{
-                  d.preferredAreas.join(', ')
-                }}</span>
-              }
+              <div class="fleet__identity">
+                <span class="fleet__thumb fleet__thumb--round">
+                  @if (api.photoUrl(d.photoId); as src) {
+                    <img class="fleet__thumb-image" [src]="src" alt="" />
+                  } @else {
+                    {{ d.firstName.charAt(0) }}{{ d.lastName.charAt(0) }}
+                  }
+                </span>
+                <div>
+                  <button
+                    type="button"
+                    class="fleet__name"
+                    (click)="open(d); $event.stopPropagation()"
+                    >{{ d.firstName }} {{ d.lastName }}</button
+                  >
+                  @if (d.preferredAreas.length) {
+                    <span class="fleet__muted">{{
+                      d.preferredAreas.join(', ')
+                    }}</span>
+                  }
+                </div>
+              </div>
             </td>
             <td>
               {{ d.phone }}
@@ -133,6 +144,7 @@
     @if (formError(); as message) {
       <p class="alert alert--error" role="alert">{{ message }}</p>
     }
+    <app-photo-field [draft]="photo" [alt]="tx.photoAlt" shape="round" />
     <div class="fleet__grid">
       <app-form-field
         i18n-label
@@ -335,6 +347,42 @@
     </app-form-field>
 
     <div class="fleet__actions">
+      @if (editing()) {
+        <div class="fleet__delete">
+          @if (confirmDelete()) {
+            <span class="fleet__confirm">
+              <ng-container i18n>Delete this driver?</ng-container>&ngsp;<button
+                appButton
+                size="sm"
+                variant="outline"
+                type="button"
+                [disabled]="saving()"
+                (click)="remove()"
+                ><ng-container i18n>Delete</ng-container></button
+              >
+              <button
+                appButton
+                size="sm"
+                variant="ghost"
+                type="button"
+                (click)="confirmDelete.set(false)"
+                ><ng-container i18n>Keep</ng-container></button
+              >
+            </span>
+          } @else {
+            <button
+              appButton
+              size="sm"
+              variant="ghost"
+              type="button"
+              (click)="confirmDelete.set(true)"
+              ><app-icon name="trash" />&ngsp;<ng-container i18n
+                >Delete</ng-container
+              ></button
+            >
+          }
+        </div>
+      }
       <button
         appButton
         type="button"

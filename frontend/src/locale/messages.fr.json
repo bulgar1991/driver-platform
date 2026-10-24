@@ -843,6 +843,14 @@
     "3025584581693865916": "Utilisez Ctrl + défilement pour zoomer sur la carte",
     "2930756815128343337": "Chargement de la carte…",
     "2325057401188569732": "{VAR_PLURAL, plural, =1 {1 siège enfant} other {{INTERPOLATION} sièges enfant}}",
-    "5476748122964799194": "Au maximum un siège enfant par passager et trois par véhicule."
+    "5476748122964799194": "Au maximum un siège enfant par passager et trois par véhicule.",
+    "6193123133418684257": "Supprimer ce chauffeur ?",
+    "4164161054364592694": "Photo du chauffeur",
+    "2059878047132087735": "Changer la photo",
+    "6029843669852625022": "Ajouter une photo",
+    "2421786756478669024": "Enregistrée avec le formulaire.",
+    "1957275048820327390": "Impossible de lire cette image. Choisissez un JPEG, PNG ou WebP.",
+    "3305259980206325593": "Supprimer ce véhicule ?",
+    "1881533568561984263": "Photo du véhicule"
   }
 }

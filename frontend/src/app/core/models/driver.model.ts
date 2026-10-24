@@ -30,6 +30,8 @@ export interface DriverRequest {
 
 export interface Driver extends DriverRequest {
   id: string
+  /** Picture at GET /api/photos/{id}. */
+  photoId: string | null
   /** Documents expired or expiring within 30 days. */
   documentAlerts: number
   /** Average client rating 1–5, null before the first review. */

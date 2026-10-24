@@ -62,6 +62,10 @@ internal sealed partial class EnglishTexts
     public override string PhoneTaken => "Another driver already has this phone number.";
     public override string VehicleNotFound => "Vehicle not found.";
     public override string PlateTaken => "Another vehicle already has this plate.";
+    public override string VehicleHasShifts => "This vehicle has been on shifts, so it can't be deleted. Untick Active instead.";
+    public override string DriverHasShifts => "This driver has shifts or reviews, so they can't be deleted. Untick Active instead.";
+    public override string PhotoTooLarge => "The picture is larger than 5 MB.";
+    public override string PhotoNotAnImage => "Choose a JPEG, PNG or WebP picture.";
     public override string ZoneNotFound => "Zone not found.";
     public override string PickCentre => "Pick the centre on the map and set a radius.";
     public override string PolygonOutsideServiceArea => "All points must be in the service area (Italy, France, Germany, Switzerland).";

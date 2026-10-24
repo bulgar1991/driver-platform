@@ -21,5 +21,7 @@ export interface VehicleRequest {
 
 export interface Vehicle extends VehicleRequest {
   id: string
+  /** Picture at GET /api/photos/{id}. */
+  photoId: string | null
   documentAlerts: number
 }

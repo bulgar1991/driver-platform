@@ -14,7 +14,7 @@ import {
   Validators,
 } from '@angular/forms'
 import { Dialog } from 'primeng/dialog'
-import { finalize } from 'rxjs'
+import { finalize, of, switchMap } from 'rxjs'
 import { Driver, DriverDocument, DriverDocumentType } from '@/core/models'
 import { AdminFleetService } from '@/core/services/admin-fleet.service'
 import { todayInItaly } from '@/core/utils/italy-time'
@@ -23,6 +23,8 @@ import { ButtonComponent } from '@/shared/components/button/button.component'
 import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
+import { PhotoDraft } from '@/features/admin/photo-field/photo-draft'
+import { PhotoFieldComponent } from '@/features/admin/photo-field/photo-field.component'
 
 export const DOCUMENT_TYPES: { value: DriverDocumentType; label: string }[] = [
   { value: 'DrivingLicence', label: $localize`Driving licence` },
@@ -53,6 +55,7 @@ type DocumentForm = FormGroup<{
     ButtonComponent,
     FormFieldComponent,
     IconComponent,
+    PhotoFieldComponent,
   ],
   templateUrl: './drivers.component.html',
   styleUrl: './drivers.component.scss',
@@ -68,9 +71,10 @@ export class DriversComponent implements OnInit {
     documentNumber: (n: number) => $localize`Document ${n}:number: number`,
     documentExpiry: (n: number) => $localize`Document ${n}:number: expiry date`,
     removeDocument: (n: number) => $localize`Remove document ${n}:number:`,
+    photoAlt: $localize`Driver's picture`,
   }
 
-  private readonly api = inject(AdminFleetService)
+  protected readonly api = inject(AdminFleetService)
   private readonly fb = inject(FormBuilder).nonNullable
 
   protected readonly documentTypes = DOCUMENT_TYPES
@@ -88,6 +92,8 @@ export class DriversComponent implements OnInit {
   protected readonly formError = signal<string | null>(null)
   protected readonly link = signal<string | null>(null)
   protected readonly linkMessage = signal<string | null>(null)
+  protected readonly confirmDelete = signal(false)
+  protected readonly photo = new PhotoDraft()
 
   protected readonly form = this.fb.group({
     firstName: ['', [Validators.required, Validators.maxLength(100)]],
@@ -138,6 +144,8 @@ export class DriversComponent implements OnInit {
       isAvailable: driver?.isAvailable ?? true,
       notes: driver?.notes ?? '',
     })
+    this.photo.reset(this.api.photoUrl(driver?.photoId ?? null))
+    this.confirmDelete.set(false)
     this.editing.set(driver)
     this.link.set(null)
     this.linkMessage.set(null)
@@ -213,13 +221,46 @@ export class DriversComponent implements OnInit {
         },
         driver?.id
       )
-      .pipe(finalize(() => this.saving.set(false)))
+      .pipe(
+        switchMap(saved => {
+          // From here on it exists: if the picture fails, saving again updates it instead of adding a copy.
+          this.editing.set(saved)
+          const photo = this.photo.change()
+          return photo === undefined
+            ? of(saved)
+            : this.api.setDriverPhoto(saved.id, photo)
+        }),
+        finalize(() => this.saving.set(false))
+      )
       .subscribe({
         next: () => {
           this.editing.set(undefined)
           this.load()
         },
         error: err => this.formError.set(problemMessage(err)),
+      })
+  }
+
+  /** Only for a driver with no shifts or reviews; the API says so otherwise. */
+  protected remove(): void {
+    const driver = this.editing()
+    if (!driver) {
+      return
+    }
+    this.saving.set(true)
+    this.formError.set(null)
+    this.api
+      .deleteDriver(driver.id)
+      .pipe(finalize(() => this.saving.set(false)))
+      .subscribe({
+        next: () => {
+          this.editing.set(undefined)
+          this.load()
+        },
+        error: err => {
+          this.confirmDelete.set(false)
+          this.formError.set(problemMessage(err))
+        },
       })
   }
 

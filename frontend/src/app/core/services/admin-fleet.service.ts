@@ -10,11 +10,17 @@ import {
 } from '../models'
 import { API_BASE_URL } from '../tokens/api-base-url.token'
 
-/** Drivers and vehicles. They are deactivated, never deleted. */
+/** Drivers and vehicles. Only those never used on a shift can be deleted; the others are deactivated. */
 @Injectable({ providedIn: 'root' })
 export class AdminFleetService {
   private readonly http = inject(HttpClient)
-  private readonly url = `${inject(API_BASE_URL)}/admin`
+  private readonly api = inject(API_BASE_URL)
+  private readonly url = `${this.api}/admin`
+
+  /** Pictures are public by id, so a plain <img> can show them. */
+  photoUrl(photoId: string | null): string | null {
+    return photoId ? `${this.api}/photos/${photoId}` : null
+  }
 
   drivers(includeInactive = false): Observable<Driver[]> {
     const params = new HttpParams().set('includeInactive', includeInactive)
@@ -25,6 +31,17 @@ export class AdminFleetService {
     return id
       ? this.http.put<Driver>(`${this.url}/drivers/${id}`, request)
       : this.http.post<Driver>(`${this.url}/drivers`, request)
+  }
+
+  deleteDriver(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.url}/drivers/${id}`)
+  }
+
+  /** Uploads a new picture, or removes it when `photo` is null. */
+  setDriverPhoto(id: string, photo: Blob | null): Observable<Driver> {
+    return photo
+      ? this.http.put<Driver>(`${this.url}/drivers/${id}/photo`, form(photo))
+      : this.http.delete<Driver>(`${this.url}/drivers/${id}/photo`)
   }
 
   /** The driver's personal link (always the same until regenerated). */
@@ -58,4 +75,21 @@ export class AdminFleetService {
       ? this.http.put<Vehicle>(`${this.url}/vehicles/${id}`, request)
       : this.http.post<Vehicle>(`${this.url}/vehicles`, request)
   }
+
+  deleteVehicle(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.url}/vehicles/${id}`)
+  }
+
+  /** Uploads a new picture, or removes it when `photo` is null. */
+  setVehiclePhoto(id: string, photo: Blob | null): Observable<Vehicle> {
+    return photo
+      ? this.http.put<Vehicle>(`${this.url}/vehicles/${id}/photo`, form(photo))
+      : this.http.delete<Vehicle>(`${this.url}/vehicles/${id}/photo`)
+  }
+}
+
+function form(photo: Blob): FormData {
+  const data = new FormData()
+  data.append('file', photo, 'photo.jpg')
+  return data
 }

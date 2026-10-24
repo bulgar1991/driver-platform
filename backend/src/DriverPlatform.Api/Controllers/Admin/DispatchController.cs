@@ -104,6 +104,22 @@ public sealed class DispatchController(
     public async Task<ActionResult<DriverLinkResponse>> RotateDriverLink(Guid id, CancellationToken cancellationToken) =>
         Ok(await drivers.RotateLinkAsync(id, cancellationToken));
 
+    [HttpDelete("drivers/{id:guid}")]
+    public async Task<IActionResult> DeleteDriver(Guid id, CancellationToken cancellationToken)
+    {
+        await drivers.DeleteAsync(id, cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPut("drivers/{id:guid}/photo")]
+    [RequestSizeLimit(Photos.MaxBytes + 64 * 1024)]
+    public async Task<ActionResult<DriverDto>> DriverPhoto(Guid id, IFormFile file, CancellationToken cancellationToken) =>
+        Ok(await drivers.SetPhotoAsync(id, await ReadAsync(file, cancellationToken), cancellationToken));
+
+    [HttpDelete("drivers/{id:guid}/photo")]
+    public async Task<ActionResult<DriverDto>> RemoveDriverPhoto(Guid id, CancellationToken cancellationToken) =>
+        Ok(await drivers.RemovePhotoAsync(id, cancellationToken));
+
     [HttpGet("reviews")]
     public async Task<ActionResult<IReadOnlyList<ReviewDto>>> Reviews(
         [FromQuery] Guid? driverId, [FromQuery] int take = 200, CancellationToken cancellationToken = default) =>
@@ -132,6 +148,29 @@ public sealed class DispatchController(
     [HttpPut("vehicles/{id:guid}")]
     public async Task<ActionResult<VehicleDto>> UpdateVehicle(Guid id, VehicleRequest request, CancellationToken cancellationToken) =>
         Ok(await vehicles.UpdateAsync(id, request, cancellationToken));
+
+    [HttpDelete("vehicles/{id:guid}")]
+    public async Task<IActionResult> DeleteVehicle(Guid id, CancellationToken cancellationToken)
+    {
+        await vehicles.DeleteAsync(id, cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPut("vehicles/{id:guid}/photo")]
+    [RequestSizeLimit(Photos.MaxBytes + 64 * 1024)]
+    public async Task<ActionResult<VehicleDto>> VehiclePhoto(Guid id, IFormFile file, CancellationToken cancellationToken) =>
+        Ok(await vehicles.SetPhotoAsync(id, await ReadAsync(file, cancellationToken), cancellationToken));
+
+    [HttpDelete("vehicles/{id:guid}/photo")]
+    public async Task<ActionResult<VehicleDto>> RemoveVehiclePhoto(Guid id, CancellationToken cancellationToken) =>
+        Ok(await vehicles.RemovePhotoAsync(id, cancellationToken));
+
+    private static async Task<byte[]> ReadAsync(IFormFile file, CancellationToken cancellationToken)
+    {
+        using var buffer = new MemoryStream((int)Math.Min(file.Length, Photos.MaxBytes + 1));
+        await file.CopyToAsync(buffer, cancellationToken);
+        return buffer.ToArray();
+    }
 }
 
 public sealed record DriverApplicationStatusRequest(DriverApplicationStatus Status);

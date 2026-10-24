@@ -843,6 +843,14 @@
     "3025584581693865916": "Usi Ctrl + scorrimento per ingrandire la mappa",
     "2930756815128343337": "Caricamento della mappa…",
     "2325057401188569732": "{VAR_PLURAL, plural, =1 {1 seggiolino} other {{INTERPOLATION} seggiolini}}",
-    "5476748122964799194": "Al massimo un seggiolino per passeggero e tre per auto."
+    "5476748122964799194": "Al massimo un seggiolino per passeggero e tre per auto.",
+    "6193123133418684257": "Eliminare questo autista?",
+    "4164161054364592694": "Foto dell'autista",
+    "2059878047132087735": "Cambia foto",
+    "6029843669852625022": "Aggiungi foto",
+    "2421786756478669024": "Verrà salvata insieme al modulo.",
+    "1957275048820327390": "Impossibile leggere questa immagine. Scegli un JPEG, PNG o WebP.",
+    "3305259980206325593": "Eliminare questo veicolo?",
+    "1881533568561984263": "Foto del veicolo"
   }
 }
