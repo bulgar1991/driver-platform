@@ -59,6 +59,16 @@ while :; do
         fi
         if echo "$out" | grep -qi 'out of host capacity\|out of capacity'; then
             log "attempt $attempt ($ocpus OCPU, $memory GB): no capacity yet"
+        elif echo "$out" | grep -q 'clock skew'; then
+            # Oracle refuses requests from a computer whose clock is more than 5 minutes off,
+            # typically after the computer slept. Corrected here when sudo allows sntp without a
+            # password (see docs/deploy-oracle.md, step 4).
+            if sudo -n /usr/bin/sntp -sS time.apple.com >/dev/null 2>&1; then
+                log "attempt $attempt: this computer's clock was wrong, corrected it, retrying"
+            else
+                log "stopped: this computer's clock is wrong; correct it (on a Mac: sudo sntp -sS time.apple.com) and start again"
+                exit 1
+            fi
         elif echo "$out" | grep -q 'NotAuthenticated\|NotAuthorized\|InvalidParameter\|LimitExceeded\|QuotaExceeded\|CannotParseRequest'; then
             # Waiting won't fix these: a key, permission, quota or setting to correct.
             log "attempt $attempt failed, stopping:"

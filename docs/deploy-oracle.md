@@ -85,6 +85,19 @@ tail -f oracle-launch.log
 
 It never creates a second server: it stops if one called `magnus-drive` exists.
 
+Keep the computer awake while it runs (on a Mac, plugged in, lid open, `caffeinate -i -s -w PID`).
+Oracle refuses requests when the computer's clock is more than 5 minutes off, which can happen
+after it slept. On a Mac the script corrects the clock itself if sudo allows this one command
+without a password:
+
+```bash
+echo "$(whoami) ALL=(root) NOPASSWD: /usr/bin/sntp -sS time.apple.com" | sudo tee /etc/sudoers.d/sntp
+sudo chmod 440 /etc/sudoers.d/sntp     # undo with: sudo rm /etc/sudoers.d/sntp
+```
+
+Otherwise it stops and says so: correct the clock (`sudo sntp -sS time.apple.com`) and start it
+again.
+
 Note the **public IP** on the instance page. It stays the same across reboots, but not if the
 instance is deleted. To keep it for good: *Networking → IP management → Reserved public IPs*, then
 attach it to the instance's VNIC (one reserved IP is included in the free tier).
