@@ -18,6 +18,8 @@ internal sealed partial class ItalianTexts : Texts
     };
     public override string ReturnDiscount(decimal percent) => $"Viaggio di ritorno −{percent.ToString("0.##", Culture)}%";
     public override string ZoneAccess(string zone) => $"Accesso {zone}";
+    public override string ZoneRate(string zone) => $"Tariffa {zone}";
+    public override string ZoneFixedPrice(string zone) => $"Prezzo fisso {zone}";
     public override string ChildSeat => "Seggiolino";
     public override string ExtraLuggage => "Bagaglio extra";
     public override string NameSign => "Cartello con nome";

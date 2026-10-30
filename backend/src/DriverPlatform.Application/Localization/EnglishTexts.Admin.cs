@@ -68,6 +68,9 @@ internal sealed partial class EnglishTexts
     public override string PhotoNotAnImage => "Choose a JPEG, PNG or WebP picture.";
     public override string BookingNotOnShift => "Put this booking on a shift first: pay goes to the shift's driver.";
     public override string ZoneNotFound => "Zone not found.";
+    public override string ZoneRateOncePerCategory => "Each vehicle category can have only one zone price.";
+    public override string ZoneRateOutOfRange => "Zone prices must be between 0 and 10,000 € (base fee up to 1,000 €, price per km up to 100 €).";
+    public override string ZoneRateNeeded => "Enter the zone price for at least one vehicle category, or choose Normal rates.";
     public override string PickCentre => "Pick the centre on the map and set a radius.";
     public override string PolygonOutsideServiceArea => "All points must be in the service area (Italy, France, Germany, Switzerland).";
     public override string MeetingPointNameAndAddress => "Name and address are required.";

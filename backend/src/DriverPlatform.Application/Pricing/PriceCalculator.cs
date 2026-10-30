@@ -15,7 +15,9 @@ public sealed record PriceInput(
     bool NameSign,
     IReadOnlyDictionary<ExtraType, decimal> ExtraFees,
     decimal DiscountPercent = 0,
-    Texts? Texts = null);
+    Texts? Texts = null,
+    /// <summary>The zone whose own price replaces the normal fare, if any (see <see cref="ZonePrices.For"/>).</summary>
+    Zone? PriceZone = null);
 
 public sealed record LegPrice(
     decimal Fare,
@@ -28,7 +30,7 @@ public sealed record LegPrice(
     IReadOnlyList<PriceLine> Lines);
 
 /// <summary>
-/// Business plan §4: fare = base fee + km × rate; the day surcharges are added together and apply to the fare;
+/// Business plan §4: fare = base fee + km × rate, or a zone's own price; the day surcharges are added together and apply to the fare;
 /// a return discount applies to the surcharged fare; zone fees and extras are fixed amounts on top.
 /// All amounts include VAT.
 /// </summary>
@@ -40,13 +42,9 @@ public static class PriceCalculator
         var texts = input.Texts ?? Texts.Current;
         var lines = new List<PriceLine>();
 
-        var fare = Money(input.Rate.BaseFee + input.DistanceKm * input.Rate.PricePerKm);
-        lines.Add(new PriceLine
-        {
-            Kind = PriceLineKind.Fare,
-            Label = texts.FareLine(input.Rate.Category, input.DistanceKm),
-            Amount = fare,
-        });
+        var (fare, fareLabel) = ZonePrices.Fare(input.PriceZone, input.Rate.Category, input.DistanceKm, texts)
+            ?? (Money(input.Rate.BaseFee + input.DistanceKm * input.Rate.PricePerKm), texts.FareLine(input.Rate.Category, input.DistanceKm));
+        lines.Add(new PriceLine { Kind = PriceLineKind.Fare, Label = fareLabel, Amount = fare });
 
         var surchargePercent = input.Surcharges.Sum(s => s.Percent);
         var surchargeTotal = 0m;

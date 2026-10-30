@@ -80,6 +80,8 @@ public sealed class ZoneAdminService(IAppDbContext db, IAuditLogger audit) : IZo
             errors.Add("polygon", Texts.Current.PolygonOutsideServiceArea);
         }
 
+        ValidateRates(request, errors);
+
         if (request.Type == ZoneType.NoCarAccess && request.MeetingPoints.Count == 0)
         {
             errors.Add("meetingPoints", "A no-car zone needs at least one meeting point reachable by car.");
@@ -103,6 +105,28 @@ public sealed class ZoneAdminService(IAppDbContext db, IAuditLogger audit) : IZo
         errors.ThrowIfAny();
     }
 
+    private static void ValidateRates(ZoneRequest request, ValidationErrors errors)
+    {
+        if (request.Rates.GroupBy(r => r.Category).Any(g => g.Count() > 1))
+        {
+            errors.Add("rates", Texts.Current.ZoneRateOncePerCategory);
+        }
+        if (request.Rates.Any(r => r.FixedPrice is < 0 or > 10_000 || r.BaseFee is < 0 or > 1_000 || r.PricePerKm is < 0 or > 100))
+        {
+            errors.Add("rates", Texts.Current.ZoneRateOutOfRange);
+        }
+        var usable = request.Pricing switch
+        {
+            ZonePricing.FixedPrice => request.Rates.Count(r => r.FixedPrice is not null),
+            ZonePricing.PerKm => request.Rates.Count(r => r is { BaseFee: not null, PricePerKm: not null }),
+            _ => 1,
+        };
+        if (usable == 0)
+        {
+            errors.Add("rates", Texts.Current.ZoneRateNeeded);
+        }
+    }
+
     private static void Apply(Zone zone, ZoneRequest request)
     {
         var circle = request.Shape == ZoneShape.Circle;
@@ -115,6 +139,17 @@ public sealed class ZoneAdminService(IAppDbContext db, IAuditLogger audit) : IZo
         zone.RadiusMeters = circle ? request.RadiusMeters : null;
         zone.Polygon = circle ? [] : request.Polygon.Select(p => new PolygonPoint { Latitude = p.Latitude, Longitude = p.Longitude }).ToList();
         zone.AccessFee = request.AccessFee;
+        zone.Pricing = request.Pricing;
+        // Only what the chosen pricing uses is kept; a category with nothing set uses the normal rate.
+        zone.Rates = request.Pricing switch
+        {
+            ZonePricing.FixedPrice => request.Rates.Where(r => r.FixedPrice is not null)
+                .Select(r => new ZoneRate { Category = r.Category, FixedPrice = r.FixedPrice }).ToList(),
+            ZonePricing.PerKm => request.Rates.Where(r => r is { BaseFee: not null, PricePerKm: not null })
+                .Select(r => new ZoneRate { Category = r.Category, BaseFee = r.BaseFee, PricePerKm = r.PricePerKm }).ToList(),
+            _ => [],
+        };
+        zone.FixedPriceMaxKm = request.Pricing == ZonePricing.FixedPrice ? request.FixedPriceMaxKm : null;
         zone.IsActive = request.IsActive;
         zone.MeetingPoints = request.MeetingPoints.Select(m => new MeetingPoint
         {
@@ -131,5 +166,5 @@ public sealed class ZoneAdminService(IAppDbContext db, IAuditLogger audit) : IZo
 
     private static ZoneAdminDto ToDto(Zone z) => new(
         z.Id, z.Name, z.NameTranslations ?? new Translations(), z.Type, z.Shape, z.CenterLatitude, z.CenterLongitude, z.RadiusMeters,
-        z.Polygon, z.AccessFee, z.MeetingPoints, z.IsActive);
+        z.Polygon, z.AccessFee, z.Pricing, z.Rates.OrderBy(r => r.Category).ToList(), z.FixedPriceMaxKm, z.MeetingPoints, z.IsActive);
 }

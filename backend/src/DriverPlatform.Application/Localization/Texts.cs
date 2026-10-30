@@ -50,6 +50,12 @@ public abstract partial class Texts
 
     public abstract string Category(VehicleCategory category);
     public string FareLine(VehicleCategory category, decimal km) => $"{Category(category)} · {km.ToString("0.0", Culture)} km";
+    /// <summary>"Business · Venice airport rate · 13.2 km".</summary>
+    public string ZoneFareLine(string zone, VehicleCategory category, decimal km) => $"{Category(category)} · {ZoneRate(zone)} · {km.ToString("0.0", Culture)} km";
+    /// <summary>"Business · Venice airport fixed price".</summary>
+    public string ZoneFixedFareLine(string zone, VehicleCategory category) => $"{Category(category)} · {ZoneFixedPrice(zone)}";
+    public abstract string ZoneRate(string zone);
+    public abstract string ZoneFixedPrice(string zone);
     public string SurchargeLine(string name, decimal percent) => $"{name} +{percent.ToString("0.##", Culture)}%";
     public abstract string ReturnDiscount(decimal percent);
     public abstract string ZoneAccess(string zone);

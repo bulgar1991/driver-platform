@@ -18,6 +18,8 @@ internal sealed partial class EnglishTexts : Texts
     };
     public override string ReturnDiscount(decimal percent) => $"Return trip −{percent.ToString("0.##", Culture)}%";
     public override string ZoneAccess(string zone) => $"{zone} access";
+    public override string ZoneRate(string zone) => $"{zone} rate";
+    public override string ZoneFixedPrice(string zone) => $"{zone} fixed price";
     public override string ChildSeat => "Child seat";
     public override string ExtraLuggage => "Extra luggage";
     public override string NameSign => "Name sign";

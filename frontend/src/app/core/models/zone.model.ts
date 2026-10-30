@@ -1,3 +1,4 @@
+import { VehicleCategory } from './vehicle.model'
 import { MeetingPoint, Translations } from './geo.model'
 
 export type ZoneType =
@@ -11,6 +12,16 @@ export interface PolygonPoint {
 }
 
 /** A circle or polygon on the map with local rules (Venice, ZTL, airports). */
+/** How rides starting or ending in a zone are priced. */
+export type ZonePricing = 'Standard' | 'FixedPrice' | 'PerKm'
+
+export interface ZoneRate {
+  category: VehicleCategory
+  fixedPrice?: number | null
+  baseFee?: number | null
+  pricePerKm?: number | null
+}
+
 export interface Zone {
   id: string
   /** In the client's language from the public API; in English in the admin API. */
@@ -24,6 +35,12 @@ export interface Zone {
   radiusMeters: number | null
   polygon: PolygonPoint[]
   accessFee: number
+  /** Only present in the admin API. */
+  pricing?: ZonePricing
+  /** Per vehicle category; a category left out uses the normal rate. Admin API only. */
+  rates?: ZoneRate[]
+  /** A fixed price only applies up to this many km. Admin API only. */
+  fixedPriceMaxKm?: number | null
   meetingPoints: MeetingPoint[]
   /** Only present in the admin API. */
   isActive?: boolean

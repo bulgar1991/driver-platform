@@ -874,6 +874,22 @@
     "7806217176465352655": "{VAR_PLURAL, plural, =1 {1 abgeschlossene Fahrt hat noch keine Fahrervergütung.} other {{INTERPOLATION} abgeschlossene Fahrten haben noch keine Fahrervergütung.}}",
     "7059467497878553184": "Kundenpreis",
     "2306929048795232532": "Fahrervergütung für {$reference}",
-    "2932018336587816090": "Geben Sie einen Betrag von 0 oder mehr ein."
+    "2932018336587816090": "Geben Sie einen Betrag von 0 oder mehr ein.",
+    "705021969965534719": "Kreis verkleinern oder vergrößern",
+    "5592373796644648111": "Preis für Fahrten von oder zu dieser Zone",
+    "1800824589044407295": "Zonenpreis",
+    "5133479575153182085": "Normale Tarife",
+    "205789136529298159": "Wie auf der Seite Preise.",
+    "4668399393309435986": "Festpreis",
+    "8536411091488274933": "Ein Preis pro Fahrzeug, unabhängig von der Entfernung.",
+    "2289857831381403787": "Eigener Kilometerpreis",
+    "24089785582602670": "Eigene Grundgebühr und eigener Kilometerpreis.",
+    "7760213257799525802": "Grundgebühr €",
+    "1808567937531769694": "€ pro km",
+    "7682701463820006423": "Festpreis nur bis (km, optional)",
+    "7775133551464909220": "Gilt, wenn eine Fahrt in dieser Zone beginnt oder endet (zuerst die Zone des Abholorts; bei überlappenden Zonen die kleinste). Leere Felder behalten den normalen Tarif für dieses Fahrzeug. Zuschläge, Rückfahrtrabatt und Extras gelten weiterhin.",
+    "6431046825171127306": "Festpreis für {$car}",
+    "7785978024763088284": "Grundgebühr für {$car}",
+    "5123664614336641025": "Kilometerpreis für {$car}"
   }
 }

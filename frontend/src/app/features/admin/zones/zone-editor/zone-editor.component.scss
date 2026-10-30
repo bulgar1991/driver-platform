@@ -61,6 +61,43 @@
     @apply h-4 w-4 accent-gold;
   }
 
+  &__slider {
+    @apply mt-2 w-full accent-gold;
+  }
+
+  &__pricing {
+    @apply flex flex-col gap-4 border-t border-ink-600 pt-4;
+  }
+
+  &__modes {
+    @apply grid grid-cols-1 gap-2 sm:grid-cols-3;
+  }
+
+  &__mode {
+    @apply flex cursor-pointer items-start gap-2 rounded-sm border border-ink-600 p-3 text-sm text-ivory has-[:checked]:border-gold;
+
+    input {
+      @apply mt-1 accent-gold;
+    }
+
+    span {
+      @apply flex flex-col gap-1;
+    }
+  }
+
+  &__rates {
+    @apply flex flex-col gap-2;
+  }
+
+  // Category · price, or category · base fee · per km.
+  &__rate {
+    @apply grid grid-cols-[6rem_minmax(0,1fr)_minmax(0,1fr)] items-center gap-2;
+  }
+
+  &__rate-name {
+    @apply text-sm text-ivory-200;
+  }
+
   &__points {
     @apply flex flex-col gap-4 border-t border-ink-600 pt-4;
   }

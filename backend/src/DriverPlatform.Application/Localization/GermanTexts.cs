@@ -21,6 +21,8 @@ internal sealed partial class GermanTexts : Texts
     };
     public override string ReturnDiscount(decimal percent) => $"Rückfahrt −{percent.ToString("0.##", Culture)}%";
     public override string ZoneAccess(string zone) => $"Zufahrt {zone}";
+    public override string ZoneRate(string zone) => $"Tarif {zone}";
+    public override string ZoneFixedPrice(string zone) => $"Festpreis {zone}";
     public override string ChildSeat => "Kindersitz";
     public override string ExtraLuggage => "Zusätzliches Gepäck";
     public override string NameSign => "Namensschild";

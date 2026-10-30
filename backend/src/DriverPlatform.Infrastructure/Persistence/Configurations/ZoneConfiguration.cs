@@ -10,6 +10,7 @@ internal sealed class ZoneConfiguration : IEntityTypeConfiguration<Zone>
     {
         builder.OwnsOne(z => z.NameTranslations, t => t.ToJson());
         builder.OwnsMany(z => z.Polygon, p => p.ToJson());
+        builder.OwnsMany(z => z.Rates, r => r.ToJson());
         builder.OwnsMany(z => z.MeetingPoints, m =>
         {
             m.ToJson();

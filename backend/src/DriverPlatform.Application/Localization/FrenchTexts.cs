@@ -18,6 +18,8 @@ internal sealed partial class FrenchTexts : Texts
     };
     public override string ReturnDiscount(decimal percent) => $"Trajet retour −{percent.ToString("0.##", Culture)} %";
     public override string ZoneAccess(string zone) => $"Accès {zone}";
+    public override string ZoneRate(string zone) => $"Tarif {zone}";
+    public override string ZoneFixedPrice(string zone) => $"Prix fixe {zone}";
     public override string ChildSeat => "Siège enfant";
     public override string ExtraLuggage => "Bagage supplémentaire";
     public override string NameSign => "Pancarte nominative";

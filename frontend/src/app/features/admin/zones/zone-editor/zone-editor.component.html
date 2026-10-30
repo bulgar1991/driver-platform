@@ -93,6 +93,15 @@
           max="50000"
           step="50"
           formControlName="radiusMeters" />
+        <input
+          class="zone-editor__slider"
+          type="range"
+          min="50"
+          max="20000"
+          step="50"
+          i18n-aria-label
+          aria-label="Make the circle smaller or bigger"
+          formControlName="radiusMeters" />
       </app-form-field>
       <p class="zone-editor__coords">
         <ng-container i18n>Centre:</ng-container>&ngsp;
@@ -152,6 +161,113 @@
       >
     </label>
   </div>
+
+  <section class="zone-editor__pricing">
+    <h3 class="zone-editor__subtitle"
+      ><ng-container i18n>Price of rides from or to this zone</ng-container></h3
+    >
+    <div
+      class="zone-editor__modes"
+      role="radiogroup"
+      i18n-aria-label
+      aria-label="Zone price">
+      <label class="zone-editor__mode">
+        <input type="radio" formControlName="pricing" value="Standard" />
+        <span
+          ><ng-container i18n>Normal rates</ng-container
+          ><small class="zone-editor__muted"
+            ><ng-container i18n>As on the Pricing page.</ng-container></small
+          ></span
+        >
+      </label>
+      <label class="zone-editor__mode">
+        <input type="radio" formControlName="pricing" value="FixedPrice" />
+        <span
+          ><ng-container i18n>Fixed price</ng-container
+          ><small class="zone-editor__muted"
+            ><ng-container i18n
+              >One price per car, whatever the distance.</ng-container
+            ></small
+          ></span
+        >
+      </label>
+      <label class="zone-editor__mode">
+        <input type="radio" formControlName="pricing" value="PerKm" />
+        <span
+          ><ng-container i18n>Own price per km</ng-container
+          ><small class="zone-editor__muted"
+            ><ng-container i18n
+              >Its own base fee and price per km.</ng-container
+            ></small
+          ></span
+        >
+      </label>
+    </div>
+
+    @if (pricing() !== 'Standard') {
+      <div class="zone-editor__rates" formGroupName="rates">
+        @for (c of categories; track c) {
+          <div class="zone-editor__rate" [formGroupName]="c">
+            <span class="zone-editor__rate-name">{{ text.categories[c] }}</span>
+            @if (pricing() === 'FixedPrice') {
+              <input
+                class="input"
+                type="number"
+                min="0"
+                step="1"
+                inputmode="decimal"
+                placeholder="€"
+                [attr.aria-label]="tx.fixedPrice(text.categories[c])"
+                formControlName="fixedPrice" />
+            } @else {
+              <input
+                class="input"
+                type="number"
+                min="0"
+                step="0.5"
+                inputmode="decimal"
+                i18n-placeholder
+                placeholder="Base €"
+                [attr.aria-label]="tx.baseFee(text.categories[c])"
+                formControlName="baseFee" />
+              <input
+                class="input"
+                type="number"
+                min="0"
+                step="0.05"
+                inputmode="decimal"
+                i18n-placeholder
+                placeholder="€ per km"
+                [attr.aria-label]="tx.pricePerKm(text.categories[c])"
+                formControlName="pricePerKm" />
+            }
+          </div>
+        }
+      </div>
+      @if (pricing() === 'FixedPrice') {
+        <app-form-field
+          i18n-label
+          label="Fixed price only up to (km, optional)"
+          for="fixedMaxKm">
+          <input
+            id="fixedMaxKm"
+            class="input"
+            type="number"
+            min="1"
+            max="2000"
+            formControlName="fixedPriceMaxKm" />
+        </app-form-field>
+      }
+      <p class="zone-editor__muted"
+        ><ng-container i18n
+          >Used when a ride starts or ends in this zone (the pickup's zone
+          first; where zones overlap, the smallest). Empty boxes keep the normal
+          rate for that car. Surcharges, the return discount and extras still
+          apply.</ng-container
+        ></p
+      >
+    }
+  </section>
 
   <section class="zone-editor__points" formArrayName="meetingPoints">
     <div class="zone-editor__points-header">

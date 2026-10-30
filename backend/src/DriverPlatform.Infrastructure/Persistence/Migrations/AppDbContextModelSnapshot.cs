@@ -1679,6 +1679,11 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<decimal?>("FixedPriceMaxKm")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)")
+                        .HasColumnName("fixed_price_max_km");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
                         .HasColumnName("is_active");
@@ -1688,6 +1693,12 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("name");
+
+                    b.Property<string>("Pricing")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("pricing");
 
                     b.Property<double?>("RadiusMeters")
                         .HasColumnType("double precision")
@@ -2491,11 +2502,46 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                                 .HasConstraintName("fk_zones_zones_zone_id");
                         });
 
+                    b.OwnsMany("DriverPlatform.Domain.ValueObjects.ZoneRate", "Rates", b1 =>
+                        {
+                            b1.Property<Guid>("ZoneId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAdd();
+
+                            b1.Property<decimal?>("BaseFee")
+                                .HasPrecision(12, 2);
+
+                            b1.Property<string>("Category")
+                                .IsRequired()
+                                .HasMaxLength(32);
+
+                            b1.Property<decimal?>("FixedPrice")
+                                .HasPrecision(12, 2);
+
+                            b1.Property<decimal?>("PricePerKm")
+                                .HasPrecision(12, 2);
+
+                            b1.HasKey("ZoneId", "__synthesizedOrdinal");
+
+                            b1.ToTable("zones");
+
+                            b1
+                                .ToJson("rates")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ZoneId")
+                                .HasConstraintName("fk_zones_zones_zone_id");
+                        });
+
                     b.Navigation("MeetingPoints");
 
                     b.Navigation("NameTranslations");
 
                     b.Navigation("Polygon");
+
+                    b.Navigation("Rates");
                 });
 
             modelBuilder.Entity("DriverPlatform.Domain.Entities.Assignment", b =>

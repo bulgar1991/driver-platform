@@ -26,6 +26,9 @@ import {
   PolygonPoint,
   Zone,
   Translations,
+  VehicleCategory,
+  ZonePricing,
+  ZoneRate,
   ZoneRequest,
   ZoneShape,
   ZoneType,
@@ -56,6 +59,14 @@ type MeetingPointForm = FormGroup<{
   driverInstructions: FormControl<string>
 }>
 
+type ZoneRateForm = FormGroup<{
+  fixedPrice: FormControl<number | null>
+  baseFee: FormControl<number | null>
+  pricePerKm: FormControl<number | null>
+}>
+
+const CATEGORIES: VehicleCategory[] = ['Sedan', 'Business', 'Estate', 'Van']
+
 /** What the next map click does: edit the shape, or place meeting point n. */
 type ClickMode = 'shape' | number
 
@@ -75,6 +86,9 @@ type ClickMode = 'shape' | number
 export class ZoneEditorComponent {
   protected readonly text = ADMIN_TEXT
   protected readonly tx = {
+    fixedPrice: (car: string) => $localize`Fixed price for ${car}:car:`,
+    baseFee: (car: string) => $localize`Base fee for ${car}:car:`,
+    pricePerKm: (car: string) => $localize`Price per km for ${car}:car:`,
     nameIn: (language: string) => $localize`Name – ${language}:language:`,
     instructionsIn: (language: string) =>
       $localize`Client instructions – ${language}:language:`,
@@ -92,6 +106,7 @@ export class ZoneEditorComponent {
   private readonly fb = inject(FormBuilder).nonNullable
 
   protected readonly types = ZONE_TYPES
+  protected readonly categories = CATEGORIES
   protected readonly nameLanguages = [
     { code: 'It', name: $localize`Italian`, control: 'nameIt' },
     { code: 'De', name: $localize`German`, control: 'nameDe' },
@@ -123,6 +138,17 @@ export class ZoneEditorComponent {
     ]),
     polygon: this.fb.control<PolygonPoint[]>([]),
     accessFee: [0, [Validators.min(0), Validators.max(500)]],
+    pricing: this.fb.control<ZonePricing>('Standard'),
+    rates: this.fb.group(
+      Object.fromEntries(CATEGORIES.map(c => [c, this.rateGroup()])) as Record<
+        VehicleCategory,
+        ZoneRateForm
+      >
+    ),
+    fixedPriceMaxKm: this.fb.control<number | null>(null, [
+      Validators.min(1),
+      Validators.max(2000),
+    ]),
     isActive: [true],
     meetingPoints: this.fb.array<MeetingPointForm>([]),
   })
@@ -130,6 +156,8 @@ export class ZoneEditorComponent {
   private readonly value = toSignal(this.form.valueChanges, {
     initialValue: this.form.getRawValue(),
   })
+
+  protected readonly pricing = computed(() => this.value().pricing)
 
   protected readonly typeHint = computed(
     () => ZONE_TYPES.find(t => t.value === this.value().type)?.hint ?? ''
@@ -262,9 +290,10 @@ export class ZoneEditorComponent {
       return
     }
     const v = this.form.getRawValue()
-    const { nameIt, nameDe, nameFr, ...zoneValue } = v
+    const { nameIt, nameDe, nameFr, rates, ...zoneValue } = v
     const request: ZoneRequest = {
       ...zoneValue,
+      rates: this.ratesToSend(rates),
       name: v.name.trim(),
       nameTranslations: translations(nameIt, nameDe, nameFr),
       meetingPoints: v.meetingPoints.map((m): MeetingPoint => ({
@@ -319,9 +348,55 @@ export class ZoneEditorComponent {
       radiusMeters: zone?.radiusMeters ?? 1000,
       polygon: zone?.polygon ?? [],
       accessFee: zone?.accessFee ?? 0,
+      pricing: zone?.pricing ?? 'Standard',
+      rates: Object.fromEntries(
+        CATEGORIES.map(c => {
+          const rate = zone?.rates?.find(r => r.category === c)
+          return [
+            c,
+            {
+              fixedPrice: rate?.fixedPrice ?? null,
+              baseFee: rate?.baseFee ?? null,
+              pricePerKm: rate?.pricePerKm ?? null,
+            },
+          ]
+        })
+      ),
+      fixedPriceMaxKm: zone?.fixedPriceMaxKm ?? null,
       isActive: zone?.isActive ?? true,
     })
     this.fitPoints.set(zone ? zonePoints(zone) : [])
+  }
+
+  /** Empty boxes are left out: that category keeps the normal rate. The API keeps only what the pricing uses. */
+  private ratesToSend(
+    rates: Record<
+      VehicleCategory,
+      {
+        fixedPrice: number | null
+        baseFee: number | null
+        pricePerKm: number | null
+      }
+    >
+  ): ZoneRate[] {
+    const pricing = this.form.controls.pricing.value
+    return CATEGORIES.map(category => ({
+      category,
+      ...rates[category],
+    })).filter(
+      r =>
+        (pricing === 'FixedPrice' && r.fixedPrice !== null) ||
+        (pricing === 'PerKm' && (r.baseFee !== null || r.pricePerKm !== null))
+    )
+  }
+
+  private rateGroup(): ZoneRateForm {
+    const money = (max: number) => [Validators.min(0), Validators.max(max)]
+    return this.fb.group({
+      fixedPrice: this.fb.control<number | null>(null, money(10_000)),
+      baseFee: this.fb.control<number | null>(null, money(1_000)),
+      pricePerKm: this.fb.control<number | null>(null, money(100)),
+    })
   }
 
   private meetingPointGroup(point?: MeetingPoint): MeetingPointForm {

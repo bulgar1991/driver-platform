@@ -874,6 +874,22 @@
     "7806217176465352655": "{VAR_PLURAL, plural, =1 {1 corsa completata non ha ancora il compenso dell'autista.} other {{INTERPOLATION} corse completate non hanno ancora il compenso dell'autista.}}",
     "7059467497878553184": "Prezzo cliente",
     "2306929048795232532": "Compenso autista per {$reference}",
-    "2932018336587816090": "Inserisci un importo pari o superiore a 0."
+    "2932018336587816090": "Inserisci un importo pari o superiore a 0.",
+    "705021969965534719": "Rimpicciolisci o ingrandisci il cerchio",
+    "5592373796644648111": "Prezzo delle corse da o verso questa zona",
+    "1800824589044407295": "Prezzo della zona",
+    "5133479575153182085": "Tariffe normali",
+    "205789136529298159": "Come nella pagina Prezzi.",
+    "4668399393309435986": "Prezzo fisso",
+    "8536411091488274933": "Un prezzo per auto, qualunque sia la distanza.",
+    "2289857831381403787": "Prezzo al km proprio",
+    "24089785582602670": "Una propria quota fissa e un proprio prezzo al km.",
+    "7760213257799525802": "Quota fissa €",
+    "1808567937531769694": "€ al km",
+    "7682701463820006423": "Prezzo fisso solo fino a (km, facoltativo)",
+    "7775133551464909220": "Si applica quando una corsa parte o arriva in questa zona (prima la zona di partenza; dove le zone si sovrappongono, la più piccola). Le caselle vuote mantengono la tariffa normale per quell'auto. Maggiorazioni, sconto andata e ritorno ed extra si applicano comunque.",
+    "6431046825171127306": "Prezzo fisso per {$car}",
+    "7785978024763088284": "Quota fissa per {$car}",
+    "5123664614336641025": "Prezzo al km per {$car}"
   }
 }

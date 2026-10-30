@@ -53,6 +53,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, TimePro
         builder.Properties<AssignmentStatus>().HaveConversion<string>().HaveMaxLength(32);
         builder.Properties<DriverDocumentType>().HaveConversion<string>().HaveMaxLength(32);
         builder.Properties<ZoneType>().HaveConversion<string>().HaveMaxLength(32);
+        builder.Properties<ZonePricing>().HaveConversion<string>().HaveMaxLength(32);
         builder.Properties<ZoneShape>().HaveConversion<string>().HaveMaxLength(32);
         builder.Properties<SurchargeKind>().HaveConversion<string>().HaveMaxLength(32);
         builder.Properties<ExtraType>().HaveConversion<string>().HaveMaxLength(32);

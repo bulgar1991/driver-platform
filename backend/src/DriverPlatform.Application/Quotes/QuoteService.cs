@@ -88,10 +88,10 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
 
             var outboundPrice = PriceCalculator.Calculate(new PriceInput(
                 rate, outbound.Leg.DistanceKm, outbound.Surcharges, outbound.FeeZones,
-                childSeats, extraLuggage, request.NameSign, extraFees, Texts: texts));
+                childSeats, extraLuggage, request.NameSign, extraFees, Texts: texts, PriceZone: outbound.PriceZone));
             var returnPrice = inbound is null ? null : PriceCalculator.Calculate(new PriceInput(
                 rate, inbound.Leg.DistanceKm, inbound.Surcharges, inbound.FeeZones,
-                childSeats, extraLuggage, request.Return!.NameSign, extraFees, settings.ReturnDiscountPercent, texts));
+                childSeats, extraLuggage, request.Return!.NameSign, extraFees, settings.ReturnDiscountPercent, texts, inbound.PriceZone));
 
             var total = outboundPrice.Total + (returnPrice?.Total ?? 0);
             return new VehicleOption(
@@ -125,9 +125,10 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
         Zone? DropoffZone,
         MeetingPoint? PickupMeetingPoint,
         MeetingPoint? DropoffMeetingPoint,
-        IReadOnlyList<Zone> FeeZones);
+        IReadOnlyList<Zone> FeeZones,
+        Zone? PriceZone = null);
 
-    private sealed record RoutedLeg(QuoteLeg Leg, IReadOnlyList<SurchargeRule> Surcharges, IReadOnlyList<Zone> FeeZones);
+    private sealed record RoutedLeg(QuoteLeg Leg, IReadOnlyList<SurchargeRule> Surcharges, IReadOnlyList<Zone> FeeZones, Zone? PriceZone);
 
     private LegPlan? PlanLeg(
         PointInput pickup,
@@ -193,7 +194,8 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
         }
 
         var leg = new LegPlan(pickup, dropoff, pickupLocal, utc!.Value, pickupZone, dropoffZone, pickupPoint, dropoffPoint, []);
-        return leg with { FeeZones = FeeZones(zones, Effective(leg.Pickup, pickupPoint), Effective(leg.Dropoff, dropoffPoint)) };
+        var (start, end) = (Effective(leg.Pickup, pickupPoint), Effective(leg.Dropoff, dropoffPoint));
+        return leg with { FeeZones = FeeZones(zones, start, end), PriceZone = ZonePrices.For(zones, start, end) };
     }
 
     /// <summary>
@@ -249,7 +251,7 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
             Math.Round(route.DistanceKm, 1, MidpointRounding.AwayFromZero), route.DurationMinutes, route.IsEstimate, route.Path,
             matched.Select(s => new SurchargeDto(s.NameTranslations.Pick(s.Name, texts.Language), s.Percent)).ToList(),
             matched.Sum(s => s.Percent));
-        return new RoutedLeg(leg, matched, plan.FeeZones);
+        return new RoutedLeg(leg, matched, plan.FeeZones, plan.PriceZone);
     }
 
     private static List<SurchargeRule> MatchSurcharges(List<SurchargeRule> rules, DateTime localPickup) =>

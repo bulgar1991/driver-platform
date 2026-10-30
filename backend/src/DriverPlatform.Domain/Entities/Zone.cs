@@ -18,6 +18,11 @@ public class Zone : Entity
     public List<PolygonPoint> Polygon { get; set; } = [];
     /// <summary>Fixed fee added to rides entering the zone (e.g. ZTL access).</summary>
     public decimal AccessFee { get; set; }
+    public ZonePricing Pricing { get; set; }
+    /// <summary>Per vehicle category; a category left out uses the normal rate.</summary>
+    public List<ZoneRate> Rates { get; set; } = [];
+    /// <summary>A fixed price only applies to rides up to this many km; longer ones use the normal rates. Null: any distance.</summary>
+    public decimal? FixedPriceMaxKm { get; set; }
     public List<MeetingPoint> MeetingPoints { get; set; } = [];
     public bool IsActive { get; set; } = true;
 }

@@ -874,6 +874,22 @@
     "7806217176465352655": "{VAR_PLURAL, plural, =1 {1 course terminée n'a pas encore de rémunération du chauffeur.} other {{INTERPOLATION} courses terminées n'ont pas encore de rémunération du chauffeur.}}",
     "7059467497878553184": "Prix client",
     "2306929048795232532": "Rémunération du chauffeur pour {$reference}",
-    "2932018336587816090": "Saisissez un montant de 0 ou plus."
+    "2932018336587816090": "Saisissez un montant de 0 ou plus.",
+    "705021969965534719": "Réduire ou agrandir le cercle",
+    "5592373796644648111": "Prix des courses depuis ou vers cette zone",
+    "1800824589044407295": "Prix de la zone",
+    "5133479575153182085": "Tarifs normaux",
+    "205789136529298159": "Comme sur la page Tarifs.",
+    "4668399393309435986": "Prix fixe",
+    "8536411091488274933": "Un prix par voiture, quelle que soit la distance.",
+    "2289857831381403787": "Prix au km propre",
+    "24089785582602670": "Sa propre prise en charge et son propre prix au km.",
+    "7760213257799525802": "Prise en charge €",
+    "1808567937531769694": "€ par km",
+    "7682701463820006423": "Prix fixe seulement jusqu'à (km, facultatif)",
+    "7775133551464909220": "S'applique quand une course part de cette zone ou y arrive (d'abord la zone de départ ; si des zones se chevauchent, la plus petite). Les cases vides gardent le tarif normal pour cette voiture. Les majorations, la remise aller-retour et les suppléments s'appliquent toujours.",
+    "6431046825171127306": "Prix fixe pour {$car}",
+    "7785978024763088284": "Prise en charge pour {$car}",
+    "5123664614336641025": "Prix au km pour {$car}"
   }
 }

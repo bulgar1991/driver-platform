@@ -40,6 +40,9 @@ public abstract partial class Texts
     public abstract string PhotoNotAnImage { get; }
     public abstract string BookingNotOnShift { get; }
     public abstract string ZoneNotFound { get; }
+    public abstract string ZoneRateOncePerCategory { get; }
+    public abstract string ZoneRateOutOfRange { get; }
+    public abstract string ZoneRateNeeded { get; }
     public abstract string PickCentre { get; }
     public abstract string PolygonOutsideServiceArea { get; }
     public abstract string MeetingPointNameAndAddress { get; }

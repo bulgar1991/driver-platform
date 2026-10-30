@@ -66,6 +66,9 @@ internal sealed partial class GermanTexts
     public override string PhotoNotAnImage => "Wählen Sie ein JPEG-, PNG- oder WebP-Bild.";
     public override string BookingNotOnShift => "Teilen Sie diese Buchung zuerst einer Schicht zu: Die Vergütung geht an den Fahrer der Schicht.";
     public override string ZoneNotFound => "Zone nicht gefunden.";
+    public override string ZoneRateOncePerCategory => "Jede Fahrzeugkategorie kann nur einen Zonenpreis haben.";
+    public override string ZoneRateOutOfRange => "Zonenpreise müssen zwischen 0 und 10.000 € liegen (Grundgebühr bis 1.000 €, Kilometerpreis bis 100 €).";
+    public override string ZoneRateNeeded => "Geben Sie den Zonenpreis für mindestens eine Fahrzeugkategorie ein oder wählen Sie Normale Tarife.";
     public override string PickCentre => "Wählen Sie den Mittelpunkt auf der Karte und legen Sie einen Radius fest.";
     public override string PolygonOutsideServiceArea => "Alle Punkte müssen im Einsatzgebiet liegen (Italien, Frankreich, Deutschland, Schweiz).";
     public override string MeetingPointNameAndAddress => "Name und Adresse sind erforderlich.";

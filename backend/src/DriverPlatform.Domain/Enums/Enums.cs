@@ -97,6 +97,17 @@ public enum ZoneType
     Port,
 }
 
+/// <summary>How rides starting or ending in a zone are priced.</summary>
+public enum ZonePricing
+{
+    /// <summary>The normal rates (Pricing page).</summary>
+    Standard,
+    /// <summary>One price per vehicle category, whatever the distance (up to an optional limit).</summary>
+    FixedPrice,
+    /// <summary>The zone's own base fee and price per km instead of the normal ones.</summary>
+    PerKm,
+}
+
 public enum ZoneShape
 {
     Circle,
