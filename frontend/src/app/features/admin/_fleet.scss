@@ -129,6 +129,10 @@
     @apply whitespace-nowrap;
   }
 
+  &__history {
+    @apply self-start;
+  }
+
   &__link {
     @apply flex flex-col gap-2 border-t border-ink-600 pt-4;
   }

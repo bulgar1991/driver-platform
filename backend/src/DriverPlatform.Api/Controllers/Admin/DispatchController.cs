@@ -104,6 +104,18 @@ public sealed class DispatchController(
     public async Task<ActionResult<DriverLinkResponse>> RotateDriverLink(Guid id, CancellationToken cancellationToken) =>
         Ok(await drivers.RotateLinkAsync(id, cancellationToken));
 
+    /// <summary>The driver's rides in one month (Italian time), oldest first.</summary>
+    [HttpGet("drivers/{id:guid}/rides")]
+    public async Task<ActionResult<DriverRidesResponse>> DriverRides(
+        Guid id, [FromQuery] int year, [FromQuery] int month, CancellationToken cancellationToken)
+    {
+        if (year is < 2020 or > 2100 || month is < 1 or > 12)
+        {
+            return ValidationProblem(new ValidationProblemDetails(new Dictionary<string, string[]> { ["month"] = ["Pick a month."] }));
+        }
+        return Ok(await drivers.RidesAsync(id, year, month, cancellationToken));
+    }
+
     [HttpDelete("drivers/{id:guid}")]
     public async Task<IActionResult> DeleteDriver(Guid id, CancellationToken cancellationToken)
     {

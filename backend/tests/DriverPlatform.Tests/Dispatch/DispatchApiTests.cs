@@ -186,6 +186,39 @@ public sealed class DispatchApiTests
     }
 
     [Fact]
+    public async Task Ride_history_lists_the_drivers_rides_of_the_month()
+    {
+        using var factory = new ApiFactory();
+        var fleet = await FleetAsync(factory);
+        var client = factory.CreateClient();
+        var day = TestData.QuietPickup().Date;
+        var a = await client.BookAndPayAsync(TestData.Trip() with { PickupAt = day.AddHours(8) });
+        var b = await client.BookAndPayAsync(TestData.Trip() with { PickupAt = day.AddHours(12) });
+        var aId = (await FindBooking(fleet.Staff, a.Reference)).Id;
+        var bId = (await FindBooking(fleet.Staff, b.Reference)).Id;
+        await Read<ShiftResult>(await CreateShift(fleet.Staff, fleet.Driver.Id, fleet.Sedan.Id, aId, bId), HttpStatusCode.Created);
+        await fleet.Staff.PutAsJsonAsync($"/api/admin/bookings/{aId}/status", new BookingStatusRequest { Status = BookingStatus.PickedUp }, TestData.Json);
+        await fleet.Staff.PutAsJsonAsync($"/api/admin/bookings/{aId}/status", new BookingStatusRequest { Status = BookingStatus.Completed }, TestData.Json);
+
+        var url = $"/api/admin/drivers/{fleet.Driver.Id}/rides?year={day.Year}&month={day.Month}";
+        var history = await Read<DriverRidesResponse>(await fleet.Staff.GetAsync(url));
+        var other = await Read<DriverRidesResponse>(await fleet.Staff.GetAsync($"/api/admin/drivers/{fleet.OtherDriver.Id}/rides?year={day.Year}&month={day.Month}"));
+        var before = day.AddMonths(-1);
+        var lastMonth = await Read<DriverRidesResponse>(await fleet.Staff.GetAsync($"/api/admin/drivers/{fleet.Driver.Id}/rides?year={before.Year}&month={before.Month}"));
+
+        Assert.Equal([a.Reference, b.Reference], history.Rides.Select(r => r.Reference));
+        Assert.Equal([BookingStatus.Completed, BookingStatus.Assigned], history.Rides.Select(r => r.Status));
+        Assert.Equal("GA123BC", history.Rides[0].VehiclePlate);
+        Assert.Equal(TestData.RomeTermini.Address, history.Rides[0].PickupAddress);
+        Assert.Equal(1, history.CompletedRides);
+        Assert.Equal(history.Rides[0].DistanceKm, history.CompletedKm);
+        Assert.Empty(other.Rides);
+        Assert.Empty(lastMonth.Rides);
+        Assert.Equal(HttpStatusCode.BadRequest, (await fleet.Staff.GetAsync($"/api/admin/drivers/{fleet.Driver.Id}/rides?year={day.Year}&month=13")).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await fleet.Staff.GetAsync($"/api/admin/drivers/{Guid.NewGuid()}/rides?year={day.Year}&month={day.Month}")).StatusCode);
+    }
+
+    [Fact]
     public async Task Removing_a_booking_from_a_shift_puts_it_back_in_the_queue()
     {
         using var factory = new ApiFactory();

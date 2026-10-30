@@ -1,3 +1,5 @@
+import { BookingStatus } from './booking.model'
+
 export type DriverDocumentType =
   | 'DrivingLicence'
   | 'NccLicence'
@@ -39,6 +41,32 @@ export interface Driver extends DriverRequest {
   ratingCount: number
   completedRides: number
   cancelledShifts: number
+}
+
+/** One booking on a driver's shift. */
+export interface DriverRide {
+  bookingId: string
+  reference: string
+  /** Italian local time, yyyy-MM-ddTHH:mm:ss */
+  pickupAt: string
+  pickupAddress: string
+  dropoffAddress: string
+  distanceKm: number
+  durationMinutes: number
+  status: BookingStatus
+  vehiclePlate: string
+  vehicleName: string
+  totalPrice: number
+  currency: string
+}
+
+/** A driver's rides in one month; totals count completed rides only. */
+export interface DriverRides {
+  year: number
+  month: number
+  rides: DriverRide[]
+  completedRides: number
+  completedKm: number
 }
 
 export type AssignmentStatus =

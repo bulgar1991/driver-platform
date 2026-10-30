@@ -13,6 +13,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms'
+import { RouterLink } from '@angular/router'
 import { Dialog } from 'primeng/dialog'
 import { finalize, of, switchMap } from 'rxjs'
 import { Driver, DriverDocument, DriverDocumentType } from '@/core/models'
@@ -51,6 +52,7 @@ type DocumentForm = FormGroup<{
   imports: [
     DatePipe,
     ReactiveFormsModule,
+    RouterLink,
     Dialog,
     ButtonComponent,
     FormFieldComponent,

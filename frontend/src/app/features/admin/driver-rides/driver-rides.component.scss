@@ -1,0 +1,76 @@
+// Block: driver-rides — one driver's rides, month by month.
+.driver-rides {
+  @apply flex flex-col gap-5;
+
+  &__back {
+    @apply inline-flex items-center gap-1 self-start text-sm text-ivory-300 hover:text-gold;
+  }
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__month {
+    @apply flex items-center gap-2;
+  }
+
+  &__month-input {
+    @apply w-44;
+  }
+
+  &__step {
+    @apply flex h-10 w-10 items-center justify-center rounded-sm text-ivory-300 hover:bg-ink-700 hover:text-gold;
+  }
+
+  &__totals {
+    @apply grid grid-cols-1 gap-3 sm:grid-cols-3;
+  }
+
+  &__total {
+    @apply rounded-sm border border-ink-600 bg-ink-900 px-4 py-3;
+
+    dt {
+      @apply text-xs uppercase tracking-widest text-ivory-400;
+    }
+
+    dd {
+      @apply mt-1 text-2xl text-gold;
+    }
+  }
+
+  &__table-wrap {
+    @apply overflow-x-auto rounded-sm border border-ink-600 bg-ink-900;
+  }
+
+  &__table {
+    @apply w-full min-w-[52rem] border-collapse text-sm;
+
+    th {
+      @apply border-b border-ink-600 px-4 py-3 text-left text-xs font-normal uppercase tracking-widest text-ivory-400;
+    }
+
+    td {
+      @apply border-b border-ink-700 px-4 py-3 align-top text-ivory;
+    }
+  }
+
+  &__route {
+    @apply flex flex-col gap-1;
+  }
+
+  &__place {
+    @apply flex items-start gap-1;
+  }
+
+  &__strong {
+    @apply font-semibold;
+  }
+
+  &__muted {
+    @apply block text-xs text-ivory-400;
+  }
+
+  &__nowrap {
+    @apply whitespace-nowrap;
+  }
+}

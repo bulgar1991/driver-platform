@@ -17,6 +17,7 @@ public interface IDriverAdminService
     Task<DriverDto> UpdateAsync(Guid id, DriverRequest request, CancellationToken cancellationToken);
     Task<DriverLinkResponse> GetLinkAsync(Guid id, CancellationToken cancellationToken);
     Task<DriverLinkResponse> RotateLinkAsync(Guid id, CancellationToken cancellationToken);
+    Task<DriverRidesResponse> RidesAsync(Guid id, int year, int month, CancellationToken cancellationToken);
     Task<DriverDto> SetPhotoAsync(Guid id, byte[] data, CancellationToken cancellationToken);
     Task<DriverDto> RemovePhotoAsync(Guid id, CancellationToken cancellationToken);
     Task DeleteAsync(Guid id, CancellationToken cancellationToken);
@@ -117,6 +118,36 @@ public sealed class DriverAdminService(IAppDbContext db, IDriverLinks links, IAu
         });
         await db.SaveChangesAsync(cancellationToken);
         return await ToDtoAsync(driver, cancellationToken);
+    }
+
+    /// <summary>Every ride on the driver's shifts with a pickup in that Italian calendar month.</summary>
+    public async Task<DriverRidesResponse> RidesAsync(Guid id, int year, int month, CancellationToken cancellationToken)
+    {
+        if (!await db.Drivers.AnyAsync(d => d.Id == id, cancellationToken))
+        {
+            throw new NotFoundException(Texts.Current.DriverNotFound);
+        }
+        var first = new DateTime(year, month, 1);
+        // Midnight always exists in Italy: clocks change at 2–3 am.
+        var from = ItalyTime.ToUtc(first)!.Value;
+        var to = ItalyTime.ToUtc(first.AddMonths(1))!.Value;
+
+        var rides = await db.Bookings.AsNoTracking()
+            .Where(b => b.Assignment != null && b.Assignment.DriverId == id && b.PickupAt >= from && b.PickupAt < to)
+            .OrderBy(b => b.PickupAt)
+            .Select(b => new
+            {
+                b.Id, b.Reference, b.PickupAt, Pickup = b.Pickup.Address, Dropoff = b.Dropoff.Address, b.DistanceKm,
+                b.DurationMinutes, b.Status, b.Assignment!.Vehicle.PlateNumber,
+                Vehicle = b.Assignment.Vehicle.Make + " " + b.Assignment.Vehicle.Model, b.TotalPrice, b.Currency,
+            })
+            .ToListAsync(cancellationToken);
+        var list = rides.Select(r => new DriverRide(
+            r.Id, r.Reference, ItalyTime.ToLocal(r.PickupAt), r.Pickup, r.Dropoff, r.DistanceKm, r.DurationMinutes,
+            r.Status, r.PlateNumber, r.Vehicle, r.TotalPrice, r.Currency)).ToList();
+
+        var completed = list.Where(r => r.Status == BookingStatus.Completed).ToList();
+        return new DriverRidesResponse(year, month, list, completed.Count, completed.Sum(r => r.DistanceKm));
     }
 
     public async Task<DriverDto> SetPhotoAsync(Guid id, byte[] data, CancellationToken cancellationToken)

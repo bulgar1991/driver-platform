@@ -1,0 +1,127 @@
+<div class="driver-rides">
+  <a class="driver-rides__back" routerLink="/admin/drivers"
+    ><app-icon name="arrow-left" />&ngsp;<ng-container i18n
+      >Drivers</ng-container
+    ></a
+  >
+  <header class="driver-rides__header">
+    <div>
+      <p class="eyebrow"><ng-container i18n>Ride history</ng-container></p>
+      <h1 class="heading heading--lg">
+        @if (driver(); as d) {
+          {{ d.firstName }} {{ d.lastName }}
+        } @else {
+          …
+        }
+      </h1>
+    </div>
+    <div class="driver-rides__month">
+      <button
+        type="button"
+        class="driver-rides__step"
+        i18n-aria-label
+        aria-label="Previous month"
+        (click)="step(-1)"
+        ><app-icon name="arrow-left"
+      /></button>
+      <input
+        class="input driver-rides__month-input"
+        type="month"
+        i18n-aria-label
+        aria-label="Month"
+        [value]="month()"
+        (change)="setMonth($any($event.target).value)" />
+      <button
+        type="button"
+        class="driver-rides__step"
+        i18n-aria-label
+        aria-label="Next month"
+        (click)="step(1)"
+        ><app-icon name="arrow-right"
+      /></button>
+    </div>
+  </header>
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  @if (history(); as h) {
+    <dl class="driver-rides__totals">
+      <div class="driver-rides__total">
+        <dt><ng-container i18n>Completed rides</ng-container></dt>
+        <dd>{{ h.completedRides }}</dd>
+      </div>
+      <div class="driver-rides__total">
+        <dt><ng-container i18n>Kilometres driven</ng-container></dt>
+        <dd>{{ h.completedKm | number: '1.0-1' }} km</dd>
+      </div>
+      <div class="driver-rides__total">
+        <dt><ng-container i18n>All rides this month</ng-container></dt>
+        <dd>{{ h.rides.length }}</dd>
+      </div>
+    </dl>
+  }
+
+  <div class="driver-rides__table-wrap">
+    <table class="driver-rides__table">
+      <thead>
+        <tr>
+          <th><ng-container i18n>Pickup</ng-container></th>
+          <th><ng-container i18n>Route</ng-container></th>
+          <th><ng-container i18n>Distance</ng-container></th>
+          <th><ng-container i18n>Vehicle</ng-container></th>
+          <th><ng-container i18n>Price</ng-container></th>
+          <th><ng-container i18n>Status</ng-container></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of history()?.rides ?? []; track r.bookingId) {
+          <tr>
+            <td class="driver-rides__nowrap">
+              {{ r.pickupAt | date: 'EEE d MMM' }}
+              <span class="driver-rides__strong">{{
+                r.pickupAt | date: 'HH:mm'
+              }}</span>
+              <span class="driver-rides__muted">{{ r.reference }}</span>
+            </td>
+            <td class="driver-rides__route">
+              <span class="driver-rides__place">
+                <app-icon name="pin" />&ngsp;{{ r.pickupAddress }}
+              </span>
+              <span class="driver-rides__place">
+                <app-icon name="navigate" />&ngsp;{{ r.dropoffAddress }}
+              </span>
+            </td>
+            <td class="driver-rides__nowrap">
+              {{ r.distanceKm | number: '1.0-1' }} km
+              <span class="driver-rides__muted"
+                ><ng-container i18n
+                  >{{ r.durationMinutes }} min</ng-container
+                ></span
+              >
+            </td>
+            <td>
+              {{ r.vehiclePlate }}
+              <span class="driver-rides__muted">{{ r.vehicleName }}</span>
+            </td>
+            <td class="driver-rides__nowrap">{{
+              r.totalPrice | money: r.currency
+            }}</td>
+            <td><app-status-badge [status]="r.status" /></td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="driver-rides__muted">
+              @if (loading()) {
+                <ng-container i18n>Loading…</ng-container>
+              } @else {
+                <ng-container i18n>No rides this month.</ng-container>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

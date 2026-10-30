@@ -851,6 +851,16 @@
     "2421786756478669024": "Verrà salvata insieme al modulo.",
     "1957275048820327390": "Impossibile leggere questa immagine. Scegli un JPEG, PNG o WebP.",
     "3305259980206325593": "Eliminare questo veicolo?",
-    "1881533568561984263": "Foto del veicolo"
+    "1881533568561984263": "Foto del veicolo",
+    "4338759975529967514": "Storico corse · Magnus Drive",
+    "1962961440665985670": "Storico corse",
+    "8586908745456864217": "Mese precedente",
+    "3628374603023447227": "Mese successivo",
+    "6590086819374116156": "Corse completate",
+    "1943502288485673096": "Chilometri percorsi",
+    "7921060562935967347": "Tutte le corse del mese",
+    "1779552786277618671": "Distanza",
+    "771135449401995553": "{$INTERPOLATION} min",
+    "8853045926704733192": "Nessuna corsa questo mese."
   }
 }

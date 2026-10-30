@@ -851,6 +851,16 @@
     "2421786756478669024": "Wird mit dem Formular gespeichert.",
     "1957275048820327390": "Dieses Bild kann nicht gelesen werden. Wählen Sie ein JPEG, PNG oder WebP.",
     "3305259980206325593": "Dieses Fahrzeug löschen?",
-    "1881533568561984263": "Fahrzeugfoto"
+    "1881533568561984263": "Fahrzeugfoto",
+    "4338759975529967514": "Fahrtenverlauf · Magnus Drive",
+    "1962961440665985670": "Fahrtenverlauf",
+    "8586908745456864217": "Vorheriger Monat",
+    "3628374603023447227": "Nächster Monat",
+    "6590086819374116156": "Abgeschlossene Fahrten",
+    "1943502288485673096": "Gefahrene Kilometer",
+    "7921060562935967347": "Alle Fahrten des Monats",
+    "1779552786277618671": "Entfernung",
+    "771135449401995553": "{$INTERPOLATION} Min.",
+    "8853045926704733192": "Keine Fahrten in diesem Monat."
   }
 }

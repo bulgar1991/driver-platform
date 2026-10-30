@@ -27,6 +27,14 @@ export const ADMIN_ROUTES: Routes = [
       import('./drivers/drivers.component').then(m => m.DriversComponent),
   },
   {
+    path: 'drivers/:id/rides',
+    title: $localize`Ride history · Magnus Drive`,
+    loadComponent: () =>
+      import('./driver-rides/driver-rides.component').then(
+        m => m.DriverRidesComponent
+      ),
+  },
+  {
     path: 'vehicles',
     title: $localize`Vehicles · Magnus Drive`,
     loadComponent: () =>

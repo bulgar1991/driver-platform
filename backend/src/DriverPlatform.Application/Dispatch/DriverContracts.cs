@@ -61,6 +61,30 @@ public sealed record DriverDto(
 
 public sealed record DriverLinkResponse(string Url);
 
+/// <summary>One booking on a driver's shift, for the ride history.</summary>
+public sealed record DriverRide(
+    Guid BookingId,
+    string Reference,
+    /// <summary>Italian local time.</summary>
+    DateTime PickupAt,
+    string PickupAddress,
+    string DropoffAddress,
+    decimal DistanceKm,
+    int DurationMinutes,
+    BookingStatus Status,
+    string VehiclePlate,
+    string VehicleName,
+    decimal TotalPrice,
+    string Currency);
+
+/// <summary>A driver's rides in one month; the totals count completed rides only.</summary>
+public sealed record DriverRidesResponse(
+    int Year,
+    int Month,
+    IReadOnlyList<DriverRide> Rides,
+    int CompletedRides,
+    decimal CompletedKm);
+
 public sealed record VehicleRequest
 {
     [Required, MaxLength(16), RegularExpression("^[A-Za-z0-9 -]{4,16}$")]

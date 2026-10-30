@@ -89,7 +89,14 @@
               }
             </td>
             <td class="fleet__nowrap">
-              {{ d.completedRides }}
+              <a
+                class="fleet__name"
+                [routerLink]="['/admin/drivers', d.id, 'rides']"
+                i18n-title
+                title="Ride history"
+                (click)="$event.stopPropagation()"
+                >{{ d.completedRides }}</a
+              >
               <span class="fleet__muted">
                 @if (d.rating) {
                   ★ {{ d.rating }} ({{ d.ratingCount }})
@@ -293,6 +300,19 @@
         ></p
       >
     </fieldset>
+
+    @if (editing(); as d) {
+      <a
+        appButton
+        size="sm"
+        variant="outline"
+        class="fleet__history"
+        [routerLink]="['/admin/drivers', d.id, 'rides']"
+        ><app-icon name="route" />&ngsp;<ng-container i18n
+          >Ride history</ng-container
+        ></a
+      >
+    }
 
     @if (link(); as url) {
       <section class="fleet__link">

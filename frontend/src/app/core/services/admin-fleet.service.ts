@@ -4,6 +4,7 @@ import { Observable } from 'rxjs'
 import {
   Driver,
   DriverRequest,
+  DriverRides,
   Review,
   Vehicle,
   VehicleRequest,
@@ -25,6 +26,22 @@ export class AdminFleetService {
   drivers(includeInactive = false): Observable<Driver[]> {
     const params = new HttpParams().set('includeInactive', includeInactive)
     return this.http.get<Driver[]>(`${this.url}/drivers`, { params })
+  }
+
+  driver(id: string): Observable<Driver> {
+    return this.http.get<Driver>(`${this.url}/drivers/${id}`)
+  }
+
+  /** Rides with a pickup in that month (Italian time), oldest first. */
+  driverRides(
+    id: string,
+    year: number,
+    month: number
+  ): Observable<DriverRides> {
+    const params = new HttpParams().set('year', year).set('month', month)
+    return this.http.get<DriverRides>(`${this.url}/drivers/${id}/rides`, {
+      params,
+    })
   }
 
   saveDriver(request: DriverRequest, id?: string): Observable<Driver> {
