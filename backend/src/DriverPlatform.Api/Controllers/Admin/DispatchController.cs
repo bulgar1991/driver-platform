@@ -113,7 +113,7 @@ public sealed class DispatchController(
         {
             return ValidationProblem(new ValidationProblemDetails(new Dictionary<string, string[]> { ["month"] = ["Pick a month."] }));
         }
-        return Ok(await drivers.RidesAsync(id, year, month, cancellationToken));
+        return Ok(await drivers.RidesAsync(id, year, month, User.IsInRole(nameof(StaffRole.Admin)), cancellationToken));
     }
 
     [HttpDelete("drivers/{id:guid}")]

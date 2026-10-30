@@ -33,6 +33,7 @@ public static class DependencyInjection
         services.AddScoped<IBookingEmails, BookingEmails>();
         services.AddScoped<IMyBookingService, MyBookingService>();
         services.AddScoped<IDriverAdminService, DriverAdminService>();
+        services.AddScoped<IDriverPayService, DriverPayService>();
         services.AddScoped<IVehicleAdminService, VehicleAdminService>();
         services.AddScoped<IBookingAdminService, BookingAdminService>();
         services.AddScoped<IShiftService, ShiftService>();

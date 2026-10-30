@@ -219,6 +219,69 @@ public sealed class DispatchApiTests
     }
 
     [Fact]
+    public async Task Admin_types_pay_per_ride_and_gets_the_monthly_salary()
+    {
+        using var factory = new ApiFactory();
+        // Before any other staff user: the bootstrap admin is only created in an empty staff table.
+        var admin = await factory.CreateAdminClientAsync();
+        var fleet = await FleetAsync(factory);
+        var client = factory.CreateClient();
+        var day = TestData.QuietPickup().Date;
+        var a = await client.BookAndPayAsync(TestData.Trip() with { PickupAt = day.AddHours(8) });
+        var b = await client.BookAndPayAsync(TestData.Trip() with { PickupAt = day.AddHours(12) });
+        var loose = await client.BookAndPayAsync(TestData.Trip() with { PickupAt = day.AddHours(18) });
+        var aId = (await FindBooking(fleet.Staff, a.Reference)).Id;
+        var bId = (await FindBooking(fleet.Staff, b.Reference)).Id;
+        var looseId = (await FindBooking(fleet.Staff, loose.Reference)).Id;
+        await Read<ShiftResult>(await CreateShift(fleet.Staff, fleet.Driver.Id, fleet.Sedan.Id, aId, bId), HttpStatusCode.Created);
+        await fleet.Staff.PutAsJsonAsync($"/api/admin/bookings/{aId}/status", new BookingStatusRequest { Status = BookingStatus.Completed }, TestData.Json);
+
+        var set = await Read<DriverPayRequest>(await admin.PutAsJsonAsync($"/api/admin/bookings/{aId}/driver-pay", new DriverPayRequest { Amount = 45.505m }, TestData.Json));
+        await admin.PutAsJsonAsync($"/api/admin/bookings/{bId}/driver-pay", new DriverPayRequest { Amount = 30 }, TestData.Json);
+        var byDispatcher = await fleet.Staff.PutAsJsonAsync($"/api/admin/bookings/{aId}/driver-pay", new DriverPayRequest { Amount = 999 }, TestData.Json);
+        var notOnShift = await admin.PutAsJsonAsync($"/api/admin/bookings/{looseId}/driver-pay", new DriverPayRequest { Amount = 20 }, TestData.Json);
+
+        var url = $"/api/admin/drivers/{fleet.Driver.Id}/rides?year={day.Year}&month={day.Month}";
+        var forAdmin = await Read<DriverRidesResponse>(await admin.GetAsync(url));
+        var forDispatcher = await Read<DriverRidesResponse>(await fleet.Staff.GetAsync(url));
+        var month = await Read<List<DriverPayLine>>(await admin.GetAsync($"/api/admin/driver-pay?year={day.Year}&month={day.Month}"));
+
+        Assert.Equal(45.51m, set.Amount);
+        Assert.Equal(HttpStatusCode.Forbidden, byDispatcher.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, notOnShift.StatusCode);
+        Assert.Equal([45.51m, 30m], forAdmin.Rides.Select(r => r.DriverPay));
+        Assert.Equal(45.51m, forAdmin.PayTotal); // only the completed ride counts
+        Assert.Equal(0, forAdmin.RidesWithoutPay);
+        Assert.All(forDispatcher.Rides, r => Assert.Null(r.DriverPay));
+        Assert.Null(forDispatcher.PayTotal);
+        var line = Assert.Single(month);
+        Assert.Equal(fleet.Driver.Id, line.DriverId);
+        Assert.Equal((1, 45.51m), (line.CompletedRides, line.PayTotal));
+        Assert.Equal(HttpStatusCode.Forbidden, (await fleet.Staff.GetAsync($"/api/admin/driver-pay?year={day.Year}&month={day.Month}")).StatusCode);
+    }
+
+    [Fact]
+    public async Task Pay_does_not_follow_a_ride_to_another_driver()
+    {
+        using var factory = new ApiFactory();
+        // Before any other staff user: the bootstrap admin is only created in an empty staff table.
+        var admin = await factory.CreateAdminClientAsync();
+        var fleet = await FleetAsync(factory);
+        var day = TestData.QuietPickup().Date;
+        var booking = await factory.CreateClient().BookAndPayAsync(TestData.Trip() with { PickupAt = day.AddHours(9) });
+        var id = (await FindBooking(fleet.Staff, booking.Reference)).Id;
+        var shift = await Read<ShiftResult>(await CreateShift(fleet.Staff, fleet.Driver.Id, fleet.Sedan.Id, id), HttpStatusCode.Created);
+        await admin.PutAsJsonAsync($"/api/admin/bookings/{id}/driver-pay", new DriverPayRequest { Amount = 40 }, TestData.Json);
+
+        var moved = await fleet.Staff.PutAsJsonAsync($"/api/admin/shifts/{shift.Shift.Id}",
+            new ShiftRequest { DriverId = fleet.OtherDriver.Id, VehicleId = fleet.Sedan.Id, BookingIds = [id] }, TestData.Json);
+        Assert.Equal(HttpStatusCode.OK, moved.StatusCode);
+
+        var history = await Read<DriverRidesResponse>(await admin.GetAsync($"/api/admin/drivers/{fleet.OtherDriver.Id}/rides?year={day.Year}&month={day.Month}"));
+        Assert.Null(Assert.Single(history.Rides).DriverPay);
+    }
+
+    [Fact]
     public async Task Removing_a_booking_from_a_shift_puts_it_back_in_the_queue()
     {
         using var factory = new ApiFactory();

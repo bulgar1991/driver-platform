@@ -64,6 +64,7 @@ internal sealed partial class ItalianTexts
     public override string DriverHasShifts => "Questo autista ha turni o recensioni e non può essere eliminato. Togli la spunta da Attivo.";
     public override string PhotoTooLarge => "L'immagine supera i 5 MB.";
     public override string PhotoNotAnImage => "Scegli un'immagine JPEG, PNG o WebP.";
+    public override string BookingNotOnShift => "Prima assegna questa prenotazione a un turno: il compenso va all'autista del turno.";
     public override string ZoneNotFound => "Zona non trovata.";
     public override string PickCentre => "Scegli il centro sulla mappa e imposta un raggio.";
     public override string PolygonOutsideServiceArea => "Tutti i punti devono essere nell'area servita (Italia, Francia, Germania, Svizzera).";

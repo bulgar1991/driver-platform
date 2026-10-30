@@ -61,6 +61,8 @@ public class Booking : Entity
     /// <summary>Kept for audit, fraud prevention and payment disputes.</summary>
     public string? ClientIp { get; set; }
 
+    /// <summary>What the driver earns for this ride, typed by an admin; summed into the monthly salary.</summary>
+    public decimal? DriverPay { get; set; }
     public Guid? AssignmentId { get; set; }
     public Assignment? Assignment { get; set; }
     public DateTimeOffset? PickedUpAt { get; set; }

@@ -1,0 +1,122 @@
+<div class="driver-pay">
+  <header class="driver-pay__header">
+    <div>
+      <p class="eyebrow"><ng-container i18n>Fleet</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Driver pay</ng-container></h1
+      >
+    </div>
+    <div class="driver-pay__month">
+      <button
+        type="button"
+        class="driver-pay__step"
+        i18n-aria-label
+        aria-label="Previous month"
+        (click)="step(-1)"
+        ><app-icon name="arrow-left"
+      /></button>
+      <input
+        class="input driver-pay__month-input"
+        type="month"
+        i18n-aria-label
+        aria-label="Month"
+        [value]="month()"
+        (change)="setMonth($any($event.target).value)" />
+      <button
+        type="button"
+        class="driver-pay__step"
+        i18n-aria-label
+        aria-label="Next month"
+        (click)="step(1)"
+        ><app-icon name="arrow-right"
+      /></button>
+    </div>
+  </header>
+
+  <p class="driver-pay__intro"
+    ><ng-container i18n
+      >The salary is the pay typed on each completed ride. Open a driver to type
+      or correct it.</ng-container
+    ></p
+  >
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+  @if (missing()) {
+    <p class="alert alert--warning" role="status"
+      ><ng-container i18n>{missing(), plural,
+        =1 {1 completed ride has no driver pay yet.}
+        other {{{ missing() }} completed rides have no driver pay yet.}
+      }</ng-container></p
+    >
+  }
+
+  <div class="driver-pay__table-wrap">
+    <table class="driver-pay__table">
+      <thead>
+        <tr>
+          <th><ng-container i18n>Driver</ng-container></th>
+          <th class="driver-pay__number"
+            ><ng-container i18n>Completed rides</ng-container></th
+          >
+          <th class="driver-pay__number"
+            ><ng-container i18n>Kilometres</ng-container></th
+          >
+          <th class="driver-pay__number"
+            ><ng-container i18n>Without pay</ng-container></th
+          >
+          <th class="driver-pay__number"
+            ><ng-container i18n>Salary</ng-container></th
+          >
+        </tr>
+      </thead>
+      <tbody>
+        @for (l of lines(); track l.driverId) {
+          <tr>
+            <td>
+              <a
+                class="driver-pay__name"
+                [routerLink]="['/admin/drivers', l.driverId, 'rides']"
+                [queryParams]="{ month: month() }"
+                >{{ l.driverName }}</a
+              >
+            </td>
+            <td class="driver-pay__number">{{ l.completedRides }}</td>
+            <td class="driver-pay__number"
+              >{{ l.completedKm | number: '1.0-1' }} km</td
+            >
+            <td
+              class="driver-pay__number"
+              [class.driver-pay__warning]="l.ridesWithoutPay"
+              >{{ l.ridesWithoutPay }}</td
+            >
+            <td class="driver-pay__number driver-pay__salary">{{
+              l.payTotal | money
+            }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="driver-pay__muted">
+              @if (loading()) {
+                <ng-container i18n>Loading…</ng-container>
+              } @else {
+                <ng-container i18n>No completed rides this month.</ng-container>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+      @if (lines().length) {
+        <tfoot>
+          <tr>
+            <th colspan="4"><ng-container i18n>Total</ng-container></th>
+            <td class="driver-pay__number driver-pay__salary">{{
+              total() | money
+            }}</td>
+          </tr>
+        </tfoot>
+      }
+    </table>
+  </div>
+</div>

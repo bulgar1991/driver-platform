@@ -58,6 +58,8 @@ export interface DriverRide {
   vehicleName: string
   totalPrice: number
   currency: string
+  /** What the driver earns for the ride; null if not typed yet (always null for dispatchers). */
+  driverPay: number | null
 }
 
 /** A driver's rides in one month; totals count completed rides only. */
@@ -67,6 +69,20 @@ export interface DriverRides {
   rides: DriverRide[]
   completedRides: number
   completedKm: number
+  /** The month's salary (completed rides). Null for dispatchers. */
+  payTotal: number | null
+  /** Completed rides with no pay typed yet. Null for dispatchers. */
+  ridesWithoutPay: number | null
+}
+
+/** One driver's line in the monthly salary list. */
+export interface DriverPayLine {
+  driverId: string
+  driverName: string
+  completedRides: number
+  completedKm: number
+  payTotal: number
+  ridesWithoutPay: number
 }
 
 export type AssignmentStatus =

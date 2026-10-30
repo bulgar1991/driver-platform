@@ -113,6 +113,7 @@ public sealed class ShiftService(
                     booking.Status = BookingStatus.New;
                     booking.AssignmentId = null;
                     booking.Assignment = null;
+                    booking.DriverPay = null;
                 }
                 shift.CancelledAt = now;
                 shift.CancellationReason = request.Reason.Trim();
@@ -274,9 +275,12 @@ public sealed class ShiftService(
             {
                 removed.AssignmentId = null;
                 removed.Status = BookingStatus.New;
+                removed.DriverPay = null;
             }
         }
 
+        // Pay typed for one driver must not follow the ride to another.
+        var driverChanged = !isNew && shift.DriverId != driver!.Id;
         shift.DriverId = driver!.Id;
         shift.VehicleId = vehicle!.Id;
         shift.DispatcherNotes = string.IsNullOrWhiteSpace(request.Notes) ? null : request.Notes.Trim();
@@ -300,6 +304,10 @@ public sealed class ShiftService(
         }
         foreach (var booking in ordered)
         {
+            if (driverChanged || booking.AssignmentId != shift.Id)
+            {
+                booking.DriverPay = null;
+            }
             booking.AssignmentId = shift.Id;
             booking.Status = BookingStatus.Assigned;
         }

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs'
 import {
   Driver,
   DriverRequest,
+  DriverPayLine,
   DriverRides,
   Review,
   Vehicle,
@@ -42,6 +43,23 @@ export class AdminFleetService {
     return this.http.get<DriverRides>(`${this.url}/drivers/${id}/rides`, {
       params,
     })
+  }
+
+  /** Admins only. Null clears the pay. */
+  setDriverPay(
+    bookingId: string,
+    amount: number | null
+  ): Observable<{ amount: number | null }> {
+    return this.http.put<{ amount: number | null }>(
+      `${this.url}/bookings/${bookingId}/driver-pay`,
+      { amount }
+    )
+  }
+
+  /** Admins only: every driver with completed rides that month and their salary. */
+  driverPay(year: number, month: number): Observable<DriverPayLine[]> {
+    const params = new HttpParams().set('year', year).set('month', month)
+    return this.http.get<DriverPayLine[]>(`${this.url}/driver-pay`, { params })
   }
 
   saveDriver(request: DriverRequest, id?: string): Observable<Driver> {

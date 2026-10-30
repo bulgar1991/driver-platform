@@ -29,7 +29,7 @@
         type="month"
         i18n-aria-label
         aria-label="Month"
-        [value]="month()"
+        [value]="selectedMonth()"
         (change)="setMonth($any($event.target).value)" />
       <button
         type="button"
@@ -60,7 +60,23 @@
         <dt><ng-container i18n>All rides this month</ng-container></dt>
         <dd>{{ h.rides.length }}</dd>
       </div>
+      @if (h.payTotal !== null) {
+        <div class="driver-rides__total driver-rides__total--pay">
+          <dt><ng-container i18n>Salary this month</ng-container></dt>
+          <dd>{{ h.payTotal | money }}</dd>
+        </div>
+      }
     </dl>
+    @if (h.ridesWithoutPay) {
+      <p class="alert alert--warning" role="status"
+        ><ng-container i18n>{h.ridesWithoutPay, plural,
+          =1 {1 completed ride has no driver pay yet.}
+          other {
+            {{ h.ridesWithoutPay }} completed rides have no driver pay yet.
+          }
+        }</ng-container></p
+      >
+    }
   }
 
   <div class="driver-rides__table-wrap">
@@ -71,7 +87,10 @@
           <th><ng-container i18n>Route</ng-container></th>
           <th><ng-container i18n>Distance</ng-container></th>
           <th><ng-container i18n>Vehicle</ng-container></th>
-          <th><ng-container i18n>Price</ng-container></th>
+          <th><ng-container i18n>Client price</ng-container></th>
+          @if (isAdmin) {
+            <th><ng-container i18n>Driver pay</ng-container></th>
+          }
           <th><ng-container i18n>Status</ng-container></th>
         </tr>
       </thead>
@@ -108,11 +127,33 @@
             <td class="driver-rides__nowrap">{{
               r.totalPrice | money: r.currency
             }}</td>
+            @if (isAdmin) {
+              <td class="driver-rides__pay">
+                <input
+                  #pay
+                  class="input driver-rides__pay-input"
+                  type="number"
+                  min="0"
+                  step="0.5"
+                  inputmode="decimal"
+                  placeholder="€"
+                  [attr.aria-label]="tx.pay(r.reference)"
+                  [value]="r.driverPay ?? ''"
+                  [class.driver-rides__pay-input--missing]="
+                    r.driverPay === null && r.status === 'Completed'
+                  "
+                  (change)="savePay(r, pay.value)"
+                  (keydown.enter)="pay.blur()" />
+                @if (payState()[r.bookingId]; as message) {
+                  <span class="driver-rides__muted">{{ message }}</span>
+                }
+              </td>
+            }
             <td><app-status-badge [status]="r.status" /></td>
           </tr>
         } @empty {
           <tr>
-            <td colspan="6" class="driver-rides__muted">
+            <td [attr.colspan]="isAdmin ? 7 : 6" class="driver-rides__muted">
               @if (loading()) {
                 <ng-container i18n>Loading…</ng-container>
               } @else {

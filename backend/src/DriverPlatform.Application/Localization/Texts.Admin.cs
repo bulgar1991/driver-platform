@@ -38,6 +38,7 @@ public abstract partial class Texts
     public abstract string DriverHasShifts { get; }
     public abstract string PhotoTooLarge { get; }
     public abstract string PhotoNotAnImage { get; }
+    public abstract string BookingNotOnShift { get; }
     public abstract string ZoneNotFound { get; }
     public abstract string PickCentre { get; }
     public abstract string PolygonOutsideServiceArea { get; }

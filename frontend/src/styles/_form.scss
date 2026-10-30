@@ -46,4 +46,8 @@
   &--info {
     @apply border-gold/40 bg-gold/10 text-ivory;
   }
+
+  &--warning {
+    @apply border-warning/50 bg-warning/10 text-ivory;
+  }
 }

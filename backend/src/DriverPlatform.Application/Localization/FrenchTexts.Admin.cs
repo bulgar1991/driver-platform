@@ -64,6 +64,7 @@ internal sealed partial class FrenchTexts
     public override string DriverHasShifts => "Ce chauffeur a des services ou des avis : il ne peut pas être supprimé. Décochez Actif.";
     public override string PhotoTooLarge => "L'image dépasse 5 Mo.";
     public override string PhotoNotAnImage => "Choisissez une image JPEG, PNG ou WebP.";
+    public override string BookingNotOnShift => "Ajoutez d'abord cette réservation à un service : la rémunération va au chauffeur du service.";
     public override string ZoneNotFound => "Zone introuvable.";
     public override string PickCentre => "Choisissez le centre sur la carte et indiquez un rayon.";
     public override string PolygonOutsideServiceArea => "Tous les points doivent être dans la zone desservie (Italie, France, Allemagne, Suisse).";

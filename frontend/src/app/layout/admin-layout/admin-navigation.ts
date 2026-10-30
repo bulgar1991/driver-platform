@@ -6,6 +6,12 @@ export const ADMIN_NAVIGATION: NavItem[] = [
   { label: $localize`Shifts`, path: '/admin/shifts', icon: 'route' },
   { label: $localize`Drivers`, path: '/admin/drivers', icon: 'users' },
   { label: $localize`Vehicles`, path: '/admin/vehicles', icon: 'car' },
+  {
+    label: $localize`Driver pay`,
+    path: '/admin/driver-pay',
+    icon: 'wallet',
+    roles: ['Admin'],
+  },
   { label: $localize`Applications`, path: '/admin/applications', icon: 'mail' },
   { label: $localize`Reviews`, path: '/admin/reviews', icon: 'star' },
   {

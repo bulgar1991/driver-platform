@@ -75,7 +75,9 @@ public sealed record DriverRide(
     string VehiclePlate,
     string VehicleName,
     decimal TotalPrice,
-    string Currency);
+    string Currency,
+    /// <summary>Null when not set yet, or for dispatchers (pay is for admins).</summary>
+    decimal? DriverPay);
 
 /// <summary>A driver's rides in one month; the totals count completed rides only.</summary>
 public sealed record DriverRidesResponse(
@@ -83,7 +85,27 @@ public sealed record DriverRidesResponse(
     int Month,
     IReadOnlyList<DriverRide> Rides,
     int CompletedRides,
-    decimal CompletedKm);
+    decimal CompletedKm,
+    /// <summary>Salary for the month: pay of the completed rides. Null for dispatchers.</summary>
+    decimal? PayTotal,
+    /// <summary>Completed rides with no pay typed yet. Null for dispatchers.</summary>
+    int? RidesWithoutPay);
+
+public sealed record DriverPayRequest
+{
+    /// <summary>Null clears it.</summary>
+    [Range(0, 10_000)]
+    public decimal? Amount { get; init; }
+}
+
+/// <summary>One driver's line in the monthly salary list.</summary>
+public sealed record DriverPayLine(
+    Guid DriverId,
+    string DriverName,
+    int CompletedRides,
+    decimal CompletedKm,
+    decimal PayTotal,
+    int RidesWithoutPay);
 
 public sealed record VehicleRequest
 {

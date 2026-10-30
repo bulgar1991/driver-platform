@@ -23,7 +23,7 @@
   }
 
   &__totals {
-    @apply grid grid-cols-1 gap-3 sm:grid-cols-3;
+    @apply grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4;
   }
 
   &__total {
@@ -35,6 +35,10 @@
 
     dd {
       @apply mt-1 text-2xl text-gold;
+    }
+
+    &--pay {
+      @apply border-gold/60;
     }
   }
 
@@ -51,6 +55,19 @@
 
     td {
       @apply border-b border-ink-700 px-4 py-3 align-top text-ivory;
+    }
+  }
+
+  &__pay {
+    @apply w-36;
+  }
+
+  &__pay-input {
+    @apply py-2;
+
+    // A completed ride that still needs its pay.
+    &--missing {
+      @apply border-warning;
     }
   }
 

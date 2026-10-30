@@ -861,6 +861,19 @@
     "7921060562935967347": "Tutte le corse del mese",
     "1779552786277618671": "Distanza",
     "771135449401995553": "{$INTERPOLATION} min",
-    "8853045926704733192": "Nessuna corsa questo mese."
+    "8853045926704733192": "Nessuna corsa questo mese.",
+    "1528795862967363587": "Compensi autisti · Magnus Drive",
+    "4091263012826398009": "Compensi autisti",
+    "8050967998407221658": "Lo stipendio è la somma dei compensi inseriti su ogni corsa completata. Apri un autista per inserirli o correggerli.",
+    "8892539467699877611": "{VAR_PLURAL, plural, =1 {1 corsa completata non ha ancora il compenso dell'autista.} other {{INTERPOLATION} corse completate non hanno ancora il compenso dell'autista.}}",
+    "2677306144896871856": "Chilometri",
+    "8248471879753780932": "Senza compenso",
+    "498286527813307230": "Stipendio",
+    "8542204226627161029": "Nessuna corsa completata questo mese.",
+    "4502854054280983572": "Stipendio del mese",
+    "7806217176465352655": "{VAR_PLURAL, plural, =1 {1 corsa completata non ha ancora il compenso dell'autista.} other {{INTERPOLATION} corse completate non hanno ancora il compenso dell'autista.}}",
+    "7059467497878553184": "Prezzo cliente",
+    "2306929048795232532": "Compenso autista per {$reference}",
+    "2932018336587816090": "Inserisci un importo pari o superiore a 0."
   }
 }

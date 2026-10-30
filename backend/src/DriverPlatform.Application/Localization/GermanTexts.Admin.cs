@@ -64,6 +64,7 @@ internal sealed partial class GermanTexts
     public override string DriverHasShifts => "Dieser Fahrer hat Schichten oder Bewertungen und kann nicht gelöscht werden. Entfernen Sie stattdessen das Häkchen bei Aktiv.";
     public override string PhotoTooLarge => "Das Bild ist größer als 5 MB.";
     public override string PhotoNotAnImage => "Wählen Sie ein JPEG-, PNG- oder WebP-Bild.";
+    public override string BookingNotOnShift => "Teilen Sie diese Buchung zuerst einer Schicht zu: Die Vergütung geht an den Fahrer der Schicht.";
     public override string ZoneNotFound => "Zone nicht gefunden.";
     public override string PickCentre => "Wählen Sie den Mittelpunkt auf der Karte und legen Sie einen Radius fest.";
     public override string PolygonOutsideServiceArea => "Alle Punkte müssen im Einsatzgebiet liegen (Italien, Frankreich, Deutschland, Schweiz).";

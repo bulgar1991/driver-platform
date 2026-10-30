@@ -66,6 +66,7 @@ internal sealed partial class EnglishTexts
     public override string DriverHasShifts => "This driver has shifts or reviews, so they can't be deleted. Untick Active instead.";
     public override string PhotoTooLarge => "The picture is larger than 5 MB.";
     public override string PhotoNotAnImage => "Choose a JPEG, PNG or WebP picture.";
+    public override string BookingNotOnShift => "Put this booking on a shift first: pay goes to the shift's driver.";
     public override string ZoneNotFound => "Zone not found.";
     public override string PickCentre => "Pick the centre on the map and set a radius.";
     public override string PolygonOutsideServiceArea => "All points must be in the service area (Italy, France, Germany, Switzerland).";

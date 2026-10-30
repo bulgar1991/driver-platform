@@ -35,6 +35,15 @@ export const ADMIN_ROUTES: Routes = [
       ),
   },
   {
+    path: 'driver-pay',
+    canActivate: [roleGuard('Admin')],
+    title: $localize`Driver pay · Magnus Drive`,
+    loadComponent: () =>
+      import('./driver-pay/driver-pay.component').then(
+        m => m.DriverPayComponent
+      ),
+  },
+  {
     path: 'vehicles',
     title: $localize`Vehicles · Magnus Drive`,
     loadComponent: () =>
