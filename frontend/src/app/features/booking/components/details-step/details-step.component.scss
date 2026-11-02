@@ -33,6 +33,10 @@
     @apply resize-y;
   }
 
+  &__hint {
+    @apply -mt-4 text-xs leading-relaxed text-ivory-400;
+  }
+
   &__error {
     @apply -mt-2 text-xs text-danger;
   }

@@ -48,7 +48,7 @@ public sealed class BookingEmails(
             Row(html, t.Vehicle, t.VehicleSummary(leg.VehicleCategory, leg.Passengers, leg.LargeLuggage, leg.SmallLuggage));
             if (leg.FlightNumber is not null)
             {
-                Row(html, t.Flight, leg.FlightNumber);
+                Row(html, t.Flight, t.FlightDetails(leg.FlightNumber, leg.FlightDepartsAt, leg.FlightLandsAt));
             }
             html.Append("</table>");
 

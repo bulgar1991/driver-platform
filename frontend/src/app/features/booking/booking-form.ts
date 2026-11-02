@@ -12,11 +12,13 @@ import {
   CreateBookingRequest,
   GeoPoint,
   QuoteRequest,
+  ReturnLegInput,
   VehicleCategory,
 } from '@/core/models'
 import { Params } from '@angular/router'
 import {
   nowInItaly,
+  ticketTime,
   todayInItaly,
   toLocalDateTime,
 } from '@/core/utils/italy-time'
@@ -43,8 +45,13 @@ export type DetailsForm = FormGroup<{
   nameSign: FormControl<boolean>
   nameSignText: FormControl<string>
   flightNumber: FormControl<string>
+  /** datetime-local values, as on the ticket. */
+  flightDepartsAt: FormControl<string>
+  flightLandsAt: FormControl<string>
   returnNameSign: FormControl<boolean>
   returnFlightNumber: FormControl<string>
+  returnFlightDepartsAt: FormControl<string>
+  returnFlightLandsAt: FormControl<string>
   notes: FormControl<string>
 }>
 
@@ -163,8 +170,12 @@ export function createBookingForms(
       nameSign: nn.control(false),
       nameSignText: nn.control('', Validators.maxLength(60)),
       flightNumber: nn.control('', Validators.pattern(FLIGHT_PATTERN)),
+      flightDepartsAt: nn.control(''),
+      flightLandsAt: nn.control(''),
       returnNameSign: nn.control(false),
       returnFlightNumber: nn.control('', Validators.pattern(FLIGHT_PATTERN)),
+      returnFlightDepartsAt: nn.control(''),
+      returnFlightLandsAt: nn.control(''),
       notes: nn.control('', Validators.maxLength(2000)),
     }),
     contact: nn.group({
@@ -184,6 +195,20 @@ export function createBookingForms(
       gdprConsent: nn.control(false, Validators.requiredTrue),
       marketingConsent: nn.control(false),
     }),
+  }
+}
+
+/** A flight's times only go with a flight number. */
+function flight(
+  number: string,
+  departsAt: string,
+  landsAt: string
+): Pick<ReturnLegInput, 'flightNumber' | 'flightDepartsAt' | 'flightLandsAt'> {
+  const flightNumber = number.trim() || null
+  return {
+    flightNumber,
+    flightDepartsAt: flightNumber ? ticketTime(departsAt) : null,
+    flightLandsAt: flightNumber ? ticketTime(landsAt) : null,
   }
 }
 
@@ -217,7 +242,11 @@ export function toQuoteRequest(forms: BookingForms): QuoteRequest {
       ? {
           pickupAt: toLocalDateTime(trip.returnDate, trip.returnTime),
           nameSign: details.returnNameSign,
-          flightNumber: details.returnFlightNumber.trim() || null,
+          ...flight(
+            details.returnFlightNumber,
+            details.returnFlightDepartsAt,
+            details.returnFlightLandsAt
+          ),
         }
       : null,
   }
@@ -242,7 +271,11 @@ export function toBookingRequest(
       phone: contact.phone.trim(),
       language,
     },
-    flightNumber: details.flightNumber.trim() || null,
+    ...flight(
+      details.flightNumber,
+      details.flightDepartsAt,
+      details.flightLandsAt
+    ),
     nameSignText: details.nameSign ? details.nameSignText.trim() || null : null,
     notes: details.notes.trim() || null,
     gdprConsent: contact.gdprConsent,

@@ -26,6 +26,9 @@ public sealed record DriverBookingView(
     int SmallLuggage,
     IReadOnlyList<ChildSeatRequest> ChildSeats,
     string? FlightNumber,
+    /// <summary>As on the ticket: the airport's local time.</summary>
+    DateTime? FlightDepartsAt,
+    DateTime? FlightLandsAt,
     bool NameSign,
     string? NameSignText,
     string ClientName,
@@ -202,7 +205,7 @@ public sealed class DriverPortalService(
                 : a.Bookings.OrderBy(b => b.PickupAt).Select(b => new DriverBookingView(
                     b.Id, b.Reference, b.Status, ItalyTime.ToLocal(b.PickupAt), b.Pickup, b.Dropoff,
                     b.PickupMeetingPoint, b.DropoffMeetingPoint, b.Passengers, b.LargeLuggage, b.SmallLuggage, b.ChildSeats,
-                    b.FlightNumber, b.NameSign, b.NameSignText,
+                    b.FlightNumber, b.FlightDepartsAt, b.FlightLandsAt, b.NameSign, b.NameSignText,
                     $"{b.Client.FirstName} {b.Client.LastName}", b.Client.Phone, b.Client.Language, b.ClientNotes,
                     b.DistanceKm, b.DurationMinutes,
                     a.Status == AssignmentStatus.Confirmed && b.Status == BookingStatus.Assigned && now >= b.PickupAt - PickupWindow,

@@ -44,6 +44,7 @@ internal sealed partial class ItalianTexts : Texts
     public override string TimeDoesNotExist => "Quest'ora non esiste (passaggio all'ora legale). Scelga un altro orario.";
     public override string BookAhead(int hours) => $"Prenoti con almeno {hours} ore di anticipo.";
     public override string OneYearAhead => "Si può prenotare fino a un anno prima.";
+    public override string FlightTimeNearPickup => "Decollo e atterraggio devono essere entro due giorni dall'orario di partenza.";
     public override string NoMeetingPointYet(string zone) => $"{zone} non ha ancora un punto d'incontro. La preghiamo di contattarci.";
     public override string NotAMeetingPoint(string requested, string zone) => $"\"{requested}\" non è un punto d'incontro di {zone}.";
     public override string BookingNotFound => "Prenotazione non trovata.";
@@ -73,6 +74,9 @@ internal sealed partial class ItalianTexts : Texts
     public override string VehicleSummary(VehicleCategory category, int passengers, int large, int small) =>
         $"{Category(category)}, {passengers} {(passengers == 1 ? "passeggero" : "passeggeri")}, {large} bagagli grandi + {small} piccoli";
     public override string Flight => "Volo";
+    public override string Takeoff => "decollo";
+    public override string Landing => "atterraggio";
+    public override string LocalTimes => "(ora locale)";
     public override string MeetingPoint(string instructions) => $"Punto d'incontro: {instructions}";
     public override string DriverDetailsFollow => "Il nome dell'autista e l'auto Le saranno inviati prima della corsa.";
     public override string ManageBooking => "Vedi o gestisci la prenotazione";

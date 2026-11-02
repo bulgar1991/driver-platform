@@ -44,6 +44,7 @@ internal sealed partial class EnglishTexts : Texts
     public override string TimeDoesNotExist => "This time does not exist locally (clocks go forward). Pick another time.";
     public override string BookAhead(int hours) => $"Book at least {hours} hours ahead.";
     public override string OneYearAhead => "Bookings open up to one year ahead.";
+    public override string FlightTimeNearPickup => "Takeoff and landing must be within two days of the pickup time.";
     public override string NoMeetingPointYet(string zone) => $"{zone} has no meeting point configured yet. Please contact us.";
     public override string NotAMeetingPoint(string requested, string zone) => $"\"{requested}\" is not a meeting point of {zone}.";
     public override string BookingNotFound => "Booking not found.";
@@ -73,6 +74,9 @@ internal sealed partial class EnglishTexts : Texts
     public override string VehicleSummary(VehicleCategory category, int passengers, int large, int small) =>
         $"{Category(category)}, {passengers} passengers, {large} large + {small} small bags";
     public override string Flight => "Flight";
+    public override string Takeoff => "takeoff";
+    public override string Landing => "landing";
+    public override string LocalTimes => "(local times)";
     public override string MeetingPoint(string instructions) => $"Meeting point: {instructions}";
     public override string DriverDetailsFollow => "Your driver's name and car will be sent to you before the ride.";
     public override string ManageBooking => "View or manage your booking";

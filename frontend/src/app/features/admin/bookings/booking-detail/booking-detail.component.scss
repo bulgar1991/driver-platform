@@ -46,6 +46,14 @@
     @apply mt-1 border-l-2 border-gold pl-3 text-xs text-ivory-300;
   }
 
+  &__flight {
+    @apply flex flex-col gap-2;
+  }
+
+  &__field {
+    @apply flex flex-col gap-1 text-xs text-ivory-400;
+  }
+
   &__muted {
     @apply block text-xs text-ivory-400;
   }

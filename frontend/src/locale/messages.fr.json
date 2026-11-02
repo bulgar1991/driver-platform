@@ -890,6 +890,14 @@
     "7775133551464909220": "S'applique quand une course part de cette zone ou y arrive (d'abord la zone de départ ; si des zones se chevauchent, la plus petite). Les cases vides gardent le tarif normal pour cette voiture. Les majorations, la remise aller-retour et les suppléments s'appliquent toujours.",
     "6431046825171127306": "Prix fixe pour {$car}",
     "7785978024763088284": "Prise en charge pour {$car}",
-    "5123664614336641025": "Prix au km pour {$car}"
+    "5123664614336641025": "Prix au km pour {$car}",
+    "2411829135806623829": "Décollage",
+    "688901269573530260": "Atterrissage",
+    "5058602024172468840": "Heures locales, comme sur le billet. Le chauffeur les voit sur la course.",
+    "7756972150519043050": "Enregistrer le vol",
+    "1135719030816864146": "Facultatif. Heures locales, comme sur votre billet : le chauffeur organise la prise en charge en fonction.",
+    "4223499714066189846": "Décollage {$TIME}",
+    "4706490130178465838": "Atterrissage {$TIME}",
+    "3805586352881312913": "Heures locales, comme sur le billet"
   }
 }

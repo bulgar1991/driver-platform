@@ -69,7 +69,8 @@ public sealed class PartnerBookingService(
         var client = await ClientAsync(request.Passenger, cancellationToken);
         var source = partner.Kind == PartnerKind.Booking ? BookingSource.Booking : BookingSource.Partner;
         var trip = request.Trip;
-        var extras = new BookingExtras(request.FlightNumber, trip.NameSign, request.NameSignText, request.Notes);
+        var extras = new BookingExtras(request.FlightNumber, trip.NameSign, request.NameSignText, request.Notes,
+            request.FlightDepartsAt, request.FlightLandsAt);
 
         var outbound = BookingFactory.Create(client, quote.Outbound, vehicle.Outbound, trip, request.VehicleCategory,
             extras, quote.VatRatePercent, source, BookingStatus.New, ip);
@@ -81,7 +82,13 @@ public sealed class PartnerBookingService(
         if (quote.Return is not null && vehicle.Return is not null)
         {
             var inbound = BookingFactory.Create(client, quote.Return, vehicle.Return, trip, request.VehicleCategory,
-                extras with { FlightNumber = trip.Return!.FlightNumber, NameSign = trip.Return.NameSign },
+                extras with
+                {
+                    FlightNumber = trip.Return!.FlightNumber,
+                    NameSign = trip.Return.NameSign,
+                    FlightDepartsAt = trip.Return.FlightDepartsAt,
+                    FlightLandsAt = trip.Return.FlightLandsAt,
+                },
                 quote.VatRatePercent, source, BookingStatus.New, ip);
             inbound.Reference = await db.NewReferenceAsync(cancellationToken);
             inbound.PartnerId = partner.Id;

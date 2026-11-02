@@ -65,6 +65,9 @@ public sealed record BookingDetail(
     int SmallLuggage,
     IReadOnlyList<ChildSeatRequest> ChildSeats,
     string? FlightNumber,
+    /// <summary>As on the ticket: the airport's local time.</summary>
+    DateTime? FlightDepartsAt,
+    DateTime? FlightLandsAt,
     bool NameSign,
     string? NameSignText,
     string? ClientNotes,
@@ -93,6 +96,15 @@ public sealed record BookingStatusRequest
     public BookingStatus Status { get; init; }
     [MaxLength(300)]
     public string? Reason { get; init; }
+}
+
+public sealed record BookingFlightRequest
+{
+    [MaxLength(16), RegularExpression("^[A-Za-z0-9 ]{2,16}$")]
+    public string? FlightNumber { get; init; }
+    /// <summary>As on the ticket: the airport's local time, without an offset.</summary>
+    public DateTime? FlightDepartsAt { get; init; }
+    public DateTime? FlightLandsAt { get; init; }
 }
 
 public sealed record BookingNotesRequest

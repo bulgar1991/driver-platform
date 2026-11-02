@@ -1,4 +1,5 @@
 using DriverPlatform.Application.Abstractions;
+using DriverPlatform.Application.Bookings;
 using DriverPlatform.Application.Common;
 using DriverPlatform.Application.Geo;
 using DriverPlatform.Application.Reviews;
@@ -14,6 +15,7 @@ public interface IBookingAdminService
     Task<PagedResult<BookingListItem>> ListAsync(BookingQuery query, CancellationToken cancellationToken);
     Task<BookingDetail> GetAsync(Guid id, CancellationToken cancellationToken);
     Task<BookingDetail> ChangeStatusAsync(Guid id, BookingStatusRequest request, CancellationToken cancellationToken);
+    Task<BookingDetail> UpdateFlightAsync(Guid id, BookingFlightRequest request, CancellationToken cancellationToken);
     Task<BookingDetail> UpdateNotesAsync(Guid id, BookingNotesRequest request, CancellationToken cancellationToken);
 }
 
@@ -126,6 +128,18 @@ public sealed class BookingAdminService(IAppDbContext db, IReviewService reviews
         return await ToDetailAsync(booking, cancellationToken);
     }
 
+    /// <summary>The client often sends the flight later, or it changes; the driver sees the new times at once.</summary>
+    public async Task<BookingDetail> UpdateFlightAsync(Guid id, BookingFlightRequest request, CancellationToken cancellationToken)
+    {
+        var booking = await FindAsync(id, cancellationToken);
+        var pickup = ItalyTime.ToLocal(booking.PickupAt);
+        booking.FlightNumber = BookingFactory.Normalize(request.FlightNumber)?.ToUpperInvariant();
+        booking.FlightDepartsAt = FlightTimes.Check(request.FlightDepartsAt, pickup, "flightDepartsAt");
+        booking.FlightLandsAt = FlightTimes.Check(request.FlightLandsAt, pickup, "flightLandsAt");
+        await db.SaveChangesAsync(cancellationToken);
+        return await ToDetailAsync(booking, cancellationToken);
+    }
+
     public async Task<BookingDetail> UpdateNotesAsync(Guid id, BookingNotesRequest request, CancellationToken cancellationToken)
     {
         var booking = await FindAsync(id, cancellationToken);
@@ -160,7 +174,7 @@ public sealed class BookingAdminService(IAppDbContext db, IReviewService reviews
         return new BookingDetail(
             b.Id, b.Reference, b.Status, b.Source, item.PickupAt, b.Pickup, b.Dropoff,
             b.PickupMeetingPoint, b.DropoffMeetingPoint, b.Passengers, b.LargeLuggage, b.SmallLuggage, b.ChildSeats,
-            b.FlightNumber, b.NameSign, b.NameSignText, b.ClientNotes, b.InternalNotes, b.VehicleCategory,
+            b.FlightNumber, b.FlightDepartsAt, b.FlightLandsAt, b.NameSign, b.NameSignText, b.ClientNotes, b.InternalNotes, b.VehicleCategory,
             b.DistanceKm, b.DurationMinutes, b.TotalPrice, b.Currency, b.PriceLines,
             new BookingClient(item.ClientName, b.Client.Email, b.Client.Phone, b.Client.Language),
             payment, b.AssignmentId, item.DriverName, item.VehiclePlate, linked, b.CancellationReason, b.CreatedAt,

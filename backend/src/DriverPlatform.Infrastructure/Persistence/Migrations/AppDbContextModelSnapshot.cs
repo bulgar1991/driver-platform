@@ -258,6 +258,14 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("numeric(12,2)")
                         .HasColumnName("extras_total");
 
+                    b.Property<DateTime?>("FlightDepartsAt")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("flight_departs_at");
+
+                    b.Property<DateTime?>("FlightLandsAt")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("flight_lands_at");
+
                     b.Property<string>("FlightNumber")
                         .HasMaxLength(16)
                         .HasColumnType("character varying(16)")

@@ -117,9 +117,35 @@
       </div>
     }
     @if (ride().flightNumber) {
-      <div>
+      <div
+        [class.driver-ride__fact--wide]="
+          ride().flightDepartsAt || ride().flightLandsAt
+        ">
         <dt i18n>Flight</dt>
-        <dd>{{ ride().flightNumber }}</dd>
+        <dd>
+          {{ ride().flightNumber }}
+          @if (ride().flightDepartsAt; as departs) {
+            <span i18n
+              >Takeoff
+              {{
+                departs | date: 'EEE d MMM, HH:mm' // i18n(ph="time")
+              }}</span
+            >
+          }
+          @if (ride().flightLandsAt; as lands) {
+            <span i18n
+              >Landing
+              {{
+                lands | date: 'EEE d MMM, HH:mm' // i18n(ph="time")
+              }}</span
+            >
+          }
+          @if (ride().flightDepartsAt || ride().flightLandsAt) {
+            <span class="driver-ride__muted" i18n
+              >Local times, as on the ticket</span
+            >
+          }
+        </dd>
       </div>
     }
     @if (ride().nameSign) {

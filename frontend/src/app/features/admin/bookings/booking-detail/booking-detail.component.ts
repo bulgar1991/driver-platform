@@ -15,6 +15,7 @@ import { finalize, Observable } from 'rxjs'
 import { BookingDetail, BookingStatus } from '@/core/models'
 import { AdminDispatchService } from '@/core/services/admin-dispatch.service'
 import { AuthService } from '@/core/services/auth.service'
+import { ticketTime } from '@/core/utils/italy-time'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { StatusBadgeComponent } from '@/shared/components/status-badge/status-badge.component'
@@ -26,6 +27,14 @@ const GROUP_LABEL = {
   Infant: $localize`infant seat`,
   Toddler: $localize`child seat`,
   Booster: $localize`booster`,
+}
+
+function flightForm(b: BookingDetail) {
+  return {
+    flightNumber: b.flightNumber ?? '',
+    flightDepartsAt: b.flightDepartsAt?.slice(0, 16) ?? '',
+    flightLandsAt: b.flightLandsAt?.slice(0, 16) ?? '',
+  }
 }
 
 /** Everything about one booking, with the status changes a dispatcher may make. */
@@ -57,6 +66,12 @@ export class BookingDetailComponent {
   protected readonly cancelling = signal(false)
   protected cancelReason = ''
   protected notes = ''
+  /** datetime-local values ("2026-11-02T14:30"), as on the ticket. */
+  protected flight = {
+    flightNumber: '',
+    flightDepartsAt: '',
+    flightLandsAt: '',
+  }
   protected readonly groupLabel = GROUP_LABEL
 
   protected readonly actions = computed(() => {
@@ -94,6 +109,26 @@ export class BookingDetailComponent {
     this.run(this.api.setBookingStatus(this.bookingId(), status, reason))
   }
 
+  protected flightChanged(b: BookingDetail): boolean {
+    const saved = flightForm(b)
+    return (
+      this.flight.flightNumber.trim() !== saved.flightNumber ||
+      this.flight.flightDepartsAt !== saved.flightDepartsAt ||
+      this.flight.flightLandsAt !== saved.flightLandsAt
+    )
+  }
+
+  protected saveFlight(): void {
+    const flightNumber = this.flight.flightNumber.trim() || null
+    this.run(
+      this.api.setBookingFlight(this.bookingId(), {
+        flightNumber,
+        flightDepartsAt: ticketTime(this.flight.flightDepartsAt),
+        flightLandsAt: ticketTime(this.flight.flightLandsAt),
+      })
+    )
+  }
+
   protected saveNotes(): void {
     this.run(this.api.setBookingNotes(this.bookingId(), this.notes))
   }
@@ -113,6 +148,7 @@ export class BookingDetailComponent {
   private show(b: BookingDetail): void {
     this.booking.set(b)
     this.notes = b.internalNotes ?? ''
+    this.flight = flightForm(b)
     this.cancelReason = ''
     this.cancelling.set(false)
   }

@@ -77,6 +77,36 @@ describe('booking form', () => {
     expect(request.nameSignText).toBeNull()
   })
 
+  it('sends takeoff and landing for each leg, only with a flight number', () => {
+    const forms = create()
+    forms.trip.patchValue({
+      pickup: rome,
+      dropoff: fiumicino,
+      returnTrip: true,
+      returnDate: '2026-11-10',
+      returnTime: '18:00',
+    })
+    forms.details.patchValue({
+      flightNumber: ' fr 1234 ',
+      flightDepartsAt: '2026-11-03T10:40',
+      flightLandsAt: '2026-11-03T12:55',
+      returnFlightLandsAt: '2026-11-10T17:30',
+    })
+
+    const request = toBookingRequest(forms, 'Sedan', null, 'it')
+
+    expect(request.flightNumber).toBe('fr 1234')
+    expect(request.flightDepartsAt).toBe('2026-11-03T10:40:00')
+    expect(request.flightLandsAt).toBe('2026-11-03T12:55:00')
+    // No return flight number: its times are not sent.
+    expect(request.trip.return?.flightLandsAt).toBeNull()
+
+    forms.details.patchValue({ returnFlightNumber: 'BA2584' })
+    expect(toQuoteRequest(forms).return?.flightLandsAt).toBe(
+      '2026-11-10T17:30:00'
+    )
+  })
+
   it('refuses a pickup sooner than the minimum notice, as the API would', () => {
     const forms = createBookingForms(TestBed.inject(FormBuilder), () => 3)
     const [date, time] = nowInItaly(60).split('T')

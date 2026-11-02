@@ -31,6 +31,9 @@ public class Booking : Entity
     public int SmallLuggage { get; set; }
     public List<ChildSeatRequest> ChildSeats { get; set; } = [];
     public string? FlightNumber { get; set; }
+    /// <summary>Takeoff and landing as on the ticket: each airport's local time, not Italian time.</summary>
+    public DateTime? FlightDepartsAt { get; set; }
+    public DateTime? FlightLandsAt { get; set; }
     public bool NameSign { get; set; }
     public string? NameSignText { get; set; }
     public string? ClientNotes { get; set; }

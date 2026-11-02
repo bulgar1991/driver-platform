@@ -45,7 +45,9 @@ public sealed class BookingService(
         var trip = request.Trip;
 
         var outbound = NewBooking(client, quote.Outbound, vehicle.Outbound, trip, request, clientIp,
-            trip.NameSign, request.FlightNumber, quote.VatRatePercent);
+            new BookingExtras(request.FlightNumber, trip.NameSign, request.NameSignText, request.Notes,
+                request.FlightDepartsAt, request.FlightLandsAt),
+            quote.VatRatePercent);
         outbound.Reference = await db.NewReferenceAsync(cancellationToken);
         db.Bookings.Add(outbound);
 
@@ -53,7 +55,9 @@ public sealed class BookingService(
         if (quote.Return is not null && vehicle.Return is not null)
         {
             var inbound = NewBooking(client, quote.Return, vehicle.Return, trip, request, clientIp,
-                trip.Return!.NameSign, trip.Return.FlightNumber, quote.VatRatePercent);
+                new BookingExtras(trip.Return!.FlightNumber, trip.Return.NameSign, request.NameSignText, request.Notes,
+                    trip.Return.FlightDepartsAt, trip.Return.FlightLandsAt),
+                quote.VatRatePercent);
             inbound.Reference = await db.NewReferenceAsync(cancellationToken);
             inbound.ReturnOfBookingId = outbound.Id;
             db.Bookings.Add(inbound);
@@ -97,13 +101,10 @@ public sealed class BookingService(
         QuoteRequest trip,
         CreateBookingRequest request,
         string? clientIp,
-        bool nameSign,
-        string? flightNumber,
+        BookingExtras extras,
         decimal vatRate) =>
         BookingFactory.Create(
-            client, leg, price, trip, request.VehicleCategory,
-            new BookingExtras(flightNumber, nameSign, request.NameSignText, request.Notes),
-            vatRate, BookingSource.Website, BookingStatus.AwaitingPayment, clientIp);
+            client, leg, price, trip, request.VehicleCategory, extras, vatRate, BookingSource.Website, BookingStatus.AwaitingPayment, clientIp);
 
     /// <summary>Reuses the client only when both email and phone match, so nobody can overwrite someone else's details.</summary>
     private async Task<Client> FindOrCreateClientAsync(ContactInput contact, bool marketingConsent, CancellationToken cancellationToken)

@@ -85,6 +85,7 @@ public abstract partial class Texts
     public abstract string TimeDoesNotExist { get; }
     public abstract string BookAhead(int hours);
     public abstract string OneYearAhead { get; }
+    public abstract string FlightTimeNearPickup { get; }
     public abstract string NoMeetingPointYet(string zone);
     public abstract string NotAMeetingPoint(string requested, string zone);
     public abstract string BookingNotFound { get; }
@@ -117,6 +118,26 @@ public abstract partial class Texts
     public abstract string Vehicle { get; }
     public abstract string VehicleSummary(VehicleCategory category, int passengers, int large, int small);
     public abstract string Flight { get; }
+    public abstract string Takeoff { get; }
+    public abstract string Landing { get; }
+    /// <summary>After flight times, which are as on the ticket, not Italian time.</summary>
+    public abstract string LocalTimes { get; }
+
+    /// <summary>"FR 1234 · takeoff Fri 30 Oct, 08:10 · landing Fri 30 Oct, 10:05 (local times)".</summary>
+    public string FlightDetails(string number, DateTime? takeoff, DateTime? landing)
+    {
+        var parts = new List<string> { number };
+        if (takeoff is { } departs)
+        {
+            parts.Add($"{Takeoff} {ShortDateTime(departs)}");
+        }
+        if (landing is { } lands)
+        {
+            parts.Add($"{Landing} {ShortDateTime(lands)}");
+        }
+        var details = string.Join(" · ", parts);
+        return takeoff is null && landing is null ? details : $"{details} {LocalTimes}";
+    }
     public abstract string MeetingPoint(string instructions);
     public abstract string DriverDetailsFollow { get; }
     public abstract string ManageBooking { get; }

@@ -17,6 +17,9 @@ export interface DriverBookingView {
   smallLuggage: number
   childSeats: ChildSeatRequest[]
   flightNumber: string | null
+  /** As on the ticket: the airport's local time. */
+  flightDepartsAt: string | null
+  flightLandsAt: string | null
   nameSign: boolean
   nameSignText: string | null
   clientName: string

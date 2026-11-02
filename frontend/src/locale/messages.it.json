@@ -890,6 +890,14 @@
     "7775133551464909220": "Si applica quando una corsa parte o arriva in questa zona (prima la zona di partenza; dove le zone si sovrappongono, la più piccola). Le caselle vuote mantengono la tariffa normale per quell'auto. Maggiorazioni, sconto andata e ritorno ed extra si applicano comunque.",
     "6431046825171127306": "Prezzo fisso per {$car}",
     "7785978024763088284": "Quota fissa per {$car}",
-    "5123664614336641025": "Prezzo al km per {$car}"
+    "5123664614336641025": "Prezzo al km per {$car}",
+    "2411829135806623829": "Decollo",
+    "688901269573530260": "Atterraggio",
+    "5058602024172468840": "Ore locali, come sul biglietto. L'autista le vede nella corsa.",
+    "7756972150519043050": "Salva volo",
+    "1135719030816864146": "Facoltativo. Ore locali, come sul biglietto: l'autista organizza il ritiro in base a questi orari.",
+    "4223499714066189846": "Decollo {$TIME}",
+    "4706490130178465838": "Atterraggio {$TIME}",
+    "3805586352881312913": "Ore locali, come sul biglietto"
   }
 }

@@ -15,6 +15,9 @@ internal sealed class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(b => b.Currency).HasMaxLength(3);
         builder.Property(b => b.ClientIp).HasMaxLength(45);
         builder.Property(b => b.FlightNumber).HasMaxLength(16);
+        // Local times of the airports, so without a time zone.
+        builder.Property(b => b.FlightDepartsAt).HasColumnType("timestamp without time zone");
+        builder.Property(b => b.FlightLandsAt).HasColumnType("timestamp without time zone");
         builder.Property(b => b.ClientNotes).HasMaxLength(2000);
         builder.Property(b => b.InternalNotes).HasMaxLength(2000);
         builder.Property(b => b.DistanceKm).HasPrecision(8, 2);

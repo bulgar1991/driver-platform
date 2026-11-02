@@ -43,6 +43,29 @@
         formControlName="flightNumber" />
     </app-form-field>
 
+    @if (details().controls.flightNumber.value.trim()) {
+      <div class="details-step__row">
+        <app-form-field i18n-label label="Takeoff" for="flightDepartsAt">
+          <input
+            id="flightDepartsAt"
+            class="input"
+            type="datetime-local"
+            formControlName="flightDepartsAt" />
+        </app-form-field>
+        <app-form-field i18n-label label="Landing" for="flightLandsAt">
+          <input
+            id="flightLandsAt"
+            class="input"
+            type="datetime-local"
+            formControlName="flightLandsAt" />
+        </app-form-field>
+      </div>
+      <p class="details-step__hint" i18n
+        >Optional. Local times, as on your ticket: the driver plans the pickup
+        around them.</p
+      >
+    }
+
     @if (hasReturn()) {
       <label class="details-step__toggle">
         <input
@@ -62,6 +85,32 @@
           autocomplete="off"
           formControlName="returnFlightNumber" />
       </app-form-field>
+
+      @if (details().controls.returnFlightNumber.value.trim()) {
+        <div class="details-step__row">
+          <app-form-field
+            i18n-label
+            label="Takeoff"
+            for="returnFlightDepartsAt">
+            <input
+              id="returnFlightDepartsAt"
+              class="input"
+              type="datetime-local"
+              formControlName="returnFlightDepartsAt" />
+          </app-form-field>
+          <app-form-field i18n-label label="Landing" for="returnFlightLandsAt">
+            <input
+              id="returnFlightLandsAt"
+              class="input"
+              type="datetime-local"
+              formControlName="returnFlightLandsAt" />
+          </app-form-field>
+        </div>
+        <p class="details-step__hint" i18n
+          >Optional. Local times, as on your ticket: the driver plans the pickup
+          around them.</p
+        >
+      }
     }
 
     <app-form-field i18n-label label="Notes for the driver" for="notes">

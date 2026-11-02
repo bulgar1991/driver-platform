@@ -57,6 +57,9 @@ export interface CreateBookingRequest {
   expectedTotal: number | null
   contact: ContactInput
   flightNumber?: string | null
+  /** As on the ticket: the airport's local time, without offset. */
+  flightDepartsAt?: string | null
+  flightLandsAt?: string | null
   nameSignText?: string | null
   notes?: string | null
   gdprConsent: boolean

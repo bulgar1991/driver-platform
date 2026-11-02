@@ -32,6 +32,9 @@ public sealed record CreateBookingRequest
     public required ContactInput Contact { get; init; }
     [MaxLength(16), RegularExpression("^[A-Za-z0-9 ]{2,16}$")]
     public string? FlightNumber { get; init; }
+    /// <summary>As on the ticket: the airport's local time, without an offset.</summary>
+    public DateTime? FlightDepartsAt { get; init; }
+    public DateTime? FlightLandsAt { get; init; }
     [MaxLength(60)]
     public string? NameSignText { get; init; }
     [MaxLength(2000)]

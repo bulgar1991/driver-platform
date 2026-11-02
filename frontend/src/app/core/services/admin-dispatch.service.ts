@@ -58,6 +58,20 @@ export class AdminDispatchService {
     })
   }
 
+  setBookingFlight(
+    id: string,
+    flight: {
+      flightNumber: string | null
+      flightDepartsAt: string | null
+      flightLandsAt: string | null
+    }
+  ): Observable<BookingDetail> {
+    return this.http.put<BookingDetail>(
+      `${this.url}/bookings/${id}/flight`,
+      flight
+    )
+  }
+
   setBookingNotes(
     id: string,
     internalNotes: string

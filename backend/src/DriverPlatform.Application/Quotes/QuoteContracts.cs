@@ -29,6 +29,9 @@ public sealed record ReturnLegInput
     public bool NameSign { get; init; }
     [MaxLength(16)]
     public string? FlightNumber { get; init; }
+    /// <summary>As on the ticket: the airport's local time, without an offset.</summary>
+    public DateTime? FlightDepartsAt { get; init; }
+    public DateTime? FlightLandsAt { get; init; }
 }
 
 public sealed record QuoteRequest

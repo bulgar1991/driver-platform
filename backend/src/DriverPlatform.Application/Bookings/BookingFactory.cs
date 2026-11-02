@@ -9,7 +9,13 @@ using Microsoft.EntityFrameworkCore;
 namespace DriverPlatform.Application.Bookings;
 
 /// <summary>What the client chose beyond the trip itself; it reaches the driver unchanged.</summary>
-public sealed record BookingExtras(string? FlightNumber, bool NameSign, string? NameSignText, string? Notes);
+public sealed record BookingExtras(
+    string? FlightNumber,
+    bool NameSign,
+    string? NameSignText,
+    string? Notes,
+    DateTime? FlightDepartsAt = null,
+    DateTime? FlightLandsAt = null);
 
 /// <summary>Builds bookings from a quote, the same way for the website and for partners.</summary>
 public static class BookingFactory
@@ -39,6 +45,8 @@ public static class BookingFactory
         SmallLuggage = trip.SmallLuggage,
         ChildSeats = trip.ChildSeats.Select(s => new ChildSeatRequest { Group = s.Group, Count = s.Count }).ToList(),
         FlightNumber = Normalize(extras.FlightNumber)?.ToUpperInvariant(),
+        FlightDepartsAt = FlightTimes.Check(extras.FlightDepartsAt, leg.PickupAt, "flightDepartsAt"),
+        FlightLandsAt = FlightTimes.Check(extras.FlightLandsAt, leg.PickupAt, "flightLandsAt"),
         NameSign = extras.NameSign,
         NameSignText = extras.NameSign
             ? Normalize(extras.NameSignText) ?? $"{client.FirstName} {client.LastName}".Trim()

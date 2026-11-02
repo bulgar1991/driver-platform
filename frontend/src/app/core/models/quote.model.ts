@@ -10,6 +10,9 @@ export interface ReturnLegInput {
   pickupAt: string
   nameSign: boolean
   flightNumber?: string | null
+  /** As on the ticket: the airport's local time, without offset. */
+  flightDepartsAt?: string | null
+  flightLandsAt?: string | null
 }
 
 export interface QuoteRequest {

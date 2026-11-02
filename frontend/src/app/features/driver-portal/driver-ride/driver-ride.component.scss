@@ -81,6 +81,10 @@
     }
   }
 
+  &__fact--wide {
+    @apply col-span-2;
+  }
+
   &__fact--alert dd {
     @apply text-warning;
   }

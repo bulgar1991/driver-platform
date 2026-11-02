@@ -3,6 +3,12 @@ export function toLocalDateTime(date: string, time: string): string {
   return `${date}T${time.length === 5 ? `${time}:00` : time}`
 }
 
+/** "2026-11-02T14:30" from a datetime-local field (a time as on a ticket, no offset) → "2026-11-02T14:30:00"; null when empty. */
+export function ticketTime(value: string): string | null {
+  const [date, time] = value.split('T')
+  return date && time ? toLocalDateTime(date, time.slice(0, 5)) : null
+}
+
 /** Today's date in Italy as yyyy-MM-dd, whatever the browser's time zone. */
 export function todayInItaly(offsetDays = 0): string {
   const date = new Date(Date.now() + offsetDays * 86_400_000)

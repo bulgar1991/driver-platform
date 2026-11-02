@@ -79,10 +79,6 @@
         </dd>
         <dt><ng-container i18n>Vehicle</ng-container></dt>
         <dd>{{ text.categories[b.vehicleCategory] }}</dd>
-        @if (b.flightNumber) {
-          <dt><ng-container i18n>Flight</ng-container></dt>
-          <dd>{{ b.flightNumber }}</dd>
-        }
         @if (b.nameSign) {
           <dt><ng-container i18n>Name sign</ng-container></dt>
           <dd>{{ b.nameSignText }}</dd>
@@ -159,6 +155,51 @@
           }
         </p>
       }
+    </section>
+
+    <section class="booking-detail__section">
+      <h3 class="booking-detail__subtitle"
+        ><ng-container i18n>Flight</ng-container></h3
+      >
+      <div class="booking-detail__flight">
+        <label class="booking-detail__field">
+          <span><ng-container i18n>Flight or ship number</ng-container></span>
+          <input
+            class="input"
+            autocomplete="off"
+            placeholder="FR 1234"
+            [(ngModel)]="flight.flightNumber" />
+        </label>
+        <label class="booking-detail__field">
+          <span><ng-container i18n>Takeoff</ng-container></span>
+          <input
+            class="input"
+            type="datetime-local"
+            [(ngModel)]="flight.flightDepartsAt" />
+        </label>
+        <label class="booking-detail__field">
+          <span><ng-container i18n>Landing</ng-container></span>
+          <input
+            class="input"
+            type="datetime-local"
+            [(ngModel)]="flight.flightLandsAt" />
+        </label>
+      </div>
+      <p class="booking-detail__muted"
+        ><ng-container i18n
+          >Local times, as on the ticket. The driver sees them on the
+          ride.</ng-container
+        ></p
+      >
+      <button
+        appButton
+        size="sm"
+        variant="ghost"
+        type="button"
+        [disabled]="busy() || !flightChanged(b)"
+        (click)="saveFlight()"
+        ><ng-container i18n>Save flight</ng-container></button
+      >
     </section>
 
     <section class="booking-detail__section">

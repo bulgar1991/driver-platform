@@ -39,6 +39,10 @@ public sealed class DispatchController(
     public async Task<ActionResult<BookingDetail>> BookingStatus(Guid id, BookingStatusRequest request, CancellationToken cancellationToken) =>
         Ok(await bookings.ChangeStatusAsync(id, request, cancellationToken));
 
+    [HttpPut("bookings/{id:guid}/flight")]
+    public async Task<ActionResult<BookingDetail>> BookingFlight(Guid id, BookingFlightRequest request, CancellationToken cancellationToken) =>
+        Ok(await bookings.UpdateFlightAsync(id, request, cancellationToken));
+
     [HttpPut("bookings/{id:guid}/notes")]
     public async Task<ActionResult<BookingDetail>> BookingNotes(Guid id, BookingNotesRequest request, CancellationToken cancellationToken) =>
         Ok(await bookings.UpdateNotesAsync(id, request, cancellationToken));

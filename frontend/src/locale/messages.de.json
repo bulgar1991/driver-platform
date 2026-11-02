@@ -890,6 +890,14 @@
     "7775133551464909220": "Gilt, wenn eine Fahrt in dieser Zone beginnt oder endet (zuerst die Zone des Abholorts; bei überlappenden Zonen die kleinste). Leere Felder behalten den normalen Tarif für dieses Fahrzeug. Zuschläge, Rückfahrtrabatt und Extras gelten weiterhin.",
     "6431046825171127306": "Festpreis für {$car}",
     "7785978024763088284": "Grundgebühr für {$car}",
-    "5123664614336641025": "Kilometerpreis für {$car}"
+    "5123664614336641025": "Kilometerpreis für {$car}",
+    "2411829135806623829": "Abflug",
+    "688901269573530260": "Landung",
+    "5058602024172468840": "Ortszeiten, wie auf dem Ticket. Der Fahrer sieht sie bei der Fahrt.",
+    "7756972150519043050": "Flug speichern",
+    "1135719030816864146": "Optional. Ortszeiten, wie auf Ihrem Ticket: Der Fahrer plant die Abholung danach.",
+    "4223499714066189846": "Abflug {$TIME}",
+    "4706490130178465838": "Landung {$TIME}",
+    "3805586352881312913": "Ortszeiten, wie auf dem Ticket"
   }
 }
