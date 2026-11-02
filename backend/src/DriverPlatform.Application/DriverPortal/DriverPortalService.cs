@@ -35,6 +35,8 @@ public sealed record DriverBookingView(
     string ClientPhone,
     string ClientLanguage,
     string? ClientNotes,
+    /// <summary>The office's notes about this client.</summary>
+    string? NotesAboutClient,
     decimal DistanceKm,
     int DurationMinutes,
     bool CanPickUp,
@@ -207,6 +209,7 @@ public sealed class DriverPortalService(
                     b.PickupMeetingPoint, b.DropoffMeetingPoint, b.Passengers, b.LargeLuggage, b.SmallLuggage, b.ChildSeats,
                     b.FlightNumber, b.FlightDepartsAt, b.FlightLandsAt, b.NameSign, b.NameSignText,
                     $"{b.Client.FirstName} {b.Client.LastName}", b.Client.Phone, b.Client.Language, b.ClientNotes,
+                    b.Client.NotesForDriver,
                     b.DistanceKm, b.DurationMinutes,
                     a.Status == AssignmentStatus.Confirmed && b.Status == BookingStatus.Assigned && now >= b.PickupAt - PickupWindow,
                     a.Status == AssignmentStatus.Confirmed && b.Status == BookingStatus.PickedUp)).ToList()))

@@ -26,6 +26,8 @@ export interface DriverBookingView {
   clientPhone: string
   clientLanguage: string
   clientNotes: string | null
+  /** The office's notes about this client. */
+  notesAboutClient: string | null
   distanceKm: number
   durationMinutes: number
   canPickUp: boolean

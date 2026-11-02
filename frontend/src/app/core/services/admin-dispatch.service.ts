@@ -72,6 +72,17 @@ export class AdminDispatchService {
     )
   }
 
+  /** Saved on the booking's client, so they follow every ride of theirs. */
+  setClientNotes(
+    id: string,
+    notesForDriver: string
+  ): Observable<BookingDetail> {
+    return this.http.put<BookingDetail>(
+      `${this.url}/bookings/${id}/client-notes`,
+      { notesForDriver }
+    )
+  }
+
   setBookingNotes(
     id: string,
     internalNotes: string

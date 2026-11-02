@@ -88,6 +88,34 @@ public sealed class DriverPortalTests
         s.Staff.PutAsJsonAsync($"/api/admin/shifts/{s.Shift.Id}/status", new ShiftStatusRequest { Status = status, Reason = reason }, TestData.Json);
 
     [Fact]
+    public async Task Notes_about_the_client_reach_the_driver_and_follow_the_client()
+    {
+        var s = await SetupAsync();
+        using var _ = s.Factory;
+
+        var saved = await s.Staff.PutAsJsonAsync($"/api/admin/bookings/{s.BookingId}/client-notes",
+            new ClientNotesRequest { NotesForDriver = "  Regular client. Help with the wheelchair.  " }, TestData.Json);
+        Assert.Equal(HttpStatusCode.OK, saved.StatusCode);
+        Assert.Equal("Regular client. Help with the wheelchair.",
+            (await saved.Content.ReadFromJsonAsync<BookingDetail>(TestData.Json))!.Client.NotesForDriver);
+
+        await SetShiftStatus(s, AssignmentStatus.Sent);
+        var portal = await s.Public.GetFromJsonAsync<DriverPortalResponse>($"/api/driver/{s.DriverToken}", TestData.Json);
+        Assert.Equal("Regular client. Help with the wheelchair.", portal!.Shifts.Single().Bookings.Single().NotesAboutClient);
+
+        // Same email and phone: the same client, so the next booking has the notes too.
+        var next = await s.Public.BookAndPayAsync();
+        var item = (await s.Staff.GetFromJsonAsync<PagedResult<BookingListItem>>(
+            $"/api/admin/bookings?search={next.Reference}", TestData.Json))!.Items.Single();
+        var detail = await s.Staff.GetFromJsonAsync<BookingDetail>($"/api/admin/bookings/{item.Id}", TestData.Json);
+        Assert.Equal("Regular client. Help with the wheelchair.", detail!.Client.NotesForDriver);
+        Assert.Equal(2, detail.Client.Rides);
+
+        var cleared = await s.Staff.PutAsJsonAsync($"/api/admin/bookings/{item.Id}/client-notes", new ClientNotesRequest { NotesForDriver = " " }, TestData.Json);
+        Assert.Null((await cleared.Content.ReadFromJsonAsync<BookingDetail>(TestData.Json))!.Client.NotesForDriver);
+    }
+
+    [Fact]
     public async Task Draft_shifts_are_not_on_the_driver_link_until_sent()
     {
         var s = await SetupAsync();

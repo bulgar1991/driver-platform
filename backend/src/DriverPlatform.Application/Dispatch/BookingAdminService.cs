@@ -17,6 +17,7 @@ public interface IBookingAdminService
     Task<BookingDetail> ChangeStatusAsync(Guid id, BookingStatusRequest request, CancellationToken cancellationToken);
     Task<BookingDetail> UpdateFlightAsync(Guid id, BookingFlightRequest request, CancellationToken cancellationToken);
     Task<BookingDetail> UpdateNotesAsync(Guid id, BookingNotesRequest request, CancellationToken cancellationToken);
+    Task<BookingDetail> UpdateClientNotesAsync(Guid id, ClientNotesRequest request, CancellationToken cancellationToken);
 }
 
 public sealed class BookingAdminService(IAppDbContext db, IReviewService reviews, IAuditLogger audit, TimeProvider clock) : IBookingAdminService
@@ -148,6 +149,15 @@ public sealed class BookingAdminService(IAppDbContext db, IReviewService reviews
         return await ToDetailAsync(booking, cancellationToken);
     }
 
+    /// <summary>Saved on the client: the driver of any of their rides sees them.</summary>
+    public async Task<BookingDetail> UpdateClientNotesAsync(Guid id, ClientNotesRequest request, CancellationToken cancellationToken)
+    {
+        var booking = await FindAsync(id, cancellationToken);
+        booking.Client.NotesForDriver = BookingFactory.Normalize(request.NotesForDriver);
+        await db.SaveChangesAsync(cancellationToken);
+        return await ToDetailAsync(booking, cancellationToken);
+    }
+
     private IQueryable<Booking> Query() => db.Bookings
         .Include(b => b.Client)
         .Include(b => b.Partner)
@@ -170,13 +180,14 @@ public sealed class BookingAdminService(IAppDbContext db, IReviewService reviews
             ? await db.Bookings.Where(x => x.Id == outboundId).Select(x => x.Reference).FirstOrDefaultAsync(cancellationToken)
             : await db.Bookings.Where(x => x.ReturnOfBookingId == b.Id).Select(x => x.Reference).FirstOrDefaultAsync(cancellationToken);
         var item = b.ToListItem();
+        var rides = await db.Bookings.CountAsync(x => x.ClientId == b.ClientId, cancellationToken);
 
         return new BookingDetail(
             b.Id, b.Reference, b.Status, b.Source, item.PickupAt, b.Pickup, b.Dropoff,
             b.PickupMeetingPoint, b.DropoffMeetingPoint, b.Passengers, b.LargeLuggage, b.SmallLuggage, b.ChildSeats,
             b.FlightNumber, b.FlightDepartsAt, b.FlightLandsAt, b.NameSign, b.NameSignText, b.ClientNotes, b.InternalNotes, b.VehicleCategory,
             b.DistanceKm, b.DurationMinutes, b.TotalPrice, b.Currency, b.PriceLines,
-            new BookingClient(item.ClientName, b.Client.Email, b.Client.Phone, b.Client.Language),
+            new BookingClient(item.ClientName, b.Client.Email, b.Client.Phone, b.Client.Language, b.Client.NotesForDriver, rides),
             payment, b.AssignmentId, item.DriverName, item.VehiclePlate, linked, b.CancellationReason, b.CreatedAt,
             b.Partner?.Name, b.ExternalReference);
     }

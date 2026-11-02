@@ -66,6 +66,7 @@ export class BookingDetailComponent {
   protected readonly cancelling = signal(false)
   protected cancelReason = ''
   protected notes = ''
+  protected clientNotes = ''
   /** datetime-local values ("2026-11-02T14:30"), as on the ticket. */
   protected flight = {
     flightNumber: '',
@@ -129,6 +130,10 @@ export class BookingDetailComponent {
     )
   }
 
+  protected saveClientNotes(): void {
+    this.run(this.api.setClientNotes(this.bookingId(), this.clientNotes))
+  }
+
   protected saveNotes(): void {
     this.run(this.api.setBookingNotes(this.bookingId(), this.notes))
   }
@@ -148,6 +153,7 @@ export class BookingDetailComponent {
   private show(b: BookingDetail): void {
     this.booking.set(b)
     this.notes = b.internalNotes ?? ''
+    this.clientNotes = b.client.notesForDriver ?? ''
     this.flight = flightForm(b)
     this.cancelReason = ''
     this.cancelling.set(false)

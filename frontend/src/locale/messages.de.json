@@ -898,6 +898,13 @@
     "1135719030816864146": "Optional. Ortszeiten, wie auf Ihrem Ticket: Der Fahrer plant die Abholung danach.",
     "4223499714066189846": "Abflug {$TIME}",
     "4706490130178465838": "Landung {$TIME}",
-    "3805586352881312913": "Ortszeiten, wie auf dem Ticket"
+    "3805586352881312913": "Ortszeiten, wie auf dem Ticket",
+    "313710365370430779": "{VAR_PLURAL, plural, =1 {Erste Buchung} other {{INTERPOLATION} Buchungen}}",
+    "3077332380215255887": "Notizen zum Kunden für den Fahrer",
+    "5149717266382645334": "Z. B. Stammkunde, braucht Hilfe mit dem Gepäck, bevorzugt eine ruhige Fahrt",
+    "2680669076246674601": "Beim Kunden gespeichert: Der Fahrer sieht sie bei jeder Fahrt dieses Kunden. Der Kunde sieht sie nie.",
+    "6857910042251330761": "Kundennotizen speichern",
+    "1978616425328865028": "Vom Büro",
+    "6137886680857757624": "Vom Kunden"
   }
 }

@@ -12,6 +12,8 @@ public class Client : Entity
     public string Language { get; set; } = "en";
     public DateTimeOffset? GdprConsentAt { get; set; }
     public bool MarketingConsent { get; set; }
+    /// <summary>Staff notes about the client (habits, needs, how to greet them); the driver sees them on every ride. Never shown to the client.</summary>
+    public string? NotesForDriver { get; set; }
 
     public ICollection<Booking> Bookings { get; set; } = [];
 }

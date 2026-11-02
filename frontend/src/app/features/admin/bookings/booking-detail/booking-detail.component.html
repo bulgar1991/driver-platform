@@ -102,7 +102,15 @@
       <h3 class="booking-detail__subtitle"
         ><ng-container i18n>Client</ng-container></h3
       >
-      <p>{{ b.client.name }}</p>
+      <p>
+        {{ b.client.name }}
+        <span class="booking-detail__muted"
+          ><ng-container i18n>{b.client.rides, plural,
+            =1 {First booking}
+            other {{{ b.client.rides }} bookings}
+          }</ng-container></span
+        >
+      </p>
       <p class="booking-detail__contact">
         <a [href]="'tel:' + b.client.phone">{{ b.client.phone }}</a>
         @if (b.client.email) {
@@ -110,6 +118,36 @@
         }
         &ngsp;<ng-container i18n>· speaks {{ b.client.language }}</ng-container>
       </p>
+      <label class="booking-detail__field" for="clientNotes">
+        <span
+          ><ng-container i18n
+            >Notes about this client for the driver</ng-container
+          ></span
+        >
+        <textarea
+          id="clientNotes"
+          class="input"
+          rows="3"
+          maxlength="1000"
+          i18n-placeholder
+          placeholder="E.g. regular client, needs help with luggage, prefers a quiet ride"
+          [(ngModel)]="clientNotes"></textarea>
+      </label>
+      <p class="booking-detail__muted"
+        ><ng-container i18n
+          >Saved on the client: the driver sees them on every ride of this
+          client. The client never sees them.</ng-container
+        ></p
+      >
+      <button
+        appButton
+        size="sm"
+        variant="ghost"
+        type="button"
+        [disabled]="busy() || clientNotes === (b.client.notesForDriver ?? '')"
+        (click)="saveClientNotes()"
+        ><ng-container i18n>Save client notes</ng-container></button
+      >
     </section>
 
     <section class="booking-detail__section">

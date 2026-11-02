@@ -184,8 +184,19 @@
         ><app-icon name="chat" /> WhatsApp</a
       >
     </div>
+    @if (ride().notesAboutClient) {
+      <div>
+        <span class="driver-ride__muted" i18n>From the office</span>
+        <p class="driver-ride__note driver-ride__note--office">{{
+          ride().notesAboutClient
+        }}</p>
+      </div>
+    }
     @if (ride().clientNotes) {
-      <p class="driver-ride__note">{{ ride().clientNotes }}</p>
+      <div>
+        <span class="driver-ride__muted" i18n>From the client</span>
+        <p class="driver-ride__note">{{ ride().clientNotes }}</p>
+      </div>
     }
   </div>
 

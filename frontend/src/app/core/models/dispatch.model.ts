@@ -86,6 +86,10 @@ export interface BookingDetail {
     email: string | null
     phone: string
     language: string
+    /** Kept on the client: the driver sees them on every ride of theirs. */
+    notesForDriver: string | null
+    /** All of the client's bookings, this one included. */
+    rides: number
   }
   paymentStatus: PaymentStatus | null
   assignmentId: string | null

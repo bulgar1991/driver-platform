@@ -898,6 +898,13 @@
     "1135719030816864146": "Facoltativo. Ore locali, come sul biglietto: l'autista organizza il ritiro in base a questi orari.",
     "4223499714066189846": "Decollo {$TIME}",
     "4706490130178465838": "Atterraggio {$TIME}",
-    "3805586352881312913": "Ore locali, come sul biglietto"
+    "3805586352881312913": "Ore locali, come sul biglietto",
+    "313710365370430779": "{VAR_PLURAL, plural, =1 {Prima prenotazione} other {{INTERPOLATION} prenotazioni}}",
+    "3077332380215255887": "Note sul cliente per l'autista",
+    "5149717266382645334": "Es. cliente abituale, serve aiuto con i bagagli, preferisce un viaggio tranquillo",
+    "2680669076246674601": "Salvate sul cliente: l'autista le vede in ogni corsa di questo cliente. Il cliente non le vede mai.",
+    "6857910042251330761": "Salva note cliente",
+    "1978616425328865028": "Dall'ufficio",
+    "6137886680857757624": "Dal cliente"
   }
 }

@@ -898,6 +898,13 @@
     "1135719030816864146": "Facultatif. Heures locales, comme sur votre billet : le chauffeur organise la prise en charge en fonction.",
     "4223499714066189846": "Décollage {$TIME}",
     "4706490130178465838": "Atterrissage {$TIME}",
-    "3805586352881312913": "Heures locales, comme sur le billet"
+    "3805586352881312913": "Heures locales, comme sur le billet",
+    "313710365370430779": "{VAR_PLURAL, plural, =1 {Première réservation} other {{INTERPOLATION} réservations}}",
+    "3077332380215255887": "Notes sur le client pour le chauffeur",
+    "5149717266382645334": "Ex. client régulier, a besoin d'aide pour les bagages, préfère un trajet calme",
+    "2680669076246674601": "Enregistrées sur le client : le chauffeur les voit à chaque course de ce client. Le client ne les voit jamais.",
+    "6857910042251330761": "Enregistrer les notes client",
+    "1978616425328865028": "Du bureau",
+    "6137886680857757624": "Du client"
   }
 }

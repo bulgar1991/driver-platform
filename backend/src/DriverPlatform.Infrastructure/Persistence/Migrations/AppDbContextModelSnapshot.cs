@@ -433,6 +433,11 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("marketing_consent");
 
+                    b.Property<string>("NotesForDriver")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("notes_for_driver");
+
                     b.Property<string>("Phone")
                         .IsRequired()
                         .HasMaxLength(32)

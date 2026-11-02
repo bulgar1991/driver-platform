@@ -89,7 +89,9 @@ public sealed record BookingDetail(
     string? PartnerName,
     string? ExternalReference);
 
-public sealed record BookingClient(string Name, string? Email, string Phone, string Language);
+/// <param name="NotesForDriver">Kept on the client, so they follow every booking of theirs.</param>
+/// <param name="Rides">All of the client's bookings, this one included.</param>
+public sealed record BookingClient(string Name, string? Email, string Phone, string Language, string? NotesForDriver, int Rides);
 
 public sealed record BookingStatusRequest
 {
@@ -105,6 +107,12 @@ public sealed record BookingFlightRequest
     /// <summary>As on the ticket: the airport's local time, without an offset.</summary>
     public DateTime? FlightDepartsAt { get; init; }
     public DateTime? FlightLandsAt { get; init; }
+}
+
+public sealed record ClientNotesRequest
+{
+    [MaxLength(1000)]
+    public string? NotesForDriver { get; init; }
 }
 
 public sealed record BookingNotesRequest

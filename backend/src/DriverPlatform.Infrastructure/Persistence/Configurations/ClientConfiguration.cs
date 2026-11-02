@@ -11,6 +11,7 @@ internal sealed class ClientConfiguration : IEntityTypeConfiguration<Client>
         builder.Property(c => c.Email).HasMaxLength(254);
         builder.Property(c => c.Phone).HasMaxLength(32);
         builder.Property(c => c.Language).HasMaxLength(8);
+        builder.Property(c => c.NotesForDriver).HasMaxLength(1000);
         builder.HasIndex(c => c.Email);
         builder.HasIndex(c => c.Phone);
     }
