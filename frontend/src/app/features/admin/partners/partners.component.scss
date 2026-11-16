@@ -17,6 +17,10 @@
     @apply h-4 w-4;
   }
 
+  &__spin {
+    @apply animate-spin motion-reduce:animate-none;
+  }
+
   &__table-wrap {
     @apply overflow-x-auto rounded-sm border border-ink-600 bg-ink-900;
   }

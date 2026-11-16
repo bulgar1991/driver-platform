@@ -12,13 +12,16 @@ public sealed class FakeBookingComApi : IBookingComApi
     public List<(string Reference, BcDriverAssignment Assignment)> Drivers { get; } = [];
     public List<(string Reference, string Event, DateTimeOffset At)> Events { get; } = [];
 
+    /// <summary>Set to make the next calls fail, as when Booking.com is down or the credentials are wrong.</summary>
+    public BookingComApiException? Failure { get; set; }
+
     public BcBooking this[string bookingReference] => _bookings[bookingReference];
 
     /// <summary>Adds or changes a ride, as the customer would on Booking.com; a new state hash each time.</summary>
     public void Put(BcBooking booking) => _bookings[booking.BookingReference] = booking with { StateHash = $"h{++_version}" };
 
     public Task<IReadOnlyList<BcBooking>> ListAsync(DateTimeOffset pickupFrom, CancellationToken cancellationToken) =>
-        Task.FromResult<IReadOnlyList<BcBooking>>(_bookings.Values.Where(b => b.Status != BcStatus.Complete).ToList());
+        Failure is not null ? Task.FromException<IReadOnlyList<BcBooking>>(Failure) : Task.FromResult<IReadOnlyList<BcBooking>>(_bookings.Values.Where(b => b.Status != BcStatus.Complete).ToList());
 
     public Task<BcBooking> GetAsync(string customerReference, string bookingReference, CancellationToken cancellationToken) =>
         Task.FromResult(Find(customerReference, bookingReference));

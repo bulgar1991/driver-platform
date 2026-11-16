@@ -37,3 +37,16 @@ export interface WebhookDelivery {
   deliveredAt: string | null
   lastError: string | null
 }
+
+/** One Booking.com synchronisation round (POST /admin/booking-com/sync). */
+export interface BookingComSyncResult {
+  fetched: number
+  imported: number
+  amended: number
+  cancelled: number
+  accepted: number
+  rejected: number
+  driversSent: number
+  eventsSent: number
+  errors: number
+}

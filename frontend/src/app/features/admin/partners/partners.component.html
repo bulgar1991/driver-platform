@@ -16,6 +16,22 @@
           >API description (OpenAPI)</ng-container
         >
       </a>
+      <button
+        appButton
+        size="sm"
+        variant="outline"
+        type="button"
+        class="partners__sync"
+        [disabled]="syncing()"
+        [attr.aria-busy]="syncing()"
+        (click)="syncBookingCom()"
+        ><app-icon name="refresh" [class.partners__spin]="syncing()" />&ngsp;
+        @if (syncing()) {
+          <ng-container i18n>Syncing…</ng-container>
+        } @else {
+          <ng-container i18n>Sync Booking.com</ng-container>
+        }
+      </button>
       <button appButton size="sm" type="button" (click)="open(null)"
         ><app-icon name="plus" />&ngsp;<ng-container i18n
           >New partner</ng-container
@@ -26,6 +42,15 @@
 
   @if (error(); as message) {
     <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+  @if (syncResult(); as sync) {
+    <p
+      class="alert"
+      [class.alert--info]="sync.ok"
+      [class.alert--error]="!sync.ok"
+      role="status"
+      >{{ sync.message }}</p
+    >
   }
 
   <div class="partners__table-wrap">
@@ -56,8 +81,10 @@
                 } @else {
                   <ng-container i18n>Company</ng-container>
                 }
-                · {{ p.contactEmail }}</span
-              >
+                @if (p.contactEmail) {
+                  · {{ p.contactEmail }}
+                }
+              </span>
             </td>
             <td>
               @if (p.apiKeyPrefix) {

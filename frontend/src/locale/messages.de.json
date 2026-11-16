@@ -905,6 +905,11 @@
     "2680669076246674601": "Beim Kunden gespeichert: Der Fahrer sieht sie bei jeder Fahrt dieses Kunden. Der Kunde sieht sie nie.",
     "6857910042251330761": "Kundennotizen speichern",
     "1978616425328865028": "Vom Büro",
-    "6137886680857757624": "Vom Kunden"
+    "6137886680857757624": "Vom Kunden",
+    "7817470586908309435": "Synchronisiere…",
+    "1803441898257280271": "Booking.com synchronisieren",
+    "9184293569456151457": "Synchronisierung mit Booking.com fehlgeschlagen: {$reason}",
+    "6628571217213760688": "Booking.com: {$fetched} Fahrten geprüft, {$imported} neu, {$amended} geändert, {$cancelled} storniert, {$accepted} angenommen, {$rejected} abgelehnt, {$drivers} Fahrer gesendet, {$events} Fahrt-Updates gesendet.",
+    "8869382051203803151": "Fahrten mit Fehler: {$errors}. Sie werden automatisch erneut versucht."
   }
 }

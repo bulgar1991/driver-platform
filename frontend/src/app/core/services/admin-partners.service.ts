@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
 import {
+  BookingComSyncResult,
   Partner,
   PartnerApiKey,
   PartnerRequest,
@@ -13,6 +14,7 @@ import { API_BASE_URL } from '../tokens/api-base-url.token'
 export class AdminPartnersService {
   private readonly http = inject(HttpClient)
   private readonly url = `${inject(API_BASE_URL)}/admin/partners`
+  private readonly bookingComUrl = `${inject(API_BASE_URL)}/admin/booking-com`
   /** Public OpenAPI description to share with partners' developers. */
   readonly docsUrl = `${inject(API_BASE_URL)}/partner/openapi/partner.json`
 
@@ -53,5 +55,13 @@ export class AdminPartnersService {
       params,
       responseType: 'blob',
     })
+  }
+
+  /** Fetches Booking.com rides and sends our answers back now, instead of at the next minute. */
+  syncBookingCom(): Observable<BookingComSyncResult> {
+    return this.http.post<BookingComSyncResult>(
+      `${this.bookingComUrl}/sync`,
+      null
+    )
   }
 }

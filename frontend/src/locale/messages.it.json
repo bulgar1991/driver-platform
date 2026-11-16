@@ -905,6 +905,11 @@
     "2680669076246674601": "Salvate sul cliente: l'autista le vede in ogni corsa di questo cliente. Il cliente non le vede mai.",
     "6857910042251330761": "Salva note cliente",
     "1978616425328865028": "Dall'ufficio",
-    "6137886680857757624": "Dal cliente"
+    "6137886680857757624": "Dal cliente",
+    "7817470586908309435": "Sincronizzazione…",
+    "1803441898257280271": "Sincronizza Booking.com",
+    "9184293569456151457": "Sincronizzazione con Booking.com non riuscita: {$reason}",
+    "6628571217213760688": "Booking.com: {$fetched} corse controllate, {$imported} nuove, {$amended} modificate, {$cancelled} annullate, {$accepted} accettate, {$rejected} rifiutate, {$drivers} autisti inviati, {$events} aggiornamenti di corsa inviati.",
+    "8869382051203803151": "Corse con un errore: {$errors}. Vengono riprovate automaticamente."
   }
 }

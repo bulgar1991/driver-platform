@@ -255,7 +255,7 @@ from 24 hours ago on (`BookingComSyncService`, state in table `booking_com_rides
   departed to drop-off, then arrived at drop-off).
 
 Errors are logged and kept on the ride (`last_error`); a failing ride is retried after 15 minutes or
-as soon as Booking.com changes it. `POST /api/admin/booking-com/sync` (admin) runs a round at once.
+as soon as Booking.com changes it. **Admin → Partners → "Sync Booking.com"** (`POST /api/admin/booking-com/sync`, admins only) runs a round at once and shows what changed.
 
 Credentials are never committed (the repo is public). Development uses the sandbox
 (`appsettings.Development.json` has its URLs):

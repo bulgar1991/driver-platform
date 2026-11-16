@@ -201,6 +201,22 @@ public sealed class BookingComSyncTests
         Assert.Equal(BcStatus.Declined, factory.BookingCom[Leg].Status);
     }
 
+    [Fact]
+    public async Task The_sync_button_says_why_booking_com_failed_and_dispatchers_cannot_use_it()
+    {
+        using var factory = new ApiFactory();
+        var admin = await factory.CreateAdminClientAsync();
+        var dispatcher = await factory.CreateDispatcherClientAsync();
+        factory.BookingCom.Failure = new BookingComApiException(401, "Booking.com sign-in failed (HTTP 401)");
+
+        var failed = await admin.PostAsync("/api/admin/booking-com/sync", null);
+        var forbidden = await dispatcher.PostAsync("/api/admin/booking-com/sync", null);
+
+        Assert.Equal(HttpStatusCode.BadGateway, failed.StatusCode);
+        Assert.Contains("Booking.com sign-in failed", await failed.Content.ReadAsStringAsync());
+        Assert.Equal(HttpStatusCode.Forbidden, forbidden.StatusCode);
+    }
+
     [Theory]
     [InlineData("STANDARD", VehicleCategory.Sedan)]
     [InlineData("ELECTRIC_STANDARD", VehicleCategory.Sedan)]

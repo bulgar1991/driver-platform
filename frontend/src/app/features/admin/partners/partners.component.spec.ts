@@ -63,4 +63,68 @@ describe('PartnersComponent', () => {
     expect(input.value).toBe('md_abcdefgh_secret')
     expect(document.body.textContent).toContain('shown only once')
   })
+
+  function syncButton(fixture: { nativeElement: HTMLElement }) {
+    return fixture.nativeElement.querySelector<HTMLButtonElement>(
+      '.partners__sync'
+    )!
+  }
+
+  it('syncs Booking.com on demand and shows what changed', () => {
+    const fixture = TestBed.createComponent(PartnersComponent)
+    fixture.detectChanges()
+    http.expectOne('/api/admin/partners').flush([])
+    fixture.detectChanges()
+
+    syncButton(fixture).click()
+    fixture.detectChanges()
+    expect(syncButton(fixture).disabled).toBe(true)
+    expect(syncButton(fixture).textContent).toContain('Syncing')
+
+    http
+      .expectOne({ method: 'POST', url: '/api/admin/booking-com/sync' })
+      .flush({
+        fetched: 22,
+        imported: 3,
+        amended: 1,
+        cancelled: 0,
+        accepted: 3,
+        rejected: 0,
+        driversSent: 0,
+        eventsSent: 0,
+        errors: 0,
+      })
+    // The first ride creates the Booking.com partner, so the list is reloaded.
+    http
+      .expectOne('/api/admin/partners')
+      .flush([{ ...partner, id: 'b1', name: 'Booking.com', kind: 'Booking' }])
+    fixture.detectChanges()
+
+    const status = fixture.nativeElement.querySelector('[role="status"]')
+    expect(status.textContent).toContain('22 rides checked, 3 new, 1 changed')
+    expect(status.classList).toContain('alert--info')
+    expect(syncButton(fixture).disabled).toBe(false)
+  })
+
+  it('says why a Booking.com sync failed', () => {
+    const fixture = TestBed.createComponent(PartnersComponent)
+    fixture.detectChanges()
+    http.expectOne('/api/admin/partners').flush([])
+    fixture.detectChanges()
+
+    syncButton(fixture).click()
+    http.expectOne('/api/admin/booking-com/sync').flush(
+      {
+        title: 'BookingCom:ClientId and BookingCom:ClientSecret are not set.',
+      },
+      { status: 502, statusText: 'Bad Gateway' }
+    )
+    fixture.detectChanges()
+
+    const status = fixture.nativeElement.querySelector('[role="status"]')
+    expect(status.textContent).toContain(
+      'Booking.com sync failed: BookingCom:ClientId'
+    )
+    expect(status.classList).toContain('alert--error')
+  })
 })

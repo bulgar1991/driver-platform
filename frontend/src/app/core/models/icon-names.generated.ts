@@ -9,6 +9,7 @@ export type IconName =
   | 'shield'
   | 'seat'
   | 'route'
+  | 'refresh'
   | 'quote'
   | 'plus'
   | 'plane'

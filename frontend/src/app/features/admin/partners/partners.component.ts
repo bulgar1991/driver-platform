@@ -9,7 +9,12 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Dialog } from 'primeng/dialog'
 import { finalize } from 'rxjs'
-import { Partner, PartnerKind, WebhookDelivery } from '@/core/models'
+import {
+  BookingComSyncResult,
+  Partner,
+  PartnerKind,
+  WebhookDelivery,
+} from '@/core/models'
 import { AdminPartnersService } from '@/core/services/admin-partners.service'
 import { saveBlob } from '@/core/utils/download'
 import { todayInItaly } from '@/core/utils/italy-time'
@@ -57,6 +62,13 @@ export class PartnersComponent implements OnInit {
   protected readonly deliveries = signal<WebhookDelivery[]>([])
   protected readonly notice = signal<string | null>(null)
   protected statementMonth = todayInItaly().slice(0, 7)
+
+  /** "Sync Booking.com": runs a round now instead of waiting for the next minute. */
+  protected readonly syncing = signal(false)
+  protected readonly syncResult = signal<{
+    ok: boolean
+    message: string
+  } | null>(null)
 
   protected readonly form = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(120)]],
@@ -203,6 +215,33 @@ export class PartnersComponent implements OnInit {
         error: err => this.notice.set(problemMessage(err)),
       })
     }
+  }
+
+  protected syncBookingCom(): void {
+    this.syncing.set(true)
+    this.syncResult.set(null)
+    this.api
+      .syncBookingCom()
+      .pipe(finalize(() => this.syncing.set(false)))
+      .subscribe({
+        next: r => {
+          this.syncResult.set({ ok: r.errors === 0, message: this.describe(r) })
+          // The first ride creates the "Booking.com" partner.
+          this.load()
+        },
+        error: err =>
+          this.syncResult.set({
+            ok: false,
+            message: $localize`Booking.com sync failed: ${problemMessage(err)}:reason:`,
+          }),
+      })
+  }
+
+  private describe(r: BookingComSyncResult): string {
+    const summary = $localize`Booking.com: ${r.fetched}:fetched: rides checked, ${r.imported}:imported: new, ${r.amended}:amended: changed, ${r.cancelled}:cancelled: cancelled, ${r.accepted}:accepted: accepted, ${r.rejected}:rejected: rejected, ${r.driversSent}:drivers: drivers sent, ${r.eventsSent}:events: ride updates sent.`
+    return r.errors > 0
+      ? `${summary} ${$localize`Rides with an error: ${r.errors}:errors:. They are retried automatically.`}`
+      : summary
   }
 
   private load(): void {
