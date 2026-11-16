@@ -21,6 +21,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     public CapturingEmailSender Emails { get; } = new();
     public CapturingWhatsAppSender WhatsApp { get; } = new();
     public FakeWebhookReceiver WebhookReceiver { get; } = new();
+    public FakeBookingComApi BookingCom { get; } = new();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -53,6 +54,8 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
             services.AddSingleton<IGeocodingService, FakeGeocodingService>();
             services.AddHttpClient(DriverPlatform.Infrastructure.Partners.PartnerWebhookDispatcher.HttpClientName)
                 .ConfigurePrimaryHttpMessageHandler(() => WebhookReceiver);
+            services.RemoveAll<DriverPlatform.Application.BookingCom.IBookingComApi>();
+            services.AddSingleton<DriverPlatform.Application.BookingCom.IBookingComApi>(BookingCom);
             services.RemoveAll<IWhatsAppSender>();
             services.AddSingleton<IWhatsAppSender>(WhatsApp);
             services.RemoveAll<IEmailSender>();

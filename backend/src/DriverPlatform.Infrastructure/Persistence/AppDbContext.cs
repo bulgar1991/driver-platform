@@ -30,6 +30,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, TimePro
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<NotificationLog> NotificationLogs => Set<NotificationLog>();
     public DbSet<PartnerWebhook> PartnerWebhooks => Set<PartnerWebhook>();
+    public DbSet<BookingComRide> BookingComRides => Set<BookingComRide>();
     public DbSet<DriverApplication> DriverApplications => Set<DriverApplication>();
     public DbSet<Photo> Photos => Set<Photo>();
 

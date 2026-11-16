@@ -391,6 +391,111 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("bookings", (string)null);
                 });
 
+            modelBuilder.Entity("DriverPlatform.Domain.Entities.BookingComRide", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset?>("AcceptedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("accepted_at");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("booking_id");
+
+                    b.Property<string>("BookingReference")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("booking_reference");
+
+                    b.Property<bool>("CancelledByBookingCom")
+                        .HasColumnType("boolean")
+                        .HasColumnName("cancelled_by_booking_com");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CustomerReference")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("customer_reference");
+
+                    b.Property<string>("DetailsHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("details_hash");
+
+                    b.Property<DateTimeOffset?>("DriverSentAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("driver_sent_at");
+
+                    b.Property<string>("DriverSentKey")
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("driver_sent_key");
+
+                    b.Property<int>("EventsSent")
+                        .HasColumnType("integer")
+                        .HasColumnName("events_sent");
+
+                    b.Property<string>("LastError")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("last_error");
+
+                    b.Property<DateTimeOffset?>("LastErrorAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_error_at");
+
+                    b.Property<DateTimeOffset?>("LastEventAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_event_at");
+
+                    b.Property<DateTimeOffset>("LastSeenAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_seen_at");
+
+                    b.Property<DateTimeOffset?>("RejectedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("rejected_at");
+
+                    b.Property<string>("StateHash")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("state_hash");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_booking_com_rides");
+
+                    b.HasIndex("BookingId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_booking_com_rides_booking_id");
+
+                    b.HasIndex("BookingReference")
+                        .IsUnique()
+                        .HasDatabaseName("ix_booking_com_rides_booking_reference");
+
+                    b.ToTable("booking_com_rides", (string)null);
+                });
+
             modelBuilder.Entity("DriverPlatform.Domain.Entities.Client", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2092,6 +2197,18 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("PickupMeetingPoint");
 
                     b.Navigation("PriceLines");
+                });
+
+            modelBuilder.Entity("DriverPlatform.Domain.Entities.BookingComRide", b =>
+                {
+                    b.HasOne("DriverPlatform.Domain.Entities.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_booking_com_rides_bookings_booking_id");
+
+                    b.Navigation("Booking");
                 });
 
             modelBuilder.Entity("DriverPlatform.Domain.Entities.Driver", b =>

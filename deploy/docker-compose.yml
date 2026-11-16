@@ -51,6 +51,10 @@ services:
       WhatsApp__Provider: ${WHATSAPP_PROVIDER}
       WhatsApp__PhoneNumberId: ${WHATSAPP_PHONE_NUMBER_ID}
       WhatsApp__AccessToken: ${WHATSAPP_ACCESS_TOKEN}
+      BookingCom__Enabled: ${BOOKINGCOM_ENABLED:-false}
+      BookingCom__ClientId: ${BOOKINGCOM_CLIENT_ID:-}
+      BookingCom__ClientSecret: ${BOOKINGCOM_CLIENT_SECRET:-}
+      BookingCom__AutoAccept: ${BOOKINGCOM_AUTO_ACCEPT:-true}
       Maps__OsrmBaseUrl: ${OSRM_BASE_URL}
       Maps__NominatimBaseUrl: ${NOMINATIM_BASE_URL}
       Maps__UserAgent: MagnusDrive/1.0 (${ACME_EMAIL})

@@ -1,6 +1,8 @@
 using DriverPlatform.Application.Abstractions;
 using DriverPlatform.Application.Common;
+using DriverPlatform.Application.BookingCom;
 using DriverPlatform.Infrastructure.Auditing;
+using DriverPlatform.Infrastructure.BookingCom;
 using DriverPlatform.Infrastructure.Documents;
 using DriverPlatform.Infrastructure.Email;
 using DriverPlatform.Infrastructure.Jobs;
@@ -54,6 +56,8 @@ public static class DependencyInjection
         {
             services.AddHostedService<HousekeepingWorker>();
         }
+
+        AddBookingCom(services, configuration);
 
         services.AddMemoryCache();
         services.Configure<MapsOptions>(configuration.GetSection(MapsOptions.SectionName));
@@ -114,6 +118,30 @@ public static class DependencyInjection
         else
         {
             services.AddSingleton<IWhatsAppSender, LogWhatsAppSender>();
+        }
+    }
+
+    /// <summary>Booking.com Taxi Supplier API: the client is always registered; the worker runs only when enabled.</summary>
+    private static void AddBookingCom(IServiceCollection services, IConfiguration configuration)
+    {
+        var section = configuration.GetSection(BookingComOptions.SectionName);
+        services.AddOptions<BookingComOptions>()
+            .Bind(section)
+            .Validate(o => !o.Enabled || (o.ClientId.Length > 0 && o.ClientSecret.Length > 0),
+                "BookingCom:ClientId and BookingCom:ClientSecret are required when BookingCom:Enabled is true.")
+            .Validate(o => !o.Enabled || (Uri.IsWellFormedUriString(o.AuthUrl, UriKind.Absolute) && Uri.IsWellFormedUriString(o.ApiUrl, UriKind.Absolute)),
+                "BookingCom:AuthUrl and BookingCom:ApiUrl must be absolute URLs.")
+            .ValidateOnStart();
+        services.AddSingleton<BookingComTokenCache>();
+        services.AddHttpClient<IBookingComApi, BookingComApiClient>(BookingComApiClient.HttpClientName, (sp, http) =>
+        {
+            http.Timeout = TimeSpan.FromSeconds(Math.Max(5, sp.GetRequiredService<IOptions<BookingComOptions>>().Value.TimeoutSeconds));
+            http.DefaultRequestHeaders.UserAgent.ParseAdd("MagnusDrive/1.0");
+        });
+        services.AddScoped<IBookingComSyncService, BookingComSyncService>();
+        if (section.GetValue<bool>(nameof(BookingComOptions.Enabled)))
+        {
+            services.AddHostedService<BookingComWorker>();
         }
     }
 

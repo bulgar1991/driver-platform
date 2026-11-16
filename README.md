@@ -237,9 +237,39 @@ Endpoints (`/api/partner/v1`, 120 requests/min per key), described in OpenAPI at
 | `GET /bookings?updatedSince=` | changes for polling, 100 at a time with `nextCursor` |
 | `POST /bookings/{reference}/cancel` | until pickup; a driver who has the shift is told at once |
 
-**Booking.com**: a partner of type "Booking.com" uses this API, and its bookings get source
-`Booking`. Booking.com's own supplier integration follows their specification and approval
-process; once they provide it, an adapter translates their messages to these same calls.
+### Booking.com (Taxi Supplier API)
+
+Booking.com rides arrive through their [Taxi Supplier API](https://connect.taxi.booking.com), not
+the partner API above. Every `BookingCom:PollSeconds` (60) the API fetches the rides with a pickup
+from 24 hours ago on (`BookingComSyncService`, state in table `booking_com_rides`):
+
+- **New ride** → booking with source `Booking`, status `New`, Booking.com's price (never recalculated),
+  filed under the partner "Booking.com" (created with the first ride; passenger messages off).
+  Car types: STANDARD → Standard, EXECUTIVE → Business, LUXURY → VIP, people carriers/minibus → Bus.
+- **Accept**: at once with `BookingCom:AutoAccept` (default), else when the dispatcher assigns a shift.
+- **Amendment** → the booking is updated (a driver with the shift is told) and the change accepted.
+- **Customer cancellation** → the booking is cancelled here and acknowledged there.
+- **Cancelled by staff here** → rejected there (reason `OTHER`; counts as a decline for Booking.com).
+- **Driver confirms the shift** → driver and car sent (`assignDriver`), again if either changes.
+- **"Picked up" / "completed"** on the driver link → driver events (departed and arrived at pickup,
+  departed to drop-off, then arrived at drop-off).
+
+Errors are logged and kept on the ride (`last_error`); a failing ride is retried after 15 minutes or
+as soon as Booking.com changes it. `POST /api/admin/booking-com/sync` (admin) runs a round at once.
+
+Credentials are never committed (the repo is public). Development uses the sandbox
+(`appsettings.Development.json` has its URLs):
+
+```bash
+cd backend/src/DriverPlatform.Api
+dotnet user-secrets set "BookingCom:ClientId" "…"
+dotnet user-secrets set "BookingCom:ClientSecret" "…"
+dotnet user-secrets set "BookingCom:Enabled" "true"
+```
+
+Production: `BOOKINGCOM_ENABLED=true`, `BOOKINGCOM_CLIENT_ID`, `BOOKINGCOM_CLIENT_SECRET` in
+`deploy/.env`. The sandbox token URL that works is `https://auth-dispatch-api-sandbox.qa.someonedrive.me/oauth2/token`
+(the Cognito URL in Booking.com's email answers 403).
 
 ### Home page
 
@@ -454,7 +484,7 @@ stays across languages).
   decide. **Flight tracking** needs a provider (e.g. AeroDataBox, FlightAware).
 - **SMS**: clients without WhatsApp get nothing when they also have no email (partner
   bookings). An SMS provider can be added behind the same notification service.
-- **Booking.com supplier integration**: request their specification and approval.
+- **Booking.com**: done (sandbox tested); put the production credentials in `deploy/.env` and set `BOOKINGCOM_ENABLED=true`.
 - **Partner invoices**: the monthly statement is a CSV; issuing a monthly invoice per partner
   (with SdI) is to set up with the accountant.
 - **QuestPDF licence**: the Community licence is free for companies under USD 1M yearly revenue.

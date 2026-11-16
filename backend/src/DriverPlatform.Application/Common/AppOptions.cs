@@ -34,3 +34,29 @@ public sealed class LinksOptions
     /// <summary>Signs the client's "my booking" links; at least 32 characters. Changing it invalidates sent links.</summary>
     public string SigningKey { get; set; } = "";
 }
+
+/// <summary>
+/// Booking.com Taxi Supplier API. The client id and secret come from user-secrets (development) or
+/// deploy/.env (production), never from a committed file.
+/// </summary>
+public sealed class BookingComOptions
+{
+    public const string SectionName = "BookingCom";
+
+    public bool Enabled { get; set; }
+    /// <summary>OAuth token endpoint (client credentials).</summary>
+    public string AuthUrl { get; set; } = "https://auth.dispatchapi.taxi.booking.com/oauth2/token";
+    public string ApiUrl { get; set; } = "https://dispatchapi.taxi.booking.com/";
+    public string ClientId { get; set; } = "";
+    public string ClientSecret { get; set; } = "";
+    /// <summary>How often new rides and changes are fetched.</summary>
+    public int PollSeconds { get; set; } = 60;
+    /// <summary>
+    /// Accept every ride (and every amendment) as soon as it arrives. When false, a ride is accepted
+    /// once the dispatcher gives it to a driver. Either way, cancelling it in the admin panel rejects it.
+    /// </summary>
+    public bool AutoAccept { get; set; } = true;
+    /// <summary>Rides with a pickup from this long ago on are fetched, so the last ones still get their driver events.</summary>
+    public int LookBackHours { get; set; } = 24;
+    public int TimeoutSeconds { get; set; } = 20;
+}

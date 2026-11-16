@@ -27,6 +27,7 @@ public interface IAppDbContext
     DbSet<PartnerWebhook> PartnerWebhooks { get; }
     DbSet<DriverApplication> DriverApplications { get; }
     DbSet<Photo> Photos { get; }
+    DbSet<BookingComRide> BookingComRides { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
