@@ -51,9 +51,13 @@ describe('booking form', () => {
     forms.trip.patchValue({ returnTrip: true })
     expect(forms.trip.hasError('returnRequired')).toBe(true)
 
-    forms.trip.patchValue({ returnDate: '2026-11-10', returnTime: '18:00' })
+    // After the outbound trip (tomorrow by default), whatever today is.
+    const returnDate = todayInItaly(8)
+    forms.trip.patchValue({ returnDate, returnTime: '18:00' })
     expect(forms.trip.valid).toBe(true)
-    expect(toQuoteRequest(forms).return?.pickupAt).toBe('2026-11-10T18:00:00')
+    expect(toQuoteRequest(forms).return?.pickupAt).toBe(
+      `${returnDate}T18:00:00`
+    )
   })
 
   it('needs privacy consent and trims the contact details', () => {
