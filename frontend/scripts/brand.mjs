@@ -1,5 +1,6 @@
-// Before a build: makes the chosen client the active brand (src/brands/active.json) and puts its
-// name and icons into index.html, the web app manifest, the app icons and the favicon. BRAND = a folder in src/brands/; without it,
+// Before a build: makes the chosen client the active brand (src/brands/active.json), puts its
+// name and icons into index.html, the web app manifest, the app icons and the favicon, and puts
+// the server's main language (SITE_LANGUAGE, English by default) at the root in angular.json. BRAND = a folder in src/brands/; without it,
 // nothing changes (Magnus Drive). Run by `npm run build:site`, so the Docker build does it.
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
 
@@ -30,4 +31,18 @@ index = index
   .replace(/<title>[^<]*<\/title>/, `<title>${escape(`${brand.name} · ${brand.tagline}`)}</title>`)
   .replace(/(class="car-loader car-loader--lg"\s+role="status"\s+aria-label=")[^"]*"/, `$1${escape(brand.name)}"`)
 writeFileSync('src/index.html', index)
-console.log(`brand: ${brand.name} (${id})`)
+// The server's main language (SITE_LANGUAGE) is built at the root, the others under /<code>.
+const language = process.env.SITE_LANGUAGE || 'en'
+const angular = JSON.parse(readFileSync('angular.json', 'utf8'))
+const i18n = angular.projects.frontend.i18n
+if (![i18n.sourceLocale.code, ...Object.keys(i18n.locales)].includes(language)) {
+  console.error(`brand: SITE_LANGUAGE must be one of it, en, de, fr (got "${language}")`)
+  process.exit(1)
+}
+i18n.sourceLocale.subPath = i18n.sourceLocale.code === language ? '' : i18n.sourceLocale.code
+for (const [code, locale] of Object.entries(i18n.locales)) {
+  locale.subPath = code === language ? '' : code
+}
+writeFileSync('angular.json', JSON.stringify(angular, null, 2) + '\n')
+
+console.log(`brand: ${brand.name} (${id}), main language ${language}`)

@@ -1,4 +1,20 @@
-<span class="logo" [class.logo--lg]="size() === 'lg'">
-  {{ parts.before }}<span class="logo__accent">{{ parts.accent }}</span
-  >{{ parts.after }}
+<span
+  class="logo"
+  [class.logo--lg]="size() === 'lg'"
+  [class.logo--stacked]="subline">
+  @if (subline) {
+    <span class="logo__name"
+      >{{ parts.before }}<span class="logo__accent">{{ parts.accent }}</span
+      >{{ parts.after }}</span
+    >
+    <span class="logo__sub" aria-hidden="true">
+      <span class="logo__rule"></span>
+      <span class="logo__sub-text">{{ subline }}</span>
+      <span class="logo__rule"></span>
+    </span>
+    <span class="logo__sr">{{ subline }}</span>
+  } @else {
+    {{ parts.before }}<span class="logo__accent">{{ parts.accent }}</span
+    >{{ parts.after }}
+  }
 </span>

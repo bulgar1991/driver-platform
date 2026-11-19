@@ -17,9 +17,10 @@
 		-Server
 	}
 
-	# Italian is the root: /it/tariffs → /tariffs (people and links often add the code).
-	redir /it / 301
-	handle_path /it/* {
+	# The main language (SITE_LANGUAGE, English by default) is the root: with English main,
+	# /en/tariffs → /tariffs (people and links often add the code).
+	redir /{$SITE_LANGUAGE:en} / 301
+	handle_path /{$SITE_LANGUAGE:en}/* {
 		redir * {path} 301
 	}
 
@@ -36,12 +37,17 @@
 		header @assets Cache-Control "public, max-age=604800"
 		header ?Cache-Control "no-cache"
 
-		# One build per language: Italian at the root, English, German and French under /en, /de, /fr.
+		# One build per language: the main language at the root, the others under /it, /en, /de, /fr
+		# (the main language's prefix never gets here: it redirects to the root above).
 		# Public pages are prerendered (/de/tariffs → de/tariffs/index.html). Anything else (panel,
 		# personal links, unknown addresses) gets that language's browser-rendered page, never indexed.
+		@it path /it /it/*
 		@en path /en /en/*
 		@de path /de /de/*
 		@fr path /fr /fr/*
+		route @it {
+			try_files {path} {path}/index.html /it/index.csr.html
+		}
 		route @en {
 			try_files {path} {path}/index.html /en/index.csr.html
 		}

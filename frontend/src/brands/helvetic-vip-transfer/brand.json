@@ -2,8 +2,17 @@
   "name": "Helvetic VIP Transfer",
   "shortName": "Helvetic VIP",
   "tagline": "Private Driver Services",
-  "logo": { "text": "HELVETIC VIP TRANSFER", "accent": "VIP" },
-  "contact": { "email": "", "phone": "", "whatsapp": "", "address": "" },
+  "logo": {
+    "text": "HELVETIC",
+    "accent": "",
+    "subline": "VIP TRANSFER"
+  },
+  "contact": {
+    "email": "",
+    "phone": "",
+    "whatsapp": "",
+    "address": ""
+  },
   "social": [],
   "partnerLogos": []
 }

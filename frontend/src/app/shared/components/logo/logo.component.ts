@@ -1,7 +1,10 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { BRAND } from '@/core/brand'
 
-/** The brand's name in capitals, with its accent word in gold (src/brands/<client>/brand.json). */
+/**
+ * The brand's name in capitals, with its accent word in gold, and for two-line logos a small gold
+ * subline between hairlines (src/brands/<client>/brand.json).
+ */
 @Component({
   selector: 'app-logo',
   templateUrl: './logo.component.html',
@@ -12,6 +15,8 @@ export class LogoComponent {
   readonly size = input<'sm' | 'lg'>('sm')
 
   protected readonly parts = splitLogo(BRAND.logo.text, BRAND.logo.accent)
+  /** Second line of a two-line logo (e.g. "VIP TRANSFER" under "HELVETIC"). */
+  protected readonly subline = BRAND.logo.subline ?? ''
 }
 
 export function splitLogo(

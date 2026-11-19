@@ -1,27 +1,41 @@
 /**
- * Languages of the public site. Each is a separate build (Angular i18n, see angular.json): Italian
- * at the root, the others under their prefix. Translations: src/locale/messages.<code>.json.
+ * Languages of the public site. Each is a separate build (Angular i18n, see angular.json): the main
+ * language at the root, the others under their prefix. The main language is set per server
+ * (SITE_LANGUAGE in deploy/.env → `ng build --define SITE_LANGUAGE`); English when not set.
+ * Translations: src/locale/messages.<code>.json.
  */
 export interface SiteLocale {
   code: 'it' | 'en' | 'de' | 'fr'
   /** In its own language, for the switcher. */
   name: string
-  /** URL prefix: '' for Italian, '/en', '/de', '/fr'. */
+  /** URL prefix: '' for the main language, else '/it', '/en', '/de' or '/fr'. */
   prefix: string
   /** Open Graph locale. */
   og: string
 }
 
-export const SITE_LOCALES: readonly SiteLocale[] = [
-  { code: 'it', name: 'Italiano', prefix: '', og: 'it_IT' },
-  { code: 'en', name: 'English', prefix: '/en', og: 'en_GB' },
-  { code: 'de', name: 'Deutsch', prefix: '/de', og: 'de_DE' },
-  { code: 'fr', name: 'Français', prefix: '/fr', og: 'fr_FR' },
+const LANGUAGES: readonly Omit<SiteLocale, 'prefix'>[] = [
+  { code: 'it', name: 'Italiano', og: 'it_IT' },
+  { code: 'en', name: 'English', og: 'en_GB' },
+  { code: 'de', name: 'Deutsch', og: 'de_DE' },
+  { code: 'fr', name: 'Français', og: 'fr_FR' },
 ]
 
-export const DEFAULT_LOCALE = SITE_LOCALES[0]
+/** The language at the root of the site. */
+export const MAIN_LANGUAGE: SiteLocale['code'] =
+  typeof SITE_LANGUAGE === 'string' &&
+  LANGUAGES.some(l => l.code === SITE_LANGUAGE)
+    ? (SITE_LANGUAGE as SiteLocale['code'])
+    : 'en'
 
-/** The site language for an Angular LOCALE_ID ("de", "en-US"…); Italian when unknown. */
+export const SITE_LOCALES: readonly SiteLocale[] = LANGUAGES.map(l => ({
+  ...l,
+  prefix: l.code === MAIN_LANGUAGE ? '' : `/${l.code}`,
+}))
+
+export const DEFAULT_LOCALE = SITE_LOCALES.find(l => l.code === MAIN_LANGUAGE)!
+
+/** The site language for an Angular LOCALE_ID ("de", "en-US"…); the main language when unknown. */
 export function siteLocale(localeId: string): SiteLocale {
   const code = localeId.slice(0, 2).toLowerCase()
   return SITE_LOCALES.find(l => l.code === code) ?? DEFAULT_LOCALE

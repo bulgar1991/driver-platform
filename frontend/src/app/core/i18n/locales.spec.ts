@@ -11,9 +11,10 @@ describe('locales', () => {
     expect(stripLocalePrefix('/frontier')).toBe('/frontier')
   })
 
-  it('maps Angular locale ids to site languages', () => {
+  it('maps Angular locale ids to site languages, English (the main one) at the root', () => {
     expect(siteLocale('de').prefix).toBe('/de')
-    expect(siteLocale('en-US').code).toBe('en')
-    expect(siteLocale('es').code).toBe('it')
+    expect(siteLocale('it').prefix).toBe('/it')
+    expect(siteLocale('en-US').prefix).toBe('')
+    expect(siteLocale('es').code).toBe('en')
   })
 })

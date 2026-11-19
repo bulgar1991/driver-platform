@@ -278,8 +278,9 @@ What differs is chosen per server in `deploy/.env`:
 
 | Setting | Effect |
 | --- | --- |
-| `BRAND` | A folder in `frontend/src/brands/`: `brand.json` (name, short name, logo text and its gold accent word, contacts, social links, partner logos) and the app icons. Only that brand is built into the site. |
+| `BRAND` | A folder in `frontend/src/brands/`: `brand.json` (name, short name, logo text and its gold accent word or a second gold line under it, contacts, social links, partner logos) and the app icons. Only that brand is built into the site. |
 | `SITE_DOMAIN` | The client's domain (HTTPS certificate, canonical links, sitemap). |
+| `SITE_LANGUAGE` | The language at the root of the site (`en` by default; `it`, `de` or `fr`). |
 | `COMPANY_*` | Company on invoices; `COMPANY_NAME` is also the email sender name and is used on Stripe payments and the partner API page. |
 | `BOOKING_PREFIX`, `INVOICE_PREFIX` | Letters of booking references (`HV-7K3QX9`) and invoice numbers (`HV-2026-000001`), 2–4 letters. |
 
@@ -447,10 +448,13 @@ Conventions:
 
 ### Languages
 
-The whole site, the client and driver pages and the admin panel are in **Italian (default, at `/`),
-English (`/en`), German (`/de`) and French (`/fr`)**, with a switcher in the header, the mobile menu,
-the footer and the panel's top bar (`/admin`, `/en/admin`, `/de/admin`, `/fr/admin`; the sign-in
-stays across languages).
+The whole site, the client and driver pages and the admin panel are in **English, Italian, German
+and French**, with a switcher in the header, the mobile menu, the footer and the panel's top bar (the
+sign-in stays across languages). The **main language** is at the root and the others under their
+code; it is set per server with `SITE_LANGUAGE` in `deploy/.env`, **English by default**: `/`,
+`/it`, `/de`, `/fr` (and `/admin`, `/it/admin`…). With `SITE_LANGUAGE=it`, Italian is at `/` and
+English at `/en`. The build (`scripts/brand.mjs` → `angular.json`), the language links, the sitemap,
+Caddy and the backend's email links all follow it.
 
 - Angular's built-in i18n: one prerendered build per language (`angular.json` → `i18n`). Texts are
   marked with `i18n` attributes in templates and `$localize` in code; translations are in
@@ -460,8 +464,8 @@ stays across languages).
   missing, so nothing ships half-translated.
 - `npm start` runs one `ng serve` per language (ports 4201–4204, `scripts/dev-languages.mjs`) behind
   http://localhost:4200, so the switcher and reloads work as in production, with live reload. It
-  uses about four times the memory of one server; `npm run start:it` serves Italian alone (other
-  languages' URLs then show the Italian page). `npm run preview` builds the prerendered site and
+  uses about four times the memory of one server; `npm run start:en` serves English alone (other
+  languages' URLs then show the English page). `npm run preview` builds the prerendered site and
   serves it at http://localhost:4300 like the production server (no live reload).
 - Prices and dates follow the language ("58,00 €" in Italian, German, French; "€58.00" in English);
   address search returns place names in it ("Mailand" on the German site).
@@ -492,7 +496,7 @@ stays across languages).
   (`SeoService`): description, robots, canonical, Open Graph and Twitter card; the home page also
   gets schema.org data (`TaxiService`, `Organization`, `WebSite`; contact details only once they
   are filled in `home.content.ts`). Routes without `seo` are `noindex`. Each page links its other
-  language versions (`hreflang`, Italian as `x-default`); the sitemap lists all of them.
+  language versions (`hreflang`, the main language as `x-default`); the sitemap lists all of them.
 - **Site address.** `npm run build:site` with `SITE_URL=https://domain` puts it in canonical links
   and previews and writes `sitemap.xml` and the `Sitemap:` line of `robots.txt`. The Docker build
   does this from `SITE_DOMAIN`.

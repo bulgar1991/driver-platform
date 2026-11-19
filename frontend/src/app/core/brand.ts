@@ -13,8 +13,11 @@ export interface Brand {
   /** Under the app icon on a phone. */
   shortName: string
   tagline: string
-  /** Logo text in capitals; the accent word is drawn in gold. */
-  logo: { text: string; accent: string }
+  /**
+   * Logo text in capitals; the accent word is drawn in gold. With a subline, the logo has two lines:
+   * the text, and the subline small and gold between two hairlines underneath.
+   */
+  logo: { text: string; accent: string; subline?: string }
   /** Shown in the footer and the partner section only when filled in. */
   contact: { email: string; phone: string; whatsapp: string; address: string }
   social: { label: string; url: string }[]

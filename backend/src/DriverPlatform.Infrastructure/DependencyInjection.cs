@@ -85,6 +85,8 @@ public static class DependencyInjection
         services.Configure<CompanyOptions>(configuration.GetSection(CompanyOptions.SectionName));
         // Booking references are made in static helpers, so the brand's prefix is set once here.
         Application.Bookings.BookingReference.UsePrefix(configuration[$"{CompanyOptions.SectionName}:ReferencePrefix"]);
+        // The site's main language (at the root of the site), for the links in emails and messages.
+        SiteLanguages.UseMainLanguage(configuration["Site:Language"]);
         services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
 
         if (configuration[$"{PaymentsOptions.SectionName}:Provider"] == "Stripe")

@@ -1,8 +1,10 @@
 #!/bin/sh
 # Read-only checks after a deployment: nothing is booked or paid.
-#   ./smoke-test.sh https://magnusdrive.it
+#   ./smoke-test.sh https://helvetic-vip-transfer.com   (English at the root, the default)
+#   ./smoke-test.sh https://magnusdrive.it it           (a server with SITE_LANGUAGE=it)
 set -eu
-base="${1:?usage: smoke-test.sh <https://site>}"
+base="${1:?usage: smoke-test.sh <https://site> [main language, default en]}"
+main="${2:-en}"
 fail=0
 
 check() {
@@ -33,12 +35,13 @@ curl -s "$base/robots.txt" | grep -q "^Sitemap: $base/sitemap.xml" && r=yes || r
 seo "robots.txt points to the sitemap" "$r"
 curl -sI "$base/admin" | grep -qi "^x-robots-tag: noindex" && r=yes || r=no
 seo "panel marked noindex" "$r"
-for lang in de fr en; do
+for lang in it en de fr; do
+    [ "$lang" = "$main" ] && continue
     curl -s "$base/$lang/" | grep -q "<html lang=\"$lang\"" && r=yes || r=no
     seo "/$lang/ served in $lang" "$r"
 done
-curl -s "$base/" | grep -q '<html lang="it"' && r=yes || r=no
-seo "/ served in Italian" "$r"
+curl -s "$base/" | grep -q "<html lang=\"$main\"" && r=yes || r=no
+seo "/ served in the main language ($main)" "$r"
 
 headers=$(curl -sI "$base/")
 for h in strict-transport-security content-security-policy x-content-type-options; do

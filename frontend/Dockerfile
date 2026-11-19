@@ -5,8 +5,10 @@ FROM node:24-alpine AS build
 ARG SITE_DOMAIN
 # The client the site is for: a folder in frontend/src/brands/ (name, logo, contacts, icons).
 ARG BRAND=magnus-drive
+# The language at the root of the site (it, en, de or fr); the others go under /<code>.
+ARG SITE_LANGUAGE=en
 RUN test -n "$SITE_DOMAIN" || (echo 'Build argument SITE_DOMAIN is required' && exit 1)
-ENV SITE_URL=https://${SITE_DOMAIN} BRAND=${BRAND}
+ENV SITE_URL=https://${SITE_DOMAIN} BRAND=${BRAND} SITE_LANGUAGE=${SITE_LANGUAGE}
 WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund

@@ -4,12 +4,12 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 
 const OUT = 'dist/frontend/browser'
-const LANGUAGES = [
-  { code: 'it', prefix: '' },
-  { code: 'en', prefix: '/en' },
-  { code: 'de', prefix: '/de' },
-  { code: 'fr', prefix: '/fr' },
-]
+// The server's main language (SITE_LANGUAGE) is at the root, the others under their code.
+const MAIN = process.env.SITE_LANGUAGE || 'en'
+const LANGUAGES = ['it', 'en', 'de', 'fr'].map(code => ({
+  code,
+  prefix: code === MAIN ? '' : `/${code}`,
+}))
 const site = (process.env.SITE_URL ?? '').replace(/\/+$/, '')
 if (!/^https?:\/\/[^/]+$/.test(site)) {
   console.warn(

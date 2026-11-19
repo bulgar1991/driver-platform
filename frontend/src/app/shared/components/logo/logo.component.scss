@@ -8,4 +8,38 @@
   &__accent {
     @apply bg-gold-gradient bg-clip-text text-transparent;
   }
+
+  // Two-line logo: the name, and under it a small gold subline between hairlines, centred.
+  &--stacked {
+    @apply inline-flex flex-col items-center gap-1.5 leading-none tracking-normal;
+  }
+
+  &__name {
+    @apply pl-[0.24em] text-[1.35rem] tracking-[0.24em];
+  }
+
+  &--lg &__name {
+    @apply text-[2.1rem];
+  }
+
+  &__sub {
+    @apply flex w-full items-center gap-2;
+  }
+
+  &__rule {
+    @apply h-px flex-1 bg-gold-gradient opacity-70;
+  }
+
+  &__sub-text {
+    // Letter-spacing also follows the last letter: the same padding on the left keeps it centred.
+    @apply bg-gold-gradient bg-clip-text pl-[0.42em] font-sans text-[0.56rem] font-medium tracking-[0.42em] text-transparent;
+  }
+
+  &--lg &__sub-text {
+    @apply text-[0.72rem];
+  }
+
+  &__sr {
+    @apply sr-only;
+  }
 }

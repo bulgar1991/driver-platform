@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "node scripts/dev-languages.mjs",
-    "start:it": "ng serve --configuration development",
+    "start:en": "ng serve --configuration development",
     "preview": "ng build --configuration development --localize && node scripts/serve-languages.mjs",
     "start:stage": "ng serve --configuration staging",
     "start:prod": "ng serve --configuration production",
@@ -20,7 +20,7 @@
     "test:coverage": "ng test --code-coverage",
     "icons:outline": "oslllo-svg-fixer -s src/assets/icons/src -d src/assets/icons/font-icons",
     "images": "node scripts/images.mjs",
-    "build:site": "node scripts/brand.mjs && ng build --define \"SITE_URL='${SITE_URL}'\" && node scripts/seo-files.mjs",
+    "build:site": "node scripts/brand.mjs && ng build --define \"SITE_URL='${SITE_URL}'\" --define \"SITE_LANGUAGE='${SITE_LANGUAGE:-en}'\" && node scripts/seo-files.mjs",
     "brand-icons": "node scripts/brand-icons.mjs",
     "i18n": "ng extract-i18n --format json --output-path src/locale && node scripts/i18n-check.mjs"
   },

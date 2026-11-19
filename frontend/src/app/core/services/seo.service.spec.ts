@@ -43,8 +43,8 @@ describe('SeoService', () => {
     )
   }
 
-  // The Italian site (the default, at the root) unless a test says otherwise.
-  beforeEach(() => setUp('it'))
+  // The English site (the default, at the root) unless a test says otherwise.
+  beforeEach(() => setUp('en'))
 
   it('describes public pages for search engines and link previews', async () => {
     await TestBed.inject(Router).navigateByUrl('/tariffs?ref=ad')
@@ -74,7 +74,7 @@ describe('SeoService', () => {
     expect(document.getElementById('structured-data')).toBeNull()
   })
 
-  it('links every language version of the page, with Italian as the default', async () => {
+  it('links every language version of the page, with English as the default', async () => {
     TestBed.resetTestingModule()
     setUp('de')
     await TestBed.inject(Router).navigateByUrl('/tariffs')
@@ -89,8 +89,8 @@ describe('SeoService', () => {
     ).toBe('https://magnus.example/de/tariffs')
     expect(meta('property="og:locale"')).toBe('de_DE')
     expect(alternates).toEqual({
-      it: 'https://magnus.example/tariffs',
-      en: 'https://magnus.example/en/tariffs',
+      it: 'https://magnus.example/it/tariffs',
+      en: 'https://magnus.example/tariffs',
       de: 'https://magnus.example/de/tariffs',
       fr: 'https://magnus.example/fr/tariffs',
       'x-default': 'https://magnus.example/tariffs',

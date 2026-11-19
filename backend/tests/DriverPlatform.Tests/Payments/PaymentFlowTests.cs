@@ -25,7 +25,7 @@ public sealed class PaymentFlowTests
 
     private static string SessionId(CreateBookingResponse booking) => booking.PaymentUrl!.Split('/').Last();
 
-    /// <summary>"https://magnus.test/en/my-booking/MD-XXXXXX/token" → "/api/my-booking/MD-XXXXXX/token".</summary>
+    /// <summary>"https://magnus.test/my-booking/MD-XXXXXX/token" → "/api/my-booking/MD-XXXXXX/token".</summary>
     private static string MyBookingApi(CreateBookingResponse booking)
     {
         var path = new Uri(booking.ManageUrl).AbsolutePath;
@@ -50,7 +50,7 @@ public sealed class PaymentFlowTests
 
         Assert.StartsWith("https://magnus.test/dev/payment/fake_cs_", booking.PaymentUrl);
         // The client booked in English: the link opens the English site.
-        Assert.StartsWith($"https://magnus.test/en/my-booking/{booking.Reference}/", booking.ManageUrl);
+        Assert.StartsWith($"https://magnus.test/my-booking/{booking.Reference}/", booking.ManageUrl);
         Assert.Equal(BookingStatus.AwaitingPayment, page!.Status);
         Assert.True(page.CanPay);
         Assert.Equal(PaymentStatus.Pending, page.Payment?.Status);
