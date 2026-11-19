@@ -2,18 +2,21 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using DriverPlatform.Application.Abstractions;
+using DriverPlatform.Application.Common;
 using DriverPlatform.Domain.Entities;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace DriverPlatform.Infrastructure.Security;
 
-public sealed class JwtTokenService(IOptions<JwtOptions> options, TimeProvider clock) : ITokenService
+public sealed class JwtTokenService(IOptions<JwtOptions> options, IOptions<TwoFactorOptions> twoFactor, TimeProvider clock) : ITokenService
 {
     public const string RoleClaim = "role";
     public const string StampClaim = "stamp";
     /// <summary>Present while the user still has a temporary password.</summary>
     public const string PasswordChangeClaim = "pwd_change";
+    /// <summary>Present while two-step sign-in is required and not set up yet.</summary>
+    public const string TwoFactorSetupClaim = "2fa_setup";
 
     public AccessToken CreateAccessToken(StaffUser user)
     {
@@ -32,6 +35,7 @@ public sealed class JwtTokenService(IOptions<JwtOptions> options, TimeProvider c
                 new Claim(RoleClaim, user.Role.ToString()),
                 new Claim(StampClaim, user.SecurityStamp),
                 .. user.MustChangePassword ? [new Claim(PasswordChangeClaim, "1")] : Array.Empty<Claim>(),
+                .. twoFactor.Value.Required && user.TwoFactorEnabledAt is null ? [new Claim(TwoFactorSetupClaim, "1")] : Array.Empty<Claim>(),
             ],
             notBefore: now.UtcDateTime,
             expires: expires.UtcDateTime,

@@ -10,6 +10,7 @@ export interface StaffMember {
   lastLoginAt: string | null
   lockedUntil: string | null
   createdAt: string
+  twoFactorEnabled: boolean
 }
 
 export interface TemporaryPassword {

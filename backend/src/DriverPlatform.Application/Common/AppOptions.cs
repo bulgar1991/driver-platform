@@ -60,3 +60,14 @@ public sealed class BookingComOptions
     public int LookBackHours { get; set; } = 24;
     public int TimeoutSeconds { get; set; } = 20;
 }
+
+/// <summary>Two-step sign-in for the panel (authenticator app, or a code by email).</summary>
+public sealed class TwoFactorOptions
+{
+    public const string SectionName = "TwoFactor";
+
+    /// <summary>Everyone must connect an authenticator app before using the panel.</summary>
+    public bool Required { get; set; } = true;
+    /// <summary>How long a code sent by email works.</summary>
+    public int EmailCodeMinutes { get; set; } = 10;
+}

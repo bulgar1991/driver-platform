@@ -1,0 +1,54 @@
+.two-factor {
+  @apply flex flex-col gap-4 border-t border-ink-600 pt-6;
+
+  &__lead {
+    @apply text-sm text-ivory;
+  }
+
+  &__muted {
+    @apply text-xs text-ivory-400;
+  }
+
+  &__steps {
+    @apply list-decimal space-y-4 pl-5 text-sm text-ivory;
+
+    // Block (not flex) items, so the step numbers show.
+    li {
+      @apply space-y-2;
+    }
+
+    img,
+    code,
+    span {
+      @apply block;
+    }
+  }
+
+  &__qr {
+    @apply h-auto w-[232px] max-w-full rounded-sm bg-white p-2;
+  }
+
+  &__key {
+    @apply break-all font-mono text-sm tracking-wider text-gold;
+  }
+
+  &__form {
+    @apply flex flex-col gap-4;
+  }
+
+  &__input {
+    @apply font-mono text-lg tracking-[0.3em];
+  }
+
+  &__actions {
+    @apply flex flex-wrap gap-3;
+  }
+
+  &__codes {
+    @apply flex flex-col gap-4 rounded-sm border border-gold-700 bg-ink-900 p-4;
+  }
+
+  &__code-list {
+    @apply grid grid-cols-2 gap-x-6 gap-y-1 font-mono text-sm text-ivory;
+  }
+}

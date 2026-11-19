@@ -45,6 +45,14 @@ export class AdminStaffService {
     )
   }
 
+  /** For someone who lost their phone: they set up the authenticator again at the next sign-in. */
+  resetTwoFactor(id: string): Observable<StaffMember> {
+    return this.http.post<StaffMember>(
+      `${this.url}/staff/${id}/reset-two-factor`,
+      null
+    )
+  }
+
   audit(search: string, before?: number | null): Observable<AuditPage> {
     let params = new HttpParams()
     if (search.trim()) {

@@ -17,4 +17,16 @@
   &__languages {
     @apply mt-2;
   }
+
+  &__hint {
+    @apply text-center text-xs text-ivory-300;
+  }
+
+  &__code {
+    @apply text-center font-mono text-lg tracking-[0.3em];
+  }
+
+  &__back {
+    @apply self-center text-xs uppercase tracking-widest text-gold hover:underline;
+  }
 }

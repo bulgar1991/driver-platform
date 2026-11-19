@@ -69,4 +69,12 @@ public abstract partial class Texts
     public abstract string PasswordTooEasy { get; }
     public abstract string CurrentPasswordWrong { get; }
     public abstract string ChooseDifferentPassword { get; }
+    public abstract string TwoFactorAlreadyOn { get; }
+    public abstract string TwoFactorStartAgain { get; }
+    public abstract string TwoFactorWrongCode { get; }
+    public abstract string TwoFactorIsOff { get; }
+    public abstract string TwoFactorSetUpFirst { get; }
+    public abstract string TwoFactorEmailFailed { get; }
+    public abstract string TwoFactorEmailSubject(string company);
+    public abstract string TwoFactorEmailBody(string firstName, string code, int minutes);
 }

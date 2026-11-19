@@ -27,6 +27,10 @@ public sealed class StaffController(IStaffAdminService staff, IAuditQueryService
     public async Task<ActionResult<TemporaryPasswordResponse>> ResetPassword(Guid id, CancellationToken cancellationToken) =>
         Ok(await staff.ResetPasswordAsync(id, cancellationToken));
 
+    [HttpPost("staff/{id:guid}/reset-two-factor")]
+    public async Task<ActionResult<StaffDto>> ResetTwoFactor(Guid id, CancellationToken cancellationToken) =>
+        Ok(await staff.ResetTwoFactorAsync(id, cancellationToken));
+
     [HttpGet("audit")]
     public async Task<ActionResult<AuditPage>> Audit([FromQuery] string? search, [FromQuery] long? before, CancellationToken cancellationToken) =>
         Ok(await audit.ListAsync(search, before, cancellationToken));

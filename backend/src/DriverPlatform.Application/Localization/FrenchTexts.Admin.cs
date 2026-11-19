@@ -95,4 +95,13 @@ internal sealed partial class FrenchTexts
     public override string PasswordTooEasy => "Ce mot de passe est trop facile à deviner.";
     public override string CurrentPasswordWrong => "Le mot de passe actuel est incorrect.";
     public override string ChooseDifferentPassword => "Choisissez un autre mot de passe.";
+    public override string TwoFactorAlreadyOn => "La connexion en deux étapes est déjà activée.";
+    public override string TwoFactorStartAgain => "Recommencez la configuration : le code n'a pas pu être vérifié.";
+    public override string TwoFactorWrongCode => "Le code est incorrect. Vérifiez l'heure de votre téléphone et utilisez le code le plus récent.";
+    public override string TwoFactorIsOff => "La connexion en deux étapes est désactivée.";
+    public override string TwoFactorSetUpFirst => "Configurez d'abord la connexion en deux étapes.";
+    public override string TwoFactorEmailFailed => "L'email n'a pas pu être envoyé. Utilisez le code de votre application d'authentification.";
+    public override string TwoFactorEmailSubject(string company) => $"Votre code de connexion – {company}";
+    public override string TwoFactorEmailBody(string firstName, string code, int minutes) =>
+        $"Bonjour {firstName},\n\nvotre code de connexion est {code}. Il est valable {minutes} minutes.\n\nSi vous n'avez pas essayé de vous connecter, changez votre mot de passe : quelqu'un le connaît.";
 }

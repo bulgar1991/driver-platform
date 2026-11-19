@@ -95,4 +95,13 @@ internal sealed partial class ItalianTexts
     public override string PasswordTooEasy => "Questa password è troppo facile da indovinare.";
     public override string CurrentPasswordWrong => "La password attuale non è corretta.";
     public override string ChooseDifferentPassword => "Scegli una password diversa.";
+    public override string TwoFactorAlreadyOn => "La verifica in due passaggi è già attiva.";
+    public override string TwoFactorStartAgain => "Ricomincia la configurazione: non è stato possibile verificare il codice.";
+    public override string TwoFactorWrongCode => "Il codice non è corretto. Controlla l'ora del telefono e usa il codice più recente.";
+    public override string TwoFactorIsOff => "La verifica in due passaggi è disattivata.";
+    public override string TwoFactorSetUpFirst => "Configura prima la verifica in due passaggi.";
+    public override string TwoFactorEmailFailed => "Impossibile inviare l'email. Usa il codice dell'app di autenticazione.";
+    public override string TwoFactorEmailSubject(string company) => $"Il tuo codice di accesso – {company}";
+    public override string TwoFactorEmailBody(string firstName, string code, int minutes) =>
+        $"Ciao {firstName},\n\nil tuo codice di accesso è {code}. È valido per {minutes} minuti.\n\nSe non hai provato ad accedere, cambia la password: qualcuno la conosce.";
 }

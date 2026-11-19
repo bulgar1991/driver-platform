@@ -57,16 +57,24 @@ public static class AuthExtensions
         }
     }
 
-    /// <summary>With a temporary password, only /api/auth (change password, me) is reachable.</summary>
+    /// <summary>
+    /// With a temporary password, or before a required two-step sign-in is set up, only /api/auth
+    /// (change password, two-step setup, me) is reachable.
+    /// </summary>
     public static IApplicationBuilder UsePasswordChangeGate(this IApplicationBuilder app) =>
         app.Use(async (context, next) =>
         {
-            if (context.User.HasClaim(JwtTokenService.PasswordChangeClaim, "1")
-                && !context.Request.Path.StartsWithSegments("/api/auth"))
+            if (!context.Request.Path.StartsWithSegments("/api/auth"))
             {
-                context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                await context.Response.WriteAsJsonAsync(new { title = "Change your temporary password first.", status = 403 });
-                return;
+                var title = context.User.HasClaim(JwtTokenService.PasswordChangeClaim, "1") ? "Change your temporary password first."
+                    : context.User.HasClaim(JwtTokenService.TwoFactorSetupClaim, "1") ? "Set up two-step sign-in first."
+                    : null;
+                if (title is not null)
+                {
+                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    await context.Response.WriteAsJsonAsync(new { title, status = 403 });
+                    return;
+                }
             }
             await next();
         });

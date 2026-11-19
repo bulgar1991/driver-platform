@@ -36,6 +36,8 @@ public static class DependencyInjection
             .Validate(o => o.SigningKey.Length >= 32, "Jwt:SigningKey must be at least 32 characters.")
             .ValidateOnStart();
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
+        services.AddSingleton<IQrCodeRenderer, QrCodeRenderer>();
+        services.Configure<TwoFactorOptions>(configuration.GetSection(TwoFactorOptions.SectionName));
         services.AddSingleton<ITokenService, JwtTokenService>();
         services.AddScoped<IStaffSessions, CachedStaffSessions>();
         services.AddScoped<IAuditLogger, AuditLogger>();

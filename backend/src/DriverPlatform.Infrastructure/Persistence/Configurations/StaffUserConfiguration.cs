@@ -10,5 +10,8 @@ internal sealed class StaffUserConfiguration : IEntityTypeConfiguration<StaffUse
     {
         builder.HasIndex(u => u.Email).IsUnique();
         builder.Property(u => u.Email).HasMaxLength(254);
+        builder.Property(u => u.TwoFactorSecret).HasMaxLength(200);
+        builder.Property(u => u.TwoFactorPendingSecret).HasMaxLength(200);
+        builder.Property(u => u.TwoFactorEmailCodeHash).HasMaxLength(64);
     }
 }

@@ -18,6 +18,7 @@ import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
+import { TwoFactorComponent } from './two-factor.component'
 
 function sameAsNew(group: AbstractControl): ValidationErrors | null {
   const { newPassword, confirm } = group.value as {
@@ -30,7 +31,12 @@ function sameAsNew(group: AbstractControl): ValidationErrors | null {
 /** /admin/account — change your own password; forced while it is a temporary one. */
 @Component({
   selector: 'app-account',
-  imports: [ReactiveFormsModule, ButtonComponent, FormFieldComponent],
+  imports: [
+    ReactiveFormsModule,
+    ButtonComponent,
+    FormFieldComponent,
+    TwoFactorComponent,
+  ],
   templateUrl: './account.component.html',
   styleUrl: './account.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

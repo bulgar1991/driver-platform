@@ -97,4 +97,13 @@ internal sealed partial class EnglishTexts
     public override string PasswordTooEasy => "This password is too easy to guess.";
     public override string CurrentPasswordWrong => "The current password is not correct.";
     public override string ChooseDifferentPassword => "Choose a different password.";
+    public override string TwoFactorAlreadyOn => "Two-step sign-in is already on.";
+    public override string TwoFactorStartAgain => "Start the setup again: the code could not be checked.";
+    public override string TwoFactorWrongCode => "The code is not correct. Check the time on your phone and use the newest code.";
+    public override string TwoFactorIsOff => "Two-step sign-in is off.";
+    public override string TwoFactorSetUpFirst => "Set up two-step sign-in first.";
+    public override string TwoFactorEmailFailed => "The email could not be sent. Use the code from your authenticator app.";
+    public override string TwoFactorEmailSubject(string company) => $"Your sign-in code – {company}";
+    public override string TwoFactorEmailBody(string firstName, string code, int minutes) =>
+        $"Hello {firstName},\n\nyour sign-in code is {code}. It works for {minutes} minutes.\n\nIf you did not try to sign in, change your password: someone knows it.";
 }

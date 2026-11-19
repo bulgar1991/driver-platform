@@ -1545,6 +1545,42 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("security_stamp");
 
+                    b.Property<DateTimeOffset?>("TwoFactorEmailCodeExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("two_factor_email_code_expires_at");
+
+                    b.Property<string>("TwoFactorEmailCodeHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("two_factor_email_code_hash");
+
+                    b.Property<DateTimeOffset?>("TwoFactorEmailCodeSentAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("two_factor_email_code_sent_at");
+
+                    b.Property<DateTimeOffset?>("TwoFactorEnabledAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("two_factor_enabled_at");
+
+                    b.Property<long>("TwoFactorLastStep")
+                        .HasColumnType("bigint")
+                        .HasColumnName("two_factor_last_step");
+
+                    b.Property<string>("TwoFactorPendingSecret")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("two_factor_pending_secret");
+
+                    b.PrimitiveCollection<List<string>>("TwoFactorRecoveryCodes")
+                        .IsRequired()
+                        .HasColumnType("text[]")
+                        .HasColumnName("two_factor_recovery_codes");
+
+                    b.Property<string>("TwoFactorSecret")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("two_factor_secret");
+
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");

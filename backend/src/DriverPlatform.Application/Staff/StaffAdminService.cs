@@ -11,7 +11,7 @@ namespace DriverPlatform.Application.Staff;
 
 public sealed record StaffDto(
     Guid Id, string Email, string FullName, StaffRole Role, bool IsActive, bool MustChangePassword,
-    DateTimeOffset? LastLoginAt, DateTimeOffset? LockedUntil, DateTimeOffset CreatedAt);
+    DateTimeOffset? LastLoginAt, DateTimeOffset? LockedUntil, DateTimeOffset CreatedAt, bool TwoFactorEnabled = false);
 
 public sealed record CreateStaffRequest
 {
@@ -39,6 +39,8 @@ public interface IStaffAdminService
     Task<TemporaryPasswordResponse> CreateAsync(CreateStaffRequest request, CancellationToken cancellationToken);
     Task<StaffDto> UpdateAsync(Guid id, UpdateStaffRequest request, CancellationToken cancellationToken);
     Task<TemporaryPasswordResponse> ResetPasswordAsync(Guid id, CancellationToken cancellationToken);
+    /// <summary>Turns two-step sign-in off for someone who lost their phone; they can set it up again.</summary>
+    Task<StaffDto> ResetTwoFactorAsync(Guid id, CancellationToken cancellationToken);
 }
 
 /// <summary>Admins manage panel accounts. The last active admin can never be removed or demoted.</summary>
@@ -116,10 +118,21 @@ public sealed class StaffAdminService(
         return new TemporaryPasswordResponse(ToDto(user), password);
     }
 
+    public async Task<StaffDto> ResetTwoFactorAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var user = await FindAsync(id, cancellationToken);
+        AuthService.TurnOff(user);
+        audit.Log("staff.two_factor_reset", nameof(StaffUser), id.ToString());
+        await db.SaveChangesAsync(cancellationToken);
+        sessions.Invalidate(id);
+        return ToDto(user);
+    }
+
     private async Task<StaffUser> FindAsync(Guid id, CancellationToken cancellationToken) =>
         await db.StaffUsers.FirstOrDefaultAsync(u => u.Id == id, cancellationToken)
         ?? throw new NotFoundException(Texts.Current.UserNotFound);
 
     private static StaffDto ToDto(StaffUser u) => new(
-        u.Id, u.Email, u.FullName, u.Role, u.IsActive, u.MustChangePassword, u.LastLoginAt, u.LockedUntil, u.CreatedAt);
+        u.Id, u.Email, u.FullName, u.Role, u.IsActive, u.MustChangePassword, u.LastLoginAt, u.LockedUntil, u.CreatedAt,
+        u.TwoFactorEnabledAt is not null);
 }

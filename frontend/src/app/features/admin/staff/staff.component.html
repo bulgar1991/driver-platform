@@ -102,6 +102,17 @@
                   ><ng-container i18n>temporary password</ng-container></span
                 >
               }
+              @if (s.twoFactorEnabled) {
+                <span class="staff__muted"
+                  ><ng-container i18n>two-step sign-in on</ng-container></span
+                >
+              } @else {
+                <span class="staff__warning"
+                  ><ng-container i18n
+                    >no two-step sign-in yet</ng-container
+                  ></span
+                >
+              }
               @if (s.lockedUntil) {
                 <span class="staff__warning"
                   ><ng-container i18n
@@ -128,6 +139,18 @@
                 (click)="reset(s)"
                 ><ng-container i18n>Reset password</ng-container></button
               >
+              @if (s.twoFactorEnabled) {
+                <button
+                  appButton
+                  size="sm"
+                  variant="ghost"
+                  type="button"
+                  (click)="resetTwoFactor(s)"
+                  ><ng-container i18n
+                    >Reset two-step sign-in</ng-container
+                  ></button
+                >
+              }
             </td>
           </tr>
         } @empty {

@@ -95,4 +95,13 @@ internal sealed partial class GermanTexts
     public override string PasswordTooEasy => "Dieses Passwort ist zu leicht zu erraten.";
     public override string CurrentPasswordWrong => "Das aktuelle Passwort ist nicht korrekt.";
     public override string ChooseDifferentPassword => "Wählen Sie ein anderes Passwort.";
+    public override string TwoFactorAlreadyOn => "Die Zwei-Schritt-Anmeldung ist bereits aktiv.";
+    public override string TwoFactorStartAgain => "Starten Sie die Einrichtung erneut: Der Code konnte nicht geprüft werden.";
+    public override string TwoFactorWrongCode => "Der Code ist nicht korrekt. Prüfen Sie die Uhrzeit Ihres Telefons und verwenden Sie den neuesten Code.";
+    public override string TwoFactorIsOff => "Die Zwei-Schritt-Anmeldung ist ausgeschaltet.";
+    public override string TwoFactorSetUpFirst => "Richten Sie zuerst die Zwei-Schritt-Anmeldung ein.";
+    public override string TwoFactorEmailFailed => "Die E-Mail konnte nicht gesendet werden. Verwenden Sie den Code aus Ihrer Authenticator-App.";
+    public override string TwoFactorEmailSubject(string company) => $"Ihr Anmeldecode – {company}";
+    public override string TwoFactorEmailBody(string firstName, string code, int minutes) =>
+        $"Hallo {firstName},\n\nIhr Anmeldecode lautet {code}. Er gilt {minutes} Minuten.\n\nWenn Sie sich nicht anmelden wollten, ändern Sie Ihr Passwort: Jemand kennt es.";
 }

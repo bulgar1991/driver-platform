@@ -92,4 +92,8 @@
       }
     </button>
   </form>
+
+  @if (!user()?.mustChangePassword) {
+    <app-two-factor />
+  }
 </section>

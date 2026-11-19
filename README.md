@@ -302,6 +302,14 @@ to (no in-page `#anchors`). The header is fixed at the top. **Texts, contacts, p
 - **Staff accounts** (Admin → Staff): temporary passwords shown once and changed at first sign-in;
   12+ character passwords; changing a role, deactivating or a new password ends open sessions.
   Everyone changes their own password under My account. **Audit log** under Admin → Audit log.
+- **Two-step sign-in** (`TwoFactor:Required`, on by default; off in Development): before using the
+  panel, everyone connects an authenticator app under My account (QR code, RFC 6238 codes) and gets
+  10 one-time recovery codes. Sign-in is then password + the app's 6-digit code, a code sent by
+  email (needs SMTP; one a minute, valid `TwoFactor:EmailCodeMinutes` = 10), or a recovery code.
+  Wrong codes count towards the same lockout as wrong passwords; a code is never accepted twice.
+  "Move to a new phone" (password + code) shows a new QR code; an admin can **reset** it for someone
+  who lost their phone (Admin → Staff), which signs them out. The app secret is stored encrypted with
+  a key derived from `Links:SigningKey`: changing that key turns two-step sign-in off for everyone.
 - **Production checks**: the API refuses to start in Production with development settings.
 - **Housekeeping**: bookings never paid are cancelled after 48 h or 1 h before pickup.
 - **Legal pages**: `/privacy` and `/terms` are drafts to complete with a lawyer.

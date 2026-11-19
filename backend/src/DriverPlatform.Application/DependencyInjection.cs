@@ -44,6 +44,7 @@ public static class DependencyInjection
         services.AddScoped<IDriverPortalService, DriverPortalService>();
         services.AddScoped<IDriverApplicationService, DriverApplicationService>();
         services.AddSingleton<IPartnerKeys, PartnerKeys>();
+        services.AddSingleton<TwoFactorKeys>();
         services.AddScoped<IPartnerAuthService, PartnerAuthService>();
         services.AddScoped<IPartnerBookingService, PartnerBookingService>();
         services.AddScoped<IPartnerAdminService, PartnerAdminService>();

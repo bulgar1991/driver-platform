@@ -1,0 +1,221 @@
+<section class="two-factor" aria-labelledby="two-factor-title">
+  <h2 id="two-factor-title" class="heading heading--md"
+    ><ng-container i18n>Two-step sign-in</ng-container></h2
+  >
+
+  @if (user()?.twoFactorSetupRequired && !recoveryCodes()) {
+    <p class="alert alert--info" role="status">
+      <ng-container i18n
+        >Connect an authenticator app to continue: from now on, signing in asks
+        for your password and a code from your phone.</ng-container
+      >
+    </p>
+  }
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+  @if (notice(); as message) {
+    <p class="alert alert--info" role="status">{{ message }}</p>
+  }
+
+  @if (recoveryCodes(); as codes) {
+    <!-- Shown once, right after turning it on or asking for new ones. -->
+    <div class="two-factor__codes">
+      <p class="two-factor__lead">
+        <ng-container i18n
+          >Save these recovery codes somewhere safe (a password manager, or
+          printed). If you lose your phone, each code lets you in once instead
+          of the app's code. They are shown only now.</ng-container
+        >
+      </p>
+      <ol class="two-factor__code-list">
+        @for (c of codes; track c) {
+          <li
+            ><code>{{ c }}</code></li
+          >
+        }
+      </ol>
+      <div class="two-factor__actions">
+        <button
+          appButton
+          size="sm"
+          variant="outline"
+          type="button"
+          (click)="copy(codes)"
+          ><ng-container i18n>Copy</ng-container></button
+        >
+        <button
+          appButton
+          size="sm"
+          variant="outline"
+          type="button"
+          (click)="download(codes)"
+          ><ng-container i18n>Download</ng-container></button
+        >
+        <button appButton size="sm" type="button" (click)="codesSaved()"
+          ><ng-container i18n>I saved them</ng-container></button
+        >
+      </div>
+    </div>
+  } @else if (setup(); as s) {
+    <ol class="two-factor__steps">
+      <li>
+        <ng-container i18n
+          >Install an authenticator app on your phone: Google Authenticator,
+          Microsoft Authenticator, Authy or 1Password.</ng-container
+        >
+      </li>
+      <li>
+        <ng-container i18n
+          >In the app, add an account and scan this QR code.</ng-container
+        >
+        <img
+          class="two-factor__qr"
+          [src]="s.qrCode"
+          width="232"
+          height="232"
+          i18n-alt
+          alt="QR code for the authenticator app" />
+        <span class="two-factor__muted"
+          ><ng-container i18n>Can't scan? Type this key:</ng-container></span
+        >
+        <code class="two-factor__key">{{ s.secret }}</code>
+      </li>
+      <li>
+        <ng-container i18n>Enter the 6-digit code the app shows.</ng-container>
+      </li>
+    </ol>
+    <form
+      class="two-factor__form"
+      [formGroup]="form"
+      (ngSubmit)="confirm()"
+      novalidate>
+      <app-form-field
+        i18n-label
+        label="Code from the app"
+        for="tfCode"
+        [error]="code.touched && code.invalid ? tx.enterCode : null">
+        <input
+          id="tfCode"
+          class="input two-factor__input"
+          type="text"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          maxlength="7"
+          formControlName="code" />
+      </app-form-field>
+      <button appButton type="submit" [disabled]="busy()"
+        ><ng-container i18n>Turn on</ng-container></button
+      >
+    </form>
+  } @else if (status(); as st) {
+    @if (st.enabled) {
+      <p class="two-factor__lead">
+        <ng-container i18n
+          >On since {{ st.enabledAt | date: 'd MMM y' }}. Signing in asks for a
+          code from your app, or one sent by email.</ng-container
+        >
+      </p>
+      <p class="two-factor__muted">
+        <ng-container i18n
+          >Recovery codes left: {{ st.recoveryCodesLeft }}</ng-container
+        >
+      </p>
+
+      @if (action(); as a) {
+        <form
+          class="two-factor__form"
+          [formGroup]="form"
+          (ngSubmit)="a === 'codes' ? newCodes() : move()"
+          novalidate>
+          @if (a === 'move') {
+            <p class="two-factor__muted">
+              <ng-container i18n
+                >Confirm with your password and a code from the current app. A
+                new QR code for the new phone appears next.</ng-container
+              >
+            </p>
+            <app-form-field
+              i18n-label
+              label="Password"
+              for="tfPassword"
+              [error]="
+                password.touched && password.invalid ? tx.required : null
+              ">
+              <input
+                id="tfPassword"
+                class="input"
+                type="password"
+                autocomplete="current-password"
+                formControlName="password" />
+            </app-form-field>
+          }
+          <app-form-field
+            i18n-label
+            label="Code from the app"
+            for="tfCode2"
+            [error]="code.touched && code.invalid ? tx.enterCode : null">
+            <input
+              id="tfCode2"
+              class="input two-factor__input"
+              type="text"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              maxlength="7"
+              formControlName="code" />
+          </app-form-field>
+          <div class="two-factor__actions">
+            <button appButton size="sm" type="submit" [disabled]="busy()">
+              @if (a === 'codes') {
+                <ng-container i18n>Get new codes</ng-container>
+              } @else {
+                <ng-container i18n>Continue</ng-container>
+              }
+            </button>
+            <button
+              appButton
+              size="sm"
+              variant="ghost"
+              type="button"
+              (click)="choose(null)"
+              ><ng-container i18n>Cancel</ng-container></button
+            >
+          </div>
+        </form>
+      } @else {
+        <div class="two-factor__actions">
+          <button
+            appButton
+            size="sm"
+            variant="outline"
+            type="button"
+            (click)="choose('codes')"
+            ><ng-container i18n>New recovery codes</ng-container></button
+          >
+          <button
+            appButton
+            size="sm"
+            variant="outline"
+            type="button"
+            (click)="choose('move')"
+            ><ng-container i18n>Move to a new phone</ng-container></button
+          >
+        </div>
+      }
+    } @else {
+      <p class="two-factor__lead">
+        <ng-container i18n
+          >Protect your account with a code from your phone: even someone who
+          knows your password cannot sign in without it.</ng-container
+        >
+      </p>
+      <div>
+        <button appButton type="button" [disabled]="busy()" (click)="start()"
+          ><ng-container i18n
+            >Set up the authenticator app</ng-container
+          ></button
+        >
+      </div>
+    }
+  }
+</section>

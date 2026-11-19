@@ -135,6 +135,26 @@ export class StaffComponent implements OnInit {
     })
   }
 
+  /** Lost phone: they connect the authenticator again at the next sign-in. */
+  protected resetTwoFactor(member: StaffMember): void {
+    if (
+      !confirm(
+        $localize`Reset two-step sign-in for ${member.fullName}:name:? They will be signed out and must connect their authenticator app again.`
+      )
+    ) {
+      return
+    }
+    this.api.resetTwoFactor(member.id).subscribe({
+      next: () => {
+        this.notify(
+          $localize`Two-step sign-in reset for ${member.fullName}:name:.`
+        )
+        this.load()
+      },
+      error: err => this.notify(problemMessage(err), true),
+    })
+  }
+
   protected copy(value: string): void {
     void navigator.clipboard?.writeText(value)
   }

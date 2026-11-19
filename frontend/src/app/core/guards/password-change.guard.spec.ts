@@ -46,6 +46,21 @@ describe('passwordChangeGuard', () => {
     expect(run('/admin/account')).toBe(true)
   })
 
+  it('sends users without the required two-step sign-in to the account page', () => {
+    user.set({
+      id: '1',
+      email: 'a@b.c',
+      fullName: 'A',
+      role: 'Admin',
+      twoFactorSetupRequired: true,
+    })
+
+    const result = run('/admin/staff') as UrlTree
+
+    expect(TestBed.inject(Router).serializeUrl(result)).toBe('/admin/account')
+    expect(run('/admin/account')).toBe(true)
+  })
+
   it('lets everyone else through', () => {
     user.set({ id: '1', email: 'a@b.c', fullName: 'A', role: 'Dispatcher' })
 

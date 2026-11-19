@@ -22,6 +22,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     public CapturingWhatsAppSender WhatsApp { get; } = new();
     public FakeWebhookReceiver WebhookReceiver { get; } = new();
     public FakeBookingComApi BookingCom { get; } = new();
+    public bool RequireTwoFactor { get; init; }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -39,6 +40,8 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         // Tests deliver webhooks explicitly through IPartnerWebhookDispatcher.
         builder.UseSetting("Webhooks:Enabled", "false");
         builder.UseSetting("Housekeeping:Enabled", "false");
+        // Most tests sign in without an authenticator; TwoFactorTests switch the requirement on.
+        builder.UseSetting("TwoFactor:Required", RequireTwoFactor ? "true" : "false");
         // TestServer requests have no remote address; trust any so X-Forwarded-For tests work.
         builder.UseSetting("ForwardedHeaders:KnownNetworks:0", "0.0.0.0/0");
 
