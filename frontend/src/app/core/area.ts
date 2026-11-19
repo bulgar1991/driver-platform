@@ -23,13 +23,11 @@ export const AREA_IN =
       ? $localize`in Italy, France, Switzerland and Germany`
       : $localize`in the countries we serve`
 
-/** First view of the maps: the area served. */
-export const AREA_BOUNDS: [LatLng, LatLng] = isFour
-  ? [
-      [37.5, -1.5],
-      [53.5, 15],
-    ]
-  : [
-      [36, -10],
-      [60, 28],
-    ]
+/** First view of the maps: centred on Switzerland… */
+export const AREA_CENTER: LatLng = [46.8, 8.2]
+
+/** …with eastern France, southern Germany and northern Italy around it (the busiest region). */
+export const AREA_BOUNDS: [LatLng, LatLng] = [
+  [43.5, 1.5],
+  [50, 15],
+]

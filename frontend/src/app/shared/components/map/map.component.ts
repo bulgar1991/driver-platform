@@ -176,9 +176,21 @@ export class MapComponent {
     // The container may still be resizing when the map is created.
     setTimeout(() => this.map?.invalidateSize())
     this.draw()
-    // Nothing to show yet: the whole service area, as large as the map allows.
+    // Nothing to show yet: centred on Switzerland, with France, Germany and Italy around it.
     if (untracked(this.fitPoints).length === 0) {
-      this.map.fitBounds(L.latLngBounds(this.config.area), { padding: [8, 8] })
+      // The region fits in the map; a small map (phone) still zooms in to at least country level.
+      // (Before the map has a size, Leaflet would answer its maximum zoom.)
+      const min = this.config.minAreaZoom
+      const zoom = this.map.getSize().x
+        ? Math.min(
+            Math.max(
+              this.map.getBoundsZoom(L.latLngBounds(this.config.area)),
+              min
+            ),
+            min + 1
+          )
+        : min
+      this.map.setView(this.config.focus, zoom)
     }
     this.fit(untracked(this.fitPoints))
   }
