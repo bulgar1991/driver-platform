@@ -18,6 +18,7 @@ import { ButtonComponent } from '@/shared/components/button/button.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { LogoComponent } from '@/shared/components/logo/logo.component'
 import { LanguageSwitchComponent } from '../language-switch/language-switch.component'
+import { BRAND } from '@/core/brand'
 
 /** Pages of the public site (each section also appears on the home page). */
 export const SITE_PAGES = [
@@ -44,6 +45,7 @@ export const SITE_PAGES = [
   host: { '[class.site-header--scrolled]': 'scrolled()' },
 })
 export class SiteHeaderComponent {
+  protected readonly brandName = BRAND.name
   protected readonly pages = SITE_PAGES
   protected readonly scrolled = signal(false)
   protected readonly open = signal(false)

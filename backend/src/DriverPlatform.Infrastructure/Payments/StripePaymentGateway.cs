@@ -1,3 +1,4 @@
+using DriverPlatform.Application.Common;
 using DriverPlatform.Application.Abstractions;
 using PaymentMethod = DriverPlatform.Domain.Enums.PaymentMethod;
 using Microsoft.Extensions.Options;
@@ -7,7 +8,7 @@ using Stripe.Checkout;
 namespace DriverPlatform.Infrastructure.Payments;
 
 /// <summary>Stripe Checkout: Stripe hosts the payment page, handles strong customer authentication (3-D Secure) and PayPal.</summary>
-public sealed class StripePaymentGateway(IOptions<StripeOptions> options) : IPaymentGateway
+public sealed class StripePaymentGateway(IOptions<StripeOptions> options, IOptions<CompanyOptions> company) : IPaymentGateway
 {
     private readonly StripeClient _client = new(options.Value.SecretKey);
 
@@ -41,7 +42,7 @@ public sealed class StripePaymentGateway(IOptions<StripeOptions> options) : IPay
             }).ToList(),
             PaymentIntentData = new SessionPaymentIntentDataOptions
             {
-                Description = $"Magnus Drive {request.Reference}",
+                Description = $"{company.Value.Name} {request.Reference}",
                 Metadata = new Dictionary<string, string> { ["reference"] = request.Reference },
             },
             Metadata = new Dictionary<string, string> { ["reference"] = request.Reference },

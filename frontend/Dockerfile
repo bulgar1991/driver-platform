@@ -3,8 +3,10 @@
 # SITE_DOMAIN goes into the prerendered pages (canonical links, link previews) and the sitemap.
 FROM node:24-alpine AS build
 ARG SITE_DOMAIN
+# The client the site is for: a folder in frontend/src/brands/ (name, logo, contacts, icons).
+ARG BRAND=magnus-drive
 RUN test -n "$SITE_DOMAIN" || (echo 'Build argument SITE_DOMAIN is required' && exit 1)
-ENV SITE_URL=https://${SITE_DOMAIN}
+ENV SITE_URL=https://${SITE_DOMAIN} BRAND=${BRAND}
 WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund

@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Options;
+using DriverPlatform.Application.Common;
 using Microsoft.AspNetCore.Authentication;
 
 namespace DriverPlatform.Api.Extensions;
@@ -20,13 +22,14 @@ public static class PartnerApi
         {
             // Only the partner endpoints; everything else stays out of the public description.
             o.ShouldInclude = description => description.GroupName == Document;
-            o.AddDocumentTransformer((document, _, _) =>
+            o.AddDocumentTransformer((document, context, _) =>
             {
-                document.Info.Title = "Magnus Drive partner API";
+                var company = context.ApplicationServices.GetRequiredService<IOptions<CompanyOptions>>().Value;
+                document.Info.Title = $"{company.Name} partner API";
                 document.Info.Version = "v1";
                 document.Info.Description =
                     "Send transfer bookings in Italy, France, Germany and Switzerland. Authenticate with the X-Api-Key header. " +
-                    "Status changes are POSTed to your webhook URL, signed with MagnusDrive-Signature.";
+                    "Status changes are POSTed to your webhook URL, signed with the Webhook-Signature header.";
                 return Task.CompletedTask;
             });
         });

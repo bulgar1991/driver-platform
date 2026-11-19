@@ -24,6 +24,8 @@ public sealed class CompanyOptions
     public string Email { get; set; } = "";
     public string Phone { get; set; } = "";
     public string InvoicePrefix { get; set; } = "MD";
+    /// <summary>Letters before every booking reference ("MD-7K3QX9"): 2 to 4 capital letters.</summary>
+    public string ReferencePrefix { get; set; } = "MD";
     public string CreditNotePrefix { get; set; } = "NC";
 }
 

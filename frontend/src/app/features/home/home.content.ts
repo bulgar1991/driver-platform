@@ -5,6 +5,7 @@ import {
   Stat,
   VehicleCategory,
 } from '@/core/models'
+import { BRAND } from '@/core/brand'
 
 /**
  * Texts of the home page. Edit here; the components only lay them out. Every visible text is
@@ -16,7 +17,7 @@ export const WELCOME = {
   eyebrow: $localize`Welcome`,
   title: $localize`Arrive like you belong here`,
   paragraphs: [
-    $localize`Magnus Drive connects airports, stations and cruise ports with hotels and homes across Italy and over the border to France, Switzerland and Germany, in a private car with a professional driver.`,
+    $localize`${BRAND.name}:brand: connects airports, stations and cruise ports with hotels and homes across Italy and over the border to France, Switzerland and Germany, in a private car with a professional driver.`,
     $localize`We plan around Italy: where cars cannot go, like the historic centre of Venice, we meet you at the nearest point a car can reach and tell you exactly how to get there.`,
   ],
 }
@@ -169,15 +170,10 @@ export const PARTNER_SEGMENTS: Feature[] = [
   },
 ]
 
-/** Logos shown only with each partner's written permission. Put the files in src/assets/partners/. */
-export const PARTNER_LOGOS: PartnerLogo[] = []
+/** Per client, in src/brands/<client>/brand.json: logos only with each partner's written permission. */
+export const PARTNER_LOGOS: PartnerLogo[] = BRAND.partnerLogos
 
-/** Shown in the footer only when filled in. */
-export const CONTACT = {
-  email: '',
-  phone: '',
-  whatsapp: '',
-  address: '',
-}
+/** Per client, in src/brands/<client>/brand.json; shown in the footer only when filled in. */
+export const CONTACT = BRAND.contact
 
-export const SOCIAL: { label: string; url: string }[] = []
+export const SOCIAL = BRAND.social

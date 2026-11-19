@@ -4,6 +4,7 @@ import { ImageComponent } from '@/shared/components/image/image.component'
 import { SectionHeadingComponent } from '@/shared/components/section-heading/section-heading.component'
 import { RevealDirective } from '@/shared/directives/reveal.directive'
 import { CONTACT, PARTNER_LOGOS, PARTNER_SEGMENTS } from '../../home.content'
+import { BRAND } from '@/core/brand'
 
 /**
  * "Our partners and clients": an endless marquee (pure CSS keyframes, the list is doubled so the loop
@@ -27,6 +28,7 @@ export class PartnersComponent {
   protected readonly logos = [...PARTNER_LOGOS, ...PARTNER_LOGOS]
   protected readonly segments = [...PARTNER_SEGMENTS, ...PARTNER_SEGMENTS]
   protected readonly hasLogos = PARTNER_LOGOS.length > 0
+  protected readonly brandName = BRAND.name
   protected readonly contactEmail = CONTACT.email
   protected readonly docsUrl = '/api/partner/openapi/partner.json'
 }

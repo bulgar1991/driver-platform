@@ -1,34 +1,35 @@
 import { Routes } from '@angular/router'
 import { roleGuard } from '@/core/guards/role.guard'
 import { DashboardComponent } from './dashboard/dashboard.component'
+import { BRAND } from '@/core/brand'
 
 export const ADMIN_ROUTES: Routes = [
   {
     path: '',
     component: DashboardComponent,
-    title: $localize`Dashboard · Magnus Drive`,
+    title: $localize`Dashboard · ${BRAND.name}:brand:`,
   },
   {
     path: 'bookings',
-    title: $localize`Bookings · Magnus Drive`,
+    title: $localize`Bookings · ${BRAND.name}:brand:`,
     loadComponent: () =>
       import('./bookings/bookings.component').then(m => m.BookingsComponent),
   },
   {
     path: 'shifts',
-    title: $localize`Shifts · Magnus Drive`,
+    title: $localize`Shifts · ${BRAND.name}:brand:`,
     loadComponent: () =>
       import('./shifts/shifts.component').then(m => m.ShiftsComponent),
   },
   {
     path: 'drivers',
-    title: $localize`Drivers · Magnus Drive`,
+    title: $localize`Drivers · ${BRAND.name}:brand:`,
     loadComponent: () =>
       import('./drivers/drivers.component').then(m => m.DriversComponent),
   },
   {
     path: 'drivers/:id/rides',
-    title: $localize`Ride history · Magnus Drive`,
+    title: $localize`Ride history · ${BRAND.name}:brand:`,
     loadComponent: () =>
       import('./driver-rides/driver-rides.component').then(
         m => m.DriverRidesComponent
@@ -37,7 +38,7 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: 'driver-pay',
     canActivate: [roleGuard('Admin')],
-    title: $localize`Driver pay · Magnus Drive`,
+    title: $localize`Driver pay · ${BRAND.name}:brand:`,
     loadComponent: () =>
       import('./driver-pay/driver-pay.component').then(
         m => m.DriverPayComponent
@@ -45,67 +46,67 @@ export const ADMIN_ROUTES: Routes = [
   },
   {
     path: 'vehicles',
-    title: $localize`Vehicles · Magnus Drive`,
+    title: $localize`Vehicles · ${BRAND.name}:brand:`,
     loadComponent: () =>
       import('./vehicles/vehicles.component').then(m => m.VehiclesComponent),
   },
   {
     path: 'zones',
     canActivate: [roleGuard('Admin')],
-    title: $localize`Zones · Magnus Drive`,
+    title: $localize`Zones · ${BRAND.name}:brand:`,
     loadComponent: () =>
       import('./zones/zones.component').then(m => m.ZonesComponent),
   },
   {
     path: 'pricing',
     canActivate: [roleGuard('Admin')],
-    title: $localize`Pricing · Magnus Drive`,
+    title: $localize`Pricing · ${BRAND.name}:brand:`,
     loadComponent: () =>
       import('./pricing/pricing.component').then(m => m.PricingComponent),
   },
   {
     path: 'payments',
     canActivate: [roleGuard('Admin')],
-    title: $localize`Payments · Magnus Drive`,
+    title: $localize`Payments · ${BRAND.name}:brand:`,
     loadComponent: () =>
       import('./payments/payments.component').then(m => m.PaymentsComponent),
   },
   {
     path: 'reviews',
-    title: $localize`Reviews · Magnus Drive`,
+    title: $localize`Reviews · ${BRAND.name}:brand:`,
     loadComponent: () =>
       import('./reviews/reviews.component').then(m => m.ReviewsComponent),
   },
   {
     path: 'partners',
     canActivate: [roleGuard('Admin')],
-    title: $localize`Partners · Magnus Drive`,
+    title: $localize`Partners · ${BRAND.name}:brand:`,
     loadComponent: () =>
       import('./partners/partners.component').then(m => m.PartnersComponent),
   },
   {
     path: 'account',
-    title: $localize`My account · Magnus Drive`,
+    title: $localize`My account · ${BRAND.name}:brand:`,
     loadComponent: () =>
       import('./account/account.component').then(m => m.AccountComponent),
   },
   {
     path: 'staff',
     canActivate: [roleGuard('Admin')],
-    title: $localize`Staff · Magnus Drive`,
+    title: $localize`Staff · ${BRAND.name}:brand:`,
     loadComponent: () =>
       import('./staff/staff.component').then(m => m.StaffComponent),
   },
   {
     path: 'audit',
     canActivate: [roleGuard('Admin')],
-    title: $localize`Audit log · Magnus Drive`,
+    title: $localize`Audit log · ${BRAND.name}:brand:`,
     loadComponent: () =>
       import('./audit/audit.component').then(m => m.AuditComponent),
   },
   {
     path: 'applications',
-    title: $localize`Driver applications · Magnus Drive`,
+    title: $localize`Driver applications · ${BRAND.name}:brand:`,
     loadComponent: () =>
       import('./applications/applications.component').then(
         m => m.ApplicationsComponent

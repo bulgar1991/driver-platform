@@ -14,7 +14,7 @@ public sealed class StripeWebhookTests
     {
         SecretKey = "sk_test_unused",
         WebhookSecret = Secret,
-    }));
+    }), Options.Create(new DriverPlatform.Application.Common.CompanyOptions()));
 
     private static string Payload(string type) => $$"""
         {

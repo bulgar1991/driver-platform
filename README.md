@@ -221,8 +221,8 @@ For agencies, hotels, cruise companies and Booking (business plan §6). Admin �
 - **Monthly invoicing**: partner bookings skip online payment and arrive as `New` for dispatch.
 - **Passenger messages** on or off (some partners talk to their own passengers).
 - **Webhook URL** (https): status changes are POSTed with
-  `MagnusDrive-Signature: t={unix},v1={hex HMAC-SHA256(secret, "{t}.{body}")}`, plus
-  `MagnusDrive-Event` (`booking.created` / `booking.updated`). The body is thin (reference,
+  `Webhook-Signature: t={unix},v1={hex HMAC-SHA256(secret, "{t}.{body}")}`, plus
+  `Webhook-Event` (`booking.created` / `booking.updated`). The body is thin (reference,
   externalReference, status); fetch the booking for details. Rows are written in the same
   transaction as the change (outbox) and retried after 1, 2, 4 … 128 minutes.
 
@@ -270,6 +270,31 @@ dotnet user-secrets set "BookingCom:Enabled" "true"
 Production: `BOOKINGCOM_ENABLED=true`, `BOOKINGCOM_CLIENT_ID`, `BOOKINGCOM_CLIENT_SECRET` in
 `deploy/.env`. The sandbox token URL that works is `https://auth-dispatch-api-sandbox.qa.someonedrive.me/oauth2/token`
 (the Cognito URL in Booking.com's email answers 403).
+
+### Clients and brands (one server per client)
+
+The same code runs a separate site for each client, each on its own server with its own database.
+What differs is chosen per server in `deploy/.env`:
+
+| Setting | Effect |
+| --- | --- |
+| `BRAND` | A folder in `frontend/src/brands/`: `brand.json` (name, short name, logo text and its gold accent word, contacts, social links, partner logos) and the app icons. Only that brand is built into the site. |
+| `SITE_DOMAIN` | The client's domain (HTTPS certificate, canonical links, sitemap). |
+| `COMPANY_*` | Company on invoices; `COMPANY_NAME` is also the email sender name and is used on Stripe payments and the partner API page. |
+| `BOOKING_PREFIX`, `INVOICE_PREFIX` | Letters of booking references (`HV-7K3QX9`) and invoice numbers (`HV-2026-000001`), 2–4 letters. |
+
+Clients today: `magnus-drive` (default, used in development) and `helvetic-vip-transfer`
+(helvetic-vip-transfer.com).
+
+**A new client:** copy a folder in `frontend/src/brands/` to a new name, edit `brand.json`, draw
+`icon.svg` (512×512) and run `npm run brand-icons <folder>` for the PNG icons and favicon; commit.
+On the client's server set `BRAND=<folder>` and the other values above, then
+`docker compose --env-file .env up -d --build`. `npm run build:site` (and so the Docker build) runs
+`scripts/brand.mjs`, which copies the brand to `src/brands/active.json` and into `index.html`, the
+manifest and the icons; after trying a brand locally, `git checkout` those files.
+
+Partner webhooks are signed with the brand-neutral headers `Webhook-Signature`, `Webhook-Event` and
+`Webhook-Delivery`.
 
 ### Home page
 

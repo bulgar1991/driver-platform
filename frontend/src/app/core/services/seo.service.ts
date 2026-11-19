@@ -12,9 +12,10 @@ import { IMAGES } from '../images.generated'
 import { PageSeo } from '../models'
 import { DEFAULT_LOCALE, SITE_LOCALES, siteLocale } from '../i18n/locales'
 import { SITE_URL_TOKEN } from '../tokens/site-url.token'
-import { CONTACT } from '@/features/home/home.content'
+import { BRAND } from '@/core/brand'
 
-const SITE_NAME = 'Magnus Drive'
+const SITE_NAME = BRAND.name
+const CONTACT = BRAND.contact
 const SCHEMA_ID = 'structured-data'
 
 /**

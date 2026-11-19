@@ -48,7 +48,7 @@ public static class DependencyInjection
         services.AddHttpClient(PartnerWebhookDispatcher.HttpClientName, http =>
         {
             http.Timeout = TimeSpan.FromSeconds(10);
-            http.DefaultRequestHeaders.UserAgent.ParseAdd("MagnusDrive-Webhooks/1.0");
+            http.DefaultRequestHeaders.UserAgent.ParseAdd("DriverPlatform-Webhooks/1.0");
         });
         if (configuration.GetValue("Webhooks:Enabled", true))
         {
@@ -83,6 +83,8 @@ public static class DependencyInjection
             .Validate(o => o.SigningKey.Length >= 32, "Links:SigningKey must be at least 32 characters.")
             .ValidateOnStart();
         services.Configure<CompanyOptions>(configuration.GetSection(CompanyOptions.SectionName));
+        // Booking references are made in static helpers, so the brand's prefix is set once here.
+        Application.Bookings.BookingReference.UsePrefix(configuration[$"{CompanyOptions.SectionName}:ReferencePrefix"]);
         services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
 
         if (configuration[$"{PaymentsOptions.SectionName}:Provider"] == "Stripe")
@@ -138,7 +140,7 @@ public static class DependencyInjection
         services.AddHttpClient<IBookingComApi, BookingComApiClient>(BookingComApiClient.HttpClientName, (sp, http) =>
         {
             http.Timeout = TimeSpan.FromSeconds(Math.Max(5, sp.GetRequiredService<IOptions<BookingComOptions>>().Value.TimeoutSeconds));
-            http.DefaultRequestHeaders.UserAgent.ParseAdd("MagnusDrive/1.0");
+            http.DefaultRequestHeaders.UserAgent.ParseAdd("DriverPlatform/1.0");
         });
         services.AddScoped<IBookingComSyncService, BookingComSyncService>();
         if (section.GetValue<bool>(nameof(BookingComOptions.Enabled)))

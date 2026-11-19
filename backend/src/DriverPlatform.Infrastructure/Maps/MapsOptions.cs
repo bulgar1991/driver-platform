@@ -9,7 +9,7 @@ public sealed class MapsOptions
     /// <summary>Nominatim server. The public one allows at most one request per second.</summary>
     public string NominatimBaseUrl { get; set; } = "https://nominatim.openstreetmap.org";
     /// <summary>Nominatim's usage policy requires an identifying User-Agent with a contact.</summary>
-    public string UserAgent { get; set; } = "MagnusDrive/1.0";
+    public string UserAgent { get; set; } = "DriverPlatform/1.0";
     public int TimeoutSeconds { get; set; } = 8;
     /// <summary>Countries where addresses are searched and accepted (ISO codes, lower case).</summary>
     public string[] Countries { get; set; } = ["it", "fr", "de", "ch"];

@@ -16,8 +16,8 @@ public sealed class FakeWebhookReceiver : HttpMessageHandler
         Requests.Enqueue(new Received(
             request.RequestUri!,
             await request.Content!.ReadAsStringAsync(cancellationToken),
-            request.Headers.GetValues("MagnusDrive-Signature").Single(),
-            request.Headers.GetValues("MagnusDrive-Event").Single()));
+            request.Headers.GetValues("Webhook-Signature").Single(),
+            request.Headers.GetValues("Webhook-Event").Single()));
         return new HttpResponseMessage(Answer);
     }
 }

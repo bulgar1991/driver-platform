@@ -15,7 +15,7 @@ public interface IPartnerWebhookDispatcher
 }
 
 /// <summary>
-/// POSTs the JSON payload with "MagnusDrive-Signature: t={unix},v1={hex HMAC-SHA256(secret, "{t}.{body}")}".
+/// POSTs the JSON payload with "Webhook-Signature: t={unix},v1={hex HMAC-SHA256(secret, "{t}.{body}")}".
 /// Retries after 1, 2, 4 … 128 minutes, then gives up (the panel shows the error).
 /// </summary>
 public sealed class PartnerWebhookDispatcher(
@@ -67,9 +67,9 @@ public sealed class PartnerWebhookDispatcher(
                 {
                     Content = new StringContent(webhook.Payload, Encoding.UTF8, "application/json"),
                 };
-                request.Headers.Add("MagnusDrive-Event", webhook.Event);
-                request.Headers.Add("MagnusDrive-Delivery", webhook.Id.ToString(CultureInfo.InvariantCulture));
-                request.Headers.Add("MagnusDrive-Signature", $"t={timestamp},v1={signature}");
+                request.Headers.Add("Webhook-Event", webhook.Event);
+                request.Headers.Add("Webhook-Delivery", webhook.Id.ToString(CultureInfo.InvariantCulture));
+                request.Headers.Add("Webhook-Signature", $"t={timestamp},v1={signature}");
                 using var response = await http.SendAsync(request, cancellationToken);
 
                 if (response.IsSuccessStatusCode)

@@ -9,6 +9,7 @@ services:
       dockerfile: frontend/Dockerfile
       args:
         SITE_DOMAIN: ${SITE_DOMAIN}
+        BRAND: ${BRAND:-magnus-drive}
     restart: unless-stopped
     ports:
       - "80:80"
@@ -57,8 +58,11 @@ services:
       BookingCom__AutoAccept: ${BOOKINGCOM_AUTO_ACCEPT:-true}
       Maps__OsrmBaseUrl: ${OSRM_BASE_URL}
       Maps__NominatimBaseUrl: ${NOMINATIM_BASE_URL}
-      Maps__UserAgent: MagnusDrive/1.0 (${ACME_EMAIL})
+      Maps__UserAgent: DriverPlatform/1.0 (${ACME_EMAIL})
       Company__Name: ${COMPANY_NAME}
+      Company__ReferencePrefix: ${BOOKING_PREFIX:-MD}
+      Company__InvoicePrefix: ${INVOICE_PREFIX:-MD}
+      Email__FromName: ${COMPANY_NAME}
       Company__Address: ${COMPANY_ADDRESS}
       Company__VatNumber: ${COMPANY_VAT_NUMBER}
       Company__TaxCode: ${COMPANY_TAX_CODE}

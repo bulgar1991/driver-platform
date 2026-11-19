@@ -5,6 +5,7 @@ import { guestGuard } from './core/guards/guest.guard'
 import { localePrefixGuard } from './core/guards/locale-prefix.guard'
 import { passwordChangeGuard } from './core/guards/password-change.guard'
 import { PublicLayoutComponent } from './layout/public-layout/public-layout.component'
+import { BRAND } from '@/core/brand'
 
 /** Route data for SeoService. Routes without it are marked noindex (panel, personal links…). */
 const seo = (
@@ -21,7 +22,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        title: $localize`Magnus Drive · Private Driver Services`,
+        title: $localize`${BRAND.name}:brand: · Private Driver Services`,
         loadComponent: () =>
           import('./features/home/home.component').then(m => m.HomeComponent),
         data: seo(
@@ -31,7 +32,7 @@ export const routes: Routes = [
       },
       {
         path: 'book',
-        title: $localize`Book a ride · Magnus Drive`,
+        title: $localize`Book a ride · ${BRAND.name}:brand:`,
         loadComponent: () =>
           import('./features/booking/booking.component').then(
             m => m.BookingComponent
@@ -42,7 +43,7 @@ export const routes: Routes = [
       },
       {
         path: 'services',
-        title: $localize`Our services · Magnus Drive`,
+        title: $localize`Our services · ${BRAND.name}:brand:`,
         loadComponent: () =>
           import('./features/home/components/services-section/services-section.component').then(
             m => m.ServicesSectionComponent
@@ -56,7 +57,7 @@ export const routes: Routes = [
       },
       {
         path: 'tariffs',
-        title: $localize`Tariffs · Magnus Drive`,
+        title: $localize`Tariffs · ${BRAND.name}:brand:`,
         loadComponent: () =>
           import('./features/home/components/tariffs/tariffs.component').then(
             m => m.TariffsComponent
@@ -70,7 +71,7 @@ export const routes: Routes = [
       },
       {
         path: 'drivers',
-        title: $localize`For drivers · Magnus Drive`,
+        title: $localize`For drivers · ${BRAND.name}:brand:`,
         loadComponent: () =>
           import('./features/home/components/drivers-join/drivers-join.component').then(
             m => m.DriversJoinComponent
@@ -78,13 +79,13 @@ export const routes: Routes = [
         data: {
           page: true,
           ...seo(
-            $localize`Licensed NCC driver in Italy? Drive with Magnus Drive: rides sent to your phone, commission agreed upfront, the area you choose. Apply in two minutes.`
+            $localize`Licensed NCC driver in Italy? Drive with ${BRAND.name}:brand:: rides sent to your phone, commission agreed upfront, the area you choose. Apply in two minutes.`
           ),
         },
       },
       {
         path: 'reviews',
-        title: $localize`Reviews · Magnus Drive`,
+        title: $localize`Reviews · ${BRAND.name}:brand:`,
         loadComponent: () =>
           import('./features/home/components/testimonials/testimonials.component').then(
             m => m.TestimonialsComponent
@@ -92,13 +93,13 @@ export const routes: Routes = [
         data: {
           page: true,
           ...seo(
-            $localize`What clients say about their Magnus Drive transfers: reviews from real rides, published with their consent.`
+            $localize`What clients say about their ${BRAND.name}:brand: transfers: reviews from real rides, published with their consent.`
           ),
         },
       },
       {
         path: 'partners',
-        title: $localize`Partners · Magnus Drive`,
+        title: $localize`Partners · ${BRAND.name}:brand:`,
         loadComponent: () =>
           import('./features/home/components/partners/partners.component').then(
             m => m.PartnersComponent
@@ -106,14 +107,14 @@ export const routes: Routes = [
         data: {
           page: true,
           ...seo(
-            $localize`Hotels, travel agencies and businesses work with Magnus Drive: partner rates, a booking API and monthly invoicing for transfers in Italy and Europe.`
+            $localize`Hotels, travel agencies and businesses work with ${BRAND.name}:brand:: partner rates, a booking API and monthly invoicing for transfers in Italy and Europe.`
           ),
         },
       },
       {
         // Signed link from the confirmation: pay, check the status, download the invoice.
         path: 'my-booking/:reference/:token',
-        title: $localize`Your booking · Magnus Drive`,
+        title: $localize`Your booking · ${BRAND.name}:brand:`,
         loadComponent: () =>
           import('./features/my-booking/my-booking.component').then(
             m => m.MyBookingComponent
@@ -121,7 +122,7 @@ export const routes: Routes = [
       },
       {
         path: 'privacy',
-        title: $localize`Privacy policy · Magnus Drive`,
+        title: $localize`Privacy policy · ${BRAND.name}:brand:`,
         loadComponent: () =>
           import('./features/legal/legal.component').then(
             m => m.LegalComponent
@@ -129,13 +130,13 @@ export const routes: Routes = [
         data: {
           page: 'privacy',
           ...seo(
-            $localize`How Magnus Drive collects, uses and protects your personal data when you book a transfer, under the GDPR.`
+            $localize`How ${BRAND.name}:brand: collects, uses and protects your personal data when you book a transfer, under the GDPR.`
           ),
         },
       },
       {
         path: 'terms',
-        title: $localize`Terms of service · Magnus Drive`,
+        title: $localize`Terms of service · ${BRAND.name}:brand:`,
         loadComponent: () =>
           import('./features/legal/legal.component').then(
             m => m.LegalComponent
@@ -143,14 +144,14 @@ export const routes: Routes = [
         data: {
           page: 'terms',
           ...seo(
-            $localize`Terms for booking private transfers with Magnus Drive: how bookings, fixed prices and payment work, and what each side is responsible for.`
+            $localize`Terms for booking private transfers with ${BRAND.name}:brand:: how bookings, fixed prices and payment work, and what each side is responsible for.`
           ),
         },
       },
       {
         // One-time review link sent after the ride.
         path: 'review/:token',
-        title: $localize`Rate your ride · Magnus Drive`,
+        title: $localize`Rate your ride · ${BRAND.name}:brand:`,
         loadComponent: () =>
           import('./features/review/review.component').then(
             m => m.ReviewComponent
@@ -159,7 +160,7 @@ export const routes: Routes = [
       {
         // Development stand-in for Stripe's payment page.
         path: 'dev/payment/:sessionId',
-        title: $localize`Test payment · Magnus Drive`,
+        title: $localize`Test payment · ${BRAND.name}:brand:`,
         loadComponent: () =>
           import('./features/dev-payment/dev-payment.component').then(
             m => m.DevPaymentComponent
@@ -169,7 +170,7 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    title: $localize`Sign in · Magnus Drive`,
+    title: $localize`Sign in · ${BRAND.name}:brand:`,
     canActivate: [guestGuard],
     loadComponent: () =>
       import('./features/auth/login/login.component').then(
@@ -190,7 +191,7 @@ export const routes: Routes = [
   {
     // Personal driver link with all assigned shifts (step 5).
     path: 'driver/:token',
-    title: $localize`My shifts · Magnus Drive`,
+    title: $localize`My shifts · ${BRAND.name}:brand:`,
     loadComponent: () =>
       import('./features/driver-portal/driver-portal.component').then(
         m => m.DriverPortalComponent
@@ -208,7 +209,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        title: $localize`Not found · Magnus Drive`,
+        title: $localize`Not found · ${BRAND.name}:brand:`,
         loadComponent: () =>
           import('./features/not-found/not-found.component').then(
             m => m.NotFoundComponent

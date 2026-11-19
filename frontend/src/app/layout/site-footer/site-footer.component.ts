@@ -5,6 +5,7 @@ import { IconComponent } from '@/shared/components/icon/icon.component'
 import { LogoComponent } from '@/shared/components/logo/logo.component'
 import { LanguageSwitchComponent } from '../language-switch/language-switch.component'
 import { SITE_PAGES } from '../site-header/site-header.component'
+import { BRAND } from '@/core/brand'
 
 @Component({
   selector: 'app-site-footer',
@@ -17,6 +18,7 @@ export class SiteFooterComponent {
   protected readonly year = new Date().getFullYear()
   protected readonly pages = SITE_PAGES
   protected readonly services = SERVICES
+  protected readonly brandName = BRAND.name
   protected readonly contact = CONTACT
   protected readonly social = SOCIAL
   protected readonly whatsAppUrl = CONTACT.whatsapp
