@@ -71,7 +71,18 @@ Then:
 
 - Real restore: stop the API, restore into `driver_platform` with `--force`, start the API.
 
-## 6. Updates
+## 6. Disk cleanup
+
+Every rebuild leaves Docker build layers behind (about 1–2 GB). `deploy/docker-cleanup.sh` removes
+them weekly, keeping 2 GB of recent cache so deploys stay fast; it never touches volumes (database,
+certificates), backups or running images. Install once on each server:
+
+```bash
+cp deploy/docker-cleanup.sh /usr/local/sbin/ && chmod 755 /usr/local/sbin/docker-cleanup.sh
+echo '30 4 * * 0 root /usr/local/sbin/docker-cleanup.sh >> /var/log/docker-cleanup.log 2>&1' > /etc/cron.d/docker-cleanup
+```
+
+## 7. Updates
 
 ```bash
 git pull && docker compose --env-file .env up -d --build
