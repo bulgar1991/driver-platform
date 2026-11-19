@@ -110,7 +110,8 @@ At the domain registrar (Namecheap: *Domain List → Manage → Advanced DNS*):
 |---|---|---|
 | A | `@` | the server's public IP |
 
-The site answers on the bare domain (`SITE_DOMAIN`), not on `www`. Wait until
+Add a second A record with host `www` and the same IP: `www.` redirects to the bare domain
+(`SITE_DOMAIN`), which is where the site answers. Wait until
 `dig +short yourdomain.it` shows the IP before step 8, or Caddy can't get the certificate yet.
 
 ## 6. Prepare the server
