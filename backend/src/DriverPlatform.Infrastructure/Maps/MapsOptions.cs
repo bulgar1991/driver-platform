@@ -11,6 +11,9 @@ public sealed class MapsOptions
     /// <summary>Nominatim's usage policy requires an identifying User-Agent with a contact.</summary>
     public string UserAgent { get; set; } = "DriverPlatform/1.0";
     public int TimeoutSeconds { get; set; } = 8;
-    /// <summary>Countries where addresses are searched and accepted (ISO codes, lower case).</summary>
-    public string[] Countries { get; set; } = ["it", "fr", "de", "ch"];
+    /// <summary>
+    /// Where trips are served: "europe" (default) or ISO country codes, e.g. "it,fr,ch,de". Addresses are
+    /// searched and accepted only there (<see cref="Application.Geo.GeoMath.Countries"/>).
+    /// </summary>
+    public string ServiceArea { get; set; } = "europe";
 }

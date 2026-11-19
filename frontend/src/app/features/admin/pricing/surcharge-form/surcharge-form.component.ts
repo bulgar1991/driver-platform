@@ -13,6 +13,10 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms'
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
+import { MatOption, MatSelect } from '@angular/material/select'
+import { MatCheckbox } from '@angular/material/checkbox'
 import {
   DayOfWeek,
   SurchargeKind,
@@ -20,7 +24,6 @@ import {
   SurchargeRuleRequest,
 } from '@/core/models'
 import { ButtonComponent } from '@/shared/components/button/button.component'
-import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
 export const DAYS: { value: DayOfWeek; label: string }[] = [
@@ -54,7 +57,17 @@ function kindFieldsValidator(group: AbstractControl): ValidationErrors | null {
 
 @Component({
   selector: 'app-surcharge-form',
-  imports: [ReactiveFormsModule, ButtonComponent, FormFieldComponent],
+  imports: [
+    MatFormField,
+    MatLabel,
+    MatError,
+    MatInput,
+    MatSelect,
+    MatOption,
+    MatCheckbox,
+    ReactiveFormsModule,
+    ButtonComponent,
+  ],
   templateUrl: './surcharge-form.component.html',
   styleUrl: './surcharge-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

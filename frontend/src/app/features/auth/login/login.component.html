@@ -26,21 +26,19 @@
         >
       </p>
 
-      <app-form-field
-        i18n-label
-        label="Code"
-        for="code"
-        [error]="code.touched && code.invalid ? tx.enterCode : null">
+      <mat-form-field>
+        <mat-label i18n>Code</mat-label>
         <input
+          matInput
           id="code"
-          class="input login__code"
-          [class.input--invalid]="code.touched && code.invalid"
+          class="login__code"
           type="text"
           inputmode="numeric"
           autocomplete="one-time-code"
           maxlength="12"
           formControlName="code" />
-      </app-form-field>
+        <mat-error>{{ tx.enterCode }}</mat-error>
+      </mat-form-field>
 
       <button appButton type="submit" [block]="true" [disabled]="submitting()">
         @if (submitting()) {
@@ -92,33 +90,31 @@
         <p class="alert alert--error" role="alert">{{ message }}</p>
       }
 
-      <app-form-field
-        i18n-label
-        label="Email"
-        for="email"
-        [error]="fieldError('email')">
+      <mat-form-field>
+        <mat-label i18n>Email</mat-label>
         <input
+          matInput
           id="email"
-          class="input"
-          [class.input--invalid]="fieldError('email')"
           type="email"
           autocomplete="username"
           formControlName="email" />
-      </app-form-field>
+        @if (fieldError('email'); as err) {
+          <mat-error>{{ err }}</mat-error>
+        }
+      </mat-form-field>
 
-      <app-form-field
-        i18n-label
-        label="Password"
-        for="password"
-        [error]="fieldError('password')">
+      <mat-form-field>
+        <mat-label i18n>Password</mat-label>
         <input
+          matInput
           id="password"
-          class="input"
-          [class.input--invalid]="fieldError('password')"
           type="password"
           autocomplete="current-password"
           formControlName="password" />
-      </app-form-field>
+        @if (fieldError('password'); as err) {
+          <mat-error>{{ err }}</mat-error>
+        }
+      </mat-form-field>
 
       <button appButton type="submit" [block]="true" [disabled]="submitting()">
         @if (submitting()) {

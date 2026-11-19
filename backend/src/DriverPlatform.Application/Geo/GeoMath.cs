@@ -10,21 +10,73 @@ public static class GeoMath
     private const double EarthRadiusMeters = 6_371_000;
 
     /// <summary>
-    /// Rough boxes around the countries served: Italy (with San Marino and Vatican City), France
-    /// (with Corsica), Switzerland and Germany. Bookings outside them are refused. The boxes also
-    /// touch neighbours (Austria, Belgium…); the precise check is the address search, which only
-    /// returns places in these countries (Maps:Countries).
+    /// Rough boxes around the countries served (Maps:ServiceArea, from SERVICE_AREA in deploy/.env):
+    /// all of Europe by default, or a list such as "it,fr,ch,de". Bookings outside them are refused.
+    /// The boxes also touch neighbours; the precise check is the address search, which only returns
+    /// places in the countries served (<see cref="Countries"/>).
     /// </summary>
-    public static bool IsInServiceArea(Coordinate c) => ServiceArea.Any(box =>
-        c.Latitude >= box.South && c.Latitude <= box.North && c.Longitude >= box.West && c.Longitude <= box.East);
+    public static bool IsInServiceArea(Coordinate c) => IsIn(Boxes, c);
 
-    private static readonly (double South, double North, double West, double East)[] ServiceArea =
+    public static bool IsIn(IEnumerable<(double South, double North, double West, double East)> boxes, Coordinate c) =>
+        boxes.Any(box => c.Latitude >= box.South && c.Latitude <= box.North && c.Longitude >= box.West && c.Longitude <= box.East);
+
+    /// <summary>ISO codes (lower case) of the countries served, for the address search.</summary>
+    public static IReadOnlyList<string> Countries { get; private set; } = EuropeCountries;
+
+    /// <summary>"europe" (default) or a comma-separated list of ISO country codes.</summary>
+    public static void UseServiceArea(string? area)
+    {
+        var (countries, boxes) = ParseServiceArea(area);
+        Countries = countries;
+        Boxes = boxes;
+    }
+
+    public static (IReadOnlyList<string> Countries, (double South, double North, double West, double East)[] Boxes)
+        ParseServiceArea(string? area)
+    {
+        var value = string.IsNullOrWhiteSpace(area) ? "europe" : area.Trim().ToLowerInvariant();
+        if (value == "europe")
+        {
+            return (EuropeCountries, EuropeBoxes);
+        }
+        var codes = value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Distinct().ToList();
+        if (codes.Count == 0 || codes.Any(c => !EuropeCountries.Contains(c)))
+        {
+            throw new InvalidOperationException(
+                $"Maps:ServiceArea must be \"europe\" or European ISO country codes, e.g. \"it,fr,ch,de\" (got \"{area}\").");
+        }
+        // Countries with their own box use it; any other European country falls back to Europe's boxes.
+        var boxes = codes.All(CountryBoxes.ContainsKey) ? codes.Select(c => CountryBoxes[c]).ToArray() : EuropeBoxes;
+        return (codes, boxes);
+    }
+
+    /// <summary>EU, EEA, the UK, Switzerland, the small states and the Western Balkans.</summary>
+    public static readonly IReadOnlyList<string> EuropeCountries =
     [
-        (35.2, 47.2, 6.5, 18.6),   // Italy
-        (41.3, 51.2, -5.3, 9.7),   // France and Corsica
-        (45.8, 47.9, 5.9, 10.6),   // Switzerland
-        (47.2, 55.1, 5.8, 15.1),   // Germany
+        "ad", "al", "at", "ba", "be", "bg", "ch", "cy", "cz", "de", "dk", "ee", "es", "fi", "fr", "gb", "gr",
+        "hr", "hu", "ie", "is", "it", "li", "lt", "lu", "lv", "mc", "md", "me", "mk", "mt", "nl", "no", "pl",
+        "pt", "ro", "rs", "se", "si", "sk", "sm", "va",
     ];
+
+    private static readonly (double South, double North, double West, double East)[] EuropeBoxes =
+    [
+        (34.7, 71.3, -10.7, 31.7),   // mainland Europe, Ireland, Britain, Scandinavia, Crete, Malta
+        (34.5, 35.8, 32.2, 34.7),    // Cyprus
+        (63.2, 66.7, -24.6, -13.4),  // Iceland
+        (27.6, 29.5, -18.2, -13.3),  // Canary Islands
+        (32.3, 33.2, -17.4, -16.2),  // Madeira
+        (36.9, 39.8, -31.4, -24.7),  // Azores
+    ];
+
+    private static readonly Dictionary<string, (double South, double North, double West, double East)> CountryBoxes = new()
+    {
+        ["it"] = (35.2, 47.2, 6.5, 18.6),   // with San Marino and Vatican City
+        ["fr"] = (41.3, 51.2, -5.3, 9.7),   // with Corsica
+        ["ch"] = (45.8, 47.9, 5.9, 10.6),
+        ["de"] = (47.2, 55.1, 5.8, 15.1),
+    };
+
+    private static (double South, double North, double West, double East)[] Boxes = EuropeBoxes;
 
     public static bool IsValid(Coordinate c) =>
         c.Latitude is >= -90 and <= 90 && c.Longitude is >= -180 and <= 180;

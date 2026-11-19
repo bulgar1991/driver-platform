@@ -14,6 +14,8 @@ import {
   withComponentInputBinding,
   withInMemoryScrolling,
 } from '@angular/router'
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field'
+import { MAT_SELECT_CONFIG } from '@angular/material/select'
 import { providePrimeNG } from 'primeng/config'
 import { firstValueFrom } from 'rxjs'
 import { routes } from './app.routes'
@@ -54,6 +56,26 @@ export const appConfig: ApplicationConfig = {
         options: { darkModeSelector: '.app-dark' },
       },
     }),
+    // Angular Material: outlined fields everywhere, room for the error under each one (so
+    // showing it never moves the fields below).
+    {
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+      useValue: {
+        appearance: 'outline',
+        floatLabel: 'always',
+        subscriptSizing: 'fixed',
+        hideRequiredMarker: true,
+      },
+    },
+    {
+      provide: MAT_SELECT_CONFIG,
+      useValue: {
+        hideSingleSelectionIndicator: true,
+        // The list opens over the page (above the header, the map), and upwards when there is
+        // no room below.
+        overlayPanelClass: 'app-select-panel',
+      },
+    },
     // The browser picks up the prerendered page instead of drawing it again. No event replay:
     // its inline scripts would be blocked by the Content-Security-Policy (deploy/Caddyfile).
     provideClientHydration(),

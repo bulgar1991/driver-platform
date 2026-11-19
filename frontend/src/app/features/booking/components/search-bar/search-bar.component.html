@@ -105,8 +105,13 @@
       </span>
     </div>
 
-    <div #people class="search-bar__cell search-bar__cell--people">
+    <div
+      class="search-bar__cell search-bar__cell--people"
+      [class.search-bar__cell--invalid]="travellersMissing">
       <button
+        #peopleButton
+        cdkOverlayOrigin
+        #peopleOrigin="cdkOverlayOrigin"
         type="button"
         class="search-bar__people"
         aria-controls="search-people"
@@ -153,7 +158,16 @@
         </span>
         <app-icon class="search-bar__chevron" name="plus" />
       </button>
-      @if (peopleOpen()) {
+      <ng-template
+        cdkConnectedOverlay
+        [cdkConnectedOverlayOrigin]="peopleOrigin"
+        [cdkConnectedOverlayOpen]="peopleOpen()"
+        [cdkConnectedOverlayPositions]="peoplePositions"
+        [cdkConnectedOverlayPush]="true"
+        [cdkConnectedOverlayViewportMargin]="16"
+        [cdkConnectedOverlayFlexibleDimensions]="true"
+        (overlayOutsideClick)="closeOutside($event)"
+        (detach)="peopleOpen.set(false)">
         <div
           id="search-people"
           class="search-bar__popover"
@@ -221,7 +235,7 @@
             >Done</button
           >
         </div>
-      }
+      </ng-template>
     </div>
 
     <button type="submit" class="search-bar__submit">

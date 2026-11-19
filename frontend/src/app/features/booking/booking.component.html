@@ -57,25 +57,6 @@
           </div>
         }
 
-        <!-- Choose which point a click on the map sets. -->
-        <div
-          class="booking__map-tools"
-          role="group"
-          i18n-aria-label
-          aria-label="Set a point on the map">
-          @for (t of mapTargets; track t.id) {
-            <button
-              type="button"
-              class="booking__map-target"
-              [class.booking__map-target--active]="mapTarget() === t.id"
-              [class.booking__map-target--dropoff]="t.id === 'dropoff'"
-              [attr.aria-pressed]="mapTarget() === t.id"
-              (click)="mapTarget.set(t.id)">
-              <span class="booking__map-dot" aria-hidden="true"></span>
-              {{ t.label }}
-            </button>
-          }
-        </div>
         <p class="booking__map-hint" aria-live="polite">
           @if (locating()) {
             <app-car-loader size="sm" aria-hidden="true" />

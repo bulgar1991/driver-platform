@@ -2,28 +2,67 @@
   @apply block;
 }
 
-// IT · EN · DE · FR: small caps in the bar, the active one in gold.
-.language-switch {
-  @apply flex items-center gap-0.5 rounded-full border border-ink-500 p-0.5;
+// The button: globe, current code, caret; the menu floats above the page (CDK overlay), under the
+// button or above it when there is no room (in the footer).
+.language-switch__toggle {
+  @apply flex items-center gap-1.5 rounded-full border border-ink-500 px-3 py-1.5 text-[0.6875rem] font-semibold tracking-wider text-ivory-200 transition-colors duration-300 hover:border-gold-700 hover:text-ivory focus:outline-none focus-visible:border-gold;
 
-  &__link {
-    @apply rounded-full px-2 py-1 text-[0.6875rem] font-semibold tracking-wider text-ivory-300 no-underline transition-colors duration-300 hover:text-ivory;
-
-    &--active {
-      @apply bg-gold/15 text-gold hover:text-gold;
-    }
+  &[aria-expanded='true'] {
+    @apply border-gold-700 text-gold;
   }
 }
 
-// Mobile menu: full names in a row that wraps.
-:host(.language-switch--menu) .language-switch {
-  @apply flex-wrap justify-center gap-2 rounded-none border-0 p-0;
+.language-switch__globe {
+  @apply h-3.5 w-3.5 text-gold;
+}
 
-  .language-switch__link {
-    @apply border border-ink-500 px-3 py-1.5 text-xs font-normal normal-case tracking-normal;
+.language-switch__caret {
+  @apply ml-0.5 h-1.5 w-1.5 -translate-y-px rotate-45 border-b border-r border-current transition-transform duration-300;
+}
+
+.language-switch__toggle[aria-expanded='true'] .language-switch__caret {
+  @apply translate-y-px -rotate-[135deg];
+}
+
+.language-switch__menu {
+  @apply flex min-w-[11rem] flex-col rounded-lg border border-ink-500 bg-ink-800 p-1.5;
+  box-shadow: 0 18px 48px rgb(0 0 0 / 0.55);
+  animation: fade-up 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.language-switch__option {
+  @apply flex items-center gap-3 rounded-md px-3 py-2 text-sm text-ivory-200 no-underline transition-colors duration-200 hover:bg-ink-700 hover:text-ivory focus:bg-ink-700 focus:text-ivory focus:outline-none;
+
+  &--active {
+    @apply text-gold hover:text-gold focus:text-gold;
   }
+}
 
-  .language-switch__link--active {
-    @apply border-gold;
+.language-switch__code {
+  @apply w-6 text-[0.6875rem] font-semibold tracking-wider text-ivory-400;
+}
+
+.language-switch__option--active .language-switch__code {
+  @apply text-gold;
+}
+
+.language-switch__name {
+  @apply flex-1;
+}
+
+.language-switch__check {
+  @apply h-4 w-4;
+}
+
+// Mobile menu: full names in a row that wraps.
+.language-switch {
+  @apply flex flex-wrap justify-center gap-2;
+}
+
+.language-switch__link {
+  @apply rounded-full border border-ink-500 px-3 py-1.5 text-xs text-ivory-300 no-underline transition-colors duration-300 hover:text-ivory;
+
+  &--active {
+    @apply border-gold bg-gold/15 text-gold hover:text-gold;
   }
 }

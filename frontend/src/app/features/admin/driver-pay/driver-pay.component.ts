@@ -8,6 +8,8 @@ import {
 } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { RouterLink } from '@angular/router'
+import { MatFormField } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
 import { catchError, finalize, of, switchMap } from 'rxjs'
 import { DriverPayLine } from '@/core/models'
 import { AdminFleetService } from '@/core/services/admin-fleet.service'
@@ -24,7 +26,14 @@ import { MoneyPipe } from '@/shared/pipes/money.pipe'
 /** /admin/driver-pay — what each driver earned in a month, from the pay typed on their completed rides. */
 @Component({
   selector: 'app-driver-pay',
-  imports: [DecimalPipe, RouterLink, IconComponent, MoneyPipe],
+  imports: [
+    MatFormField,
+    MatInput,
+    DecimalPipe,
+    RouterLink,
+    IconComponent,
+    MoneyPipe,
+  ],
   templateUrl: './driver-pay.component.html',
   styleUrl: './driver-pay.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

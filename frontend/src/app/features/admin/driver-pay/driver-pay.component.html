@@ -15,13 +15,15 @@
         (click)="step(-1)"
         ><app-icon name="arrow-left"
       /></button>
-      <input
-        class="input driver-pay__month-input"
-        type="month"
-        i18n-aria-label
-        aria-label="Month"
-        [value]="month()"
-        (change)="setMonth($any($event.target).value)" />
+      <mat-form-field class="driver-pay__month-input" subscriptSizing="dynamic">
+        <input
+          matInput
+          type="month"
+          i18n-aria-label
+          aria-label="Month"
+          [value]="month()"
+          (change)="setMonth($any($event.target).value)" />
+      </mat-form-field>
       <button
         type="button"
         class="driver-pay__step"

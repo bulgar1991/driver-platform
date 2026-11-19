@@ -63,11 +63,10 @@
   }
 
   &__pay-input {
-    @apply py-2;
-
     // A completed ride that still needs its pay.
     &--missing {
-      @apply border-warning;
+      --mat-form-field-outlined-outline-color: theme('colors.warning');
+      --mat-form-field-outlined-hover-outline-color: theme('colors.warning');
     }
   }
 

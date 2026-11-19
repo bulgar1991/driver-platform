@@ -66,19 +66,19 @@
             ></p
           >
         </div>
-        <label class="applications__status">
-          <span class="applications__muted"
-            ><ng-container i18n>Status</ng-container></span
-          >
-          <select
-            class="input applications__select"
+        <mat-form-field class="applications__status" subscriptSizing="dynamic">
+          <mat-label i18n>Status</mat-label>
+          <mat-select
+            class="applications__select"
             [value]="a.status"
-            (change)="setStatus(a, $any($event.target).value)">
+            (selectionChange)="setStatus(a, $event.value)">
             @for (s of statuses; track s) {
-              <option [value]="s">{{ text.applicationStatus[s] }}</option>
+              <mat-option [value]="s">{{
+                text.applicationStatus[s]
+              }}</mat-option>
             }
-          </select>
-        </label>
+          </mat-select>
+        </mat-form-field>
       </li>
     } @empty {
       <li class="applications__muted">

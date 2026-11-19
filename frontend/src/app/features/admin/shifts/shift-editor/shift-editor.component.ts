@@ -11,6 +11,10 @@ import {
   untracked,
 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { MatCheckbox } from '@angular/material/checkbox'
+import { MatFormField, MatLabel } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
+import { MatOption, MatSelect } from '@angular/material/select'
 import { finalize, Subscription } from 'rxjs'
 import {
   Availability,
@@ -29,7 +33,17 @@ import { ADMIN_TEXT } from '@/features/admin/admin-texts'
  */
 @Component({
   selector: 'app-shift-editor',
-  imports: [DatePipe, FormsModule, ButtonComponent],
+  imports: [
+    DatePipe,
+    FormsModule,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatSelect,
+    MatOption,
+    MatCheckbox,
+    ButtonComponent,
+  ],
   templateUrl: './shift-editor.component.html',
   styleUrl: './shift-editor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

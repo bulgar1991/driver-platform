@@ -50,7 +50,7 @@
   }
 
   &__number {
-    @apply w-24 px-3 py-2;
+    @apply w-24;
   }
 
   &__rules {
@@ -116,8 +116,4 @@
   &__sr {
     @apply sr-only;
   }
-}
-
-::ng-deep .pricing__dialog {
-  @apply w-[min(32rem,calc(100vw-2rem))];
 }

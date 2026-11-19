@@ -111,10 +111,13 @@ describe('ShiftEditorComponent', () => {
     fixture.detectChanges()
     await fixture.whenStable()
 
-    const select: HTMLSelectElement =
-      fixture.nativeElement.querySelector('select')
-    select.value = 'd1'
-    select.dispatchEvent(new Event('change'))
+    // Open the driver list and pick the busy driver.
+    fixture.nativeElement.querySelector('.mat-mdc-select-trigger').click()
+    fixture.detectChanges()
+    const option = [
+      ...document.querySelectorAll<HTMLElement>('mat-option'),
+    ].find(o => o.textContent?.includes('Marco'))!
+    option.click()
     fixture.detectChanges()
 
     expect(fixture.nativeElement.textContent).toContain(

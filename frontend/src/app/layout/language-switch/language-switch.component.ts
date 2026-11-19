@@ -1,11 +1,19 @@
+import {
+  CdkConnectedOverlay,
+  CdkOverlayOrigin,
+  ConnectedPosition,
+} from '@angular/cdk/overlay'
 import { DOCUMENT } from '@angular/common'
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  ElementRef,
   inject,
   input,
   LOCALE_ID,
+  signal,
+  viewChild,
 } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { NavigationEnd, Router } from '@angular/router'
@@ -17,9 +25,11 @@ import {
 } from '@/core/i18n/locales'
 import { LanguageCarryService } from '@/core/services/language-carry.service'
 import { LoadingScreenService } from '@/core/services/loading-screen.service'
+import { IconComponent } from '@/shared/components/icon/icon.component'
 
 /**
- * IT · EN · DE · FR. Each language is its own build, so the links are plain links (a full page
+ * English, French, German, Italian: a dropdown in the header, footer, sign-in and panel, the full
+ * names in a row in the mobile menu. Each language is its own build, so the links are plain links (a full page
  * load) to the same page under the other prefix. To make that feel instant: the other language is
  * loaded in the background on hover (speculation rules in index.html, or a prefetch where the
  * browser has none), the pages cross-fade (@view-transition in styles.scss), and the scroll
@@ -28,14 +38,48 @@ import { LoadingScreenService } from '@/core/services/loading-screen.service'
  */
 @Component({
   selector: 'app-language-switch',
+  imports: [CdkConnectedOverlay, CdkOverlayOrigin, IconComponent],
   templateUrl: './language-switch.component.html',
   styleUrl: './language-switch.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '[class.language-switch--menu]': "variant() === 'menu'" },
 })
 export class LanguageSwitchComponent {
-  /** Compact codes in the header bar, full names in the mobile menu. */
+  /** A dropdown in bars (header, footer, sign-in, panel); the full names in the mobile menu. */
   readonly variant = input<'bar' | 'menu'>('bar')
+
+  protected readonly open = signal(false)
+  private readonly toggle = viewChild<ElementRef<HTMLElement>>('toggle')
+  /** Under the button, right-aligned; above it when there is no room below (e.g. in the footer). */
+  protected readonly positions: ConnectedPosition[] = [
+    {
+      originX: 'end',
+      originY: 'bottom',
+      overlayX: 'end',
+      overlayY: 'top',
+      offsetY: 8,
+    },
+    {
+      originX: 'end',
+      originY: 'top',
+      overlayX: 'end',
+      overlayY: 'bottom',
+      offsetY: -8,
+    },
+    {
+      originX: 'start',
+      originY: 'bottom',
+      overlayX: 'start',
+      overlayY: 'top',
+      offsetY: 8,
+    },
+    {
+      originX: 'start',
+      originY: 'top',
+      overlayX: 'start',
+      overlayY: 'bottom',
+      offsetY: -8,
+    },
+  ]
 
   private readonly router = inject(Router)
   private readonly document = inject(DOCUMENT)
@@ -58,7 +102,24 @@ export class LanguageSwitchComponent {
     return SITE_LOCALES.map(l => ({ ...l, href: `${l.prefix}${path}` || '/' }))
   })
 
+  /** A click outside closes the menu, except on its button (which toggles it). */
+  protected closeOutside(event: MouseEvent): void {
+    if (!this.toggle()?.nativeElement.contains(event.target as Node)) {
+      this.open.set(false)
+    }
+  }
+
+  protected keydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape') {
+      this.open.set(false)
+      this.toggle()?.nativeElement.focus()
+    }
+  }
+
   protected leave(event: MouseEvent, current: boolean): void {
+    if (current) {
+      this.open.set(false)
+    }
     // Ctrl / ⌘ / Shift / middle click opens another tab: this page stays as it is.
     if (
       current ||

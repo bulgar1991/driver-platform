@@ -63,6 +63,8 @@ public static class DependencyInjection
 
         services.AddMemoryCache();
         services.Configure<MapsOptions>(configuration.GetSection(MapsOptions.SectionName));
+        // Where trips are served: address search and the price check follow it.
+        Application.Geo.GeoMath.UseServiceArea(configuration[$"{MapsOptions.SectionName}:ServiceArea"]);
         services.AddHttpClient<IRoutingService, OsrmRoutingService>((sp, http) =>
             ConfigureMapsClient(http, sp.GetRequiredService<IOptions<MapsOptions>>().Value, o => o.OsrmBaseUrl));
         services.AddHttpClient<IGeocodingService, NominatimGeocodingService>((sp, http) =>

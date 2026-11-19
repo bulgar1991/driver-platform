@@ -8,6 +8,8 @@ import {
 } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
+import { MatFormField } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
 import { debounceTime } from 'rxjs'
 import { AuditEntry } from '@/core/models'
 import { AdminStaffService } from '@/core/services/admin-staff.service'
@@ -17,7 +19,13 @@ import { ButtonComponent } from '@/shared/components/button/button.component'
 /** Business plan §6: who changed what, when, from which IP. Read-only. */
 @Component({
   selector: 'app-audit',
-  imports: [DatePipe, ReactiveFormsModule, ButtonComponent],
+  imports: [
+    MatFormField,
+    MatInput,
+    DatePipe,
+    ReactiveFormsModule,
+    ButtonComponent,
+  ],
   templateUrl: './audit.component.html',
   styleUrl: './audit.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

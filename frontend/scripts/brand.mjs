@@ -39,10 +39,14 @@ if (![i18n.sourceLocale.code, ...Object.keys(i18n.locales)].includes(language)) 
   console.error(`brand: SITE_LANGUAGE must be one of it, en, de, fr (got "${language}")`)
   process.exit(1)
 }
+const before = JSON.stringify(i18n)
 i18n.sourceLocale.subPath = i18n.sourceLocale.code === language ? '' : i18n.sourceLocale.code
 for (const [code, locale] of Object.entries(i18n.locales)) {
   locale.subPath = code === language ? '' : code
 }
-writeFileSync('angular.json', JSON.stringify(angular, null, 2) + '\n')
+// Written only when the layout changes, so the default (English at the root) leaves the file as committed.
+if (JSON.stringify(i18n) !== before) {
+  writeFileSync('angular.json', JSON.stringify(angular, null, 2) + '\n')
+}
 
 console.log(`brand: ${brand.name} (${id}), main language ${language}`)

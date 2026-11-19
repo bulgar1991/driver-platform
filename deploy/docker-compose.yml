@@ -11,6 +11,7 @@ services:
         SITE_DOMAIN: ${SITE_DOMAIN}
         BRAND: ${BRAND:-magnus-drive}
         SITE_LANGUAGE: ${SITE_LANGUAGE:-en}
+        SERVICE_AREA: ${SERVICE_AREA:-europe}
     restart: unless-stopped
     ports:
       - "80:80"
@@ -60,6 +61,7 @@ services:
       BookingCom__AutoAccept: ${BOOKINGCOM_AUTO_ACCEPT:-true}
       Maps__OsrmBaseUrl: ${OSRM_BASE_URL}
       Maps__NominatimBaseUrl: ${NOMINATIM_BASE_URL}
+      Maps__ServiceArea: ${SERVICE_AREA:-europe}
       Maps__UserAgent: DriverPlatform/1.0 (${ACME_EMAIL})
       Company__Name: ${COMPANY_NAME}
       Site__Language: ${SITE_LANGUAGE:-en}

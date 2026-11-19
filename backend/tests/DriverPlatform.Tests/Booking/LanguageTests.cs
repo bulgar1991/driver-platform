@@ -83,11 +83,11 @@ public sealed class LanguageTests
     public async Task Errors_are_translated_and_unknown_languages_get_english()
     {
         using var factory = new ApiFactory();
-        var london = new PointInput { Address = "London", Latitude = 51.5072, Longitude = -0.1276 };
+        var newYork = new PointInput { Address = "New York", Latitude = 40.7128, Longitude = -74.0060 };
 
         async Task<string> ErrorAsync(string language)
         {
-            var response = await Client(factory, language).PostAsJsonAsync("/api/quotes", TestData.Trip(london), TestData.Json);
+            var response = await Client(factory, language).PostAsJsonAsync("/api/quotes", TestData.Trip(newYork), TestData.Json);
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>(TestData.Json);
             return problem!.Errors["pickup"][0];

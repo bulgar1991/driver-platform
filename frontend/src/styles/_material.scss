@@ -1,0 +1,184 @@
+@use '@angular/material' as mat;
+
+// Angular Material (form fields, selects, dialogs, toasts) in the site's black and gold.
+// Colours come from src/theme/colors.ts; keep the two in step.
+html {
+  color-scheme: dark;
+
+  @include mat.theme(
+    (
+      color: (
+        theme-type: dark,
+        primary: mat.$orange-palette,
+      ),
+      typography: (
+        plain-family: (Montserrat, 'Montserrat Fallback', system-ui, sans-serif),
+        brand-family: (Montserrat, 'Montserrat Fallback', system-ui, sans-serif),
+      ),
+      // 48px fields: compact enough for the admin tables, still easy to tap.
+      density: -2,
+    )
+  );
+
+  // The palette above is only a starting point: these are the colours actually used.
+  @include mat.theme-overrides(
+    (
+      primary: #c9a45c,
+      on-primary: #0b0b0c,
+      primary-container: #2e2311,
+      on-primary-container: #f4e8c9,
+      surface: #121214,
+      surface-container-lowest: #0b0b0c,
+      surface-container-low: #121214,
+      surface-container: #1a1a1d,
+      surface-container-high: #1a1a1d,
+      surface-container-highest: #232327,
+      on-surface: #f5f1e8,
+      on-surface-variant: #b8b2a7,
+      outline: #4a4a50,
+      outline-variant: #2e2e33,
+      error: #d9534f,
+      on-error: #0b0b0c,
+      inverse-surface: #f5f1e8,
+      inverse-on-surface: #0b0b0c,
+      inverse-primary: #8c6e37,
+      corner-extra-small: 2px,
+      corner-small: 4px,
+      corner-medium: 6px,
+      corner-large: 8px,
+      corner-extra-large: 10px,
+    )
+  );
+
+  // Form fields: the outline turns gold on focus, labels stay quiet until then.
+  @include mat.form-field-overrides(
+    (
+      outlined-outline-color: #2e2e33,
+      outlined-hover-outline-color: #4a4a50,
+      outlined-focus-outline-color: #c9a45c,
+      outlined-focus-outline-width: 1px,
+      outlined-input-text-color: #f5f1e8,
+      outlined-input-text-placeholder-color: #7d786f,
+      outlined-label-text-color: #9a958c,
+      outlined-hover-label-text-color: #b8b2a7,
+      outlined-focus-label-text-color: #c9a45c,
+      outlined-container-shape: 2px,
+      container-text-size: 0.875rem,
+    )
+  );
+
+  @include mat.select-overrides(
+    (
+      panel-background-color: #1a1a1d,
+      enabled-trigger-text-color: #f5f1e8,
+      trigger-text-size: 0.875rem,
+    )
+  );
+
+  @include mat.option-overrides(
+    (
+      label-text-size: 0.875rem,
+      label-text-color: #f5f1e8,
+      selected-state-label-text-color: #c9a45c,
+      hover-state-layer-color: rgb(201 164 92 / 0.08),
+      focus-state-layer-color: rgb(201 164 92 / 0.12),
+      selected-state-layer-color: rgb(201 164 92 / 0.12),
+    )
+  );
+
+  @include mat.checkbox-overrides(
+    (
+      label-text-size: 0.875rem,
+      label-text-color: #f5f1e8,
+    )
+  );
+
+  @include mat.slide-toggle-overrides(
+    (
+      label-text-size: 0.875rem,
+      label-text-color: #f5f1e8,
+      unselected-track-color: #121214,
+      unselected-hover-track-color: #121214,
+      unselected-focus-track-color: #121214,
+      unselected-pressed-track-color: #121214,
+      track-outline-color: #4a4a50,
+      selected-track-outline-color: #c9a45c,
+      unselected-handle-color: #9a958c,
+      unselected-hover-handle-color: #b8b2a7,
+      unselected-focus-handle-color: #b8b2a7,
+      unselected-pressed-handle-color: #b8b2a7,
+      selected-track-color: rgb(201 164 92 / 0.3),
+      selected-hover-track-color: rgb(201 164 92 / 0.3),
+      selected-focus-track-color: rgb(201 164 92 / 0.3),
+      selected-pressed-track-color: rgb(201 164 92 / 0.3),
+      selected-handle-color: #c9a45c,
+      selected-hover-handle-color: #d3b06a,
+      selected-focus-handle-color: #d3b06a,
+      selected-pressed-handle-color: #d3b06a,
+      selected-icon-color: #0b0b0c,
+    )
+  );
+
+  @include mat.dialog-overrides(
+    (
+      container-color: #121214,
+      container-shape: 4px,
+      subhead-color: #f5f1e8,
+      supporting-text-color: #f5f1e8,
+    )
+  );
+
+  @include mat.snack-bar-overrides(
+    (
+      container-color: #1a1a1d,
+      supporting-text-color: #f5f1e8,
+      button-color: #c9a45c,
+      container-shape: 4px,
+    )
+  );
+}
+
+// Inputs keep the field's text style (Tailwind's base would otherwise reset them).
+.mat-mdc-form-field {
+  @apply w-full;
+
+  // Native date and time pickers: light icon on the dark field.
+  input::-webkit-calendar-picker-indicator {
+    filter: invert(0.8);
+    cursor: pointer;
+  }
+
+  // Tailwind forms focus ring off: the outline itself shows focus.
+  input:focus,
+  textarea:focus {
+    box-shadow: none;
+    outline: none;
+  }
+}
+
+// Dialogs: the backdrop dims the page like the site's own overlays (after the CDK's own rule).
+.cdk-overlay-container .cdk-overlay-dark-backdrop {
+  background: rgb(6 6 7 / 0.75);
+  backdrop-filter: blur(2px);
+}
+
+// An error stays on one line under its field, so it never runs into the
+// field below.
+.mat-mdc-form-field-error {
+  @apply block truncate;
+}
+
+// Toasts: a thin gold (or red) line on the left says what kind they are.
+.toast {
+  &--success .mat-mdc-snackbar-surface {
+    border-left: 3px solid #4caf7a;
+  }
+
+  &--info .mat-mdc-snackbar-surface {
+    border-left: 3px solid #c9a45c;
+  }
+
+  &--error .mat-mdc-snackbar-surface {
+    border-left: 3px solid #d9534f;
+  }
+}

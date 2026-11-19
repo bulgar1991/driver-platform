@@ -47,11 +47,7 @@
   }
 
   &__flight {
-    @apply flex flex-col gap-2;
-  }
-
-  &__field {
-    @apply flex flex-col gap-1 text-xs text-ivory-400;
+    @apply flex flex-col gap-3;
   }
 
   &__muted {

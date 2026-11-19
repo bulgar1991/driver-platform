@@ -1,0 +1,38 @@
+.app-dialog {
+  @apply block;
+
+  &__header {
+    @apply flex items-start justify-between gap-4 border-b border-ink-600 py-1 pr-3;
+  }
+
+  // Material's title adds its own spacing; the header owns it here.
+  &__title.mat-mdc-dialog-title {
+    @apply m-0 font-display text-lg font-normal tracking-wide text-ivory;
+    padding: 1rem 0 0.75rem 1.5rem;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  &__close {
+    @apply mt-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-ivory-300 transition-colors hover:bg-ink-600 hover:text-ivory;
+  }
+
+  // Forms and sections stack with even spacing.
+  &__body.mat-mdc-dialog-content {
+    @apply flex flex-col gap-4 text-sm text-ivory;
+    // The body scrolls (Material caps it at 65vh), the title and buttons stay in view.
+    padding-top: 1.25rem;
+  }
+
+  // Nothing to show: no empty bar under the body.
+  &__actions:empty,
+  &__actions:not(:has(*)) {
+    display: none;
+  }
+
+  &__actions.mat-mdc-dialog-actions {
+    @apply justify-end gap-3 border-t border-ink-600 px-6 py-3;
+  }
+}

@@ -7,6 +7,11 @@ import {
   signal,
   viewChild,
 } from '@angular/core'
+import {
+  CdkConnectedOverlay,
+  CdkOverlayOrigin,
+  ConnectedPosition,
+} from '@angular/cdk/overlay'
 import { ReactiveFormsModule } from '@angular/forms'
 import { todayInItaly } from '@/core/utils/italy-time'
 import { CounterComponent } from '@/shared/components/counter/counter.component'
@@ -23,6 +28,8 @@ import { childSeatLimit, TripForm } from '../../booking-form'
   selector: 'app-search-bar',
   imports: [
     ReactiveFormsModule,
+    CdkConnectedOverlay,
+    CdkOverlayOrigin,
     AddressInputComponent,
     CounterComponent,
     IconComponent,
@@ -32,7 +39,6 @@ import { childSeatLimit, TripForm } from '../../booking-form'
   styleUrl: './search-bar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '(document:click)': 'closeOutside($event)',
     '(document:keydown.escape)': 'peopleOpen.set(false)',
   },
 })
@@ -49,7 +55,43 @@ export class SearchBarComponent {
   protected readonly peopleOpen = signal(false)
   /** Search was pressed: from now on, every missing field says so. */
   protected readonly submitted = signal(false)
-  private readonly people = viewChild<ElementRef<HTMLElement>>('people')
+  private readonly peopleButton =
+    viewChild<ElementRef<HTMLElement>>('peopleButton')
+
+  /**
+   * The passengers panel floats above the whole page (CDK overlay, like Material's select): under
+   * the button when there is room, else above it, and pushed back on screen near the edges.
+   */
+  protected readonly peoplePositions: ConnectedPosition[] = [
+    {
+      originX: 'end',
+      originY: 'bottom',
+      overlayX: 'end',
+      overlayY: 'top',
+      offsetY: 8,
+    },
+    {
+      originX: 'start',
+      originY: 'bottom',
+      overlayX: 'start',
+      overlayY: 'top',
+      offsetY: 8,
+    },
+    {
+      originX: 'end',
+      originY: 'top',
+      overlayX: 'end',
+      overlayY: 'bottom',
+      offsetY: -8,
+    },
+    {
+      originX: 'start',
+      originY: 'top',
+      overlayX: 'start',
+      overlayY: 'bottom',
+      offsetY: -8,
+    },
+  ]
 
   protected readonly t = {
     pickAddress: $localize`Pick an address from the list`,
@@ -59,6 +101,7 @@ export class SearchBarComponent {
     tooSoon: (hours: number) =>
       $localize`Book at least ${hours}:hours: hours ahead.`,
     childSeats: $localize`At most one child seat per passenger, and three per car.`,
+    addTravellers: $localize`Add at least one passenger.`,
   }
 
   protected shows(name: 'pickup' | 'dropoff'): boolean {
@@ -95,10 +138,18 @@ export class SearchBarComponent {
     if (this.shows('pickup') || this.shows('dropoff')) {
       return this.t.pickAddress
     }
+    if (this.travellersMissing) {
+      return this.t.addTravellers
+    }
     if (this.form().hasError('childSeats')) {
       return this.t.childSeats
     }
     return this.whenError ?? this.returnError
+  }
+
+  /** Search was pressed without passengers: the Travellers field is marked. */
+  protected get travellersMissing(): boolean {
+    return this.submitted() && this.form().controls.passengers.invalid
   }
 
   protected get passengers(): number {
@@ -138,16 +189,29 @@ export class SearchBarComponent {
 
   protected submit(): void {
     this.submitted.set(true)
-    this.peopleOpen.set(false)
     this.form().markAllAsTouched()
+    // No passengers yet: open the panel where they are chosen.
+    this.peopleOpen.set(this.form().controls.passengers.invalid)
     if (this.form().valid) {
       this.searched.emit()
     }
   }
 
-  protected closeOutside(event: Event): void {
-    const people = this.people()?.nativeElement
-    if (this.peopleOpen() && people && !people.contains(event.target as Node)) {
+  /** No passengers yet (e.g. a car was chosen first): mark the field, open its panel, bring it into view. */
+  askForTravellers(): void {
+    this.submitted.set(true)
+    this.form().controls.passengers.markAsTouched()
+    this.peopleButton()?.nativeElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    })
+    this.peopleOpen.set(true)
+  }
+
+  /** A click outside the panel closes it, except on its own button (which toggles it). */
+  protected closeOutside(event: MouseEvent): void {
+    const button = this.peopleButton()?.nativeElement
+    if (!button?.contains(event.target as Node)) {
       this.peopleOpen.set(false)
     }
   }

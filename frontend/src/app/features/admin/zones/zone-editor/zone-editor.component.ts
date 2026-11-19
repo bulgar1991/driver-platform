@@ -17,6 +17,10 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms'
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
+import { MatOption, MatSelect } from '@angular/material/select'
+import { MatCheckbox } from '@angular/material/checkbox'
 import { finalize, Observable } from 'rxjs'
 import {
   LatLng,
@@ -37,7 +41,6 @@ import { AdminZonesService } from '@/core/services/admin-zones.service'
 import { GeoService } from '@/core/services/geo.service'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
-import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { MapComponent } from '@/shared/components/map/map.component'
 import { ZONE_TYPES } from '../zone-labels'
@@ -73,9 +76,15 @@ type ClickMode = 'shape' | number
 @Component({
   selector: 'app-zone-editor',
   imports: [
+    MatFormField,
+    MatLabel,
+    MatError,
+    MatInput,
+    MatSelect,
+    MatOption,
+    MatCheckbox,
     ReactiveFormsModule,
     ButtonComponent,
-    FormFieldComponent,
     IconComponent,
     MapComponent,
   ],

@@ -6,6 +6,7 @@ import { localePrefixGuard } from './core/guards/locale-prefix.guard'
 import { passwordChangeGuard } from './core/guards/password-change.guard'
 import { PublicLayoutComponent } from './layout/public-layout/public-layout.component'
 import { BRAND } from '@/core/brand'
+import { AREA_IN } from '@/core/area'
 
 /** Route data for SeoService. Routes without it are marked noindex (panel, personal links…). */
 const seo = (
@@ -26,7 +27,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/home/home.component').then(m => m.HomeComponent),
         data: seo(
-          $localize`Private transfers with driver in Italy, France, Switzerland and Germany: airports, stations, ports and cities at a fixed price. Your driver meets you on arrival.`,
+          $localize`Private transfers with driver ${AREA_IN}:area:: airports, stations, ports and cities at a fixed price. Your driver meets you on arrival.`,
           'business'
         ),
       },
@@ -38,7 +39,7 @@ export const routes: Routes = [
             m => m.BookingComponent
           ),
         data: seo(
-          $localize`Book a private transfer in Italy, France, Switzerland or Germany: enter from and to, see the route and the fixed price, pay by card or PayPal.`
+          $localize`Book a private transfer ${AREA_IN}:area:: enter from and to, see the route and the fixed price, pay by card or PayPal.`
         ),
       },
       {
@@ -51,7 +52,7 @@ export const routes: Routes = [
         data: {
           page: true,
           ...seo(
-            $localize`Airport and station transfers, business travel, city-to-city rides, Venice, groups and families: chauffeured services across Italy and its neighbours at a fixed price.`
+            $localize`Airport and station transfers, business travel, city-to-city rides, Venice, groups and families: chauffeured services ${AREA_IN}:area: at a fixed price.`
           ),
         },
       },
@@ -79,7 +80,7 @@ export const routes: Routes = [
         data: {
           page: true,
           ...seo(
-            $localize`Licensed NCC driver in Italy? Drive with ${BRAND.name}:brand:: rides sent to your phone, commission agreed upfront, the area you choose. Apply in two minutes.`
+            $localize`Licensed professional driver? Drive with ${BRAND.name}:brand:: rides sent to your phone, commission agreed upfront, the area you choose. Apply in two minutes.`
           ),
         },
       },
@@ -107,7 +108,7 @@ export const routes: Routes = [
         data: {
           page: true,
           ...seo(
-            $localize`Hotels, travel agencies and businesses work with ${BRAND.name}:brand:: partner rates, a booking API and monthly invoicing for transfers in Italy and Europe.`
+            $localize`Hotels, travel agencies and businesses work with ${BRAND.name}:brand:: partner rates, a booking API and monthly invoicing for transfers ${AREA_IN}:area:.`
           ),
         },
       },

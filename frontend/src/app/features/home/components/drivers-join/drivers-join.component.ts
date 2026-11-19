@@ -7,16 +7,20 @@ import {
 } from '@angular/core'
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
 import { RouterLink } from '@angular/router'
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
+import { MatCheckbox } from '@angular/material/checkbox'
+import { MatSlideToggle } from '@angular/material/slide-toggle'
 import { finalize } from 'rxjs'
 import { DriverLicenceKind } from '@/core/models'
 import { SiteService } from '@/core/services/site.service'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { CounterComponent } from '@/shared/components/counter/counter.component'
-import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { RevealDirective } from '@/shared/directives/reveal.directive'
 import { DRIVER_BENEFITS, LANGUAGES } from '../../home.content'
+import { AREA_IN } from '@/core/area'
 
 const LICENCES: { value: DriverLicenceKind; label: string; hint: string }[] = [
   {
@@ -36,11 +40,16 @@ const LICENCES: { value: DriverLicenceKind; label: string; hint: string }[] = [
 @Component({
   selector: 'app-drivers-join',
   imports: [
+    MatSlideToggle,
+    MatFormField,
+    MatLabel,
+    MatError,
+    MatInput,
+    MatCheckbox,
     ReactiveFormsModule,
     RouterLink,
     ButtonComponent,
     CounterComponent,
-    FormFieldComponent,
     IconComponent,
     RevealDirective,
   ],
@@ -49,6 +58,7 @@ const LICENCES: { value: DriverLicenceKind; label: string; hint: string }[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DriversJoinComponent {
+  protected readonly area = AREA_IN
   /** Texts used in template expressions (the i18n attribute only covers static text). */
   protected readonly t = {
     required: $localize`Required`,

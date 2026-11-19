@@ -29,55 +29,37 @@
     [formGroup]="form"
     (ngSubmit)="submit()"
     novalidate>
-    <app-form-field
-      i18n-label
-      label="Current password"
-      for="current"
-      [error]="
-        form.controls.currentPassword.touched &&
-        form.controls.currentPassword.invalid
-          ? text.required
-          : null
-      ">
+    <mat-form-field>
+      <mat-label i18n>Current password</mat-label>
       <input
+        matInput
         id="current"
-        class="input"
         type="password"
         autocomplete="current-password"
         formControlName="currentPassword" />
-    </app-form-field>
-    <app-form-field
-      i18n-label
-      label="New password"
-      for="newPassword"
-      [error]="
-        form.controls.newPassword.touched && form.controls.newPassword.invalid
-          ? tx.minLength
-          : null
-      ">
+      <mat-error>{{ text.required }}</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label i18n>New password</mat-label>
       <input
+        matInput
         id="newPassword"
-        class="input"
         type="password"
         autocomplete="new-password"
         formControlName="newPassword" />
-    </app-form-field>
-    <app-form-field
-      i18n-label
-      label="Repeat the new password"
-      for="confirm"
-      [error]="
-        form.controls.confirm.touched && form.hasError('mismatch')
-          ? tx.passwordsDiffer
-          : null
-      ">
+      <mat-error>{{ tx.minLength }}</mat-error>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label i18n>Repeat the new password</mat-label>
       <input
+        matInput
         id="confirm"
-        class="input"
         type="password"
         autocomplete="new-password"
-        formControlName="confirm" />
-    </app-form-field>
+        formControlName="confirm"
+        [errorStateMatcher]="mismatchMatcher" />
+      <mat-error>{{ tx.passwordsDiffer }}</mat-error>
+    </mat-form-field>
     <p class="account__muted">
       <ng-container i18n
         >At least 12 characters. A short sentence is easier to remember than

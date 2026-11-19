@@ -14,7 +14,11 @@
   }
 
   &__mono {
-    @apply max-w-xs font-mono;
+    @apply max-w-xs;
+
+    input {
+      @apply font-mono;
+    }
   }
 
   &__table-wrap {
@@ -54,26 +58,10 @@
   }
 
   &__form {
-    @apply flex flex-col gap-4;
-  }
-
-  &__check {
-    @apply flex items-center gap-3 text-sm text-ivory;
-  }
-
-  &__checkbox {
-    @apply h-4 w-4 accent-gold;
-  }
-
-  &__dialog-actions {
-    @apply flex justify-end gap-3;
+    @apply flex flex-col gap-2;
   }
 
   &__sr {
     @apply sr-only;
   }
-}
-
-::ng-deep .staff__dialog {
-  @apply w-[min(30rem,calc(100vw-2rem))];
 }

@@ -28,7 +28,7 @@ public static class PartnerApi
                 document.Info.Title = $"{company.Name} partner API";
                 document.Info.Version = "v1";
                 document.Info.Description =
-                    "Send transfer bookings in Italy, France, Germany and Switzerland. Authenticate with the X-Api-Key header. " +
+                    "Send transfer bookings in the countries we serve. Authenticate with the X-Api-Key header. " +
                     "Status changes are POSTed to your webhook URL, signed with the Webhook-Signature header.";
                 return Task.CompletedTask;
             });

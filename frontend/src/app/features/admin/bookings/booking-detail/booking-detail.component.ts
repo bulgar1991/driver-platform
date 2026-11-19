@@ -11,6 +11,8 @@ import {
 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterLink } from '@angular/router'
+import { MatFormField, MatLabel } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
 import { finalize, Observable } from 'rxjs'
 import { BookingDetail, BookingStatus } from '@/core/models'
 import { AdminDispatchService } from '@/core/services/admin-dispatch.service'
@@ -41,6 +43,9 @@ function flightForm(b: BookingDetail) {
 @Component({
   selector: 'app-booking-detail',
   imports: [
+    MatFormField,
+    MatLabel,
+    MatInput,
     DatePipe,
     FormsModule,
     RouterLink,

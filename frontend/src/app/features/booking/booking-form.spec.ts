@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing'
 import { FormBuilder } from '@angular/forms'
 import { nowInItaly, todayInItaly } from '@/core/utils/italy-time'
 import {
+  canQuote,
   createBookingForms,
   toBookingRequest,
   toQuoteRequest,
@@ -43,9 +44,22 @@ describe('booking form', () => {
     expect(request.return).toBeNull()
   })
 
-  it('requires the return date and time only for a return trip', () => {
+  it('starts with no passengers; prices can show, booking needs at least one', () => {
     const forms = create()
     forms.trip.patchValue({ pickup: rome, dropoff: fiumicino })
+    expect(forms.trip.controls.passengers.value).toBe(0)
+    expect(forms.trip.valid).toBe(false)
+    expect(canQuote(forms.trip)).toBe(true)
+    expect(toQuoteRequest(forms).passengers).toBe(1)
+
+    forms.trip.patchValue({ passengers: 3 })
+    expect(forms.trip.valid).toBe(true)
+    expect(toQuoteRequest(forms).passengers).toBe(3)
+  })
+
+  it('requires the return date and time only for a return trip', () => {
+    const forms = create()
+    forms.trip.patchValue({ pickup: rome, dropoff: fiumicino, passengers: 2 })
     expect(forms.trip.valid).toBe(true)
 
     forms.trip.patchValue({ returnTrip: true })
@@ -114,7 +128,13 @@ describe('booking form', () => {
   it('refuses a pickup sooner than the minimum notice, as the API would', () => {
     const forms = createBookingForms(TestBed.inject(FormBuilder), () => 3)
     const [date, time] = nowInItaly(60).split('T')
-    forms.trip.patchValue({ pickup: rome, dropoff: fiumicino, date, time })
+    forms.trip.patchValue({
+      pickup: rome,
+      dropoff: fiumicino,
+      date,
+      time,
+      passengers: 2,
+    })
     expect(forms.trip.getError('tooSoon')).toEqual({ hours: 3 })
 
     forms.trip.patchValue({ date: todayInItaly(2) })

@@ -137,8 +137,9 @@ export function createTripForm(
       dropoff: fb.control<GeoPoint | null>(null, Validators.required),
       date: nn.control(todayInItaly(1), Validators.required),
       time: nn.control('10:00', Validators.required),
-      passengers: nn.control(2, [Validators.min(1), Validators.max(8)]),
-      largeLuggage: nn.control(2),
+      // Nobody chosen yet: the customer sets passengers and bags before searching.
+      passengers: nn.control(0, [Validators.min(1), Validators.max(8)]),
+      largeLuggage: nn.control(0),
       smallLuggage: nn.control(0),
       infantSeats: nn.control(0),
       toddlerSeats: nn.control(0),
@@ -224,6 +225,19 @@ function childSeats(trip: TripForm): ChildSeatRequest[] {
     .map(([group, count]) => ({ group, count }))
 }
 
+/**
+ * Enough to show prices: everything filled in, except that passengers may still be 0 (the default),
+ * in which case the prices are for one passenger until the customer sets them.
+ */
+export function canQuote(trip: TripForm): boolean {
+  return (
+    !trip.errors &&
+    Object.entries(trip.controls).every(
+      ([name, control]) => name === 'passengers' || control.valid
+    )
+  )
+}
+
 export function toQuoteRequest(forms: BookingForms): QuoteRequest {
   const trip = forms.trip.getRawValue()
   const details = forms.details.getRawValue()
@@ -231,7 +245,7 @@ export function toQuoteRequest(forms: BookingForms): QuoteRequest {
     pickup: trip.pickup!,
     dropoff: trip.dropoff!,
     pickupAt: toLocalDateTime(trip.date, trip.time),
-    passengers: trip.passengers,
+    passengers: Math.max(1, trip.passengers),
     largeLuggage: trip.largeLuggage,
     smallLuggage: trip.smallLuggage,
     childSeats: childSeats(forms.trip),

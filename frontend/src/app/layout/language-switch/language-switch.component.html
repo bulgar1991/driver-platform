@@ -1,17 +1,72 @@
-<nav class="language-switch" i18n-aria-label aria-label="Language">
-  @for (l of links(); track l.code) {
-    <a
-      class="language-switch__link"
-      [class.language-switch__link--active]="l.code === current.code"
-      [href]="l.href"
-      [attr.hreflang]="l.code"
-      [attr.lang]="l.code"
-      [attr.aria-current]="l.code === current.code ? 'true' : null"
-      [title]="l.name"
-      (click)="leave($event, l.code === current.code)"
-      (pointerenter)="prefetch(l.href)"
-      (focus)="prefetch(l.href)">
-      {{ variant() === 'menu' ? l.name : l.code.toUpperCase() }}
-    </a>
-  }
-</nav>
+@if (variant() === 'menu') {
+  <!-- Mobile menu: the full names in a row. -->
+  <nav class="language-switch" i18n-aria-label aria-label="Language">
+    @for (l of links(); track l.code) {
+      <a
+        class="language-switch__link"
+        [class.language-switch__link--active]="l.code === current.code"
+        [href]="l.href"
+        [attr.hreflang]="l.code"
+        [attr.lang]="l.code"
+        [attr.aria-current]="l.code === current.code ? 'true' : null"
+        (click)="leave($event, l.code === current.code)"
+        (pointerenter)="prefetch(l.href)"
+        (focus)="prefetch(l.href)">
+        {{ l.name }}
+      </a>
+    }
+  </nav>
+} @else {
+  <!-- Header, footer, sign-in, panel: a button with the current language and a dropdown. -->
+  <button
+    #toggle
+    cdkOverlayOrigin
+    #origin="cdkOverlayOrigin"
+    type="button"
+    class="language-switch__toggle"
+    aria-haspopup="true"
+    [attr.aria-expanded]="open()"
+    aria-controls="language-menu"
+    i18n-title
+    title="Language"
+    (click)="open.set(!open())">
+    <app-icon class="language-switch__globe" name="globe" />
+    <span [attr.lang]="current.code">{{ current.code.toUpperCase() }}</span>
+    <span class="language-switch__caret" aria-hidden="true"></span>
+  </button>
+  <ng-template
+    cdkConnectedOverlay
+    [cdkConnectedOverlayOrigin]="origin"
+    [cdkConnectedOverlayOpen]="open()"
+    [cdkConnectedOverlayPositions]="positions"
+    [cdkConnectedOverlayPush]="true"
+    [cdkConnectedOverlayViewportMargin]="12"
+    (overlayOutsideClick)="closeOutside($event)"
+    (overlayKeydown)="keydown($event)"
+    (detach)="open.set(false)">
+    <nav
+      id="language-menu"
+      class="language-switch__menu"
+      i18n-aria-label
+      aria-label="Language">
+      @for (l of links(); track l.code) {
+        <a
+          class="language-switch__option"
+          [class.language-switch__option--active]="l.code === current.code"
+          [href]="l.href"
+          [attr.hreflang]="l.code"
+          [attr.lang]="l.code"
+          [attr.aria-current]="l.code === current.code ? 'true' : null"
+          (click)="leave($event, l.code === current.code)"
+          (pointerenter)="prefetch(l.href)"
+          (focus)="prefetch(l.href)">
+          <span class="language-switch__code">{{ l.code.toUpperCase() }}</span>
+          <span class="language-switch__name">{{ l.name }}</span>
+          @if (l.code === current.code) {
+            <app-icon class="language-switch__check" name="check" />
+          }
+        </a>
+      }
+    </nav>
+  </ng-template>
+}

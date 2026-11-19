@@ -8,13 +8,15 @@ import {
 } from '@angular/core'
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
 import { finalize, Observable } from 'rxjs'
 import { TwoFactorSetup, TwoFactorStatus } from '@/core/models'
 import { AuthService } from '@/core/services/auth.service'
+import { ToastService } from '@/core/services/toast.service'
 import { saveBlob } from '@/core/utils/download'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
-import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 
 /**
  * My account → two-step sign-in: connect an authenticator app with a QR code, keep the recovery
@@ -22,7 +24,15 @@ import { FormFieldComponent } from '@/shared/components/form-field/form-field.co
  */
 @Component({
   selector: 'app-two-factor',
-  imports: [DatePipe, ReactiveFormsModule, ButtonComponent, FormFieldComponent],
+  imports: [
+    MatFormField,
+    MatLabel,
+    MatError,
+    MatInput,
+    DatePipe,
+    ReactiveFormsModule,
+    ButtonComponent,
+  ],
   templateUrl: './two-factor.component.html',
   styleUrl: './two-factor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,6 +43,7 @@ export class TwoFactorComponent implements OnInit {
     required: $localize`Required`,
   }
 
+  private readonly toast = inject(ToastService)
   private readonly auth = inject(AuthService)
   private readonly router = inject(Router)
   private readonly fb = inject(FormBuilder).nonNullable
@@ -88,7 +99,7 @@ export class TwoFactorComponent implements OnInit {
   /** The codes are saved; after the required first setup, the panel opens. */
   protected codesSaved(): void {
     this.recoveryCodes.set(null)
-    this.notice.set($localize`Two-step sign-in is on.`)
+    this.toast.success($localize`Two-step sign-in is on.`)
     if (this.forced) {
       this.forced = false
       void this.router.navigateByUrl('/admin')
@@ -123,7 +134,7 @@ export class TwoFactorComponent implements OnInit {
         if (user.twoFactorSetupRequired) {
           this.start()
         } else {
-          this.notice.set($localize`Two-step sign-in is off.`)
+          this.toast.success($localize`Two-step sign-in is off.`)
         }
       }
     )
@@ -138,8 +149,8 @@ export class TwoFactorComponent implements OnInit {
 
   protected copy(codes: string[]): void {
     void navigator.clipboard?.writeText(codes.join('\n')).then(
-      () => this.notice.set($localize`Copied.`),
-      () => this.notice.set($localize`Select the codes and copy them.`)
+      () => this.toast.success($localize`Copied.`),
+      () => this.toast.info($localize`Select the codes and copy them.`)
     )
   }
 

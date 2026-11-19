@@ -34,13 +34,15 @@
         ></p
       >
       <div class="staff__secret">
-        <input
-          class="input staff__mono"
-          readonly
-          [value]="t.password"
-          i18n-aria-label
-          aria-label="Temporary password"
-          (focus)="$any($event.target).select()" />
+        <mat-form-field class="staff__mono" subscriptSizing="dynamic">
+          <input
+            matInput
+            readonly
+            [value]="t.password"
+            i18n-aria-label
+            aria-label="Temporary password"
+            (focus)="$any($event.target).select()" />
+        </mat-form-field>
         <button
           appButton
           size="sm"
@@ -169,89 +171,73 @@
   </div>
 </div>
 
-<p-dialog
-  [header]="editing() ? tx.editAccount : tx.newAccount"
-  [modal]="true"
-  [draggable]="false"
-  styleClass="staff__dialog"
-  [visible]="editing() !== undefined"
-  (visibleChange)="$event || editing.set(undefined)">
-  <form class="staff__form" [formGroup]="form" (ngSubmit)="save()" novalidate>
-    <app-form-field
-      i18n-label
-      label="Email"
-      for="sEmail"
-      [error]="
-        form.controls.email.touched && form.controls.email.invalid
-          ? text.validEmail
-          : null
-      ">
-      <input id="sEmail" class="input" type="email" formControlName="email" />
-    </app-form-field>
-    <app-form-field
-      i18n-label
-      label="Full name"
-      for="sName"
-      [error]="
-        form.controls.fullName.touched && form.controls.fullName.invalid
-          ? text.required
-          : null
-      ">
-      <input id="sName" class="input" formControlName="fullName" />
-    </app-form-field>
-    <app-form-field i18n-label label="Role" for="sRole">
-      <select id="sRole" class="input" formControlName="role">
-        <option value="Dispatcher"
-          ><ng-container i18n
-            >Dispatcher: bookings, shifts, drivers, vehicles</ng-container
-          ></option
-        >
-        <option value="Admin"
-          ><ng-container i18n
-            >Admin: everything, including prices, payments and
-            staff</ng-container
-          ></option
-        >
-      </select>
-    </app-form-field>
-    @if (editing()) {
-      <label class="staff__check">
-        <input
-          class="staff__checkbox"
-          type="checkbox"
-          formControlName="isActive"
-          [attr.disabled]="
-            editing()?.id === me()?.id ? true : null
-          " />&ngsp;<ng-container i18n>Active</ng-container>
-      </label>
-      <p class="staff__muted"
-        ><ng-container i18n
-          >Changing the role or deactivating signs the person out at
-          once.</ng-container
-        ></p
-      >
-    } @else {
-      <p class="staff__muted"
-        ><ng-container i18n
-          >A temporary password is shown after saving.</ng-container
-        ></p
-      >
-    }
-    <div class="staff__dialog-actions">
-      <button
-        appButton
-        type="button"
-        variant="ghost"
-        (click)="editing.set(undefined)"
-        ><ng-container i18n>Cancel</ng-container></button
-      >
-      <button appButton type="submit" [disabled]="saving()">
-        @if (saving()) {
-          <ng-container i18n>Saving…</ng-container>
+<ng-template
+  [appDialogOpen]="editing() !== undefined"
+  dialogWidth="30rem"
+  (dialogClosed)="editing.set(undefined)">
+  <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <app-dialog [title]="editing() ? tx.editAccount : tx.newAccount">
+      <div class="staff__form">
+        <mat-form-field>
+          <mat-label i18n>Email</mat-label>
+          <input matInput type="email" formControlName="email" />
+          <mat-error>{{ text.validEmail }}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Full name</mat-label>
+          <input matInput formControlName="fullName" />
+          <mat-error>{{ text.required }}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Role</mat-label>
+          <mat-select formControlName="role">
+            <mat-option value="Dispatcher"
+              ><ng-container i18n
+                >Dispatcher: bookings, shifts, drivers, vehicles</ng-container
+              ></mat-option
+            >
+            <mat-option value="Admin"
+              ><ng-container i18n
+                >Admin: everything, including prices, payments and
+                staff</ng-container
+              ></mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+        @if (editing()) {
+          <mat-checkbox formControlName="isActive"
+            ><ng-container i18n>Active</ng-container></mat-checkbox
+          >
+          <p class="staff__muted"
+            ><ng-container i18n
+              >Changing the role or deactivating signs the person out at
+              once.</ng-container
+            ></p
+          >
         } @else {
-          <ng-container i18n>Save</ng-container>
+          <p class="staff__muted"
+            ><ng-container i18n
+              >A temporary password is shown after saving.</ng-container
+            ></p
+          >
         }
-      </button>
-    </div>
+      </div>
+      <div dialog-actions>
+        <button
+          appButton
+          type="button"
+          variant="ghost"
+          (click)="editing.set(undefined)"
+          ><ng-container i18n>Cancel</ng-container></button
+        >
+        <button appButton type="submit" [disabled]="saving()">
+          @if (saving()) {
+            <ng-container i18n>Saving…</ng-container>
+          } @else {
+            <ng-container i18n>Save</ng-container>
+          }
+        </button>
+      </div>
+    </app-dialog>
   </form>
-</p-dialog>
+</ng-template>

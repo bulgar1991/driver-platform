@@ -7,15 +7,12 @@
       >
     </div>
     <div class="fleet__tools">
-      <label class="fleet__check">
-        <input
-          class="fleet__checkbox"
-          type="checkbox"
-          [checked]="showInactive()"
-          (change)="toggleInactive()" />&ngsp;<ng-container i18n
-          >Show inactive</ng-container
-        >
-      </label>
+      <mat-checkbox
+        class="fleet__check"
+        [checked]="showInactive()"
+        (change)="toggleInactive()"
+        ><ng-container i18n>Show inactive</ng-container></mat-checkbox
+      >
       <button appButton size="sm" type="button" (click)="open(null)"
         ><app-icon name="plus" />&ngsp;<ng-container i18n
           >New driver</ng-container
@@ -140,283 +137,260 @@
   </div>
 </div>
 
-<p-dialog
-  [header]="editing() ? tx.editDriver : tx.newDriver"
-  [modal]="true"
-  [draggable]="false"
-  styleClass="fleet__dialog"
-  [visible]="editing() !== undefined"
-  (visibleChange)="$event || editing.set(undefined)">
-  <form class="fleet__form" [formGroup]="form" (ngSubmit)="save()" novalidate>
-    @if (formError(); as message) {
-      <p class="alert alert--error" role="alert">{{ message }}</p>
-    }
-    <app-photo-field [draft]="photo" [alt]="tx.photoAlt" shape="round" />
-    <div class="fleet__grid">
-      <app-form-field
-        i18n-label
-        label="First name"
-        for="dFirst"
-        [error]="
-          form.controls.firstName.touched && form.controls.firstName.invalid
-            ? text.required
-            : null
-        ">
-        <input id="dFirst" class="input" formControlName="firstName" />
-      </app-form-field>
-      <app-form-field
-        i18n-label
-        label="Last name"
-        for="dLast"
-        [error]="
-          form.controls.lastName.touched && form.controls.lastName.invalid
-            ? text.required
-            : null
-        ">
-        <input id="dLast" class="input" formControlName="lastName" />
-      </app-form-field>
-      <app-form-field
-        i18n-label
-        label="Mobile (WhatsApp)"
-        for="dPhone"
-        [error]="
-          form.controls.phone.touched && form.controls.phone.invalid
-            ? tx.phoneHint
-            : null
-        ">
-        <input id="dPhone" class="input" type="tel" formControlName="phone" />
-      </app-form-field>
-      <app-form-field
-        i18n-label
-        label="Email"
-        for="dEmail"
-        [error]="
-          form.controls.email.touched && form.controls.email.invalid
-            ? text.validEmail
-            : null
-        ">
-        <input id="dEmail" class="input" type="email" formControlName="email" />
-      </app-form-field>
-      <app-form-field
-        i18n-label
-        label="Languages (comma separated)"
-        for="dLang">
-        <input
-          id="dLang"
-          class="input"
-          formControlName="languages"
-          i18n-placeholder
-          placeholder="it, en, fr" />
-      </app-form-field>
-      <app-form-field i18n-label label="Preferred areas" for="dAreas">
-        <input
-          id="dAreas"
-          class="input"
-          formControlName="preferredAreas"
-          i18n-placeholder
-          placeholder="Venezia, Mestre" />
-      </app-form-field>
-      <app-form-field i18n-label label="Commission (%)" for="dCommission">
-        <input
-          id="dCommission"
-          class="input"
-          type="number"
-          min="0"
-          max="100"
-          formControlName="commissionPercent" />
-      </app-form-field>
-      <div class="fleet__switches">
-        <label class="fleet__check"
-          ><input
-            class="fleet__checkbox"
-            type="checkbox"
-            formControlName="isActive" />&ngsp;<ng-container i18n
-            >Active</ng-container
-          ></label
-        >
-        <label class="fleet__check"
-          ><input
-            class="fleet__checkbox"
-            type="checkbox"
-            formControlName="isAvailable" />&ngsp;<ng-container i18n
-            >Available for shifts</ng-container
-          ></label
-        >
-      </div>
-    </div>
-
-    <fieldset class="fleet__documents" formArrayName="documents">
-      <legend class="fleet__legend"
-        ><ng-container i18n>Documents</ng-container></legend
-      >
-      @for (
-        doc of form.controls.documents.controls;
-        track doc;
-        let i = $index
-      ) {
-        <div class="fleet__document" [formGroupName]="i">
-          <select
-            class="input"
-            formControlName="type"
-            [attr.aria-label]="tx.documentType(i + 1)">
-            @for (t of documentTypes; track t.value) {
-              <option [value]="t.value">{{ t.label }}</option>
-            }
-          </select>
-          <input
-            class="input"
-            formControlName="number"
-            i18n-placeholder
-            placeholder="Number"
-            [attr.aria-label]="tx.documentNumber(i + 1)" />
-          <input
-            class="input"
-            type="date"
-            formControlName="expiresOn"
-            [attr.aria-label]="tx.documentExpiry(i + 1)" />
-          <button
-            type="button"
-            class="fleet__icon-button"
-            [attr.aria-label]="tx.removeDocument(i + 1)"
-            (click)="removeDocument(i)"
-            ><app-icon name="trash"
-          /></button>
-        </div>
+<ng-template
+  [appDialogOpen]="editing() !== undefined"
+  dialogWidth="46rem"
+  (dialogClosed)="editing.set(undefined)">
+  <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <app-dialog [title]="editing() ? tx.editDriver : tx.newDriver">
+      @if (formError(); as message) {
+        <p class="alert alert--error" role="alert">{{ message }}</p>
       }
-      <button
-        appButton
-        size="sm"
-        variant="ghost"
-        type="button"
-        (click)="addDocument()"
-        ><app-icon name="plus" />&ngsp;<ng-container i18n
-          >Add document</ng-container
-        ></button
-      >
-      <p class="fleet__muted"
-        ><ng-container i18n
-          >A driver with an expired document cannot be put on a shift for that
-          day. Scans can be attached in a later step.</ng-container
-        ></p
-      >
-    </fieldset>
+      <app-photo-field [draft]="photo" [alt]="tx.photoAlt" shape="round" />
+      <div class="fleet__grid">
+        <mat-form-field>
+          <mat-label i18n>First name</mat-label>
+          <input matInput id="dFirst" formControlName="firstName" />
+          <mat-error>{{ text.required }}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Last name</mat-label>
+          <input matInput id="dLast" formControlName="lastName" />
+          <mat-error>{{ text.required }}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Mobile (WhatsApp)</mat-label>
+          <input matInput id="dPhone" type="tel" formControlName="phone" />
+          <mat-error>{{ tx.phoneHint }}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Email</mat-label>
+          <input matInput id="dEmail" type="email" formControlName="email" />
+          <mat-error>{{ text.validEmail }}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Languages (comma separated)</mat-label>
+          <input
+            matInput
+            id="dLang"
+            formControlName="languages"
+            i18n-placeholder
+            placeholder="it, en, fr" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Preferred areas</mat-label>
+          <input
+            matInput
+            id="dAreas"
+            formControlName="preferredAreas"
+            i18n-placeholder
+            placeholder="Venezia, Mestre" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Commission (%)</mat-label>
+          <input
+            matInput
+            id="dCommission"
+            type="number"
+            min="0"
+            max="100"
+            formControlName="commissionPercent" />
+        </mat-form-field>
+        <div class="fleet__switches">
+          <mat-checkbox class="fleet__check" formControlName="isActive"
+            ><ng-container i18n>Active</ng-container></mat-checkbox
+          >
+          <mat-checkbox class="fleet__check" formControlName="isAvailable"
+            ><ng-container i18n
+              >Available for shifts</ng-container
+            ></mat-checkbox
+          >
+        </div>
+      </div>
 
-    @if (editing(); as d) {
-      <a
-        appButton
-        size="sm"
-        variant="outline"
-        class="fleet__history"
-        [routerLink]="['/admin/drivers', d.id, 'rides']"
-        ><app-icon name="route" />&ngsp;<ng-container i18n
-          >Ride history</ng-container
-        ></a
-      >
-    }
-
-    @if (link(); as url) {
-      <section class="fleet__link">
-        <p class="fleet__legend"
-          ><ng-container i18n>Personal link</ng-container></p
+      <fieldset class="fleet__documents" formArrayName="documents">
+        <legend class="fleet__legend"
+          ><ng-container i18n>Documents</ng-container></legend
+        >
+        @for (
+          doc of form.controls.documents.controls;
+          track doc;
+          let i = $index
+        ) {
+          <div class="fleet__document" [formGroupName]="i">
+            <mat-form-field subscriptSizing="dynamic">
+              <mat-select
+                formControlName="type"
+                [attr.aria-label]="tx.documentType(i + 1)">
+                @for (t of documentTypes; track t.value) {
+                  <mat-option [value]="t.value">{{ t.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field subscriptSizing="dynamic">
+              <input
+                matInput
+                formControlName="number"
+                i18n-placeholder
+                placeholder="Number"
+                [attr.aria-label]="tx.documentNumber(i + 1)" />
+            </mat-form-field>
+            <mat-form-field subscriptSizing="dynamic">
+              <input
+                matInput
+                type="date"
+                formControlName="expiresOn"
+                [attr.aria-label]="tx.documentExpiry(i + 1)" />
+            </mat-form-field>
+            <button
+              type="button"
+              class="fleet__icon-button"
+              [attr.aria-label]="tx.removeDocument(i + 1)"
+              (click)="removeDocument(i)"
+              ><app-icon name="trash"
+            /></button>
+          </div>
+        }
+        <button
+          appButton
+          size="sm"
+          variant="ghost"
+          type="button"
+          (click)="addDocument()"
+          ><app-icon name="plus" />&ngsp;<ng-container i18n
+            >Add document</ng-container
+          ></button
         >
         <p class="fleet__muted"
           ><ng-container i18n
-            >All the driver's shifts, without a password. It is sent with every
-            shift.</ng-container
+            >A driver with an expired document cannot be put on a shift for that
+            day. Scans can be attached in a later step.</ng-container
           ></p
         >
-        <input
-          class="input fleet__link-input"
-          readonly
-          [value]="url"
-          i18n-aria-label
-          aria-label="Driver's personal link"
-          (focus)="$any($event.target).select()" />
-        <div class="fleet__link-actions">
-          <button
-            appButton
-            size="sm"
-            variant="outline"
-            type="button"
-            (click)="copyLink()"
-            ><app-icon name="link" />&ngsp;<ng-container i18n
-              >Copy</ng-container
-            ></button
-          >
-          <button
-            appButton
-            size="sm"
-            variant="ghost"
-            type="button"
-            (click)="rotateLink()"
-            ><ng-container i18n>Make a new link</ng-container></button
-          >
-          @if (linkMessage(); as m) {
-            <span class="fleet__muted">{{ m }}</span>
-          }
-        </div>
-      </section>
-    }
+      </fieldset>
 
-    <app-form-field i18n-label label="Notes" for="dNotes">
-      <textarea
-        id="dNotes"
-        class="input"
-        rows="2"
-        formControlName="notes"></textarea>
-    </app-form-field>
+      @if (editing(); as d) {
+        <a
+          appButton
+          size="sm"
+          variant="outline"
+          class="fleet__history"
+          [routerLink]="['/admin/drivers', d.id, 'rides']"
+          ><app-icon name="route" />&ngsp;<ng-container i18n
+            >Ride history</ng-container
+          ></a
+        >
+      }
 
-    <div class="fleet__actions">
-      @if (editing()) {
-        <div class="fleet__delete">
-          @if (confirmDelete()) {
-            <span class="fleet__confirm">
-              <ng-container i18n>Delete this driver?</ng-container>&ngsp;<button
-                appButton
-                size="sm"
-                variant="outline"
-                type="button"
-                [disabled]="saving()"
-                (click)="remove()"
-                ><ng-container i18n>Delete</ng-container></button
-              >
-              <button
-                appButton
-                size="sm"
-                variant="ghost"
-                type="button"
-                (click)="confirmDelete.set(false)"
-                ><ng-container i18n>Keep</ng-container></button
-              >
-            </span>
-          } @else {
+      @if (link(); as url) {
+        <section class="fleet__link">
+          <p class="fleet__legend"
+            ><ng-container i18n>Personal link</ng-container></p
+          >
+          <p class="fleet__muted"
+            ><ng-container i18n
+              >All the driver's shifts, without a password. It is sent with
+              every shift.</ng-container
+            ></p
+          >
+          <mat-form-field subscriptSizing="dynamic">
+            <input
+              matInput
+              class="fleet__link-input"
+              readonly
+              [value]="url"
+              i18n-aria-label
+              aria-label="Driver's personal link"
+              (focus)="$any($event.target).select()" />
+          </mat-form-field>
+          <div class="fleet__link-actions">
+            <button
+              appButton
+              size="sm"
+              variant="outline"
+              type="button"
+              (click)="copyLink()"
+              ><app-icon name="link" />&ngsp;<ng-container i18n
+                >Copy</ng-container
+              ></button
+            >
             <button
               appButton
               size="sm"
               variant="ghost"
               type="button"
-              (click)="confirmDelete.set(true)"
-              ><app-icon name="trash" />&ngsp;<ng-container i18n
-                >Delete</ng-container
-              ></button
+              (click)="rotateLink()"
+              ><ng-container i18n>Make a new link</ng-container></button
             >
-          }
-        </div>
+            @if (linkMessage(); as m) {
+              <span class="fleet__muted">{{ m }}</span>
+            }
+          </div>
+        </section>
       }
-      <button
-        appButton
-        type="button"
-        variant="ghost"
-        (click)="editing.set(undefined)"
-        ><ng-container i18n>Cancel</ng-container></button
-      >
-      <button appButton type="submit" [disabled]="saving()">
-        @if (saving()) {
-          <ng-container i18n>Saving…</ng-container>
-        } @else {
-          <ng-container i18n>Save driver</ng-container>
+
+      <mat-form-field>
+        <mat-label i18n>Notes</mat-label>
+        <textarea
+          matInput
+          id="dNotes"
+          rows="2"
+          formControlName="notes"></textarea>
+      </mat-form-field>
+
+      <div class="fleet__actions" dialog-actions>
+        @if (editing()) {
+          <div class="fleet__delete">
+            @if (confirmDelete()) {
+              <span class="fleet__confirm">
+                <ng-container i18n>Delete this driver?</ng-container
+                >&ngsp;<button
+                  appButton
+                  size="sm"
+                  variant="outline"
+                  type="button"
+                  [disabled]="saving()"
+                  (click)="remove()"
+                  ><ng-container i18n>Delete</ng-container></button
+                >
+                <button
+                  appButton
+                  size="sm"
+                  variant="ghost"
+                  type="button"
+                  (click)="confirmDelete.set(false)"
+                  ><ng-container i18n>Keep</ng-container></button
+                >
+              </span>
+            } @else {
+              <button
+                appButton
+                size="sm"
+                variant="ghost"
+                type="button"
+                (click)="confirmDelete.set(true)"
+                ><app-icon name="trash" />&ngsp;<ng-container i18n
+                  >Delete</ng-container
+                ></button
+              >
+            }
+          </div>
         }
-      </button>
-    </div>
+        <button
+          appButton
+          type="button"
+          variant="ghost"
+          (click)="editing.set(undefined)"
+          ><ng-container i18n>Cancel</ng-container></button
+        >
+        <button appButton type="submit" [disabled]="saving()">
+          @if (saving()) {
+            <ng-container i18n>Saving…</ng-container>
+          } @else {
+            <ng-container i18n>Save driver</ng-container>
+          }
+        </button>
+      </div>
+    </app-dialog>
   </form>
-</p-dialog>
+</ng-template>

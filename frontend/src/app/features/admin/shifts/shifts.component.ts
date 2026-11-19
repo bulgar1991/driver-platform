@@ -12,10 +12,16 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
-import { Dialog } from 'primeng/dialog'
+import { MatFormField } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
+import {
+  DialogComponent,
+  DialogOpenDirective,
+} from '@/shared/components/dialog'
 import { combineLatest, Subscription } from 'rxjs'
 import { BookingListItem, Shift, ShiftResult } from '@/core/models'
 import { AdminDispatchService } from '@/core/services/admin-dispatch.service'
+import { ToastService } from '@/core/services/toast.service'
 import { todayInItaly } from '@/core/utils/italy-time'
 import { poll } from '@/core/utils/poll'
 import { problemMessage } from '@/core/utils/problem'
@@ -33,9 +39,12 @@ import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 @Component({
   selector: 'app-shifts',
   imports: [
+    MatFormField,
+    MatInput,
+    DialogComponent,
+    DialogOpenDirective,
     DatePipe,
     FormsModule,
-    Dialog,
     ButtonComponent,
     IconComponent,
     ShiftCardComponent,
@@ -58,6 +67,7 @@ export class ShiftsComponent {
   readonly date = input<string | undefined>(undefined)
   readonly bookings = input<string | undefined>(undefined)
 
+  private readonly toast = inject(ToastService)
   private readonly api = inject(AdminDispatchService)
   private readonly router = inject(Router)
   private readonly destroyRef = inject(DestroyRef)
@@ -130,11 +140,14 @@ export class ShiftsComponent {
 
   protected onSaved(result: ShiftResult): void {
     this.closeEditor()
-    this.message.set({
-      text: $localize`Shift for ${result.shift.driverName}:driver: saved.`,
-      error: false,
-      warnings: result.warnings,
-    })
+    const text = $localize`Shift for ${result.shift.driverName}:driver: saved.`
+    // Warnings (overtime, documents…) need reading: they stay on the page.
+    if (result.warnings.length) {
+      this.message.set({ text, error: false, warnings: result.warnings })
+    } else {
+      this.message.set(null)
+      this.toast.success(text)
+    }
     this.reload()
   }
 
@@ -145,13 +158,12 @@ export class ShiftsComponent {
       .subscribe({
         next: () => {
           this.busyId.set(null)
-          this.message.set({
-            text:
-              change.status === 'Sent'
-                ? $localize`Shift sent to ${change.shift.driverName}:driver: on WhatsApp and email. The card shows what was delivered.`
-                : $localize`Shift for ${change.shift.driverName}:driver:: ${SHIFT_STATUS_LABEL[change.status]}:status:.`,
-            error: false,
-          })
+          this.message.set(null)
+          this.toast.success(
+            change.status === 'Sent'
+              ? $localize`Shift sent to ${change.shift.driverName}:driver: on WhatsApp and email. The card shows what was delivered.`
+              : $localize`Shift for ${change.shift.driverName}:driver:: ${SHIFT_STATUS_LABEL[change.status]}:status:.`
+          )
           this.reload()
         },
         error: err => {

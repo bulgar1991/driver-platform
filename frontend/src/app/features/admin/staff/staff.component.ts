@@ -7,14 +7,22 @@ import {
   signal,
 } from '@angular/core'
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
-import { Dialog } from 'primeng/dialog'
+import { MatCheckbox } from '@angular/material/checkbox'
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
+import { MatOption, MatSelect } from '@angular/material/select'
 import { finalize } from 'rxjs'
 import { StaffMember, StaffRole } from '@/core/models'
 import { AdminStaffService } from '@/core/services/admin-staff.service'
 import { AuthService } from '@/core/services/auth.service'
 import { problemMessage } from '@/core/utils/problem'
+import { ToastService } from '@/core/services/toast.service'
 import { ButtonComponent } from '@/shared/components/button/button.component'
-import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
+import {
+  DialogComponent,
+  DialogOpenDirective,
+  DialogService,
+} from '@/shared/components/dialog'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
@@ -24,9 +32,16 @@ import { ADMIN_TEXT } from '@/features/admin/admin-texts'
   imports: [
     DatePipe,
     ReactiveFormsModule,
-    Dialog,
+    MatFormField,
+    MatLabel,
+    MatError,
+    MatInput,
+    MatSelect,
+    MatOption,
+    MatCheckbox,
+    DialogComponent,
+    DialogOpenDirective,
     ButtonComponent,
-    FormFieldComponent,
     IconComponent,
   ],
   templateUrl: './staff.component.html',
@@ -42,6 +57,8 @@ export class StaffComponent implements OnInit {
 
   private readonly api = inject(AdminStaffService)
   private readonly fb = inject(FormBuilder).nonNullable
+  private readonly dialogs = inject(DialogService)
+  private readonly toast = inject(ToastService)
   protected readonly me = inject(AuthService).currentUser
 
   protected readonly staff = signal<StaffMember[]>([])
@@ -80,6 +97,12 @@ export class StaffComponent implements OnInit {
       this.form.controls.email.disable()
     } else {
       this.form.controls.email.enable()
+    }
+    // Nobody can deactivate their own account.
+    if (member && member.id === this.me()?.id) {
+      this.form.controls.isActive.disable()
+    } else {
+      this.form.controls.isActive.enable()
     }
     this.editing.set(member)
   }
@@ -137,13 +160,19 @@ export class StaffComponent implements OnInit {
 
   /** Lost phone: they connect the authenticator again at the next sign-in. */
   protected resetTwoFactor(member: StaffMember): void {
-    if (
-      !confirm(
-        $localize`Reset two-step sign-in for ${member.fullName}:name:? They will be signed out and must connect their authenticator app again.`
-      )
-    ) {
-      return
-    }
+    this.dialogs
+      .confirm({
+        title: $localize`Reset two-step sign-in`,
+        message: $localize`Reset two-step sign-in for ${member.fullName}:name:? They will be signed out and must connect their authenticator app again.`,
+        confirm: $localize`Reset`,
+        danger: true,
+      })
+      .subscribe(ok => {
+        if (ok) this.doResetTwoFactor(member)
+      })
+  }
+
+  private doResetTwoFactor(member: StaffMember): void {
     this.api.resetTwoFactor(member.id).subscribe({
       next: () => {
         this.notify(
@@ -156,7 +185,9 @@ export class StaffComponent implements OnInit {
   }
 
   protected copy(value: string): void {
-    void navigator.clipboard?.writeText(value)
+    void navigator.clipboard
+      ?.writeText(value)
+      .then(() => this.toast.success($localize`Copied.`))
   }
 
   private load(): void {
@@ -170,7 +201,13 @@ export class StaffComponent implements OnInit {
       })
   }
 
+  /** Confirmations come and go as a toast; errors stay on the page until the next action. */
   private notify(text: string, error = false): void {
-    this.message.set({ text, error })
+    if (error) {
+      this.message.set({ text, error })
+    } else {
+      this.message.set(null)
+      this.toast.success(text)
+    }
   }
 }

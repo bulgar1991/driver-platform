@@ -72,13 +72,15 @@
   @if (open()) {
     <footer class="shift-card__actions">
       @if (cancelling()) {
-        <input
-          class="input shift-card__reason"
-          i18n-placeholder
-          placeholder="Reason"
-          i18n-aria-label
-          aria-label="Reason for cancelling the shift"
-          [(ngModel)]="reason" />
+        <mat-form-field class="shift-card__reason" subscriptSizing="dynamic">
+          <input
+            matInput
+            i18n-placeholder
+            placeholder="Reason"
+            i18n-aria-label
+            aria-label="Reason for cancelling the shift"
+            [(ngModel)]="reason" />
+        </mat-form-field>
         <button
           appButton
           size="sm"

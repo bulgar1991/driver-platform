@@ -7,14 +7,20 @@ import {
   signal,
 } from '@angular/core'
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
-import { Dialog } from 'primeng/dialog'
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
+import { MatOption, MatSelect } from '@angular/material/select'
+import { MatCheckbox } from '@angular/material/checkbox'
+import {
+  DialogComponent,
+  DialogOpenDirective,
+} from '@/shared/components/dialog'
 import { finalize, of, switchMap } from 'rxjs'
 import { Vehicle, VehicleCategory } from '@/core/models'
 import { AdminFleetService } from '@/core/services/admin-fleet.service'
 import { todayInItaly } from '@/core/utils/italy-time'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
-import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 import { PhotoDraft } from '@/features/admin/photo-field/photo-draft'
@@ -36,11 +42,18 @@ const CATEGORIES: {
 @Component({
   selector: 'app-vehicles',
   imports: [
+    MatFormField,
+    MatLabel,
+    MatError,
+    MatInput,
+    MatSelect,
+    MatOption,
+    MatCheckbox,
+    DialogComponent,
+    DialogOpenDirective,
     DatePipe,
     ReactiveFormsModule,
-    Dialog,
     ButtonComponent,
-    FormFieldComponent,
     IconComponent,
     PhotoFieldComponent,
   ],

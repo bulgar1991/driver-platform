@@ -13,6 +13,10 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
+import { MatFormField, MatLabel } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
+import { MatOption, MatSelect } from '@angular/material/select'
+import { MatCheckbox } from '@angular/material/checkbox'
 import { Drawer } from 'primeng/drawer'
 import { debounceTime, Subscription } from 'rxjs'
 import { BookingListItem, BookingQuery, BookingStatus } from '@/core/models'
@@ -34,6 +38,12 @@ const PAGE_SIZE = 50
 @Component({
   selector: 'app-bookings',
   imports: [
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatSelect,
+    MatOption,
+    MatCheckbox,
     DatePipe,
     ReactiveFormsModule,
     Drawer,

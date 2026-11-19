@@ -58,7 +58,7 @@
   }
 
   &__row {
-    @apply grid grid-cols-1 gap-x-4 gap-y-6 xm:grid-cols-2;
+    @apply grid grid-cols-1 items-start gap-x-4 gap-y-1 xm:grid-cols-2;
   }
 
   &__fieldset {
@@ -93,38 +93,8 @@
     @apply text-[11px] text-ivory-400;
   }
 
-  // Block element: switch — a CSS toggle around a real checkbox.
   &__switch {
-    @apply flex cursor-pointer items-center gap-3 text-sm text-ivory;
-  }
-
-  &__switch-input {
-    @apply sr-only;
-  }
-
-  &__switch-track {
-    @apply relative h-6 w-11 shrink-0 rounded-full border border-ink-400 bg-ink-800 transition-colors duration-300;
-
-    &::after {
-      content: '';
-      @apply absolute left-0.5 top-0.5 h-[1.125rem] w-[1.125rem] rounded-full bg-ivory-300;
-      transition:
-        transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-        background-color 0.3s;
-    }
-  }
-
-  &__switch-input:checked + &__switch-track {
-    @apply border-gold bg-gold/30;
-
-    &::after {
-      @apply bg-gold;
-      transform: translateX(1.25rem);
-    }
-  }
-
-  &__switch-input:focus-visible + &__switch-track {
-    @apply outline outline-2 outline-offset-2 outline-gold;
+    @apply text-sm;
   }
 
   &__appear {

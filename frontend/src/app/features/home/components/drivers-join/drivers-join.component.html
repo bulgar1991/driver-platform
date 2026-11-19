@@ -22,7 +22,7 @@
         </h2>
       }
       <p class="drivers-join__lead" appReveal [delay]="160" i18n>
-        We work with licensed NCC and taxi drivers across Italy, with or without
+        We work with licensed professional drivers {{ area }}, with or without
         their own car. Tell us about you; we answer within a few days.
       </p>
       <ul class="drivers-join__benefits">
@@ -74,66 +74,56 @@
           }
 
           <div class="drivers-join__row">
-            <app-form-field
-              i18n-label
-              label="First name"
-              for="djFirst"
-              [error]="invalid('firstName') ? t.required : null">
+            <mat-form-field>
+              <mat-label i18n>First name</mat-label>
               <input
+                matInput
                 id="djFirst"
-                class="input"
                 autocomplete="given-name"
                 formControlName="firstName" />
-            </app-form-field>
-            <app-form-field
-              i18n-label
-              label="Last name"
-              for="djLast"
-              [error]="invalid('lastName') ? t.required : null">
+              <mat-error>{{ t.required }}</mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label i18n>Last name</mat-label>
               <input
+                matInput
                 id="djLast"
-                class="input"
                 autocomplete="family-name"
                 formControlName="lastName" />
-            </app-form-field>
+              <mat-error>{{ t.required }}</mat-error>
+            </mat-form-field>
           </div>
           <div class="drivers-join__row">
-            <app-form-field
-              i18n-label
-              label="Mobile (WhatsApp)"
-              for="djPhone"
-              [error]="invalid('phone') ? t.phone : null">
+            <mat-form-field>
+              <mat-label i18n>Mobile (WhatsApp)</mat-label>
               <input
+                matInput
                 id="djPhone"
-                class="input"
                 type="tel"
                 autocomplete="tel"
                 formControlName="phone" />
-            </app-form-field>
-            <app-form-field
-              i18n-label
-              label="Email"
-              for="djEmail"
-              [error]="invalid('email') ? t.email : null">
+              <mat-error>{{ t.phone }}</mat-error>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label i18n>Email</mat-label>
               <input
+                matInput
                 id="djEmail"
-                class="input"
                 type="email"
                 autocomplete="email"
                 formControlName="email" />
-            </app-form-field>
+              <mat-error>{{ t.email }}</mat-error>
+            </mat-form-field>
           </div>
-          <app-form-field
-            i18n-label
-            label="City where you drive"
-            for="djCity"
-            [error]="invalid('city') ? t.required : null">
+          <mat-form-field>
+            <mat-label i18n>City where you drive</mat-label>
             <input
+              matInput
               id="djCity"
-              class="input"
               placeholder="Venezia, Roma, Milano…"
               formControlName="city" />
-          </app-form-field>
+            <mat-error>{{ t.required }}</mat-error>
+          </mat-form-field>
 
           <fieldset class="drivers-join__fieldset">
             <legend class="drivers-join__legend" i18n>Licence</legend>
@@ -163,25 +153,22 @@
             [max]="60"
             formControlName="yearsExperience" />
 
-          <label class="drivers-join__switch">
-            <input
-              class="drivers-join__switch-input"
-              type="checkbox"
-              formControlName="hasOwnVehicle" />
-            <span class="drivers-join__switch-track" aria-hidden="true"></span>
-            <ng-container i18n>I have my own car</ng-container>
-          </label>
+          <mat-slide-toggle
+            class="drivers-join__switch"
+            formControlName="hasOwnVehicle"
+            ><ng-container i18n
+              >I have my own car</ng-container
+            ></mat-slide-toggle
+          >
           @if (form.controls.hasOwnVehicle.value) {
-            <app-form-field
-              i18n-label
-              label="Car (make, model, year)"
-              for="djVehicle">
+            <mat-form-field class="drivers-join__appear">
+              <mat-label i18n>Car (make, model, year)</mat-label>
               <input
+                matInput
                 id="djVehicle"
-                class="input drivers-join__appear"
                 placeholder="Mercedes E-Class 2023"
                 formControlName="vehicle" />
-            </app-form-field>
+            </mat-form-field>
           }
 
           <fieldset class="drivers-join__fieldset">
@@ -206,16 +193,14 @@
             </div>
           </fieldset>
 
-          <app-form-field
-            i18n-label
-            label="Anything else? (optional)"
-            for="djMessage">
+          <mat-form-field>
+            <mat-label i18n>Anything else? (optional)</mat-label>
             <textarea
+              matInput
               id="djMessage"
-              class="input"
               rows="3"
               formControlName="message"></textarea>
-          </app-form-field>
+          </mat-form-field>
 
           <!-- Honeypot: hidden from people, filled by bots. -->
           <input
@@ -225,12 +210,10 @@
             aria-hidden="true"
             formControlName="website" />
 
-          <label class="drivers-join__consent">
-            <input
-              class="drivers-join__checkbox"
-              type="checkbox"
-              formControlName="privacyConsent" />
-            <span i18n
+          <mat-checkbox
+            class="drivers-join__consent"
+            formControlName="privacyConsent"
+            ><span i18n
               >I agree that my details are kept to evaluate my application, as
               described in the
               <a
@@ -239,8 +222,8 @@
                 target="_blank"
                 >privacy policy</a
               >.</span
-            >
-          </label>
+            ></mat-checkbox
+          >
           @if (invalid('privacyConsent')) {
             <p class="drivers-join__error" role="alert" i18n
               >Please accept to continue.</p

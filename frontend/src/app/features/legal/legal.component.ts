@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { RouterLink } from '@angular/router'
+import { AREA_IN } from '@/core/area'
 
 export type LegalPage = 'privacy' | 'terms'
 
@@ -15,6 +16,7 @@ export type LegalPage = 'privacy' | 'terms'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LegalComponent {
+  protected readonly area = AREA_IN
   /** From the route data. */
   readonly page = input<LegalPage>('privacy')
 }

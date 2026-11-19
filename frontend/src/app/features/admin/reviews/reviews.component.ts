@@ -7,6 +7,8 @@ import {
   OnInit,
   signal,
 } from '@angular/core'
+import { MatFormField, MatLabel } from '@angular/material/form-field'
+import { MatOption, MatSelect } from '@angular/material/select'
 import { finalize } from 'rxjs'
 import { Driver, Review } from '@/core/models'
 import { AdminFleetService } from '@/core/services/admin-fleet.service'
@@ -16,7 +18,14 @@ import { IconComponent } from '@/shared/components/icon/icon.component'
 /** Client reviews of rides and drivers. */
 @Component({
   selector: 'app-reviews',
-  imports: [DatePipe, IconComponent],
+  imports: [
+    MatFormField,
+    MatLabel,
+    MatSelect,
+    MatOption,
+    DatePipe,
+    IconComponent,
+  ],
   templateUrl: './reviews.component.html',
   styleUrl: './reviews.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

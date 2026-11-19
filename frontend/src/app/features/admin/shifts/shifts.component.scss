@@ -14,7 +14,7 @@
   }
 
   &__date {
-    @apply w-44 py-2;
+    @apply w-44;
   }
 
   &__warnings {
@@ -61,8 +61,4 @@
   &__muted {
     @apply block text-xs text-ivory-400;
   }
-}
-
-::ng-deep .shifts__dialog {
-  @apply w-[min(44rem,calc(100vw-2rem))];
 }

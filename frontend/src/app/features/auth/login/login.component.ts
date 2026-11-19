@@ -7,20 +7,24 @@ import {
 } from '@angular/core'
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
 import { finalize } from 'rxjs'
 import { AuthService } from '@/core/services/auth.service'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
-import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { LogoComponent } from '@/shared/components/logo/logo.component'
 import { LanguageSwitchComponent } from '@/layout/language-switch/language-switch.component'
 
 @Component({
   selector: 'app-login',
   imports: [
+    MatFormField,
+    MatLabel,
+    MatError,
+    MatInput,
     ReactiveFormsModule,
     ButtonComponent,
-    FormFieldComponent,
     LanguageSwitchComponent,
     LogoComponent,
   ],

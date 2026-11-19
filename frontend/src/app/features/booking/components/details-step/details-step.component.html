@@ -2,63 +2,61 @@
   <fieldset class="details-step__group" [formGroup]="details()">
     <legend class="details-step__legend" i18n>Options</legend>
 
-    <label class="details-step__toggle">
-      <input
-        class="details-step__checkbox"
-        type="checkbox"
-        formControlName="nameSign" />
-      <span>
+    <mat-checkbox class="details-step__toggle" formControlName="nameSign"
+      ><span>
         <ng-container i18n>Name sign in arrivals</ng-container>
         @if (options()?.extras?.NameSign; as price) {
           <span class="details-step__price">+{{ price | money }}</span>
         }
-      </span>
-    </label>
+      </span></mat-checkbox
+    >
     @if (details().controls.nameSign.value) {
-      <app-form-field
-        i18n-label
-        label="Name on the sign"
-        for="nameSignText"
-        [error]="detailsError('nameSignText')">
+      <mat-form-field>
+        <mat-label i18n>Name on the sign</mat-label>
         <input
+          matInput
           id="nameSignText"
-          class="input"
           i18n-placeholder
           placeholder="Your name if left empty"
           formControlName="nameSignText" />
-      </app-form-field>
+        @if (detailsError('nameSignText'); as err) {
+          <mat-error>{{ err }}</mat-error>
+        }
+      </mat-form-field>
     }
 
-    <app-form-field
-      i18n-label
-      label="Flight or ship number"
-      for="flightNumber"
-      [error]="detailsError('flightNumber')">
+    <mat-form-field>
+      <mat-label i18n>Flight or ship number</mat-label>
       <input
+        matInput
         id="flightNumber"
-        class="input"
         i18n-placeholder
         placeholder="Optional — we track delays"
         autocomplete="off"
         formControlName="flightNumber" />
-    </app-form-field>
+      @if (detailsError('flightNumber'); as err) {
+        <mat-error>{{ err }}</mat-error>
+      }
+    </mat-form-field>
 
     @if (details().controls.flightNumber.value.trim()) {
       <div class="details-step__row">
-        <app-form-field i18n-label label="Takeoff" for="flightDepartsAt">
+        <mat-form-field>
+          <mat-label i18n>Takeoff</mat-label>
           <input
+            matInput
             id="flightDepartsAt"
-            class="input"
             type="datetime-local"
             formControlName="flightDepartsAt" />
-        </app-form-field>
-        <app-form-field i18n-label label="Landing" for="flightLandsAt">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Landing</mat-label>
           <input
+            matInput
             id="flightLandsAt"
-            class="input"
             type="datetime-local"
             formControlName="flightLandsAt" />
-        </app-form-field>
+        </mat-form-field>
       </div>
       <p class="details-step__hint" i18n
         >Optional. Local times, as on your ticket: the driver plans the pickup
@@ -67,44 +65,41 @@
     }
 
     @if (hasReturn()) {
-      <label class="details-step__toggle">
+      <mat-checkbox
+        class="details-step__toggle"
+        formControlName="returnNameSign"
+        ><span i18n>Name sign on the return trip</span></mat-checkbox
+      >
+      <mat-form-field>
+        <mat-label i18n>Return flight or ship number</mat-label>
         <input
-          class="details-step__checkbox"
-          type="checkbox"
-          formControlName="returnNameSign" />
-        <span i18n>Name sign on the return trip</span>
-      </label>
-      <app-form-field
-        i18n-label
-        label="Return flight or ship number"
-        for="returnFlightNumber"
-        [error]="detailsError('returnFlightNumber')">
-        <input
+          matInput
           id="returnFlightNumber"
-          class="input"
           autocomplete="off"
           formControlName="returnFlightNumber" />
-      </app-form-field>
+        @if (detailsError('returnFlightNumber'); as err) {
+          <mat-error>{{ err }}</mat-error>
+        }
+      </mat-form-field>
 
       @if (details().controls.returnFlightNumber.value.trim()) {
         <div class="details-step__row">
-          <app-form-field
-            i18n-label
-            label="Takeoff"
-            for="returnFlightDepartsAt">
+          <mat-form-field>
+            <mat-label i18n>Takeoff</mat-label>
             <input
+              matInput
               id="returnFlightDepartsAt"
-              class="input"
               type="datetime-local"
               formControlName="returnFlightDepartsAt" />
-          </app-form-field>
-          <app-form-field i18n-label label="Landing" for="returnFlightLandsAt">
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Landing</mat-label>
             <input
+              matInput
               id="returnFlightLandsAt"
-              class="input"
               type="datetime-local"
               formControlName="returnFlightLandsAt" />
-          </app-form-field>
+          </mat-form-field>
         </div>
         <p class="details-step__hint" i18n
           >Optional. Local times, as on your ticket: the driver plans the pickup
@@ -113,75 +108,73 @@
       }
     }
 
-    <app-form-field i18n-label label="Notes for the driver" for="notes">
+    <mat-form-field>
+      <mat-label i18n>Notes for the driver</mat-label>
       <textarea
+        matInput
         id="notes"
-        class="input details-step__notes"
+        class="details-step__notes"
         rows="3"
         formControlName="notes"></textarea>
-    </app-form-field>
+    </mat-form-field>
   </fieldset>
 
   <fieldset class="details-step__group" [formGroup]="contact()">
     <legend class="details-step__legend" i18n>Your details</legend>
     <div class="details-step__row">
-      <app-form-field
-        i18n-label
-        label="First name"
-        for="firstName"
-        [error]="contactError('firstName')">
+      <mat-form-field>
+        <mat-label i18n>First name</mat-label>
         <input
+          matInput
           id="firstName"
-          class="input"
           autocomplete="given-name"
           formControlName="firstName" />
-      </app-form-field>
-      <app-form-field
-        i18n-label
-        label="Last name"
-        for="lastName"
-        [error]="contactError('lastName')">
+        @if (contactError('firstName'); as err) {
+          <mat-error>{{ err }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>Last name</mat-label>
         <input
+          matInput
           id="lastName"
-          class="input"
           autocomplete="family-name"
           formControlName="lastName" />
-      </app-form-field>
+        @if (contactError('lastName'); as err) {
+          <mat-error>{{ err }}</mat-error>
+        }
+      </mat-form-field>
     </div>
     <div class="details-step__row">
-      <app-form-field
-        i18n-label
-        label="Email"
-        for="email"
-        [error]="contactError('email')">
+      <mat-form-field>
+        <mat-label i18n>Email</mat-label>
         <input
+          matInput
           id="email"
-          class="input"
           type="email"
           autocomplete="email"
           formControlName="email" />
-      </app-form-field>
-      <app-form-field
-        i18n-label
-        label="Mobile phone"
-        for="phone"
-        [error]="contactError('phone')">
+        @if (contactError('email'); as err) {
+          <mat-error>{{ err }}</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>Mobile phone</mat-label>
         <input
+          matInput
           id="phone"
-          class="input"
           type="tel"
           autocomplete="tel"
           placeholder="+39 …"
           formControlName="phone" />
-      </app-form-field>
+        @if (contactError('phone'); as err) {
+          <mat-error>{{ err }}</mat-error>
+        }
+      </mat-form-field>
     </div>
 
-    <label class="details-step__toggle">
-      <input
-        class="details-step__checkbox"
-        type="checkbox"
-        formControlName="gdprConsent" />
-      <span i18n>
+    <mat-checkbox class="details-step__toggle" formControlName="gdprConsent"
+      ><span i18n>
         I agree that my details are used to arrange this ride, as described in
         the
         <a class="details-step__link" routerLink="/privacy" target="_blank"
@@ -190,20 +183,18 @@
         <a class="details-step__link" routerLink="/terms" target="_blank"
           >terms of service</a
         >.
-      </span>
-    </label>
+      </span></mat-checkbox
+    >
     @if (contactError('gdprConsent')) {
       <p class="details-step__error" role="alert" i18n
         >Please accept to continue.</p
       >
     }
-    <label class="details-step__toggle">
-      <input
-        class="details-step__checkbox"
-        type="checkbox"
-        formControlName="marketingConsent" />
-      <span i18n>Send me occasional offers (optional).</span>
-    </label>
+    <mat-checkbox
+      class="details-step__toggle"
+      formControlName="marketingConsent"
+      ><span i18n>Send me occasional offers (optional).</span></mat-checkbox
+    >
   </fieldset>
 
   <div class="details-step__actions">

@@ -10,20 +10,24 @@
       class="payments__export"
       [formGroup]="exportForm"
       (ngSubmit)="exportCsv()">
-      <app-form-field i18n-label label="Invoices from" for="exportFrom">
+      <mat-form-field>
+        <mat-label i18n>Invoices from</mat-label>
         <input
+          matInput
           id="exportFrom"
-          class="input payments__date"
+          class="payments__date"
           type="date"
           formControlName="from" />
-      </app-form-field>
-      <app-form-field i18n-label label="To" for="exportTo">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>To</mat-label>
         <input
+          matInput
           id="exportTo"
-          class="input payments__date"
+          class="payments__date"
           type="date"
           formControlName="to" />
-      </app-form-field>
+      </mat-form-field>
       <button appButton size="sm" variant="outline" type="submit">
         <app-icon name="download" />&ngsp;<ng-container i18n
           >CSV for the accountant</ng-container
@@ -171,104 +175,80 @@
   </div>
 </div>
 
-<p-dialog
-  i18n-header
-  header="Refund"
-  [modal]="true"
-  [draggable]="false"
-  [dismissableMask]="true"
-  styleClass="payments__dialog"
-  [visible]="refunding() !== null"
-  (visibleChange)="$event || refunding.set(null)">
+<ng-template
+  [appDialogOpen]="refunding() !== null"
+  dialogWidth="30rem"
+  (dialogClosed)="refunding.set(null)">
   @if (refunding(); as p) {
-    <form
-      class="payments__refund"
-      [formGroup]="refundForm"
-      (ngSubmit)="refund()"
-      novalidate>
-      <p class="payments__muted">
-        <ng-container i18n
-          >{{ p.bookingReference }} · {{ p.clientName }} · paid
-          {{ p.amount | money: p.currency }}</ng-container
-        >&ngsp;
-        @if (p.refundedAmount) {
+    <form [formGroup]="refundForm" (ngSubmit)="refund()" novalidate>
+      <app-dialog i18n-title title="Refund">
+        <p class="payments__muted">
           <ng-container i18n
-            >, {{ p.refundedAmount | money: p.currency }} already
-            refunded</ng-container
-          >
-        }
-      </p>
-      <app-form-field
-        i18n-label
-        label="Amount (€)"
-        for="refundAmount"
-        [error]="
-          refundForm.controls.amount.touched &&
-          refundForm.controls.amount.invalid
-            ? tx.refundLimit
-            : null
-        ">
-        <input
-          id="refundAmount"
-          class="input"
-          type="number"
-          step="0.01"
-          min="0.01"
-          formControlName="amount" />
-      </app-form-field>
-      <app-form-field
-        i18n-label
-        label="Reason (printed on the credit note)"
-        for="refundReason"
-        [error]="
-          refundForm.controls.reason.touched &&
-          refundForm.controls.reason.invalid
-            ? text.required
-            : null
-        ">
-        <input
-          id="refundReason"
-          class="input"
-          formControlName="reason"
-          i18n-placeholder
-          placeholder="e.g. Client cancelled 48 h before" />
-      </app-form-field>
-      <label class="payments__toggle">
-        <input
-          class="payments__checkbox"
-          type="checkbox"
-          formControlName="cancelBooking" />&ngsp;<ng-container i18n
-          >Also cancel the ride (and its return trip)</ng-container
-        >
-      </label>
-      <p class="payments__muted">
-        <ng-container i18n
-          >The money goes back to the client's card or PayPal through Stripe. A
-          credit note is issued and emailed. This cannot be
-          undone.</ng-container
-        >
-      </p>
-      <div class="payments__actions">
-        <button
-          appButton
-          type="button"
-          variant="ghost"
-          (click)="refunding.set(null)"
-          ><ng-container i18n>Cancel</ng-container></button
-        >
-        <button appButton type="submit" [disabled]="saving()">
-          @if (saving()) {
-            <ng-container i18n>Refunding…</ng-container>
-          } @else {
+            >{{ p.bookingReference }} · {{ p.clientName }} · paid
+            {{ p.amount | money: p.currency }}</ng-container
+          >&ngsp;
+          @if (p.refundedAmount) {
             <ng-container i18n
-              >Refund
-              {{
-                refundForm.controls.amount.value | money: p.currency
-              }}</ng-container
+              >, {{ p.refundedAmount | money: p.currency }} already
+              refunded</ng-container
             >
           }
-        </button>
-      </div>
+        </p>
+        <mat-form-field>
+          <mat-label i18n>Amount (€)</mat-label>
+          <input
+            matInput
+            id="refundAmount"
+            type="number"
+            step="0.01"
+            min="0.01"
+            formControlName="amount" />
+          <mat-error>{{ tx.refundLimit }}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Reason (printed on the credit note)</mat-label>
+          <input
+            matInput
+            id="refundReason"
+            formControlName="reason"
+            i18n-placeholder
+            placeholder="e.g. Client cancelled 48 h before" />
+          <mat-error>{{ text.required }}</mat-error>
+        </mat-form-field>
+        <mat-checkbox class="payments__toggle" formControlName="cancelBooking"
+          ><ng-container i18n
+            >Also cancel the ride (and its return trip)</ng-container
+          ></mat-checkbox
+        >
+        <p class="payments__muted">
+          <ng-container i18n
+            >The money goes back to the client's card or PayPal through Stripe.
+            A credit note is issued and emailed. This cannot be
+            undone.</ng-container
+          >
+        </p>
+        <div class="payments__actions" dialog-actions>
+          <button
+            appButton
+            type="button"
+            variant="ghost"
+            (click)="refunding.set(null)"
+            ><ng-container i18n>Cancel</ng-container></button
+          >
+          <button appButton type="submit" [disabled]="saving()">
+            @if (saving()) {
+              <ng-container i18n>Refunding…</ng-container>
+            } @else {
+              <ng-container i18n
+                >Refund
+                {{
+                  refundForm.controls.amount.value | money: p.currency
+                }}</ng-container
+              >
+            }
+          </button>
+        </div>
+      </app-dialog>
     </form>
   }
-</p-dialog>
+</ng-template>

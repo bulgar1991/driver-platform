@@ -57,54 +57,68 @@
                 <th scope="row">{{
                   categoryLabel(group.controls.category.value)
                 }}</th>
-                <td
-                  ><input
-                    class="input pricing__number"
-                    type="number"
-                    step="0.5"
-                    min="0"
-                    formControlName="baseFee"
-                    [attr.aria-label]="
-                      tx.baseFee(categoryLabel(group.controls.category.value))
-                    "
-                /></td>
-                <td
-                  ><input
-                    class="input pricing__number"
-                    type="number"
-                    step="0.05"
-                    min="0"
-                    formControlName="pricePerKm"
-                    [attr.aria-label]="
-                      tx.pricePerKm(
-                        categoryLabel(group.controls.category.value)
-                      )
-                    "
-                /></td>
-                <td
-                  ><input
-                    class="input pricing__number"
-                    type="number"
-                    min="1"
-                    max="8"
-                    formControlName="maxPassengers"
-                    [attr.aria-label]="
-                      tx.passengers(
-                        categoryLabel(group.controls.category.value)
-                      )
-                    "
-                /></td>
-                <td
-                  ><input
-                    class="input pricing__number"
-                    type="number"
-                    min="0"
-                    max="16"
-                    formControlName="maxLuggage"
-                    [attr.aria-label]="
-                      tx.largeBags(categoryLabel(group.controls.category.value))
-                    "
-                /></td>
+                <td>
+                  <mat-form-field
+                    class="pricing__number"
+                    subscriptSizing="dynamic">
+                    <input
+                      matInput
+                      type="number"
+                      step="0.5"
+                      min="0"
+                      formControlName="baseFee"
+                      [attr.aria-label]="
+                        tx.baseFee(categoryLabel(group.controls.category.value))
+                      " /> </mat-form-field
+                ></td>
+                <td>
+                  <mat-form-field
+                    class="pricing__number"
+                    subscriptSizing="dynamic">
+                    <input
+                      matInput
+                      type="number"
+                      step="0.05"
+                      min="0"
+                      formControlName="pricePerKm"
+                      [attr.aria-label]="
+                        tx.pricePerKm(
+                          categoryLabel(group.controls.category.value)
+                        )
+                      " /> </mat-form-field
+                ></td>
+                <td>
+                  <mat-form-field
+                    class="pricing__number"
+                    subscriptSizing="dynamic">
+                    <input
+                      matInput
+                      type="number"
+                      min="1"
+                      max="8"
+                      formControlName="maxPassengers"
+                      [attr.aria-label]="
+                        tx.passengers(
+                          categoryLabel(group.controls.category.value)
+                        )
+                      " /> </mat-form-field
+                ></td>
+                <td>
+                  <mat-form-field
+                    class="pricing__number"
+                    subscriptSizing="dynamic">
+                    <input
+                      matInput
+                      type="number"
+                      min="0"
+                      max="16"
+                      formControlName="maxLuggage"
+                      [attr.aria-label]="
+                        tx.largeBags(
+                          categoryLabel(group.controls.category.value)
+                        )
+                      " /> </mat-form-field
+                ></td>
                 <td>
                   <button
                     appButton
@@ -158,17 +172,15 @@
             </div>
             <span class="pricing__rule-percent">+{{ rule.percent }}%</span>
             <div class="pricing__rule-actions">
-              <label class="pricing__switch">
-                <input
-                  type="checkbox"
-                  class="pricing__checkbox"
-                  [checked]="rule.isActive"
-                  [disabled]="saving() === 'toggle-' + rule.id"
-                  (change)="toggleSurcharge(rule)" />
-                <span class="pricing__sr"
+              <mat-checkbox
+                class="pricing__switch"
+                [checked]="rule.isActive"
+                [disabled]="saving() === 'toggle-' + rule.id"
+                (change)="toggleSurcharge(rule)"
+                ><span class="pricing__sr"
                   ><ng-container i18n>Active</ng-container></span
-                >
-              </label>
+                ></mat-checkbox
+              >
               <button
                 type="button"
                 class="pricing__icon-button"
@@ -225,13 +237,15 @@
               <label class="pricing__label" [for]="'extra-' + i">{{
                 extraLabels[group.controls.type.value]
               }}</label>
-              <input
-                [id]="'extra-' + i"
-                class="input pricing__number"
-                type="number"
-                min="0"
-                step="0.5"
-                formControlName="amount" />
+              <mat-form-field class="pricing__number" subscriptSizing="dynamic">
+                <input
+                  matInput
+                  [id]="'extra-' + i"
+                  type="number"
+                  min="0"
+                  step="0.5"
+                  formControlName="amount" />
+              </mat-form-field>
               <button
                 appButton
                 size="sm"
@@ -256,25 +270,29 @@
                 >VAT included (%) · confirm with the accountant</ng-container
               ></label
             >
-            <input
-              id="vat"
-              class="input pricing__number"
-              type="number"
-              min="0"
-              max="50"
-              formControlName="vatRatePercent" />
+            <mat-form-field class="pricing__number" subscriptSizing="dynamic">
+              <input
+                matInput
+                id="vat"
+                type="number"
+                min="0"
+                max="50"
+                formControlName="vatRatePercent" />
+            </mat-form-field>
           </li>
           <li class="pricing__list-item">
             <label class="pricing__label" for="returnDiscount"
               ><ng-container i18n>Return trip discount (%)</ng-container></label
             >
-            <input
-              id="returnDiscount"
-              class="input pricing__number"
-              type="number"
-              min="0"
-              max="50"
-              formControlName="returnDiscountPercent" />
+            <mat-form-field class="pricing__number" subscriptSizing="dynamic">
+              <input
+                matInput
+                id="returnDiscount"
+                type="number"
+                min="0"
+                max="50"
+                formControlName="returnDiscountPercent" />
+            </mat-form-field>
           </li>
           <li class="pricing__list-item">
             <label class="pricing__label" for="leadTime"
@@ -282,13 +300,15 @@
                 >Book at least (hours ahead)</ng-container
               ></label
             >
-            <input
-              id="leadTime"
-              class="input pricing__number"
-              type="number"
-              min="0"
-              max="168"
-              formControlName="minLeadTimeHours" />
+            <mat-form-field class="pricing__number" subscriptSizing="dynamic">
+              <input
+                matInput
+                id="leadTime"
+                type="number"
+                min="0"
+                max="168"
+                formControlName="minLeadTimeHours" />
+            </mat-form-field>
           </li>
         </ul>
         <button
@@ -304,19 +324,17 @@
   }
 </div>
 
-<p-dialog
-  [header]="editing() ? tx.editSurcharge : tx.newSurcharge"
-  [modal]="true"
-  [draggable]="false"
-  [dismissableMask]="true"
-  styleClass="pricing__dialog"
-  [visible]="dialogOpen()"
-  (visibleChange)="dialogOpen.set($event)">
-  @if (dialogOpen()) {
-    <app-surcharge-form
-      [rule]="editing()"
-      [saving]="saving() === 'surcharge'"
-      (saved)="saveSurcharge($event)"
-      (cancelled)="dialogOpen.set(false)" />
-  }
-</p-dialog>
+<ng-template
+  [appDialogOpen]="dialogOpen()"
+  dialogWidth="32rem"
+  (dialogClosed)="dialogOpen.set(false)">
+  <app-dialog [title]="editing() ? tx.editSurcharge : tx.newSurcharge">
+    @if (dialogOpen()) {
+      <app-surcharge-form
+        [rule]="editing()"
+        [saving]="saving() === 'surcharge'"
+        (saved)="saveSurcharge($event)"
+        (cancelled)="dialogOpen.set(false)" />
+    }
+  </app-dialog>
+</ng-template>

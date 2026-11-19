@@ -118,21 +118,17 @@
         }
         &ngsp;<ng-container i18n>· speaks {{ b.client.language }}</ng-container>
       </p>
-      <label class="booking-detail__field" for="clientNotes">
-        <span
-          ><ng-container i18n
-            >Notes about this client for the driver</ng-container
-          ></span
-        >
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>Notes about this client for the driver</mat-label>
         <textarea
+          matInput
           id="clientNotes"
-          class="input"
           rows="3"
           maxlength="1000"
           i18n-placeholder
           placeholder="E.g. regular client, needs help with luggage, prefers a quiet ride"
           [(ngModel)]="clientNotes"></textarea>
-      </label>
+      </mat-form-field>
       <p class="booking-detail__muted"
         ><ng-container i18n
           >Saved on the client: the driver sees them on every ride of this
@@ -200,28 +196,28 @@
         ><ng-container i18n>Flight</ng-container></h3
       >
       <div class="booking-detail__flight">
-        <label class="booking-detail__field">
-          <span><ng-container i18n>Flight or ship number</ng-container></span>
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label i18n>Flight or ship number</mat-label>
           <input
-            class="input"
+            matInput
             autocomplete="off"
             placeholder="FR 1234"
             [(ngModel)]="flight.flightNumber" />
-        </label>
-        <label class="booking-detail__field">
-          <span><ng-container i18n>Takeoff</ng-container></span>
+        </mat-form-field>
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label i18n>Takeoff</mat-label>
           <input
-            class="input"
+            matInput
             type="datetime-local"
             [(ngModel)]="flight.flightDepartsAt" />
-        </label>
-        <label class="booking-detail__field">
-          <span><ng-container i18n>Landing</ng-container></span>
+        </mat-form-field>
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label i18n>Landing</mat-label>
           <input
-            class="input"
+            matInput
             type="datetime-local"
             [(ngModel)]="flight.flightLandsAt" />
-        </label>
+        </mat-form-field>
       </div>
       <p class="booking-detail__muted"
         ><ng-container i18n
@@ -241,14 +237,17 @@
     </section>
 
     <section class="booking-detail__section">
-      <label class="booking-detail__subtitle" for="internalNotes"
-        ><ng-container i18n>Internal notes</ng-container></label
+      <h3 class="booking-detail__subtitle"
+        ><ng-container i18n>Internal notes</ng-container></h3
       >
-      <textarea
-        id="internalNotes"
-        class="input"
-        rows="3"
-        [(ngModel)]="notes"></textarea>
+      <mat-form-field subscriptSizing="dynamic">
+        <textarea
+          matInput
+          rows="3"
+          i18n-aria-label
+          aria-label="Internal notes"
+          [(ngModel)]="notes"></textarea>
+      </mat-form-field>
       <button
         appButton
         size="sm"
@@ -263,13 +262,10 @@
     @if (actions().pickedUp || actions().completed || actions().cancel) {
       <footer class="booking-detail__actions">
         @if (cancelling()) {
-          <input
-            class="input"
-            i18n-placeholder
-            placeholder="Reason for cancelling"
-            [(ngModel)]="cancelReason"
-            i18n-aria-label
-            aria-label="Reason for cancelling" />
+          <mat-form-field subscriptSizing="dynamic">
+            <mat-label i18n>Reason for cancelling</mat-label>
+            <input matInput [(ngModel)]="cancelReason" />
+          </mat-form-field>
           <div class="booking-detail__buttons">
             <button
               appButton

@@ -111,7 +111,3 @@
     @apply sr-only;
   }
 }
-
-::ng-deep .payments__dialog {
-  @apply w-[min(30rem,calc(100vw-2rem))];
-}

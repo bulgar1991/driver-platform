@@ -10,14 +10,6 @@
     @apply flex flex-wrap items-center gap-4;
   }
 
-  &__check {
-    @apply flex cursor-pointer items-center gap-2 text-sm text-ivory;
-  }
-
-  &__checkbox {
-    @apply h-4 w-4 accent-gold;
-  }
-
   &__table-wrap {
     @apply overflow-x-auto rounded-sm border border-ink-600 bg-ink-900;
   }
@@ -88,11 +80,11 @@
   }
 
   &__grid {
-    @apply grid grid-cols-1 gap-4 sm:grid-cols-2;
+    @apply grid grid-cols-1 items-start gap-x-4 gap-y-1 sm:grid-cols-2;
   }
 
   &__switches {
-    @apply flex flex-col justify-end gap-2 pb-2;
+    @apply flex flex-col justify-center gap-1 pb-5;
   }
 
   &__documents {
@@ -109,11 +101,12 @@
   }
 
   &__icon-button {
-    @apply flex h-10 w-10 justify-self-end items-center justify-center rounded-sm text-ivory-300 hover:bg-ink-700 hover:text-danger;
+    @apply flex h-10 w-10 items-center justify-center self-center justify-self-end rounded-sm text-ivory-300 hover:bg-ink-700 hover:text-danger;
   }
 
+  // In the popup's button bar.
   &__actions {
-    @apply flex flex-wrap items-center justify-end gap-3;
+    @apply flex w-full flex-wrap items-center justify-end gap-3;
   }
 
   // Delete sits apart, on the left, away from Save.
@@ -138,14 +131,10 @@
   }
 
   &__link-input {
-    @apply py-2 font-mono text-xs;
+    @apply font-mono text-xs;
   }
 
   &__link-actions {
     @apply flex flex-wrap items-center gap-2;
   }
-}
-
-::ng-deep .fleet__dialog {
-  @apply w-[min(46rem,calc(100vw-2rem))];
 }

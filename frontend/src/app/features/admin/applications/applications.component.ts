@@ -6,6 +6,8 @@ import {
   OnInit,
   signal,
 } from '@angular/core'
+import { MatFormField, MatLabel } from '@angular/material/form-field'
+import { MatOption, MatSelect } from '@angular/material/select'
 import { finalize } from 'rxjs'
 import { DriverApplication, DriverApplicationStatus } from '@/core/models'
 import { SiteService } from '@/core/services/site.service'
@@ -22,7 +24,7 @@ const STATUSES: DriverApplicationStatus[] = [
 /** Applications from the "For drivers" form on the website. */
 @Component({
   selector: 'app-applications',
-  imports: [DatePipe],
+  imports: [MatFormField, MatLabel, MatSelect, MatOption, DatePipe],
   templateUrl: './applications.component.html',
   styleUrl: './applications.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

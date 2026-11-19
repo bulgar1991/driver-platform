@@ -10,6 +10,8 @@ import {
 } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { RouterLink } from '@angular/router'
+import { MatFormField } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
 import { catchError, finalize, of, switchMap } from 'rxjs'
 import { DriverRide } from '@/core/models'
 import { AdminFleetService } from '@/core/services/admin-fleet.service'
@@ -29,6 +31,8 @@ import { MoneyPipe } from '@/shared/pipes/money.pipe'
 @Component({
   selector: 'app-driver-rides',
   imports: [
+    MatFormField,
+    MatInput,
     DatePipe,
     DecimalPipe,
     RouterLink,

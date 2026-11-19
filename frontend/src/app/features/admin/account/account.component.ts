@@ -12,11 +12,13 @@ import {
   Validators,
 } from '@angular/forms'
 import { Router } from '@angular/router'
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
+import { ErrorStateMatcher } from '@angular/material/core'
 import { finalize } from 'rxjs'
 import { AuthService } from '@/core/services/auth.service'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
-import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 import { TwoFactorComponent } from './two-factor.component'
 
@@ -32,9 +34,12 @@ function sameAsNew(group: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'app-account',
   imports: [
+    MatFormField,
+    MatLabel,
+    MatError,
+    MatInput,
     ReactiveFormsModule,
     ButtonComponent,
-    FormFieldComponent,
     TwoFactorComponent,
   ],
   templateUrl: './account.component.html',
@@ -42,6 +47,11 @@ function sameAsNew(group: AbstractControl): ValidationErrors | null {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccountComponent {
+  /** "Repeat the new password" turns red when the two passwords differ (an error of the form). */
+  protected readonly mismatchMatcher: ErrorStateMatcher = {
+    isErrorState: control =>
+      !!control?.touched && !!control.parent?.hasError('mismatch'),
+  }
   protected readonly text = ADMIN_TEXT
   protected readonly tx = {
     minLength: $localize`At least 12 characters`,

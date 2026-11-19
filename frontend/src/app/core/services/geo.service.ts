@@ -5,7 +5,7 @@ import { siteLocale } from '../i18n/locales'
 import { Place } from '../models'
 import { API_BASE_URL } from '../tokens/api-base-url.token'
 
-/** Address search in the countries served (Italy, France, Switzerland, Germany); predefined meeting points come first. */
+/** Address search in the countries served (SERVICE_AREA); predefined meeting points come first. */
 @Injectable({ providedIn: 'root' })
 export class GeoService {
   private readonly http = inject(HttpClient)

@@ -1,0 +1,18 @@
+<header class="app-dialog__header">
+  <h2 mat-dialog-title class="app-dialog__title">{{ title() }}</h2>
+  @if (closable()) {
+    <button
+      type="button"
+      class="app-dialog__close"
+      mat-dialog-close
+      [attr.aria-label]="closeLabel">
+      <app-icon name="close" class="h-4 w-4" />
+    </button>
+  }
+</header>
+<mat-dialog-content class="app-dialog__body">
+  <ng-content />
+</mat-dialog-content>
+<mat-dialog-actions class="app-dialog__actions">
+  <ng-content select="[dialog-actions]" />
+</mat-dialog-actions>

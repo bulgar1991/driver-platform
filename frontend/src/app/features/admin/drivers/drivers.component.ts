@@ -14,14 +14,21 @@ import {
   Validators,
 } from '@angular/forms'
 import { RouterLink } from '@angular/router'
-import { Dialog } from 'primeng/dialog'
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
+import { MatOption, MatSelect } from '@angular/material/select'
+import { MatCheckbox } from '@angular/material/checkbox'
+import {
+  DialogComponent,
+  DialogOpenDirective,
+} from '@/shared/components/dialog'
 import { finalize, of, switchMap } from 'rxjs'
 import { Driver, DriverDocument, DriverDocumentType } from '@/core/models'
 import { AdminFleetService } from '@/core/services/admin-fleet.service'
+import { ToastService } from '@/core/services/toast.service'
 import { todayInItaly } from '@/core/utils/italy-time'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
-import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 import { PhotoDraft } from '@/features/admin/photo-field/photo-draft'
@@ -50,12 +57,19 @@ type DocumentForm = FormGroup<{
 @Component({
   selector: 'app-drivers',
   imports: [
+    MatFormField,
+    MatLabel,
+    MatError,
+    MatInput,
+    MatSelect,
+    MatOption,
+    MatCheckbox,
+    DialogComponent,
+    DialogOpenDirective,
     DatePipe,
     ReactiveFormsModule,
     RouterLink,
-    Dialog,
     ButtonComponent,
-    FormFieldComponent,
     IconComponent,
     PhotoFieldComponent,
   ],
@@ -76,6 +90,7 @@ export class DriversComponent implements OnInit {
     photoAlt: $localize`Driver's picture`,
   }
 
+  private readonly toast = inject(ToastService)
   protected readonly api = inject(AdminFleetService)
   private readonly fb = inject(FormBuilder).nonNullable
 
@@ -162,8 +177,8 @@ export class DriversComponent implements OnInit {
     const url = this.link()
     if (url) {
       void navigator.clipboard?.writeText(url).then(
-        () => this.linkMessage.set($localize`Copied.`),
-        () => this.linkMessage.set($localize`Select the link and copy it.`)
+        () => this.toast.success($localize`Copied.`),
+        () => this.toast.info($localize`Select the link and copy it.`)
       )
     }
   }

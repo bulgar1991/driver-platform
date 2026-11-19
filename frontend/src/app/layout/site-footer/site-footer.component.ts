@@ -6,6 +6,7 @@ import { LogoComponent } from '@/shared/components/logo/logo.component'
 import { LanguageSwitchComponent } from '../language-switch/language-switch.component'
 import { SITE_PAGES } from '../site-header/site-header.component'
 import { BRAND } from '@/core/brand'
+import { AREA_IN } from '@/core/area'
 
 @Component({
   selector: 'app-site-footer',
@@ -19,6 +20,7 @@ export class SiteFooterComponent {
   protected readonly pages = SITE_PAGES
   protected readonly services = SERVICES
   protected readonly brandName = BRAND.name
+  protected readonly area = AREA_IN
   protected readonly contact = CONTACT
   protected readonly social = SOCIAL
   protected readonly whatsAppUrl = CONTACT.whatsapp

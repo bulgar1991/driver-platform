@@ -281,6 +281,7 @@ What differs is chosen per server in `deploy/.env`:
 | `BRAND` | A folder in `frontend/src/brands/`: `brand.json` (name, short name, logo text and its gold accent word or a second gold line under it, contacts, social links, partner logos) and the app icons. Only that brand is built into the site. |
 | `SITE_DOMAIN` | The client's domain (HTTPS certificate, canonical links, sitemap). |
 | `SITE_LANGUAGE` | The language at the root of the site (`en` by default; `it`, `de` or `fr`). |
+| `SERVICE_AREA` | Where trips are served: `europe` (default: EU, EEA, UK, Switzerland, Western Balkans) or ISO codes such as `it,fr,ch,de`. Address search, the price check, the map's first view and the site's wording follow it. |
 | `COMPANY_*` | Company on invoices; `COMPANY_NAME` is also the email sender name and is used on Stripe payments and the partner API page. |
 | `BOOKING_PREFIX`, `INVOICE_PREFIX` | Letters of booking references (`HV-7K3QX9`) and invoice numbers (`HV-2026-000001`), 2–4 letters. |
 
@@ -349,9 +350,9 @@ to (no in-page `#anchors`). The header is fixed at the top. **Texts, contacts, p
 | Address search | public Nominatim (max 1 request/s) | `Maps:NominatimBaseUrl`, `Maps:UserAgent` |
 | Map tiles | tile.openstreetmap.org, darkened in CSS | `MAP_CONFIG` token in the frontend |
 
-**Countries served: Italy, France, Switzerland and Germany** (`Maps:Countries`). Address search
-and map clicks only return places there; the price check refuses anything outside rough boxes
-around the four (`GeoMath.IsInServiceArea`).
+**Countries served:** set per server with `SERVICE_AREA` (`Maps:ServiceArea`): all of Europe by
+default, or a list of countries. Address search and map clicks only return places there; the price
+check refuses anything outside rough boxes around them (`GeoMath.IsInServiceArea`).
 
 Addresses are shortened from OpenStreetMap's parts (`AddressFormatter`): "Via del Corso 12, 00187
 Rome", or "San Marco 1, 30124 Venice". A searched place keeps its name ("Hotel Danieli, Riva degli

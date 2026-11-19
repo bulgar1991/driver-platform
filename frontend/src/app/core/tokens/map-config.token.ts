@@ -1,5 +1,6 @@
 import { InjectionToken } from '@angular/core'
 import { LatLng } from '../models'
+import { AREA_BOUNDS } from '../area'
 
 export interface MapConfig {
   tileUrl: string
@@ -7,7 +8,7 @@ export interface MapConfig {
   /** Fallback view before the map has a size. */
   center: LatLng
   zoom: number
-  /** Initial view, fitted to the map's size: the countries served (Italy, France, Switzerland, Germany). */
+  /** Initial view, fitted to the map's size: the area served (SERVICE_AREA). */
   area: [LatLng, LatLng]
 }
 
@@ -23,9 +24,6 @@ export const MAP_CONFIG = new InjectionToken<MapConfig>('MAP_CONFIG', {
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     center: [46, 9],
     zoom: 5,
-    area: [
-      [37.5, -1.5],
-      [53.5, 15],
-    ],
+    area: AREA_BOUNDS,
   }),
 })

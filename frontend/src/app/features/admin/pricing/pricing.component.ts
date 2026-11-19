@@ -12,7 +12,13 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms'
-import { Dialog } from 'primeng/dialog'
+import { MatCheckbox } from '@angular/material/checkbox'
+import { MatFormField } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
+import {
+  DialogComponent,
+  DialogOpenDirective,
+} from '@/shared/components/dialog'
 import { finalize, Observable } from 'rxjs'
 import {
   ExtraType,
@@ -22,6 +28,7 @@ import {
   VehicleCategory,
 } from '@/core/models'
 import { AdminPricingService } from '@/core/services/admin-pricing.service'
+import { ToastService } from '@/core/services/toast.service'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
@@ -55,8 +62,12 @@ const EXTRA_LABELS: Record<ExtraType, string> = {
 @Component({
   selector: 'app-pricing',
   imports: [
+    MatFormField,
+    MatInput,
+    MatCheckbox,
+    DialogComponent,
+    DialogOpenDirective,
     ReactiveFormsModule,
-    Dialog,
     ButtonComponent,
     IconComponent,
     SurchargeFormComponent,
@@ -83,6 +94,7 @@ export class PricingComponent implements OnInit {
   protected readonly categoryLabel = (category: VehicleCategory) =>
     ADMIN_TEXT.categories[category]
 
+  private readonly toast = inject(ToastService)
   private readonly api = inject(AdminPricingService)
   private readonly fb = inject(FormBuilder).nonNullable
 
@@ -291,7 +303,13 @@ export class PricingComponent implements OnInit {
     })
   }
 
+  /** Confirmations come and go as a toast; errors stay on the page until the next action. */
   private notify(text: string, error = false): void {
-    this.message.set({ text, error })
+    if (error) {
+      this.message.set({ text, error })
+    } else {
+      this.message.set(null)
+      this.toast.success(text)
+    }
   }
 }

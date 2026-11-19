@@ -7,15 +7,21 @@ import {
   signal,
 } from '@angular/core'
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
-import { Dialog } from 'primeng/dialog'
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
+import { MatCheckbox } from '@angular/material/checkbox'
+import {
+  DialogComponent,
+  DialogOpenDirective,
+} from '@/shared/components/dialog'
 import { finalize } from 'rxjs'
 import { InvoiceSummary, PaymentListItem, PaymentStatus } from '@/core/models'
 import { AdminPaymentsService } from '@/core/services/admin-payments.service'
+import { ToastService } from '@/core/services/toast.service'
 import { saveBlob } from '@/core/utils/download'
 import { todayInItaly } from '@/core/utils/italy-time'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
-import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
@@ -41,11 +47,16 @@ const STATUS_LABEL: Record<PaymentStatus, string> = {
 @Component({
   selector: 'app-payments',
   imports: [
+    MatFormField,
+    MatLabel,
+    MatError,
+    MatInput,
+    MatCheckbox,
+    DialogComponent,
+    DialogOpenDirective,
     DatePipe,
     ReactiveFormsModule,
-    Dialog,
     ButtonComponent,
-    FormFieldComponent,
     IconComponent,
     MoneyPipe,
   ],
@@ -60,6 +71,7 @@ export class PaymentsComponent implements OnInit {
     refundLimit: $localize`Up to what is left to refund`,
   }
 
+  private readonly toast = inject(ToastService)
   private readonly api = inject(AdminPaymentsService)
   private readonly fb = inject(FormBuilder).nonNullable
 
@@ -176,7 +188,13 @@ export class PaymentsComponent implements OnInit {
       })
   }
 
+  /** Confirmations come and go as a toast; errors stay on the page until the next action. */
   private notify(text: string, error = false): void {
-    this.message.set({ text, error })
+    if (error) {
+      this.message.set({ text, error })
+    } else {
+      this.message.set(null)
+      this.toast.success(text)
+    }
   }
 }

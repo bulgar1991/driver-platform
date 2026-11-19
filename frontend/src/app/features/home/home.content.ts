@@ -6,6 +6,7 @@ import {
   VehicleCategory,
 } from '@/core/models'
 import { BRAND } from '@/core/brand'
+import { AREA_IN } from '@/core/area'
 
 /**
  * Texts of the home page. Edit here; the components only lay them out. Every visible text is
@@ -17,8 +18,8 @@ export const WELCOME = {
   eyebrow: $localize`Welcome`,
   title: $localize`Arrive like you belong here`,
   paragraphs: [
-    $localize`${BRAND.name}:brand: connects airports, stations and cruise ports with hotels and homes across Italy and over the border to France, Switzerland and Germany, in a private car with a professional driver.`,
-    $localize`We plan around Italy: where cars cannot go, like the historic centre of Venice, we meet you at the nearest point a car can reach and tell you exactly how to get there.`,
+    $localize`${BRAND.name}:brand: connects airports, stations and cruise ports with hotels and homes ${AREA_IN}:area:, in a private car with a professional driver.`,
+    $localize`Where cars cannot go, like the historic centre of Venice, we meet you at the nearest point a car can reach and tell you exactly how to get there.`,
   ],
 }
 
@@ -43,7 +44,7 @@ export const SERVICES: ServiceOffering[] = [
   },
   {
     title: $localize`Stations & Ports`,
-    description: $localize`Train stations and cruise terminals, in Italy and over the border.`,
+    description: $localize`Train stations and cruise terminals, also across borders.`,
     icon: 'pin',
   },
   {

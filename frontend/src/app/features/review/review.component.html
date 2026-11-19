@@ -60,20 +60,21 @@
     <label class="review__label" for="comment" i18n
       >Anything to tell us? (optional)</label
     >
-    <textarea
-      id="comment"
-      class="input"
-      rows="4"
-      maxlength="2000"
-      [(ngModel)]="comment"></textarea>
+    <mat-form-field subscriptSizing="dynamic">
+      <textarea
+        matInput
+        id="comment"
+        rows="4"
+        maxlength="2000"
+        [(ngModel)]="comment"></textarea>
+    </mat-form-field>
 
-    <label class="review__consent">
-      <input class="review__checkbox" type="checkbox" [(ngModel)]="publish" />
-      <span i18n
+    <mat-checkbox class="review__consent" [(ngModel)]="publish"
+      ><span i18n
         >You may show my rating and comment on the website, with my first name
         and the initial of my surname.</span
-      >
-    </label>
+      ></mat-checkbox
+    >
 
     <button
       appButton

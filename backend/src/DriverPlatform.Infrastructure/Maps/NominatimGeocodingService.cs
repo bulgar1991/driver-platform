@@ -1,3 +1,4 @@
+using DriverPlatform.Application.Geo;
 using System.Globalization;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
@@ -16,7 +17,7 @@ public sealed class NominatimGeocodingService(
     HttpClient http, IMemoryCache cache, IOptions<MapsOptions> options, ILogger<NominatimGeocodingService> logger)
     : IGeocodingService
 {
-    private readonly string[] _countries = options.Value.Countries.Select(c => c.ToLowerInvariant()).ToArray();
+    private readonly string[] _countries = [.. GeoMath.Countries];
 
     private static readonly TimeSpan CacheFor = TimeSpan.FromDays(1);
     // The public server allows one request per second for the whole application.

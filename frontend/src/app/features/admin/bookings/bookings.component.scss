@@ -10,27 +10,15 @@
   }
 
   &__filter {
-    @apply flex flex-col gap-1;
+    @apply w-44;
 
     &--grow {
-      @apply min-w-56 flex-1;
+      @apply w-auto min-w-56 flex-1;
     }
   }
 
-  &__filter-label {
-    @apply text-[10px] uppercase tracking-widest text-ivory-400;
-  }
-
-  &__input {
-    @apply py-2;
-  }
-
   &__check {
-    @apply flex cursor-pointer items-center gap-2 pb-2 text-sm text-ivory;
-  }
-
-  &__checkbox {
-    @apply h-4 w-4 cursor-pointer accent-gold;
+    @apply pb-1;
   }
 
   &__table-wrap {

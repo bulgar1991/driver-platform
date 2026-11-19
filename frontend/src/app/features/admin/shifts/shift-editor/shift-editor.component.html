@@ -10,14 +10,11 @@
     <ul class="shift-editor__bookings">
       @for (b of options(); track b.id) {
         <li>
-          <label
+          <mat-checkbox
             class="shift-editor__booking"
-            [class.shift-editor__booking--on]="selected().has(b.id)">
-            <input
-              class="shift-editor__checkbox"
-              type="checkbox"
-              [checked]="selected().has(b.id)"
-              (change)="toggle(b.id)" />
+            [class.shift-editor__booking--on]="selected().has(b.id)"
+            [checked]="selected().has(b.id)"
+            (change)="toggle(b.id)">
             <span class="shift-editor__time">{{
               b.pickupAt | date: 'HH:mm'
             }}</span>
@@ -40,7 +37,7 @@
                 >
               </span>
             </span>
-          </label>
+          </mat-checkbox>
         </li>
       } @empty {
         <li class="shift-editor__muted"
@@ -54,58 +51,54 @@
 
   @if (availability(); as a) {
     <div class="shift-editor__row">
-      <label class="shift-editor__field">
-        <span class="shift-editor__legend"
-          ><ng-container i18n>Driver</ng-container></span
-        >
-        <select
-          class="input"
-          [ngModel]="driverId()"
-          (ngModelChange)="driverId.set($event)">
-          <option value=""
-            ><ng-container i18n>Choose a driver</ng-container></option
-          >
-          @for (d of a.drivers; track d.id) {
-            <option [value]="d.id"
-              >{{ d.available ? '' : '⚠ ' }}{{ d.name }}</option
+      <div class="shift-editor__field">
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label i18n>Driver</mat-label>
+          <mat-select
+            [ngModel]="driverId()"
+            (ngModelChange)="driverId.set($event)">
+            <mat-option value=""
+              ><ng-container i18n>Choose a driver</ng-container></mat-option
             >
-          }
-        </select>
+            @for (d of a.drivers; track d.id) {
+              <mat-option [value]="d.id"
+                >{{ d.available ? '' : '⚠ ' }}{{ d.name }}</mat-option
+              >
+            }
+          </mat-select>
+        </mat-form-field>
         @for (p of driverProblems(); track p) {
           <span class="shift-editor__problem">{{ p }}</span>
         }
-      </label>
-      <label class="shift-editor__field">
-        <span class="shift-editor__legend"
-          ><ng-container i18n>Car</ng-container></span
-        >
-        <select
-          class="input"
-          [ngModel]="vehicleId()"
-          (ngModelChange)="vehicleId.set($event)">
-          <option value=""
-            ><ng-container i18n>Choose a car</ng-container></option
-          >
-          @for (v of a.vehicles; track v.id) {
-            <option [value]="v.id"
-              >{{ v.available ? '' : '⚠ ' }}{{ v.plateNumber }} ·
-              {{ v.label }} ({{ text.categories[v.category] }})</option
+      </div>
+      <div class="shift-editor__field">
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label i18n>Car</mat-label>
+          <mat-select
+            [ngModel]="vehicleId()"
+            (ngModelChange)="vehicleId.set($event)">
+            <mat-option value=""
+              ><ng-container i18n>Choose a car</ng-container></mat-option
             >
-          }
-        </select>
+            @for (v of a.vehicles; track v.id) {
+              <mat-option [value]="v.id"
+                >{{ v.available ? '' : '⚠ ' }}{{ v.plateNumber }} ·
+                {{ v.label }} ({{ text.categories[v.category] }})</mat-option
+              >
+            }
+          </mat-select>
+        </mat-form-field>
         @for (p of vehicleProblems(); track p) {
           <span class="shift-editor__problem">{{ p }}</span>
         }
-      </label>
+      </div>
     </div>
   }
 
-  <label class="shift-editor__field">
-    <span class="shift-editor__legend"
-      ><ng-container i18n>Notes for the driver</ng-container></span
-    >
-    <textarea class="input" rows="2" [(ngModel)]="notes"></textarea>
-  </label>
+  <mat-form-field subscriptSizing="dynamic">
+    <mat-label i18n>Notes for the driver</mat-label>
+    <textarea matInput rows="2" [(ngModel)]="notes"></textarea>
+  </mat-form-field>
 
   @if (shift()?.status === 'Confirmed') {
     <p class="shift-editor__muted"

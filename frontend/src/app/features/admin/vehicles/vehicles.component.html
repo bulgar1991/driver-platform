@@ -7,15 +7,12 @@
       >
     </div>
     <div class="fleet__tools">
-      <label class="fleet__check">
-        <input
-          class="fleet__checkbox"
-          type="checkbox"
-          [checked]="showInactive()"
-          (change)="toggleInactive()" />&ngsp;<ng-container i18n
-          >Show inactive</ng-container
-        >
-      </label>
+      <mat-checkbox
+        class="fleet__check"
+        [checked]="showInactive()"
+        (change)="toggleInactive()"
+        ><ng-container i18n>Show inactive</ng-container></mat-checkbox
+      >
       <button appButton size="sm" type="button" (click)="open(null)"
         ><app-icon name="plus" />&ngsp;<ng-container i18n
           >New vehicle</ng-container
@@ -128,199 +125,179 @@
   </div>
 </div>
 
-<p-dialog
-  [header]="editing() ? tx.editVehicle : tx.newVehicle"
-  [modal]="true"
-  [draggable]="false"
-  styleClass="fleet__dialog"
-  [visible]="editing() !== undefined"
-  (visibleChange)="$event || editing.set(undefined)">
-  <form class="fleet__form" [formGroup]="form" (ngSubmit)="save()" novalidate>
-    @if (formError(); as message) {
-      <p class="alert alert--error" role="alert">{{ message }}</p>
-    }
-    <app-photo-field [draft]="photo" [alt]="tx.photoAlt" />
-    <div class="fleet__grid">
-      <app-form-field
-        i18n-label
-        label="Plate"
-        for="vPlate"
-        [error]="
-          form.controls.plateNumber.touched && form.controls.plateNumber.invalid
-            ? tx.plateHint
-            : null
-        ">
-        <input
-          id="vPlate"
-          class="input fleet__upper"
-          formControlName="plateNumber" />
-      </app-form-field>
-      <app-form-field i18n-label label="Category" for="vCategory">
-        <select
-          id="vCategory"
-          class="input"
-          formControlName="category"
-          (change)="categoryChanged()">
-          @for (c of categories; track c.value) {
-            <option [value]="c.value">{{ c.label }}</option>
-          }
-        </select>
-      </app-form-field>
-      <app-form-field
-        i18n-label
-        label="Make"
-        for="vMake"
-        [error]="
-          form.controls.make.touched && form.controls.make.invalid
-            ? text.required
-            : null
-        ">
-        <input id="vMake" class="input" formControlName="make" />
-      </app-form-field>
-      <app-form-field
-        i18n-label
-        label="Model"
-        for="vModel"
-        [error]="
-          form.controls.model.touched && form.controls.model.invalid
-            ? text.required
-            : null
-        ">
-        <input id="vModel" class="input" formControlName="model" />
-      </app-form-field>
-      <app-form-field i18n-label label="Colour" for="vColor">
-        <input id="vColor" class="input" formControlName="color" />
-      </app-form-field>
-      <app-form-field i18n-label label="Mileage (km)" for="vKm">
-        <input
-          id="vKm"
-          class="input"
-          type="number"
-          min="0"
-          formControlName="mileageKm" />
-      </app-form-field>
-      <app-form-field i18n-label label="Passenger seats" for="vSeats">
-        <input
-          id="vSeats"
-          class="input"
-          type="number"
-          min="1"
-          max="8"
-          formControlName="seats" />
-      </app-form-field>
-      <app-form-field i18n-label label="Large bags" for="vLuggage">
-        <input
-          id="vLuggage"
-          class="input"
-          type="number"
-          min="0"
-          max="16"
-          formControlName="luggageCapacity" />
-      </app-form-field>
-      <app-form-field i18n-label label="Child seats on board" for="vChild">
-        <input
-          id="vChild"
-          class="input"
-          type="number"
-          min="0"
-          max="4"
-          formControlName="childSeatsAvailable" />
-      </app-form-field>
-      <app-form-field i18n-label label="Insurance expires" for="vInsurance">
-        <input
-          id="vInsurance"
-          class="input"
-          type="date"
-          formControlName="insuranceExpiresOn" />
-      </app-form-field>
-      <app-form-field
-        i18n-label
-        label="Inspection (revisione) due"
-        for="vInspection">
-        <input
-          id="vInspection"
-          class="input"
-          type="date"
-          formControlName="inspectionExpiresOn" />
-      </app-form-field>
-      <app-form-field i18n-label label="Next service" for="vService">
-        <input
-          id="vService"
-          class="input"
-          type="date"
-          formControlName="nextServiceOn" />
-      </app-form-field>
-    </div>
-    <label class="fleet__check"
-      ><input
-        class="fleet__checkbox"
-        type="checkbox"
-        formControlName="isActive" />&ngsp;<ng-container i18n
-        >Active</ng-container
-      ></label
-    >
-    <app-form-field
-      i18n-label
-      label="Notes (condition, cleaning…)"
-      for="vNotes">
-      <textarea
-        id="vNotes"
-        class="input"
-        rows="2"
-        formControlName="notes"></textarea>
-    </app-form-field>
-    <div class="fleet__actions">
-      @if (editing()) {
-        <div class="fleet__delete">
-          @if (confirmDelete()) {
-            <span class="fleet__confirm">
-              <ng-container i18n>Delete this vehicle?</ng-container
-              >&ngsp;<button
-                appButton
-                size="sm"
-                variant="outline"
-                type="button"
-                [disabled]="saving()"
-                (click)="remove()"
-                ><ng-container i18n>Delete</ng-container></button
-              >
+<ng-template
+  [appDialogOpen]="editing() !== undefined"
+  dialogWidth="46rem"
+  (dialogClosed)="editing.set(undefined)">
+  <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <app-dialog [title]="editing() ? tx.editVehicle : tx.newVehicle">
+      @if (formError(); as message) {
+        <p class="alert alert--error" role="alert">{{ message }}</p>
+      }
+      <app-photo-field [draft]="photo" [alt]="tx.photoAlt" />
+      <div class="fleet__grid">
+        <mat-form-field>
+          <mat-label i18n>Plate</mat-label>
+          <input
+            matInput
+            id="vPlate"
+            class="fleet__upper"
+            formControlName="plateNumber" />
+          <mat-error>{{ tx.plateHint }}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Category</mat-label>
+          <mat-select
+            id="vCategory"
+            formControlName="category"
+            (change)="categoryChanged()">
+            @for (c of categories; track c.value) {
+              <mat-option [value]="c.value">{{ c.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Make</mat-label>
+          <input matInput id="vMake" formControlName="make" />
+          <mat-error>{{ text.required }}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Model</mat-label>
+          <input matInput id="vModel" formControlName="model" />
+          <mat-error>{{ text.required }}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Colour</mat-label>
+          <input matInput id="vColor" formControlName="color" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Mileage (km)</mat-label>
+          <input
+            matInput
+            id="vKm"
+            type="number"
+            min="0"
+            formControlName="mileageKm" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Passenger seats</mat-label>
+          <input
+            matInput
+            id="vSeats"
+            type="number"
+            min="1"
+            max="8"
+            formControlName="seats" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Large bags</mat-label>
+          <input
+            matInput
+            id="vLuggage"
+            type="number"
+            min="0"
+            max="16"
+            formControlName="luggageCapacity" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Child seats on board</mat-label>
+          <input
+            matInput
+            id="vChild"
+            type="number"
+            min="0"
+            max="4"
+            formControlName="childSeatsAvailable" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Insurance expires</mat-label>
+          <input
+            matInput
+            id="vInsurance"
+            type="date"
+            formControlName="insuranceExpiresOn" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Inspection (revisione) due</mat-label>
+          <input
+            matInput
+            id="vInspection"
+            type="date"
+            formControlName="inspectionExpiresOn" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Next service</mat-label>
+          <input
+            matInput
+            id="vService"
+            type="date"
+            formControlName="nextServiceOn" />
+        </mat-form-field>
+      </div>
+      <mat-checkbox class="fleet__check" formControlName="isActive"
+        ><ng-container i18n>Active</ng-container></mat-checkbox
+      >
+      <mat-form-field>
+        <mat-label i18n>Notes (condition, cleaning…)</mat-label>
+        <textarea
+          matInput
+          id="vNotes"
+          rows="2"
+          formControlName="notes"></textarea>
+      </mat-form-field>
+      <div class="fleet__actions" dialog-actions>
+        @if (editing()) {
+          <div class="fleet__delete">
+            @if (confirmDelete()) {
+              <span class="fleet__confirm">
+                <ng-container i18n>Delete this vehicle?</ng-container
+                >&ngsp;<button
+                  appButton
+                  size="sm"
+                  variant="outline"
+                  type="button"
+                  [disabled]="saving()"
+                  (click)="remove()"
+                  ><ng-container i18n>Delete</ng-container></button
+                >
+                <button
+                  appButton
+                  size="sm"
+                  variant="ghost"
+                  type="button"
+                  (click)="confirmDelete.set(false)"
+                  ><ng-container i18n>Keep</ng-container></button
+                >
+              </span>
+            } @else {
               <button
                 appButton
                 size="sm"
                 variant="ghost"
                 type="button"
-                (click)="confirmDelete.set(false)"
-                ><ng-container i18n>Keep</ng-container></button
+                (click)="confirmDelete.set(true)"
+                ><app-icon name="trash" />&ngsp;<ng-container i18n
+                  >Delete</ng-container
+                ></button
               >
-            </span>
-          } @else {
-            <button
-              appButton
-              size="sm"
-              variant="ghost"
-              type="button"
-              (click)="confirmDelete.set(true)"
-              ><app-icon name="trash" />&ngsp;<ng-container i18n
-                >Delete</ng-container
-              ></button
-            >
-          }
-        </div>
-      }
-      <button
-        appButton
-        type="button"
-        variant="ghost"
-        (click)="editing.set(undefined)"
-        ><ng-container i18n>Cancel</ng-container></button
-      >
-      <button appButton type="submit" [disabled]="saving()">
-        @if (saving()) {
-          <ng-container i18n>Saving…</ng-container>
-        } @else {
-          <ng-container i18n>Save vehicle</ng-container>
+            }
+          </div>
         }
-      </button>
-    </div>
+        <button
+          appButton
+          type="button"
+          variant="ghost"
+          (click)="editing.set(undefined)"
+          ><ng-container i18n>Cancel</ng-container></button
+        >
+        <button appButton type="submit" [disabled]="saving()">
+          @if (saving()) {
+            <ng-container i18n>Saving…</ng-container>
+          } @else {
+            <ng-container i18n>Save vehicle</ng-container>
+          }
+        </button>
+      </div>
+    </app-dialog>
   </form>
-</p-dialog>
+</ng-template>

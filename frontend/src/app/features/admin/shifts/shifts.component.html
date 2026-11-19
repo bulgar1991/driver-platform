@@ -15,13 +15,15 @@
         (click)="shiftDay(-1)"
         >‹</button
       >
-      <input
-        class="input shifts__date"
-        type="date"
-        i18n-aria-label
-        aria-label="Day"
-        [ngModel]="day()"
-        (ngModelChange)="changeDay($event)" />
+      <mat-form-field class="shifts__date" subscriptSizing="dynamic">
+        <input
+          matInput
+          type="date"
+          i18n-aria-label
+          aria-label="Day"
+          [ngModel]="day()"
+          (ngModelChange)="changeDay($event)" />
+      </mat-form-field>
       <button
         type="button"
         class="shifts__nav"
@@ -124,19 +126,18 @@
   </div>
 </div>
 
-<p-dialog
-  [header]="editing() ? tx.editShift : tx.newShift"
-  [modal]="true"
-  [draggable]="false"
-  styleClass="shifts__dialog"
-  [visible]="editorOpen()"
-  (visibleChange)="$event || closeEditor()">
-  @if (editorOpen()) {
-    <app-shift-editor
-      [shift]="editing()"
-      [candidates]="unassigned()"
-      [preselected]="preselected()"
-      (saved)="onSaved($event)"
-      (closed)="closeEditor()" />
-  }
-</p-dialog>
+<ng-template
+  [appDialogOpen]="editorOpen()"
+  dialogWidth="44rem"
+  (dialogClosed)="closeEditor()">
+  <app-dialog [title]="editing() ? tx.editShift : tx.newShift">
+    @if (editorOpen()) {
+      <app-shift-editor
+        [shift]="editing()"
+        [candidates]="unassigned()"
+        [preselected]="preselected()"
+        (saved)="onSaved($event)"
+        (closed)="closeEditor()" />
+    }
+  </app-dialog>
+</ng-template>

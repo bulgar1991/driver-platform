@@ -99,11 +99,11 @@ public sealed class QuoteApiTests(ApiFactory factory) : IClassFixture<ApiFactory
     }
 
     [Fact]
-    public async Task Points_outside_the_four_countries_are_refused()
+    public async Task Points_outside_the_service_area_are_refused()
     {
-        var london = new Application.Quotes.PointInput { Address = "London", Latitude = 51.5072, Longitude = -0.1276 };
+        var newYork = new Application.Quotes.PointInput { Address = "New York", Latitude = 40.7128, Longitude = -74.0060 };
 
-        var response = await factory.CreateClient().PostAsJsonAsync("/api/quotes", TestData.Trip(london), TestData.Json);
+        var response = await factory.CreateClient().PostAsJsonAsync("/api/quotes", TestData.Trip(newYork), TestData.Json);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }

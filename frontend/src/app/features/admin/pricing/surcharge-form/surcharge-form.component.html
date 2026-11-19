@@ -3,57 +3,52 @@
   [formGroup]="form"
   (ngSubmit)="submit()"
   novalidate>
-  <app-form-field
-    i18n-label
-    label="Name – English"
-    for="surchargeName"
-    [error]="
-      form.controls.name.touched && form.controls.name.invalid
-        ? text.required
-        : null
-    ">
+  <mat-form-field>
+    <mat-label i18n>Name – English</mat-label>
     <input
+      matInput
       id="surchargeName"
-      class="input"
       i18n-placeholder
       placeholder="e.g. Venice Carnival 2027"
       formControlName="name" />
-  </app-form-field>
+    <mat-error>{{ text.required }}</mat-error>
+  </mat-form-field>
 
   <!-- What clients on the Italian, German and French site see; blank shows the English name. -->
   <div class="surcharge-form__translations">
     @for (lang of nameLanguages; track lang.control) {
-      <app-form-field
-        [label]="tx.nameIn(lang.name)"
-        [for]="'surchargeName' + lang.code">
+      <mat-form-field>
+        <mat-label>{{ tx.nameIn(lang.name) }}</mat-label>
         <input
+          matInput
           [id]="'surchargeName' + lang.code"
-          class="input"
           i18n-placeholder
           placeholder="Blank: the English name"
           [formControlName]="lang.control" />
-      </app-form-field>
+      </mat-form-field>
     }
   </div>
 
   <div class="surcharge-form__row">
-    <app-form-field i18n-label label="Applies on" for="surchargeKind">
-      <select id="surchargeKind" class="input" formControlName="kind">
+    <mat-form-field>
+      <mat-label i18n>Applies on</mat-label>
+      <mat-select id="surchargeKind" formControlName="kind">
         @for (kind of kinds; track kind.value) {
-          <option [value]="kind.value">{{ kind.label }}</option>
+          <mat-option [value]="kind.value">{{ kind.label }}</mat-option>
         }
-      </select>
-    </app-form-field>
-    <app-form-field i18n-label label="Increase (%)" for="surchargePercent">
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label i18n>Increase (%)</mat-label>
       <input
+        matInput
         id="surchargePercent"
-        class="input"
         type="number"
         min="0"
         max="200"
         step="0.5"
         formControlName="percent" />
-    </app-form-field>
+    </mat-form-field>
   </div>
 
   @switch (form.controls.kind.value) {
@@ -64,59 +59,52 @@
         i18n-aria-label
         aria-label="Days">
         @for (day of days; track day.value) {
-          <label class="surcharge-form__day">
-            <input
-              class="surcharge-form__checkbox"
-              type="checkbox"
-              [checked]="form.controls.daysOfWeek.value.includes(day.value)"
-              (change)="toggleDay(day.value, $any($event.target).checked)" />
-            {{ day.label }}
-          </label>
+          <mat-checkbox
+            class="surcharge-form__day"
+            [checked]="form.controls.daysOfWeek.value.includes(day.value)"
+            (change)="toggleDay(day.value, $event.checked)"
+            >{{ day.label }}</mat-checkbox
+          >
         }
       </div>
     }
     @case ('DateRange') {
       <div class="surcharge-form__row">
-        <app-form-field i18n-label label="From" for="startDate">
+        <mat-form-field>
+          <mat-label i18n>From</mat-label>
           <input
+            matInput
             id="startDate"
-            class="input"
             type="date"
             formControlName="startDate" />
-        </app-form-field>
-        <app-form-field i18n-label label="To (inclusive)" for="endDate">
-          <input
-            id="endDate"
-            class="input"
-            type="date"
-            formControlName="endDate" />
-        </app-form-field>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>To (inclusive)</mat-label>
+          <input matInput id="endDate" type="date" formControlName="endDate" />
+        </mat-form-field>
       </div>
-      <label class="surcharge-form__toggle">
-        <input
-          class="surcharge-form__checkbox"
-          type="checkbox"
-          formControlName="repeatsYearly" />&ngsp;<ng-container i18n
+      <mat-checkbox
+        class="surcharge-form__toggle"
+        formControlName="repeatsYearly"
+        ><ng-container i18n
           >Every year on these dates</ng-container
-        >
-      </label>
+        ></mat-checkbox
+      >
     }
     @case ('TimeOfDay') {
       <div class="surcharge-form__row">
-        <app-form-field i18n-label label="From" for="startTime">
+        <mat-form-field>
+          <mat-label i18n>From</mat-label>
           <input
+            matInput
             id="startTime"
-            class="input"
             type="time"
             formControlName="startTime" />
-        </app-form-field>
-        <app-form-field i18n-label label="Until" for="endTime">
-          <input
-            id="endTime"
-            class="input"
-            type="time"
-            formControlName="endTime" />
-        </app-form-field>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Until</mat-label>
+          <input matInput id="endTime" type="time" formControlName="endTime" />
+        </mat-form-field>
       </div>
       <p class="surcharge-form__hint">
         <ng-container i18n
@@ -135,14 +123,9 @@
     </p>
   }
 
-  <label class="surcharge-form__toggle">
-    <input
-      class="surcharge-form__checkbox"
-      type="checkbox"
-      formControlName="isActive" />&ngsp;<ng-container i18n
-      >Active</ng-container
-    >
-  </label>
+  <mat-checkbox class="surcharge-form__toggle" formControlName="isActive"
+    ><ng-container i18n>Active</ng-container></mat-checkbox
+  >
 
   <div class="surcharge-form__actions">
     <button appButton type="button" variant="ghost" (click)="cancelled.emit()">

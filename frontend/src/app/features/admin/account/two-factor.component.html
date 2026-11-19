@@ -90,20 +90,19 @@
       [formGroup]="form"
       (ngSubmit)="confirm()"
       novalidate>
-      <app-form-field
-        i18n-label
-        label="Code from the app"
-        for="tfCode"
-        [error]="code.touched && code.invalid ? tx.enterCode : null">
+      <mat-form-field>
+        <mat-label i18n>Code from the app</mat-label>
         <input
+          matInput
           id="tfCode"
-          class="input two-factor__input"
+          class="two-factor__input"
           type="text"
           inputmode="numeric"
           autocomplete="one-time-code"
           maxlength="7"
           formControlName="code" />
-      </app-form-field>
+        <mat-error>{{ tx.enterCode }}</mat-error>
+      </mat-form-field>
       <button appButton type="submit" [disabled]="busy()"
         ><ng-container i18n>Turn on</ng-container></button
       >
@@ -135,35 +134,30 @@
                 new QR code for the new phone appears next.</ng-container
               >
             </p>
-            <app-form-field
-              i18n-label
-              label="Password"
-              for="tfPassword"
-              [error]="
-                password.touched && password.invalid ? tx.required : null
-              ">
+            <mat-form-field>
+              <mat-label i18n>Password</mat-label>
               <input
+                matInput
                 id="tfPassword"
-                class="input"
                 type="password"
                 autocomplete="current-password"
                 formControlName="password" />
-            </app-form-field>
+              <mat-error>{{ tx.required }}</mat-error>
+            </mat-form-field>
           }
-          <app-form-field
-            i18n-label
-            label="Code from the app"
-            for="tfCode2"
-            [error]="code.touched && code.invalid ? tx.enterCode : null">
+          <mat-form-field>
+            <mat-label i18n>Code from the app</mat-label>
             <input
+              matInput
               id="tfCode2"
-              class="input two-factor__input"
+              class="two-factor__input"
               type="text"
               inputmode="numeric"
               autocomplete="one-time-code"
               maxlength="7"
               formControlName="code" />
-          </app-form-field>
+            <mat-error>{{ tx.enterCode }}</mat-error>
+          </mat-form-field>
           <div class="two-factor__actions">
             <button appButton size="sm" type="submit" [disabled]="busy()">
               @if (a === 'codes') {

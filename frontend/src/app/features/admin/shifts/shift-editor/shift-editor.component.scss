@@ -13,16 +13,17 @@
     @apply flex max-h-72 flex-col gap-2 overflow-y-auto;
   }
 
+  // The whole card is the checkbox's label: a click anywhere on it picks the booking.
   &__booking {
-    @apply flex cursor-pointer items-start gap-3 rounded-sm border border-ink-600 p-3 text-ivory transition hover:border-ink-400;
+    @apply block rounded-sm border border-ink-600 py-1 pr-3 text-ivory transition hover:border-ink-400;
+
+    ::ng-deep label {
+      @apply flex cursor-pointer items-start gap-3 py-2 text-sm;
+    }
 
     &--on {
       @apply border-gold bg-gold/5;
     }
-  }
-
-  &__checkbox {
-    @apply mt-0.5 h-4 w-4 shrink-0 accent-gold;
   }
 
   &__time {

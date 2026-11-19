@@ -6,9 +6,11 @@ import {
 } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { RouterLink } from '@angular/router'
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
+import { MatCheckbox } from '@angular/material/checkbox'
 import { BookingOptions, VehicleOption } from '@/core/models'
 import { ButtonComponent } from '@/shared/components/button/button.component'
-import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { ContactForm, DetailsForm } from '../../booking-form'
 
@@ -16,10 +18,14 @@ import { ContactForm, DetailsForm } from '../../booking-form'
 @Component({
   selector: 'app-details-step',
   imports: [
+    MatFormField,
+    MatLabel,
+    MatError,
+    MatInput,
+    MatCheckbox,
     ReactiveFormsModule,
     RouterLink,
     ButtonComponent,
-    FormFieldComponent,
     MoneyPipe,
   ],
   templateUrl: './details-step.component.html',

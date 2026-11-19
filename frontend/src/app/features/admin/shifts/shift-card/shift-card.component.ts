@@ -8,6 +8,8 @@ import {
   signal,
 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { MatFormField } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
 import { AssignmentStatus, Shift } from '@/core/models'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { StatusBadgeComponent } from '@/shared/components/status-badge/status-badge.component'
@@ -21,7 +23,14 @@ export interface ShiftStatusChange {
 
 @Component({
   selector: 'app-shift-card',
-  imports: [DatePipe, FormsModule, ButtonComponent, StatusBadgeComponent],
+  imports: [
+    MatFormField,
+    MatInput,
+    DatePipe,
+    FormsModule,
+    ButtonComponent,
+    StatusBadgeComponent,
+  ],
   templateUrl: './shift-card.component.html',
   styleUrl: './shift-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

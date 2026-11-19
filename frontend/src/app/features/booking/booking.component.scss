@@ -106,32 +106,9 @@
     }
   }
 
-  // The map with its "Set From / Set To" switch on top and the hint under it.
+  // The map with the hint under it.
   &__map-wrap {
     @apply relative flex flex-col gap-2;
-  }
-
-  // In line with the page content above and below, not with the screen edge.
-  &__map-tools {
-    left: max(1rem, calc((100% - theme('maxWidth.6xl')) / 2 + 1rem));
-    @apply absolute top-3 z-10 flex gap-1 rounded-full border border-ink-500 bg-ink/85 p-1 shadow-lg backdrop-blur;
-  }
-
-  &__map-target {
-    @apply flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-ivory-300 transition-colors duration-300 hover:text-ivory;
-
-    &--active {
-      @apply bg-gold text-ink hover:text-ink;
-    }
-  }
-
-  // Same colours as the map markers: gold for From, light for To.
-  &__map-dot {
-    @apply block h-2.5 w-2.5 rounded-full border-2 border-ink bg-gold;
-  }
-
-  &__map-target--dropoff &__map-dot {
-    @apply bg-ivory;
   }
 
   &__map-hint {

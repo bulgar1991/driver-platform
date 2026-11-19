@@ -7,7 +7,14 @@ import {
   signal,
 } from '@angular/core'
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
-import { Dialog } from 'primeng/dialog'
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
+import { MatOption, MatSelect } from '@angular/material/select'
+import { MatCheckbox } from '@angular/material/checkbox'
+import {
+  DialogComponent,
+  DialogOpenDirective,
+} from '@/shared/components/dialog'
 import { finalize } from 'rxjs'
 import {
   BookingComSyncResult,
@@ -16,11 +23,11 @@ import {
   WebhookDelivery,
 } from '@/core/models'
 import { AdminPartnersService } from '@/core/services/admin-partners.service'
+import { ToastService } from '@/core/services/toast.service'
 import { saveBlob } from '@/core/utils/download'
 import { todayInItaly } from '@/core/utils/italy-time'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
-import { FormFieldComponent } from '@/shared/components/form-field/form-field.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 
@@ -28,11 +35,18 @@ import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 @Component({
   selector: 'app-partners',
   imports: [
+    MatFormField,
+    MatLabel,
+    MatError,
+    MatInput,
+    MatSelect,
+    MatOption,
+    MatCheckbox,
+    DialogComponent,
+    DialogOpenDirective,
     DatePipe,
     ReactiveFormsModule,
-    Dialog,
     ButtonComponent,
-    FormFieldComponent,
     IconComponent,
   ],
   templateUrl: './partners.component.html',
@@ -46,6 +60,7 @@ export class PartnersComponent implements OnInit {
     httpsOnly: $localize`Use an https:// address`,
   }
 
+  private readonly toast = inject(ToastService)
   protected readonly api = inject(AdminPartnersService)
   private readonly fb = inject(FormBuilder).nonNullable
 
@@ -150,7 +165,7 @@ export class PartnersComponent implements OnInit {
     this.api.createKey(partner.id).subscribe({
       next: key => {
         this.newKey.set(key.apiKey)
-        this.notice.set(
+        this.toast.success(
           partner.apiKeyPrefix
             ? $localize`New key created; the old one no longer works.`
             : $localize`Key created.`
@@ -167,7 +182,7 @@ export class PartnersComponent implements OnInit {
       this.api.revokeKey(partner.id).subscribe({
         next: () => {
           this.newKey.set(null)
-          this.notice.set(
+          this.toast.success(
             $localize`Key revoked: the partner can no longer call the API.`
           )
           this.editing.set({ ...partner, apiKeyPrefix: null })
@@ -185,7 +200,7 @@ export class PartnersComponent implements OnInit {
         next: r => {
           this.secret.set(r.secret)
           if (rotate) {
-            this.notice.set(
+            this.toast.success(
               $localize`New webhook secret: the partner must update it on their side.`
             )
           }
@@ -197,8 +212,8 @@ export class PartnersComponent implements OnInit {
 
   protected copy(value: string): void {
     void navigator.clipboard?.writeText(value).then(
-      () => this.notice.set($localize`Copied.`),
-      () => this.notice.set($localize`Select the text and copy it.`)
+      () => this.toast.success($localize`Copied.`),
+      () => this.toast.info($localize`Select the text and copy it.`)
     )
   }
 

@@ -6,14 +6,16 @@
         ><ng-container i18n>Audit log</ng-container></h1
       >
     </div>
-    <input
-      class="input audit__search"
-      type="search"
-      i18n-placeholder
-      placeholder="Search action, person, reference…"
-      i18n-aria-label
-      aria-label="Search the audit log"
-      [formControl]="search" />
+    <mat-form-field class="audit__search" subscriptSizing="dynamic">
+      <input
+        matInput
+        type="search"
+        i18n-placeholder
+        placeholder="Search action, person, reference…"
+        i18n-aria-label
+        aria-label="Search the audit log"
+        [formControl]="search" />
+    </mat-form-field>
   </header>
 
   @if (error(); as message) {

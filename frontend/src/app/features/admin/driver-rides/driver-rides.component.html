@@ -24,13 +24,17 @@
         (click)="step(-1)"
         ><app-icon name="arrow-left"
       /></button>
-      <input
-        class="input driver-rides__month-input"
-        type="month"
-        i18n-aria-label
-        aria-label="Month"
-        [value]="selectedMonth()"
-        (change)="setMonth($any($event.target).value)" />
+      <mat-form-field
+        class="driver-rides__month-input"
+        subscriptSizing="dynamic">
+        <input
+          matInput
+          type="month"
+          i18n-aria-label
+          aria-label="Month"
+          [value]="selectedMonth()"
+          (change)="setMonth($any($event.target).value)" />
+      </mat-form-field>
       <button
         type="button"
         class="driver-rides__step"
@@ -129,21 +133,25 @@
             }}</td>
             @if (isAdmin) {
               <td class="driver-rides__pay">
-                <input
-                  #pay
-                  class="input driver-rides__pay-input"
-                  type="number"
-                  min="0"
-                  step="0.5"
-                  inputmode="decimal"
-                  placeholder="€"
-                  [attr.aria-label]="tx.pay(r.reference)"
-                  [value]="r.driverPay ?? ''"
+                <mat-form-field
+                  class="driver-rides__pay-input"
                   [class.driver-rides__pay-input--missing]="
                     r.driverPay === null && r.status === 'Completed'
                   "
-                  (change)="savePay(r, pay.value)"
-                  (keydown.enter)="pay.blur()" />
+                  subscriptSizing="dynamic">
+                  <input
+                    matInput
+                    #pay
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    inputmode="decimal"
+                    placeholder="€"
+                    [attr.aria-label]="tx.pay(r.reference)"
+                    [value]="r.driverPay ?? ''"
+                    (change)="savePay(r, pay.value)"
+                    (keydown.enter)="pay.blur()" />
+                </mat-form-field>
                 @if (payState()[r.bookingId]; as message) {
                   <span class="driver-rides__muted">{{ message }}</span>
                 }

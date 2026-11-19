@@ -133,8 +133,9 @@
     @apply flex w-full min-w-0 items-center gap-3 self-stretch text-left focus:outline-none;
   }
 
+  // In a CDK overlay above the page: the overlay places it (below, or above when no room below).
   &__popover {
-    @apply absolute right-0 top-[calc(100%+0.5rem)] z-30 flex w-[min(22rem,calc(100vw-2rem))] flex-col gap-3 rounded-lg border border-ink-500 bg-ink-800 p-4;
+    @apply flex max-h-[calc(100dvh-2rem)] w-[min(22rem,calc(100vw-2rem))] flex-col gap-3 overflow-y-auto overscroll-contain rounded-lg border border-ink-500 bg-ink-800 p-4;
     box-shadow: 0 24px 60px rgb(0 0 0 / 0.6);
     animation: fade-up 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
   }

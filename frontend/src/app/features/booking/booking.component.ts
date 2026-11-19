@@ -41,6 +41,7 @@ import {
   createBookingForms,
   DEFAULT_MIN_LEAD_HOURS,
   toBookingRequest,
+  canQuote,
   toQuoteRequest,
   tripFromParams,
   tripToParams,
@@ -86,14 +87,11 @@ export class BookingComponent implements OnInit {
   )
   private readonly detailsRef = viewChild<ElementRef<HTMLElement>>('details')
   private readonly resultsRef = viewChild<ElementRef<HTMLElement>>('results')
+  private readonly searchBar = viewChild(SearchBarComponent)
   private readonly geo = inject(GeoService)
   /** The site language: emails, messages and links for this booking use it. */
   private readonly language = siteLocale(inject(LOCALE_ID)).code
 
-  protected readonly mapTargets = [
-    { id: 'pickup', label: $localize`Set From` },
-    { id: 'dropoff', label: $localize`Set To` },
-  ] as const
   protected readonly steps = [
     { id: 'trip', label: $localize`Your trip` },
     { id: 'car', label: $localize`Choose a car` },
@@ -202,7 +200,7 @@ export class BookingComponent implements OnInit {
         filter(
           () =>
             this.ready() &&
-            this.forms.trip.valid &&
+            canQuote(this.forms.trip) &&
             this.store.step() !== 'done'
         ),
         takeUntilDestroyed(this.destroyRef)
@@ -245,7 +243,10 @@ export class BookingComponent implements OnInit {
 
   /** A click on the map: the address there becomes From or To, then the price follows. */
   protected placeOnMap([latitude, longitude]: LatLng): void {
-    const target = this.mapTarget()
+    // From comes first; once it is set, clicks set (or move) To.
+    const target = this.forms.trip.controls.pickup.value
+      ? this.mapTarget()
+      : 'pickup'
     this.locating.set(true)
     this.mapError.set(null)
     this.geo.reverse(latitude, longitude).subscribe({
@@ -259,14 +260,12 @@ export class BookingComponent implements OnInit {
         })
         control.markAsTouched()
         // From is set: the next click sets To, unless it is already there.
-        if (target === 'pickup' && !this.forms.trip.controls.dropoff.value) {
-          this.mapTarget.set('dropoff')
-        }
+        if (target === 'pickup') this.mapTarget.set('dropoff')
       },
       error: () => {
         this.locating.set(false)
         this.mapError.set(
-          $localize`No address found there. Try a point on a street in Italy, France, Switzerland or Germany.`
+          $localize`No address found there. Try a point on a street in a country we serve.`
         )
       },
     })
@@ -285,6 +284,11 @@ export class BookingComponent implements OnInit {
   }
 
   protected chooseVehicle(category: VehicleCategory): void {
+    // Prices can show before passengers are set; a car is chosen only once they are.
+    if (this.forms.trip.controls.passengers.invalid) {
+      this.searchBar()?.askForTravellers()
+      return
+    }
     this.store.category.set(category)
     this.store.step.set('details')
     // The rest of the form opens below the prices; bring it into view.

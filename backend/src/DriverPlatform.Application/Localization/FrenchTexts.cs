@@ -38,7 +38,7 @@ internal sealed partial class FrenchTexts : Texts
     public override string ReturnAfterArrival => "Le retour doit partir après l'arrivée du premier trajet.";
     public override string ChildSeatLimit => "Au maximum un siège enfant par passager et trois par véhicule.";
     public override string ChildSeatGroupOnce => "Indiquez chaque groupe de siège enfant une seule fois.";
-    public override string OutsideServiceArea => "Nous opérons en Italie, en France, en Allemagne et en Suisse.";
+    public override string OutsideServiceArea => "Cette adresse est en dehors de la zone que nous desservons.";
     public override string TooClose => "Le départ et l'arrivée sont trop proches.";
     public override string PickupTimeRequired => "Indiquez la date et l'heure de prise en charge.";
     public override string TimeDoesNotExist => "Cette heure n'existe pas (passage à l'heure d'été). Choisissez une autre heure.";

@@ -168,326 +168,302 @@
   </div>
 </div>
 
-<p-dialog
-  [header]="editing() ? editing()!.name : tx.newPartner"
-  [modal]="true"
-  [draggable]="false"
-  styleClass="partners__dialog"
-  [visible]="editing() !== undefined"
-  (visibleChange)="$event || editing.set(undefined)">
-  @if (notice(); as n) {
-    <p class="alert alert--info partners__notice" role="status">{{ n }}</p>
-  }
-  <form
-    class="partners__form"
-    [formGroup]="form"
-    (ngSubmit)="save()"
-    novalidate>
-    @if (formError(); as message) {
-      <p class="alert alert--error" role="alert">{{ message }}</p>
+<ng-template
+  [appDialogOpen]="editing() !== undefined"
+  dialogWidth="44rem"
+  (dialogClosed)="editing.set(undefined)">
+  <app-dialog [title]="editing() ? editing()!.name : tx.newPartner">
+    @if (notice(); as n) {
+      <p class="alert alert--info partners__notice" role="status">{{ n }}</p>
     }
-    <div class="partners__grid">
-      <app-form-field
-        i18n-label
-        label="Name"
-        for="pName"
-        [error]="
-          form.controls.name.touched && form.controls.name.invalid
-            ? text.required
-            : null
-        ">
-        <input id="pName" class="input" formControlName="name" />
-      </app-form-field>
-      <app-form-field i18n-label label="Type" for="pKind">
-        <select id="pKind" class="input" formControlName="kind">
-          <option value="Company"
-            ><ng-container i18n
-              >Company (agency, hotel, cruise…)</ng-container
-            ></option
-          >
-          <option value="Booking"
-            ><ng-container i18n>Booking.com</ng-container></option
-          >
-        </select>
-      </app-form-field>
-      <app-form-field
-        i18n-label
-        label="Contact email"
-        for="pEmail"
-        [error]="
-          form.controls.contactEmail.touched &&
-          form.controls.contactEmail.invalid
-            ? text.validEmail
-            : null
-        ">
-        <input
-          id="pEmail"
-          class="input"
-          type="email"
-          formControlName="contactEmail" />
-      </app-form-field>
-      <app-form-field
-        i18n-label
-        label="Webhook URL (optional)"
-        for="pHook"
-        [error]="
-          form.controls.webhookUrl.touched && form.controls.webhookUrl.invalid
-            ? tx.httpsOnly
-            : null
-        ">
-        <input
-          id="pHook"
-          class="input"
-          formControlName="webhookUrl"
-          i18n-placeholder
-          placeholder="https://partner.example/hooks/magnus" />
-      </app-form-field>
-      <app-form-field
-        i18n-label
-        label="Agreed rate (% on public price)"
-        for="pRate">
-        <input
-          id="pRate"
-          class="input"
-          type="number"
-          min="-50"
-          max="50"
-          step="0.5"
-          formControlName="priceAdjustmentPercent" />
-      </app-form-field>
-      <app-form-field i18n-label label="Commission (%)" for="pCommission">
-        <input
-          id="pCommission"
-          class="input"
-          type="number"
-          min="0"
-          max="50"
-          step="0.5"
-          formControlName="commissionPercent" />
-      </app-form-field>
-    </div>
-    <div class="partners__checks">
-      <label class="partners__check"
-        ><input
-          class="partners__checkbox"
-          type="checkbox"
-          formControlName="monthlyInvoicing" />&ngsp;<ng-container i18n
-          >Monthly invoicing (no online payment)</ng-container
-        ></label
-      >
-      <label class="partners__check"
-        ><input
-          class="partners__checkbox"
-          type="checkbox"
-          formControlName="notifyPassengers" />&ngsp;<ng-container i18n
-          >We message passengers (driver details, review link)</ng-container
-        ></label
-      >
-      <label class="partners__check"
-        ><input
-          class="partners__checkbox"
-          type="checkbox"
-          formControlName="isActive" />&ngsp;<ng-container i18n
-          >Active</ng-container
-        ></label
-      >
-    </div>
-    <div class="partners__actions">
-      <button
-        appButton
-        type="button"
-        variant="ghost"
-        (click)="editing.set(undefined)"
-        ><ng-container i18n>Close</ng-container></button
-      >
-      <button appButton type="submit" [disabled]="saving()">
-        @if (saving()) {
-          <ng-container i18n>Saving…</ng-container>
-        } @else {
-          <ng-container i18n>Save partner</ng-container>
-        }
-      </button>
-    </div>
-  </form>
-
-  @if (editing(); as p) {
-    <section class="partners__section">
-      <h3 class="partners__legend"
-        ><ng-container i18n>API key</ng-container></h3
-      >
-      @if (newKey(); as key) {
-        <p class="partners__warning"
-          ><ng-container i18n
-            >Copy it now: it is shown only once.</ng-container
-          ></p
-        >
-        <div class="partners__secret">
-          <input
-            class="input partners__mono"
-            readonly
-            [value]="key"
-            i18n-aria-label
-            aria-label="New API key"
-            (focus)="$any($event.target).select()" />
-          <button
-            appButton
-            size="sm"
-            variant="outline"
-            type="button"
-            (click)="copy(key)"
-            ><ng-container i18n>Copy</ng-container></button
-          >
-        </div>
-      } @else if (p.apiKeyPrefix) {
-        <p class="partners__muted"
-          ><ng-container i18n>Current key</ng-container>&ngsp;<code
-            class="partners__code"
-            ><ng-container i18n>md_{{ p.apiKeyPrefix }}_…</ng-container></code
-          ><ng-container i18n
-            >, created {{ p.apiKeyCreatedAt | date: 'd MMM y' }}.</ng-container
-          ></p
-        >
+    <form
+      class="partners__form"
+      [formGroup]="form"
+      (ngSubmit)="save()"
+      novalidate>
+      @if (formError(); as message) {
+        <p class="alert alert--error" role="alert">{{ message }}</p>
       }
-      <div class="partners__buttons">
+      <div class="partners__grid">
+        <mat-form-field>
+          <mat-label i18n>Name</mat-label>
+          <input matInput id="pName" formControlName="name" />
+          <mat-error>{{ text.required }}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Type</mat-label>
+          <mat-select id="pKind" formControlName="kind">
+            <mat-option value="Company"
+              ><ng-container i18n
+                >Company (agency, hotel, cruise…)</ng-container
+              ></mat-option
+            >
+            <mat-option value="Booking"
+              ><ng-container i18n>Booking.com</ng-container></mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Contact email</mat-label>
+          <input
+            matInput
+            id="pEmail"
+            type="email"
+            formControlName="contactEmail" />
+          <mat-error>{{ text.validEmail }}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Webhook URL (optional)</mat-label>
+          <input
+            matInput
+            id="pHook"
+            formControlName="webhookUrl"
+            i18n-placeholder
+            placeholder="https://partner.example/hooks/magnus" />
+          <mat-error>{{ tx.httpsOnly }}</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Agreed rate (% on public price)</mat-label>
+          <input
+            matInput
+            id="pRate"
+            type="number"
+            min="-50"
+            max="50"
+            step="0.5"
+            formControlName="priceAdjustmentPercent" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Commission (%)</mat-label>
+          <input
+            matInput
+            id="pCommission"
+            type="number"
+            min="0"
+            max="50"
+            step="0.5"
+            formControlName="commissionPercent" />
+        </mat-form-field>
+      </div>
+      <div class="partners__checks">
+        <mat-checkbox class="partners__check" formControlName="monthlyInvoicing"
+          ><ng-container i18n
+            >Monthly invoicing (no online payment)</ng-container
+          ></mat-checkbox
+        >
+        <mat-checkbox class="partners__check" formControlName="notifyPassengers"
+          ><ng-container i18n
+            >We message passengers (driver details, review link)</ng-container
+          ></mat-checkbox
+        >
+        <mat-checkbox class="partners__check" formControlName="isActive"
+          ><ng-container i18n>Active</ng-container></mat-checkbox
+        >
+      </div>
+      <div class="partners__actions">
         <button
           appButton
-          size="sm"
-          variant="outline"
           type="button"
-          (click)="createKey()">
-          @if (p.apiKeyPrefix) {
-            <ng-container i18n>Replace key</ng-container>
+          variant="ghost"
+          (click)="editing.set(undefined)"
+          ><ng-container i18n>Close</ng-container></button
+        >
+        <button appButton type="submit" [disabled]="saving()">
+          @if (saving()) {
+            <ng-container i18n>Saving…</ng-container>
           } @else {
-            <ng-container i18n>Create API key</ng-container>
+            <ng-container i18n>Save partner</ng-container>
           }
         </button>
-        @if (p.apiKeyPrefix) {
-          <button
-            appButton
-            size="sm"
-            variant="ghost"
-            type="button"
-            (click)="revokeKey()"
-            ><ng-container i18n>Revoke</ng-container></button
-          >
-        }
       </div>
-      <p class="partners__muted"
-        ><ng-container i18n>Requests send it in the</ng-container>&ngsp;<code
-          class="partners__code"
-          ><ng-container i18n>X-Api-Key</ng-container></code
-        >&ngsp;<ng-container i18n>header to</ng-container>&ngsp;<code
-          class="partners__code"
-          ><ng-container i18n>/api/partner/v1</ng-container></code
-        >.</p
-      >
-    </section>
+    </form>
 
-    @if (p.webhookUrl) {
+    @if (editing(); as p) {
       <section class="partners__section">
         <h3 class="partners__legend"
-          ><ng-container i18n>Webhook</ng-container></h3
+          ><ng-container i18n>API key</ng-container></h3
         >
-        <p class="partners__muted"
-          ><ng-container i18n
-            >Status changes are POSTed to {{ p.webhookUrl }}, signed with the
-            secret (header</ng-container
-          >&ngsp;<code class="partners__code"
-            ><ng-container i18n>Webhook-Signature</ng-container></code
-          >).</p
-        >
-        @if (secret(); as value) {
+        @if (newKey(); as key) {
+          <p class="partners__warning"
+            ><ng-container i18n
+              >Copy it now: it is shown only once.</ng-container
+            ></p
+          >
           <div class="partners__secret">
-            <input
-              class="input partners__mono"
-              readonly
-              [value]="value"
-              i18n-aria-label
-              aria-label="Webhook secret"
-              (focus)="$any($event.target).select()" />
+            <mat-form-field class="partners__mono" subscriptSizing="dynamic">
+              <input
+                matInput
+                readonly
+                [value]="key"
+                i18n-aria-label
+                aria-label="New API key"
+                (focus)="$any($event.target).select()" />
+            </mat-form-field>
             <button
               appButton
               size="sm"
               variant="outline"
               type="button"
-              (click)="copy(value)"
+              (click)="copy(key)"
               ><ng-container i18n>Copy</ng-container></button
             >
           </div>
+        } @else if (p.apiKeyPrefix) {
+          <p class="partners__muted"
+            ><ng-container i18n>Current key</ng-container>&ngsp;<code
+              class="partners__code"
+              ><ng-container i18n>md_{{ p.apiKeyPrefix }}_…</ng-container></code
+            ><ng-container i18n
+              >, created
+              {{ p.apiKeyCreatedAt | date: 'd MMM y' }}.</ng-container
+            ></p
+          >
         }
         <div class="partners__buttons">
           <button
             appButton
             size="sm"
-            variant="ghost"
+            variant="outline"
             type="button"
-            (click)="showSecret()"
-            ><ng-container i18n>Show secret</ng-container></button
+            (click)="createKey()">
+            @if (p.apiKeyPrefix) {
+              <ng-container i18n>Replace key</ng-container>
+            } @else {
+              <ng-container i18n>Create API key</ng-container>
+            }
+          </button>
+          @if (p.apiKeyPrefix) {
+            <button
+              appButton
+              size="sm"
+              variant="ghost"
+              type="button"
+              (click)="revokeKey()"
+              ><ng-container i18n>Revoke</ng-container></button
+            >
+          }
+        </div>
+        <p class="partners__muted"
+          ><ng-container i18n>Requests send it in the</ng-container>&ngsp;<code
+            class="partners__code"
+            ><ng-container i18n>X-Api-Key</ng-container></code
+          >&ngsp;<ng-container i18n>header to</ng-container>&ngsp;<code
+            class="partners__code"
+            ><ng-container i18n>/api/partner/v1</ng-container></code
+          >.</p
+        >
+      </section>
+
+      @if (p.webhookUrl) {
+        <section class="partners__section">
+          <h3 class="partners__legend"
+            ><ng-container i18n>Webhook</ng-container></h3
           >
+          <p class="partners__muted"
+            ><ng-container i18n
+              >Status changes are POSTed to {{ p.webhookUrl }}, signed with the
+              secret (header</ng-container
+            >&ngsp;<code class="partners__code"
+              ><ng-container i18n>Webhook-Signature</ng-container></code
+            >).</p
+          >
+          @if (secret(); as value) {
+            <div class="partners__secret">
+              <mat-form-field class="partners__mono" subscriptSizing="dynamic">
+                <input
+                  matInput
+                  readonly
+                  [value]="value"
+                  i18n-aria-label
+                  aria-label="Webhook secret"
+                  (focus)="$any($event.target).select()" />
+              </mat-form-field>
+              <button
+                appButton
+                size="sm"
+                variant="outline"
+                type="button"
+                (click)="copy(value)"
+                ><ng-container i18n>Copy</ng-container></button
+              >
+            </div>
+          }
+          <div class="partners__buttons">
+            <button
+              appButton
+              size="sm"
+              variant="ghost"
+              type="button"
+              (click)="showSecret()"
+              ><ng-container i18n>Show secret</ng-container></button
+            >
+            <button
+              appButton
+              size="sm"
+              variant="ghost"
+              type="button"
+              (click)="showSecret(true)"
+              ><ng-container i18n>New secret</ng-container></button
+            >
+          </div>
+          <ul class="partners__deliveries">
+            @for (d of deliveries(); track d.id) {
+              <li class="partners__delivery">
+                <span
+                  [class.partners__danger]="!d.deliveredAt && d.attempts > 0"
+                  >{{ d.deliveredAt ? '✓' : d.attempts ? '✗' : '…' }}</span
+                >
+                {{ d.event }} · {{ d.bookingReference }}
+                <span class="partners__muted"
+                  >{{ d.createdAt | date: 'd MMM HH:mm' }}
+                  @if (d.lastError) {
+                    <ng-container i18n>
+                      · {{ d.lastError }} ({{ d.attempts }} tries)</ng-container
+                    >
+                  }
+                </span>
+              </li>
+            } @empty {
+              <li class="partners__muted"
+                ><ng-container i18n>Nothing sent yet.</ng-container></li
+              >
+            }
+          </ul>
+        </section>
+      }
+
+      <section class="partners__section">
+        <h3 class="partners__legend"
+          ><ng-container i18n>Monthly statement</ng-container></h3
+        >
+        <div class="partners__buttons">
+          <mat-form-field class="partners__month" subscriptSizing="dynamic">
+            <input
+              matInput
+              type="month"
+              i18n-aria-label
+              aria-label="Month"
+              [value]="statementMonth"
+              (change)="statementMonth = $any($event.target).value" />
+          </mat-form-field>
           <button
             appButton
             size="sm"
-            variant="ghost"
+            variant="outline"
             type="button"
-            (click)="showSecret(true)"
-            ><ng-container i18n>New secret</ng-container></button
+            (click)="downloadStatement()"
+            ><app-icon name="download" />&ngsp;<ng-container i18n
+              >CSV</ng-container
+            ></button
           >
         </div>
-        <ul class="partners__deliveries">
-          @for (d of deliveries(); track d.id) {
-            <li class="partners__delivery">
-              <span
-                [class.partners__danger]="!d.deliveredAt && d.attempts > 0"
-                >{{ d.deliveredAt ? '✓' : d.attempts ? '✗' : '…' }}</span
-              >
-              {{ d.event }} · {{ d.bookingReference }}
-              <span class="partners__muted"
-                >{{ d.createdAt | date: 'd MMM HH:mm' }}
-                @if (d.lastError) {
-                  <ng-container i18n>
-                    · {{ d.lastError }} ({{ d.attempts }} tries)</ng-container
-                  >
-                }
-              </span>
-            </li>
-          } @empty {
-            <li class="partners__muted"
-              ><ng-container i18n>Nothing sent yet.</ng-container></li
-            >
-          }
-        </ul>
+        <p class="partners__muted"
+          ><ng-container i18n
+            >Rides by pickup date, with price, commission and net. Cancelled
+            rides are listed at zero.</ng-container
+          ></p
+        >
       </section>
     }
-
-    <section class="partners__section">
-      <h3 class="partners__legend"
-        ><ng-container i18n>Monthly statement</ng-container></h3
-      >
-      <div class="partners__buttons">
-        <input
-          class="input partners__month"
-          type="month"
-          i18n-aria-label
-          aria-label="Month"
-          [value]="statementMonth"
-          (change)="statementMonth = $any($event.target).value" />
-        <button
-          appButton
-          size="sm"
-          variant="outline"
-          type="button"
-          (click)="downloadStatement()"
-          ><app-icon name="download" />&ngsp;<ng-container i18n
-            >CSV</ng-container
-          ></button
-        >
-      </div>
-      <p class="partners__muted"
-        ><ng-container i18n
-          >Rides by pickup date, with price, commission and net. Cancelled rides
-          are listed at zero.</ng-container
-        ></p
-      >
-    </section>
-  }
-</p-dialog>
+  </app-dialog>
+</ng-template>

@@ -36,7 +36,7 @@ describe('LoginComponent', () => {
     const { el, submit } = render()
     submit()
 
-    expect(el.querySelectorAll('.form-field__error').length).toBe(2)
+    expect(el.querySelectorAll('mat-error').length).toBe(2)
     TestBed.inject(HttpTestingController).expectNone('/api/auth/login')
   })
 

@@ -14,11 +14,12 @@ export interface SiteLocale {
   og: string
 }
 
+/** In the order of the language switch: English, French, German, Italian. */
 const LANGUAGES: readonly Omit<SiteLocale, 'prefix'>[] = [
-  { code: 'it', name: 'Italiano', og: 'it_IT' },
   { code: 'en', name: 'English', og: 'en_GB' },
-  { code: 'de', name: 'Deutsch', og: 'de_DE' },
   { code: 'fr', name: 'Français', og: 'fr_FR' },
+  { code: 'de', name: 'Deutsch', og: 'de_DE' },
+  { code: 'it', name: 'Italiano', og: 'it_IT' },
 ]
 
 /** The language at the root of the site. */

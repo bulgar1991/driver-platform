@@ -10,6 +10,9 @@ import {
 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Meta } from '@angular/platform-browser'
+import { MatCheckbox } from '@angular/material/checkbox'
+import { MatFormField } from '@angular/material/form-field'
+import { MatInput } from '@angular/material/input'
 import { finalize } from 'rxjs'
 import { ReviewPage } from '@/core/models'
 import { DriverPortalService } from '@/core/services/driver-portal.service'
@@ -20,7 +23,15 @@ import { IconComponent } from '@/shared/components/icon/icon.component'
 /** /review/:token — the one-time link sent after drop-off (business plan §5 step 7). */
 @Component({
   selector: 'app-review',
-  imports: [DatePipe, FormsModule, ButtonComponent, IconComponent],
+  imports: [
+    MatFormField,
+    MatInput,
+    MatCheckbox,
+    DatePipe,
+    FormsModule,
+    ButtonComponent,
+    IconComponent,
+  ],
   templateUrl: './review.component.html',
   styleUrl: './review.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

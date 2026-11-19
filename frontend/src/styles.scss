@@ -5,3 +5,8 @@
 @use 'styles/page';
 @use 'styles/motion';
 @use 'styles/loader';
+@use 'styles/material';
+@use '@angular/cdk' as cdk;
+
+// CDK overlay (dropdown panels above the page). Above the fixed header (z-40) and Leaflet maps.
+@include cdk.overlay();
