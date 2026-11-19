@@ -19,7 +19,7 @@ import { InvoiceSummary, PaymentListItem, PaymentStatus } from '@/core/models'
 import { AdminPaymentsService } from '@/core/services/admin-payments.service'
 import { ToastService } from '@/core/services/toast.service'
 import { saveBlob } from '@/core/utils/download'
-import { todayInItaly } from '@/core/utils/italy-time'
+import { todayInOffice } from '@/core/utils/local-time'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
@@ -94,8 +94,8 @@ export class PaymentsComponent implements OnInit {
   })
 
   protected readonly exportForm = this.fb.group({
-    from: [todayInItaly().slice(0, 8) + '01', Validators.required],
-    to: [todayInItaly(), Validators.required],
+    from: [todayInOffice().slice(0, 8) + '01', Validators.required],
+    to: [todayInOffice(), Validators.required],
   })
 
   ngOnInit(): void {

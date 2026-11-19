@@ -70,7 +70,7 @@ internal sealed partial class GermanTexts : Texts
     public override string PaymentConfirmed(string amount) => $"vielen Dank, Ihre Zahlung von {amount} ist bestätigt und Ihre Fahrt ist gebucht.";
     public override string Booking => "Buchung";
     public override string Pickup => "Abholung";
-    public override string ItalianTime => "(italienische Zeit)";
+    public override string PickupLocalTime => "(Ortszeit)";
     public override string From => "Von";
     public override string To => "Nach";
     public override string Vehicle => "Fahrzeug";

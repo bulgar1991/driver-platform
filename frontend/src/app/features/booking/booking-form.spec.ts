@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing'
 import { FormBuilder } from '@angular/forms'
-import { nowInItaly, todayInItaly } from '@/core/utils/italy-time'
+import { nowIn, OFFICE_TIME_ZONE, todayInOffice } from '@/core/utils/local-time'
 import {
   canQuote,
   createBookingForms,
@@ -20,7 +20,7 @@ const fiumicino = {
 describe('booking form', () => {
   const create = () => createBookingForms(TestBed.inject(FormBuilder))
 
-  it('builds the quote request in Italian local time with child seats', () => {
+  it('builds the quote request in local time with child seats', () => {
     const forms = create()
     forms.trip.patchValue({
       pickup: rome,
@@ -66,7 +66,7 @@ describe('booking form', () => {
     expect(forms.trip.hasError('returnRequired')).toBe(true)
 
     // After the outbound trip (tomorrow by default), whatever today is.
-    const returnDate = todayInItaly(8)
+    const returnDate = todayInOffice(8)
     forms.trip.patchValue({ returnDate, returnTime: '18:00' })
     expect(forms.trip.valid).toBe(true)
     expect(toQuoteRequest(forms).return?.pickupAt).toBe(
@@ -127,7 +127,7 @@ describe('booking form', () => {
 
   it('refuses a pickup sooner than the minimum notice, as the API would', () => {
     const forms = createBookingForms(TestBed.inject(FormBuilder), () => 3)
-    const [date, time] = nowInItaly(60).split('T')
+    const [date, time] = nowIn(OFFICE_TIME_ZONE, 60).split('T')
     forms.trip.patchValue({
       pickup: rome,
       dropoff: fiumicino,
@@ -137,8 +137,32 @@ describe('booking form', () => {
     })
     expect(forms.trip.getError('tooSoon')).toEqual({ hours: 3 })
 
-    forms.trip.patchValue({ date: todayInItaly(2) })
+    forms.trip.patchValue({ date: todayInOffice(2) })
     expect(forms.trip.valid).toBe(true)
+  })
+
+  it('counts the minimum notice in the local time at the pickup', () => {
+    let zone = 'Europe/London'
+    const forms = createBookingForms(
+      TestBed.inject(FormBuilder),
+      () => 1,
+      () => zone
+    )
+    // 90 minutes from now on a London clock: enough notice for a London pickup…
+    const [date, time] = nowIn('Europe/London', 90).split('T')
+    forms.trip.patchValue({
+      pickup: rome,
+      dropoff: fiumicino,
+      date,
+      time,
+      passengers: 2,
+    })
+    expect(forms.trip.hasError('tooSoon')).toBe(false)
+
+    // …but already past on an Athens clock (two hours ahead of London).
+    zone = 'Europe/Athens'
+    forms.trip.updateValueAndValidity()
+    expect(forms.trip.getError('tooSoon')).toEqual({ hours: 1 })
   })
 
   it('refuses a return before the outbound trip', () => {
@@ -146,10 +170,10 @@ describe('booking form', () => {
     forms.trip.patchValue({
       pickup: rome,
       dropoff: fiumicino,
-      date: todayInItaly(5),
+      date: todayInOffice(5),
       time: '10:00',
       returnTrip: true,
-      returnDate: todayInItaly(5),
+      returnDate: todayInOffice(5),
       returnTime: '09:00',
     })
     expect(forms.trip.hasError('returnBeforeOutbound')).toBe(true)

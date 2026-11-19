@@ -135,7 +135,7 @@ public sealed class PartnerApiTests
         var booking = await Read<PartnerBooking>(await s.Api.PostAsJsonAsync("/api/partner/v1/bookings", Booking("BKG-77"), TestData.Json), HttpStatusCode.Created);
 
         var staff = await s.Factory.CreateDispatcherClientAsync();
-        var today = DateOnly.FromDateTime(ItalyTime.ToLocal(DateTimeOffset.UtcNow));
+        var today = DateOnly.FromDateTime(OfficeTime.ToLocal(DateTimeOffset.UtcNow));
         var driver = (await (await staff.PostAsJsonAsync("/api/admin/drivers", new DriverRequest
         {
             FirstName = "Giulia", LastName = "Ferrari", Phone = "+393400000002",

@@ -13,7 +13,7 @@ import {
   ConnectedPosition,
 } from '@angular/cdk/overlay'
 import { ReactiveFormsModule } from '@angular/forms'
-import { todayInItaly } from '@/core/utils/italy-time'
+import { todayInOffice } from '@/core/utils/local-time'
 import { CounterComponent } from '@/shared/components/counter/counter.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
@@ -51,7 +51,7 @@ export class SearchBarComponent {
   /** Every field is filled and valid. */
   readonly searched = output()
 
-  protected readonly minDate = todayInItaly()
+  protected readonly minDate = todayInOffice()
   protected readonly peopleOpen = signal(false)
   /** Search was pressed: from now on, every missing field says so. */
   protected readonly submitted = signal(false)

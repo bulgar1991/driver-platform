@@ -22,7 +22,7 @@ import { combineLatest, Subscription } from 'rxjs'
 import { BookingListItem, Shift, ShiftResult } from '@/core/models'
 import { AdminDispatchService } from '@/core/services/admin-dispatch.service'
 import { ToastService } from '@/core/services/toast.service'
-import { todayInItaly } from '@/core/utils/italy-time'
+import { todayInOffice } from '@/core/utils/local-time'
 import { poll } from '@/core/utils/poll'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
@@ -73,7 +73,7 @@ export class ShiftsComponent {
   private readonly destroyRef = inject(DestroyRef)
   private refresh?: Subscription
 
-  protected readonly day = signal(todayInItaly())
+  protected readonly day = signal(todayInOffice())
   protected readonly shifts = signal<Shift[]>([])
   protected readonly unassigned = signal<BookingListItem[]>([])
   protected readonly loading = signal(true)

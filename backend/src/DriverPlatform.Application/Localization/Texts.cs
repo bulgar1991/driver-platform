@@ -112,7 +112,7 @@ public abstract partial class Texts
     public abstract string PaymentConfirmed(string amount);
     public abstract string Booking { get; }
     public abstract string Pickup { get; }
-    public abstract string ItalianTime { get; }
+    public abstract string PickupLocalTime { get; }
     public abstract string From { get; }
     public abstract string To { get; }
     public abstract string Vehicle { get; }
@@ -120,7 +120,7 @@ public abstract partial class Texts
     public abstract string Flight { get; }
     public abstract string Takeoff { get; }
     public abstract string Landing { get; }
-    /// <summary>After flight times, which are as on the ticket, not Italian time.</summary>
+    /// <summary>After flight times, which are as on the ticket (each airport's local time).</summary>
     public abstract string LocalTimes { get; }
 
     /// <summary>"FR 1234 · takeoff Fri 30 Oct, 08:10 · landing Fri 30 Oct, 10:05 (local times)".</summary>

@@ -9,8 +9,10 @@ ARG BRAND=magnus-drive
 ARG SITE_LANGUAGE=en
 # Where trips are served: "europe" or ISO country codes, e.g. "it,fr,ch,de".
 ARG SERVICE_AREA=europe
+# The company's time zone ("today" in the panel); ride times use the pickup's own zone.
+ARG TIME_ZONE=Europe/Rome
 RUN test -n "$SITE_DOMAIN" || (echo 'Build argument SITE_DOMAIN is required' && exit 1)
-ENV SITE_URL=https://${SITE_DOMAIN} BRAND=${BRAND} SITE_LANGUAGE=${SITE_LANGUAGE} SERVICE_AREA=${SERVICE_AREA}
+ENV SITE_URL=https://${SITE_DOMAIN} BRAND=${BRAND} SITE_LANGUAGE=${SITE_LANGUAGE} SERVICE_AREA=${SERVICE_AREA} TIME_ZONE=${TIME_ZONE}
 WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund

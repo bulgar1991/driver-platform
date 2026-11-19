@@ -11,7 +11,7 @@ internal static class BookingAdminMapping
         b.Reference,
         b.Status,
         b.Source,
-        ItalyTime.ToLocal(b.PickupAt),
+        RideTime.ToLocal(b.PickupAt, b.Pickup),
         b.PickupMeetingPoint?.Name ?? b.Pickup.Address,
         b.DropoffMeetingPoint?.Name ?? b.Dropoff.Address,
         $"{b.Client.FirstName} {b.Client.LastName}".Trim(),

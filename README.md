@@ -282,6 +282,7 @@ What differs is chosen per server in `deploy/.env`:
 | `SITE_DOMAIN` | The client's domain (HTTPS certificate, canonical links, sitemap). |
 | `SITE_LANGUAGE` | The language at the root of the site (`en` by default; `it`, `de` or `fr`). |
 | `SERVICE_AREA` | Where trips are served: `europe` (default: EU, EEA, UK, Switzerland, Western Balkans) or ISO codes such as `it,fr,ch,de`. Address search, the price check, the map's first view and the site's wording follow it. |
+| `TIME_ZONE` | The company's own time zone (IANA, default `Europe/Rome`; e.g. `Europe/Zurich`): "today" in the panel, shift days, monthly reports, statements and invoices. Ride times always use the local time at the pickup. |
 | `COMPANY_*` | Company on invoices; `COMPANY_NAME` is also the email sender name and is used on Stripe payments and the partner API page. |
 | `BOOKING_PREFIX`, `INVOICE_PREFIX` | Letters of booking references (`HV-7K3QX9`) and invoice numbers (`HV-2026-000001`), 2–4 letters. |
 
@@ -353,6 +354,12 @@ to (no in-page `#anchors`). The header is fixed at the top. **Texts, contacts, p
 **Countries served:** set per server with `SERVICE_AREA` (`Maps:ServiceArea`): all of Europe by
 default, or a list of countries. Address search and map clicks only return places there; the price
 check refuses anything outside rough boxes around them (`GeoMath.IsInServiceArea`).
+
+**Times:** a pickup time is the local time where the ride starts: a London ride is booked, priced
+(night and weekend surcharges), shown and sent to the driver in UK time, a Rome ride in Italian time
+(`RideTime`, an offline lookup from the pickup's coordinates; the booking page asks
+`GET /api/geo/time-zone`). Panel dates ("today", report months, shift days, invoices) use the
+company's zone, `TIME_ZONE` (`OfficeTime`).
 
 Addresses are shortened from OpenStreetMap's parts (`AddressFormatter`): "Via del Corso 12, 00187
 Rome", or "San Marco 1, 30124 Venice". A searched place keeps its name ("Hotel Danieli, Riva degli

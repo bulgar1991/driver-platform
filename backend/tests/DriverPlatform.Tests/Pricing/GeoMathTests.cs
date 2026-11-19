@@ -27,9 +27,9 @@ public sealed class GeoMathTests
     public void Times_are_converted_from_italian_local_time()
     {
         // CET in winter (+1), CEST in summer (+2).
-        Assert.Equal(new DateTimeOffset(2026, 12, 1, 9, 0, 0, TimeSpan.Zero), ItalyTime.ToUtc(new DateTime(2026, 12, 1, 10, 0, 0)));
-        Assert.Equal(new DateTimeOffset(2027, 7, 1, 8, 0, 0, TimeSpan.Zero), ItalyTime.ToUtc(new DateTime(2027, 7, 1, 10, 0, 0)));
+        Assert.Equal(new DateTimeOffset(2026, 12, 1, 9, 0, 0, TimeSpan.Zero), OfficeTime.ToUtc(new DateTime(2026, 12, 1, 10, 0, 0)));
+        Assert.Equal(new DateTimeOffset(2027, 7, 1, 8, 0, 0, TimeSpan.Zero), OfficeTime.ToUtc(new DateTime(2027, 7, 1, 10, 0, 0)));
         // 28 March 2027, 02:30 is skipped when clocks go forward.
-        Assert.Null(ItalyTime.ToUtc(new DateTime(2027, 3, 28, 2, 30, 0)));
+        Assert.Null(OfficeTime.ToUtc(new DateTime(2027, 3, 28, 2, 30, 0)));
     }
 }

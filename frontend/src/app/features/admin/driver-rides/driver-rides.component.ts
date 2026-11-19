@@ -20,7 +20,7 @@ import {
   addMonths,
   isMonth,
   splitMonth,
-  thisMonthInItaly,
+  thisMonthInOffice,
 } from '@/core/utils/month'
 import { problemMessage } from '@/core/utils/problem'
 import { IconComponent } from '@/shared/components/icon/icon.component'
@@ -60,7 +60,7 @@ export class DriverRidesComponent {
   /** yyyy-MM, as the month input gives it. */
   protected readonly selectedMonth = linkedSignal(() => {
     const param = this.month()
-    return isMonth(param) ? param : thisMonthInItaly()
+    return isMonth(param) ? param : thisMonthInOffice()
   })
   protected readonly loading = signal(true)
   protected readonly error = signal<string | null>(null)

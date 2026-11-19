@@ -18,7 +18,7 @@ public sealed class BookingComSyncTests
     private const string Customer = "46825434";
     private const string Leg = "34745155";
 
-    private static DateOnly Today() => DateOnly.FromDateTime(ItalyTime.ToLocal(DateTimeOffset.UtcNow));
+    private static DateOnly Today() => DateOnly.FromDateTime(OfficeTime.ToLocal(DateTimeOffset.UtcNow));
 
     /// <summary>Venice airport to Rialto, as Booking.com sends it: the pickup in UTC, without an offset.</summary>
     private static BcBooking Ride(DateTime? pickupUtc = null, string status = BcStatus.New) => new()

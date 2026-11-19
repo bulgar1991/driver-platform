@@ -25,7 +25,7 @@ import {
 import { AdminPartnersService } from '@/core/services/admin-partners.service'
 import { ToastService } from '@/core/services/toast.service'
 import { saveBlob } from '@/core/utils/download'
-import { todayInItaly } from '@/core/utils/italy-time'
+import { todayInOffice } from '@/core/utils/local-time'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
@@ -76,7 +76,7 @@ export class PartnersComponent implements OnInit {
   protected readonly secret = signal<string | null>(null)
   protected readonly deliveries = signal<WebhookDelivery[]>([])
   protected readonly notice = signal<string | null>(null)
-  protected statementMonth = todayInItaly().slice(0, 7)
+  protected statementMonth = todayInOffice().slice(0, 7)
 
   /** "Sync Booking.com": runs a round now instead of waiting for the next minute. */
   protected readonly syncing = signal(false)

@@ -5,7 +5,7 @@ namespace DriverPlatform.Application.Pricing;
 
 public static class SurchargeMatcher
 {
-    /// <param name="localPickup">Pickup time in Italian local time.</param>
+    /// <param name="localPickup">Pickup time, local time at the pickup.</param>
     public static bool Matches(SurchargeRule rule, DateTime localPickup)
     {
         if (!rule.IsActive)

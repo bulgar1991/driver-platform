@@ -65,7 +65,7 @@ public sealed record DriverLinkResponse(string Url);
 public sealed record DriverRide(
     Guid BookingId,
     string Reference,
-    /// <summary>Italian local time.</summary>
+    /// <summary>Local time at the pickup.</summary>
     DateTime PickupAt,
     string PickupAddress,
     string DropoffAddress,

@@ -122,7 +122,7 @@ public sealed class VehicleAdminService(IAppDbContext db, IAuditLogger audit, Ti
     private VehicleDto ToDto(Vehicle v) => new(
         v.Id, v.PlateNumber, v.Make, v.Model, v.Color, v.Category, v.Seats, v.LuggageCapacity, v.ChildSeatsAvailable,
         v.InsuranceExpiresOn, v.InspectionExpiresOn, v.NextServiceOn, v.MileageKm, v.IsActive, v.Notes, v.PhotoId,
-        DocumentRules.AlertCount(DocumentRules.Dated(v), DateOnly.FromDateTime(ItalyTime.ToLocal(clock.GetUtcNow()))));
+        DocumentRules.AlertCount(DocumentRules.Dated(v), DateOnly.FromDateTime(OfficeTime.ToLocal(clock.GetUtcNow()))));
 
     /// <summary>"ab 123 cd" → "AB123CD".</summary>
     internal static string NormalizePlate(string plate) =>

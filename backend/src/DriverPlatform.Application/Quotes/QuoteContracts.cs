@@ -24,7 +24,7 @@ public sealed record ChildSeatInput
 
 public sealed record ReturnLegInput
 {
-    /// <summary>Italian local time, without an offset.</summary>
+    /// <summary>Local time at the pickup, without an offset.</summary>
     public DateTime PickupAt { get; init; }
     public bool NameSign { get; init; }
     [MaxLength(16)]
@@ -40,7 +40,7 @@ public sealed record QuoteRequest
     public required PointInput Pickup { get; init; }
     [Required]
     public required PointInput Dropoff { get; init; }
-    /// <summary>Italian local time, without an offset, e.g. "2026-11-02T14:30:00".</summary>
+    /// <summary>Local time at the pickup, without an offset, e.g. "2026-11-02T14:30:00".</summary>
     public DateTime PickupAt { get; init; }
     [Range(1, 8)]
     public int Passengers { get; init; } = 1;

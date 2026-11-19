@@ -20,9 +20,6 @@ public static class GeoMath
     public static bool IsIn(IEnumerable<(double South, double North, double West, double East)> boxes, Coordinate c) =>
         boxes.Any(box => c.Latitude >= box.South && c.Latitude <= box.North && c.Longitude >= box.West && c.Longitude <= box.East);
 
-    /// <summary>ISO codes (lower case) of the countries served, for the address search.</summary>
-    public static IReadOnlyList<string> Countries { get; private set; } = EuropeCountries;
-
     /// <summary>"europe" (default) or a comma-separated list of ISO country codes.</summary>
     public static void UseServiceArea(string? area)
     {
@@ -77,6 +74,10 @@ public static class GeoMath
     };
 
     private static (double South, double North, double West, double East)[] Boxes = EuropeBoxes;
+
+    /// <summary>ISO codes (lower case) of the countries served, for the address search.</summary>
+    // Declared after EuropeCountries: static fields start in the order they are written.
+    public static IReadOnlyList<string> Countries { get; private set; } = EuropeCountries;
 
     public static bool IsValid(Coordinate c) =>
         c.Latitude is >= -90 and <= 90 && c.Longitude is >= -180 and <= 180;

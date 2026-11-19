@@ -163,7 +163,7 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
         }
 
         // No date sent: DateTime's default, which is not a time to convert.
-        var utc = pickupLocal == default ? null : ItalyTime.ToUtc(pickupLocal);
+        var utc = pickupLocal == default ? null : RideTime.ToUtc(pickupLocal, from);
         var now = clock.GetUtcNow();
         if (pickupLocal == default)
         {

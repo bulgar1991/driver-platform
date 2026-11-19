@@ -89,6 +89,8 @@ public static class DependencyInjection
         Application.Bookings.BookingReference.UsePrefix(configuration[$"{CompanyOptions.SectionName}:ReferencePrefix"]);
         // The site's main language (at the root of the site), for the links in emails and messages.
         SiteLanguages.UseMainLanguage(configuration["Site:Language"]);
+        // The company's time zone: "today", shift days, months of reports and invoices.
+        Application.Geo.OfficeTime.UseZone(configuration["Site:TimeZone"]);
         services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
 
         if (configuration[$"{PaymentsOptions.SectionName}:Provider"] == "Stripe")

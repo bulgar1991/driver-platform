@@ -26,7 +26,7 @@ import { finalize, of, switchMap } from 'rxjs'
 import { Driver, DriverDocument, DriverDocumentType } from '@/core/models'
 import { AdminFleetService } from '@/core/services/admin-fleet.service'
 import { ToastService } from '@/core/services/toast.service'
-import { todayInItaly } from '@/core/utils/italy-time'
+import { todayInOffice } from '@/core/utils/local-time'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
@@ -98,8 +98,8 @@ export class DriversComponent implements OnInit {
   protected readonly documentLabel = Object.fromEntries(
     DOCUMENT_TYPES.map(t => [t.value, t.label])
   ) as Record<DriverDocumentType, string>
-  protected readonly today = todayInItaly()
-  protected readonly soon = todayInItaly(30)
+  protected readonly today = todayInOffice()
+  protected readonly soon = todayInOffice(30)
   protected readonly drivers = signal<Driver[]>([])
   protected readonly showInactive = signal(false)
   protected readonly loading = signal(true)

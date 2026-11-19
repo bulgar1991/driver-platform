@@ -196,8 +196,8 @@ public sealed class DriverPortalService(
             a.Id,
             a.Status,
             a.ShiftDate,
-            ItalyTime.ToLocal(a.StartsAt),
-            ItalyTime.ToLocal(a.EndsAt),
+            LocalTime.ToLocal(a.StartsAt, RideTime.ZoneOf(a.Bookings)),
+            LocalTime.ToLocal(a.EndsAt, RideTime.ZoneOf(a.Bookings)),
             string.Join(" ", new[] { a.Vehicle.Color, a.Vehicle.Make, a.Vehicle.Model }.Where(s => !string.IsNullOrEmpty(s))),
             a.Vehicle.PlateNumber,
             a.DispatcherNotes,
@@ -205,7 +205,7 @@ public sealed class DriverPortalService(
             a.Status == AssignmentStatus.Cancelled
                 ? []
                 : a.Bookings.OrderBy(b => b.PickupAt).Select(b => new DriverBookingView(
-                    b.Id, b.Reference, b.Status, ItalyTime.ToLocal(b.PickupAt), b.Pickup, b.Dropoff,
+                    b.Id, b.Reference, b.Status, RideTime.ToLocal(b.PickupAt, b.Pickup), b.Pickup, b.Dropoff,
                     b.PickupMeetingPoint, b.DropoffMeetingPoint, b.Passengers, b.LargeLuggage, b.SmallLuggage, b.ChildSeats,
                     b.FlightNumber, b.FlightDepartsAt, b.FlightLandsAt, b.NameSign, b.NameSignText,
                     $"{b.Client.FirstName} {b.Client.LastName}", b.Client.Phone, b.Client.Language, b.ClientNotes,

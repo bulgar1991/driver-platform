@@ -18,7 +18,7 @@ public sealed class DriverPortalTests
 
     private sealed record Setup(ApiFactory Factory, HttpClient Staff, HttpClient Public, DriverDto Driver, ShiftDto Shift, Guid BookingId, string DriverToken);
 
-    private static DateOnly Today() => DateOnly.FromDateTime(ItalyTime.ToLocal(DateTimeOffset.UtcNow));
+    private static DateOnly Today() => DateOnly.FromDateTime(OfficeTime.ToLocal(DateTimeOffset.UtcNow));
 
     /// <summary>A paid booking in a draft shift for a driver with valid documents.</summary>
     private static async Task<Setup> SetupAsync(string? clientEmail = "maria@example.com")
@@ -53,7 +53,7 @@ public sealed class DriverPortalTests
         }, TestData.Json)).Content.ReadFromJsonAsync<VehicleDto>(TestData.Json))!;
 
         // Soon enough for the driver's pickup window (3 hours), late enough for the booking lead time (2 hours).
-        var pickupAt = ItalyTime.ToLocal(DateTimeOffset.UtcNow).AddHours(2.5);
+        var pickupAt = OfficeTime.ToLocal(DateTimeOffset.UtcNow).AddHours(2.5);
         var request = TestData.Booking(TestData.Trip(TestData.VeniceRialto, TestData.VeniceAirport) with
         {
             PickupAt = pickupAt.AddTicks(-(pickupAt.Ticks % TimeSpan.TicksPerMinute)),

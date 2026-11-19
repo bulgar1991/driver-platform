@@ -67,7 +67,7 @@ internal sealed partial class FrenchTexts : Texts
     public override string PaymentConfirmed(string amount) => $"merci, votre paiement de {amount} est confirmé et votre trajet est réservé.";
     public override string Booking => "Réservation";
     public override string Pickup => "Prise en charge";
-    public override string ItalianTime => "(heure italienne)";
+    public override string PickupLocalTime => "(heure locale)";
     public override string From => "De";
     public override string To => "À";
     public override string Vehicle => "Véhicule";

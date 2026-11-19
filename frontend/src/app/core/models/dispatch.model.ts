@@ -30,7 +30,7 @@ export interface BookingListItem {
   reference: string
   status: BookingStatus
   source: BookingSource
-  /** Italian local time. */
+  /** Local time at the pickup. */
   pickupAt: string
   pickupLabel: string
   dropoffLabel: string

@@ -192,7 +192,7 @@ public sealed class ShiftService(
             return;
         }
         (shift.StartsAt, shift.EndsAt, _) = Window(active);
-        shift.ShiftDate = DateOnly.FromDateTime(ItalyTime.ToLocal(shift.StartsAt));
+        shift.ShiftDate = DateOnly.FromDateTime(OfficeTime.ToLocal(shift.StartsAt));
         if (active.All(b => b.Status == BookingStatus.Completed) && Open.Contains(shift.Status))
         {
             shift.Status = AssignmentStatus.Completed;
@@ -260,7 +260,7 @@ public sealed class ShiftService(
         }
         errors.ThrowIfAny();
 
-        var today = DateOnly.FromDateTime(ItalyTime.ToLocal(clock.GetUtcNow()));
+        var today = DateOnly.FromDateTime(OfficeTime.ToLocal(clock.GetUtcNow()));
         warnings.AddRange(DocumentRules.Missing(driver!).Select(m => $"{driver!.FirstName} {driver.LastName}: {m}"));
         warnings.AddRange(DocumentRules.Missing(vehicle!).Select(m => $"{vehicle!.PlateNumber}: {m}"));
         warnings.AddRange(DocumentRules.Dated(driver!).Where(d => d.ExpiresOn <= today.AddDays(DocumentRules.AlertDays))
@@ -286,7 +286,7 @@ public sealed class ShiftService(
         shift.DispatcherNotes = string.IsNullOrWhiteSpace(request.Notes) ? null : request.Notes.Trim();
         shift.StartsAt = start;
         shift.EndsAt = end;
-        shift.ShiftDate = DateOnly.FromDateTime(ItalyTime.ToLocal(start));
+        shift.ShiftDate = DateOnly.FromDateTime(OfficeTime.ToLocal(start));
         // A changed shift needs confirming again. If the driver already had it, the updated link is sent at once.
         var resend = !isNew && shift.SentAt is not null && shift.Status != AssignmentStatus.Draft;
         if (!isNew && shift.Status != AssignmentStatus.Draft)
@@ -392,7 +392,7 @@ public sealed class ShiftService(
     {
         var start = bookings.Min(b => b.PickupAt);
         var end = bookings.Max(b => b.PickupAt.AddMinutes(b.DurationMinutes));
-        return (start, end, DateOnly.FromDateTime(ItalyTime.ToLocal(end)));
+        return (start, end, DateOnly.FromDateTime(OfficeTime.ToLocal(end)));
     }
 
     private IQueryable<Assignment> Query() => db.Assignments
@@ -425,8 +425,8 @@ public sealed class ShiftService(
         a.Id,
         a.Status,
         a.ShiftDate,
-        ItalyTime.ToLocal(a.StartsAt),
-        ItalyTime.ToLocal(a.EndsAt),
+        OfficeTime.ToLocal(a.StartsAt),
+        OfficeTime.ToLocal(a.EndsAt),
         a.DriverId,
         $"{a.Driver.FirstName} {a.Driver.LastName}",
         a.Driver.Phone,

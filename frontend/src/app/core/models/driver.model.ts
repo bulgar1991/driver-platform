@@ -47,7 +47,7 @@ export interface Driver extends DriverRequest {
 export interface DriverRide {
   bookingId: string
   reference: string
-  /** Italian local time, yyyy-MM-ddTHH:mm:ss */
+  /** Local time at the pickup, yyyy-MM-ddTHH:mm:ss */
   pickupAt: string
   pickupAddress: string
   dropoffAddress: string

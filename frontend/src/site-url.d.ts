@@ -6,3 +6,6 @@ declare const SITE_LANGUAGE: string
 
 /** Where trips are served: "europe" or ISO country codes ("it,fr,ch,de"); `ng build --define SERVICE_AREA="'europe'"`. */
 declare const SERVICE_AREA: string
+
+/** The company's time zone (IANA, e.g. "Europe/Zurich"); `ng build --define TIME_ZONE="'Europe/Rome'"`. */
+declare const TIME_ZONE: string

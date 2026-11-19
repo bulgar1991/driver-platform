@@ -154,8 +154,8 @@ public sealed class PartnerAdminService(IAppDbContext db, IPartnerKeys keys, IAu
     {
         var partner = await FindAsync(id, cancellationToken);
         var first = new DateOnly(year, month, 1);
-        var start = ItalyTime.ToUtc(first.ToDateTime(TimeOnly.MinValue))!.Value;
-        var end = ItalyTime.ToUtc(first.AddMonths(1).ToDateTime(TimeOnly.MinValue))!.Value;
+        var start = OfficeTime.ToUtc(first.ToDateTime(TimeOnly.MinValue))!.Value;
+        var end = OfficeTime.ToUtc(first.AddMonths(1).ToDateTime(TimeOnly.MinValue))!.Value;
         var bookings = await db.Bookings.AsNoTracking()
             .Include(b => b.Client)
             .Where(b => b.PartnerId == id && b.PickupAt >= start && b.PickupAt < end)
@@ -176,7 +176,7 @@ public sealed class PartnerAdminService(IAppDbContext db, IPartnerKeys keys, IAu
             csv.AppendJoin(';',
                 b.Reference,
                 Csv(b.ExternalReference ?? ""),
-                ItalyTime.ToLocal(b.PickupAt).ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture),
+                RideTime.ToLocal(b.PickupAt, b.Pickup).ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture),
                 Csv($"{b.Client.FirstName} {b.Client.LastName}"),
                 Csv(b.PickupMeetingPoint?.Name ?? b.Pickup.Address),
                 Csv(b.DropoffMeetingPoint?.Name ?? b.Dropoff.Address),
@@ -226,8 +226,8 @@ public sealed class PartnerAdminService(IAppDbContext db, IPartnerKeys keys, IAu
 
     private async Task<PartnerDto> ToDtoAsync(Partner p, CancellationToken cancellationToken)
     {
-        var today = DateOnly.FromDateTime(ItalyTime.ToLocal(clock.GetUtcNow()));
-        var monthStart = ItalyTime.ToUtc(new DateOnly(today.Year, today.Month, 1).ToDateTime(TimeOnly.MinValue))!.Value;
+        var today = DateOnly.FromDateTime(OfficeTime.ToLocal(clock.GetUtcNow()));
+        var monthStart = OfficeTime.ToUtc(new DateOnly(today.Year, today.Month, 1).ToDateTime(TimeOnly.MinValue))!.Value;
         var bookings = await db.Bookings.CountAsync(b => b.PartnerId == p.Id && b.CreatedAt >= monthStart && b.ReturnOfBookingId == null, cancellationToken);
         var failing = await db.PartnerWebhooks.CountAsync(w => w.PartnerId == p.Id && w.DeliveredAt == null && w.Attempts > 0, cancellationToken);
         return new PartnerDto(

@@ -103,6 +103,10 @@ describe('BookingComponent', () => {
       pickup: { address: 'Roma Termini', latitude: 41.9, longitude: 12.5 },
       dropoff: { address: 'Fiumicino', latitude: 41.79, longitude: 12.25 },
     })
+    // The pickup's time zone: the date and time are local times there.
+    http
+      .expectOne(r => r.url === '/api/geo/time-zone')
+      .flush({ timeZone: 'Europe/Rome' })
     vi.advanceTimersByTime(499)
     http.expectNone('/api/quotes')
     vi.advanceTimersByTime(1)

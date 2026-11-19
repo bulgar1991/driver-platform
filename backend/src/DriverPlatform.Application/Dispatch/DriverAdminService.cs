@@ -128,20 +128,20 @@ public sealed class DriverAdminService(IAppDbContext db, IDriverLinks links, IAu
         {
             throw new NotFoundException(Texts.Current.DriverNotFound);
         }
-        var (from, to) = ItalyTime.Month(year, month);
+        var (from, to) = OfficeTime.Month(year, month);
 
         var rides = await db.Bookings.AsNoTracking()
             .Where(b => b.Assignment != null && b.Assignment.DriverId == id && b.PickupAt >= from && b.PickupAt < to)
             .OrderBy(b => b.PickupAt)
             .Select(b => new
             {
-                b.Id, b.Reference, b.PickupAt, Pickup = b.Pickup.Address, Dropoff = b.Dropoff.Address, b.DistanceKm,
+                b.Id, b.Reference, b.PickupAt, PickupPoint = b.Pickup, Pickup = b.Pickup.Address, Dropoff = b.Dropoff.Address, b.DistanceKm,
                 b.DurationMinutes, b.Status, b.Assignment!.Vehicle.PlateNumber,
                 Vehicle = b.Assignment.Vehicle.Make + " " + b.Assignment.Vehicle.Model, b.TotalPrice, b.Currency, b.DriverPay,
             })
             .ToListAsync(cancellationToken);
         var list = rides.Select(r => new DriverRide(
-            r.Id, r.Reference, ItalyTime.ToLocal(r.PickupAt), r.Pickup, r.Dropoff, r.DistanceKm, r.DurationMinutes,
+            r.Id, r.Reference, RideTime.ToLocal(r.PickupAt, r.PickupPoint), r.Pickup, r.Dropoff, r.DistanceKm, r.DurationMinutes,
             r.Status, r.PlateNumber, r.Vehicle, r.TotalPrice, r.Currency, includePay ? r.DriverPay : null)).ToList();
 
         var completed = list.Where(r => r.Status == BookingStatus.Completed).ToList();
@@ -247,7 +247,7 @@ public sealed class DriverAdminService(IAppDbContext db, IDriverLinks links, IAu
         stats?.CompletedRides ?? 0,
         stats?.CancelledShifts ?? 0);
 
-    private DateOnly Today() => DateOnly.FromDateTime(ItalyTime.ToLocal(clock.GetUtcNow()));
+    private DateOnly Today() => DateOnly.FromDateTime(OfficeTime.ToLocal(clock.GetUtcNow()));
 
     internal static string NormalizePhone(string phone) =>
         new(phone.Where(c => char.IsDigit(c) || c == '+').ToArray());

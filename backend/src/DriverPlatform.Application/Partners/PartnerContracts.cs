@@ -55,7 +55,7 @@ public sealed record PartnerBooking(
     string Reference,
     string ExternalReference,
     BookingStatus Status,
-    /// <summary>Italian local time.</summary>
+    /// <summary>Local time at the pickup.</summary>
     DateTime PickupAt,
     DateTimeOffset PickupAtUtc,
     GeoPoint Pickup,

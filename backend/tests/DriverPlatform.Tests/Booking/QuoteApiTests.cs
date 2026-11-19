@@ -90,7 +90,7 @@ public sealed class QuoteApiTests(ApiFactory factory) : IClassFixture<ApiFactory
     [InlineData(400)] // too far ahead, in days
     public async Task Pickup_time_must_be_within_the_booking_window(int offset)
     {
-        var now = ItalyTime.ToLocal(DateTimeOffset.UtcNow);
+        var now = OfficeTime.ToLocal(DateTimeOffset.UtcNow);
         var trip = TestData.Trip() with { PickupAt = offset == 1 ? now.AddHours(1) : now.AddDays(offset) };
 
         var response = await factory.CreateClient().PostAsJsonAsync("/api/quotes", trip, TestData.Json);

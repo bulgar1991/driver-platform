@@ -220,7 +220,7 @@ public sealed class PartnerBookingService(
             : null;
 
         return new PartnerBooking(
-            b.Reference, b.ExternalReference ?? "", b.Status, ItalyTime.ToLocal(b.PickupAt), b.PickupAt,
+            b.Reference, b.ExternalReference ?? "", b.Status, RideTime.ToLocal(b.PickupAt, b.Pickup), b.PickupAt,
             b.Pickup, b.Dropoff, b.PickupMeetingPoint, b.DropoffMeetingPoint, b.VehicleCategory, b.Passengers,
             b.DistanceKm, b.DurationMinutes, b.TotalPrice, b.Currency, b.VatRate, driver, returnLeg,
             b.CancellationReason, b.UpdatedAt);

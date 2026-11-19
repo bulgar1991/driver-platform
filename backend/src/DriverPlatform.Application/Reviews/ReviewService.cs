@@ -106,7 +106,7 @@ public sealed class ReviewService(
         var b = review.Booking;
         return new ReviewPage(
             b.Reference,
-            ItalyTime.ToLocal(b.PickupAt),
+            RideTime.ToLocal(b.PickupAt, b.Pickup),
             b.PickupMeetingPoint?.Name ?? b.Pickup.Address,
             b.DropoffMeetingPoint?.Name ?? b.Dropoff.Address,
             review.Driver.FirstName,
@@ -137,7 +137,7 @@ public sealed class ReviewService(
             .Take(Math.Clamp(take, 1, 500))
             .ToListAsync(cancellationToken);
         return reviews.Select(r => new ReviewDto(
-            r.Id, r.Booking.Reference, ItalyTime.ToLocal(r.Booking.PickupAt), r.DriverId,
+            r.Id, r.Booking.Reference, RideTime.ToLocal(r.Booking.PickupAt, r.Booking.Pickup), r.DriverId,
             $"{r.Driver.FirstName} {r.Driver.LastName}", $"{r.Booking.Client.FirstName} {r.Booking.Client.LastName}",
             r.Rating, r.Comment, r.Channel, r.SentAt, r.SubmittedAt)).ToList();
     }
@@ -154,7 +154,7 @@ public sealed class ReviewService(
             $"{r.Booking.Client.FirstName} {Initial(r.Booking.Client.LastName)}".Trim(),
             r.Rating!.Value,
             r.Comment!,
-            DateOnly.FromDateTime(ItalyTime.ToLocal(r.SubmittedAt!.Value)),
+            DateOnly.FromDateTime(OfficeTime.ToLocal(r.SubmittedAt!.Value)),
             r.Booking.VehicleCategory.ToString())).ToList();
     }
 

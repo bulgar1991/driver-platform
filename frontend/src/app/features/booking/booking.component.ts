@@ -15,7 +15,17 @@ import {
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { FormBuilder } from '@angular/forms'
 import { ActivatedRoute, Params } from '@angular/router'
-import { debounceTime, filter, merge } from 'rxjs'
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  merge,
+  of,
+  startWith,
+  switchMap,
+} from 'rxjs'
+import { OFFICE_TIME_ZONE } from '@/core/utils/local-time'
 import {
   LatLng,
   MapMarker,
@@ -81,9 +91,12 @@ export class BookingComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef)
   private readonly route = inject(ActivatedRoute)
   private readonly carry = inject(LanguageCarryService)
+  /** The time zone at the pickup: the date and time typed are local times there. */
+  private readonly pickupZone = signal(OFFICE_TIME_ZONE)
   protected readonly forms = createBookingForms(
     inject(FormBuilder),
-    () => this.store.options()?.minLeadTimeHours ?? DEFAULT_MIN_LEAD_HOURS
+    () => this.store.options()?.minLeadTimeHours ?? DEFAULT_MIN_LEAD_HOURS,
+    () => this.pickupZone()
   )
   private readonly detailsRef = viewChild<ElementRef<HTMLElement>>('details')
   private readonly resultsRef = viewChild<ElementRef<HTMLElement>>('results')
@@ -187,6 +200,25 @@ export class BookingComponent implements OnInit {
     dropoff.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => dropoffMeetingPoint.setValue(null, { emitEvent: false }))
+    // "Book at least … ahead" counts in the pickup's local time (a London ride in UK time).
+    pickup.valueChanges
+      .pipe(
+        startWith(pickup.value),
+        filter(point => !!point),
+        distinctUntilChanged(
+          (a, b) => a!.latitude === b!.latitude && a!.longitude === b!.longitude
+        ),
+        switchMap(point =>
+          this.geo
+            .timeZone(point!.latitude, point!.longitude)
+            .pipe(catchError(() => of(OFFICE_TIME_ZONE)))
+        ),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(zone => {
+        this.pickupZone.set(zone)
+        this.forms.trip.updateValueAndValidity()
+      })
 
     // The price follows the form: any change of route, time, people or options re-quotes.
     const { nameSign, returnNameSign } = this.forms.details.controls

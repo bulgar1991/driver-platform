@@ -21,7 +21,7 @@ import { Drawer } from 'primeng/drawer'
 import { debounceTime, Subscription } from 'rxjs'
 import { BookingListItem, BookingQuery, BookingStatus } from '@/core/models'
 import { AdminDispatchService } from '@/core/services/admin-dispatch.service'
-import { todayInItaly } from '@/core/utils/italy-time'
+import { todayInOffice } from '@/core/utils/local-time'
 import { poll } from '@/core/utils/poll'
 import { problemMessage } from '@/core/utils/problem'
 import { BOOKING_STATUS_LABEL } from '@/core/utils/status-labels'
@@ -92,8 +92,8 @@ export class BookingsComponent {
   )
 
   protected readonly filters = inject(FormBuilder).nonNullable.group({
-    from: [todayInItaly()],
-    to: [todayInItaly(7)],
+    from: [todayInOffice()],
+    to: [todayInOffice(7)],
     status: ['' as BookingStatus | ''],
     unassigned: [false],
     includeUnpaid: [false],
@@ -107,7 +107,7 @@ export class BookingsComponent {
       untracked(() => {
         if (unassigned) {
           this.filters.patchValue(
-            { unassigned: true, from: todayInItaly(), to: todayInItaly(2) },
+            { unassigned: true, from: todayInOffice(), to: todayInOffice(2) },
             { emitEvent: false }
           )
         }

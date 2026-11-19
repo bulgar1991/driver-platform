@@ -12,7 +12,7 @@ public static class BookingMapping
         b.TotalPrice, b.PriceLines);
 
     public static BookingLegSummary ToLegSummary(this Booking b) => new(
-        b.Reference, ItalyTime.ToLocal(b.PickupAt), b.Pickup.Address, b.Dropoff.Address,
+        b.Reference, RideTime.ToLocal(b.PickupAt, b.Pickup), b.Pickup.Address, b.Dropoff.Address,
         b.PickupMeetingPoint, b.DropoffMeetingPoint, b.DistanceKm, b.DurationMinutes, b.ToLegPrice());
 
     /// <summary>One-line description for invoices, payment pages and emails.</summary>
@@ -21,7 +21,7 @@ public static class BookingMapping
     /// <summary>"Transfer MD-…, 03/05/2027 14:30: Piazzale Roma → Fiumicino Terminal 3 arrivals" in that language.</summary>
     public static string Describe(this Booking b, Texts texts) => texts.Transfer(
         b.Reference,
-        ItalyTime.ToLocal(b.PickupAt),
+        RideTime.ToLocal(b.PickupAt, b.Pickup),
         b.PickupMeetingPoint?.DisplayName(texts) ?? b.Pickup.Address,
         b.DropoffMeetingPoint?.DisplayName(texts) ?? b.Dropoff.Address);
 }

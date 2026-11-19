@@ -18,7 +18,7 @@ import {
 import { finalize, of, switchMap } from 'rxjs'
 import { Vehicle, VehicleCategory } from '@/core/models'
 import { AdminFleetService } from '@/core/services/admin-fleet.service'
-import { todayInItaly } from '@/core/utils/italy-time'
+import { todayInOffice } from '@/core/utils/local-time'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
@@ -74,8 +74,8 @@ export class VehiclesComponent implements OnInit {
   private readonly fb = inject(FormBuilder).nonNullable
 
   protected readonly categories = CATEGORIES
-  protected readonly today = todayInItaly()
-  protected readonly soon = todayInItaly(30)
+  protected readonly today = todayInOffice()
+  protected readonly soon = todayInOffice(30)
   protected readonly vehicles = signal<Vehicle[]>([])
   protected readonly showInactive = signal(false)
   protected readonly loading = signal(true)

@@ -116,7 +116,7 @@ public sealed class LanguageTests
         var email = Assert.Single(factory.Emails.Sent);
         Assert.Equal($"Prenotazione confermata – {booking.Reference}", email.Subject);
         Assert.StartsWith("Gentile Maria,", email.TextBody);
-        Assert.Contains("(ora italiana)", email.HtmlBody);
+        Assert.Contains("(ora locale)", email.HtmlBody);
         Assert.Matches(@"\d+,\d\d €", email.TextBody);
         Assert.Contains("Cordiali saluti,", email.TextBody);
 

@@ -27,4 +27,14 @@ public sealed class GeoController(IPlaceSearchService places) : ControllerBase
         var place = await places.ReverseAsync(lat, lng, lang, cancellationToken);
         return place is null ? NotFound() : Ok(place);
     }
+
+    /// <summary>The time zone at a point (IANA id, e.g. "Europe/London"): pickup times are in local time there.</summary>
+    [HttpGet("time-zone")]
+    [ResponseCache(Duration = 86400)]
+    public ActionResult<TimeZoneDto> TimeZone(
+        [FromQuery, Range(-90, 90)] double lat,
+        [FromQuery, Range(-180, 180)] double lng) =>
+        Ok(new TimeZoneDto(RideTime.ZoneAt(lat, lng).Id));
 }
+
+public sealed record TimeZoneDto(string TimeZone);

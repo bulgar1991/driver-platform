@@ -43,7 +43,7 @@ public sealed class NotificationService(
         var driver = shift.Driver;
         var t = DriverTexts(driver);
         var url = driverLinks.Url(driver);
-        var when = t.ShortDateTime(ItalyTime.ToLocal(shift.StartsAt));
+        var when = t.ShortDateTime(LocalTime.ToLocal(shift.StartsAt, RideTime.ZoneOf(shift.Bookings)));
         var rides = shift.Bookings.Count(b => b.Status != BookingStatus.Cancelled);
         var headline = kind switch
         {
@@ -86,7 +86,7 @@ public sealed class NotificationService(
             }
             var client = booking.Client;
             var t = Texts.For(client.Language);
-            var pickup = t.ShortDateTime(ItalyTime.ToLocal(booking.PickupAt));
+            var pickup = t.ShortDateTime(RideTime.ToLocal(booking.PickupAt, booking.Pickup));
             var where = booking.PickupMeetingPoint?.DisplayName(t) ?? booking.Pickup.Address;
             var details = $"{driver.FirstName}, {driver.Phone}, {car} ({vehicle.PlateNumber})";
             var manage = bookingLinks.ManageUrl(booking.ReturnOfBookingId is null ? booking : await OutboundAsync(booking, cancellationToken));

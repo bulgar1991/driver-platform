@@ -1,8 +1,8 @@
-import { todayInItaly } from './italy-time'
+import { todayInOffice } from './local-time'
 
-/** The current month in Italy, as yyyy-MM (what <input type="month"> uses). */
-export function thisMonthInItaly(): string {
-  return todayInItaly().slice(0, 7)
+/** The current month for the company, as yyyy-MM (what <input type="month"> uses). */
+export function thisMonthInOffice(): string {
+  return todayInOffice().slice(0, 7)
 }
 
 /** "2026-10" → [2026, 10]. */

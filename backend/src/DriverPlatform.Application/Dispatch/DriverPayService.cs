@@ -35,7 +35,7 @@ public sealed class DriverPayService(IAppDbContext db, IAuditLogger audit) : IDr
 
     public async Task<IReadOnlyList<DriverPayLine>> MonthAsync(int year, int month, CancellationToken cancellationToken)
     {
-        var (from, to) = ItalyTime.Month(year, month);
+        var (from, to) = OfficeTime.Month(year, month);
         var rides = await db.Bookings.AsNoTracking()
             .Where(b => b.Status == BookingStatus.Completed && b.Assignment != null && b.PickupAt >= from && b.PickupAt < to)
             .Select(b => new

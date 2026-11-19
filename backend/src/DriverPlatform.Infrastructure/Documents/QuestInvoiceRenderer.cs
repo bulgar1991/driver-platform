@@ -31,7 +31,7 @@ public sealed class QuestInvoiceRenderer : IInvoiceRenderer
     {
         var creditNote = invoice.Type == InvoiceType.CreditNote;
         var title = creditNote ? "NOTA DI CREDITO · CREDIT NOTE" : "FATTURA · INVOICE";
-        var issued = ItalyTime.ToLocal(invoice.IssuedAt).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
+        var issued = OfficeTime.ToLocal(invoice.IssuedAt).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
 
         return Document.Create(container => container.Page(page =>
         {

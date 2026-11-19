@@ -136,8 +136,8 @@ public sealed class PaymentAdminService(
         {
             throw new RequestValidationException("to", Texts.Current.EndBeforeStart);
         }
-        var start = ItalyTime.ToUtc(from.ToDateTime(TimeOnly.MinValue))!.Value;
-        var end = ItalyTime.ToUtc(to.AddDays(1).ToDateTime(TimeOnly.MinValue))!.Value;
+        var start = OfficeTime.ToUtc(from.ToDateTime(TimeOnly.MinValue))!.Value;
+        var end = OfficeTime.ToUtc(to.AddDays(1).ToDateTime(TimeOnly.MinValue))!.Value;
         var rows = await db.Invoices.AsNoTracking()
             .Include(i => i.Booking)
             .Include(i => i.OriginalInvoice)
@@ -152,7 +152,7 @@ public sealed class PaymentAdminService(
             csv.AppendJoin(';',
                 i.Number,
                 i.Type,
-                ItalyTime.ToLocal(i.IssuedAt).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                OfficeTime.ToLocal(i.IssuedAt).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                 Csv(i.Buyer.Name),
                 Csv(i.Buyer.Email ?? ""),
                 i.Booking.Reference,

@@ -26,7 +26,7 @@ public static class TestData
     /// <summary>A weekday afternoon outside every seeded surcharge: not Fri–Sun, July–August or a holiday.</summary>
     public static DateTime QuietPickup(int daysAhead = 10)
     {
-        var date = ItalyTime.ToLocal(DateTimeOffset.UtcNow).Date.AddDays(daysAhead);
+        var date = OfficeTime.ToLocal(DateTimeOffset.UtcNow).Date.AddDays(daysAhead);
         while (date.DayOfWeek is not (DayOfWeek.Tuesday or DayOfWeek.Wednesday)
             || date.Month is 7 or 8
             || (date.Month, date.Day) is (1, 1) or (1, 6) or (4, 25) or (5, 1) or (6, 2) or (11, 1) or (12, 8) or (12, 25) or (12, 26))

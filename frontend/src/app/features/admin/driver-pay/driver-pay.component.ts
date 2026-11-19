@@ -17,7 +17,7 @@ import {
   addMonths,
   isMonth,
   splitMonth,
-  thisMonthInItaly,
+  thisMonthInOffice,
 } from '@/core/utils/month'
 import { problemMessage } from '@/core/utils/problem'
 import { IconComponent } from '@/shared/components/icon/icon.component'
@@ -41,7 +41,7 @@ import { MoneyPipe } from '@/shared/pipes/money.pipe'
 export class DriverPayComponent {
   private readonly api = inject(AdminFleetService)
 
-  protected readonly month = signal(thisMonthInItaly())
+  protected readonly month = signal(thisMonthInOffice())
   protected readonly loading = signal(true)
   protected readonly error = signal<string | null>(null)
 

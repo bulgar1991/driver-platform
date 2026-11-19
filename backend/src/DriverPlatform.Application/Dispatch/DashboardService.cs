@@ -15,9 +15,9 @@ public sealed class DashboardService(IAppDbContext db, TimeProvider clock) : IDa
     public async Task<DashboardResponse> GetAsync(CancellationToken cancellationToken)
     {
         var now = clock.GetUtcNow();
-        var today = DateOnly.FromDateTime(ItalyTime.ToLocal(now));
-        var dayStart = ItalyTime.ToUtc(today.ToDateTime(TimeOnly.MinValue))!.Value;
-        var dayEnd = ItalyTime.ToUtc(today.AddDays(1).ToDateTime(TimeOnly.MinValue))!.Value;
+        var today = DateOnly.FromDateTime(OfficeTime.ToLocal(now));
+        var dayStart = OfficeTime.ToUtc(today.ToDateTime(TimeOnly.MinValue))!.Value;
+        var dayEnd = OfficeTime.ToUtc(today.AddDays(1).ToDateTime(TimeOnly.MinValue))!.Value;
         var horizon = now.AddHours(48);
 
         var todays = db.Bookings.Where(b => b.PickupAt >= dayStart && b.PickupAt < dayEnd

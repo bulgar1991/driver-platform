@@ -6,7 +6,7 @@ import { VehicleCategory } from './vehicle.model'
 import { Zone } from './zone.model'
 
 export interface ReturnLegInput {
-  /** Italian local time without offset, e.g. "2026-11-02T14:30:00". */
+  /** Local time at the pickup, without offset, e.g. "2026-11-02T14:30:00". */
   pickupAt: string
   nameSign: boolean
   flightNumber?: string | null
@@ -18,7 +18,7 @@ export interface ReturnLegInput {
 export interface QuoteRequest {
   pickup: GeoPoint
   dropoff: GeoPoint
-  /** Italian local time without offset. */
+  /** Local time at the pickup, without offset. */
   pickupAt: string
   passengers: number
   largeLuggage: number

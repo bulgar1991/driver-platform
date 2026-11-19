@@ -12,6 +12,7 @@ services:
         BRAND: ${BRAND:-magnus-drive}
         SITE_LANGUAGE: ${SITE_LANGUAGE:-en}
         SERVICE_AREA: ${SERVICE_AREA:-europe}
+        TIME_ZONE: ${TIME_ZONE:-Europe/Rome}
     restart: unless-stopped
     ports:
       - "80:80"
@@ -65,6 +66,7 @@ services:
       Maps__UserAgent: DriverPlatform/1.0 (${ACME_EMAIL})
       Company__Name: ${COMPANY_NAME}
       Site__Language: ${SITE_LANGUAGE:-en}
+      Site__TimeZone: ${TIME_ZONE:-Europe/Rome}
       Company__ReferencePrefix: ${BOOKING_PREFIX:-MD}
       Company__InvoicePrefix: ${INVOICE_PREFIX:-MD}
       Email__FromName: ${COMPANY_NAME}

@@ -77,7 +77,7 @@ public sealed class PaymentFlowTests
         Assert.Equal(PaymentStatus.Succeeded, payment.Status);
         Assert.Equal(PaymentMethod.PayPal, payment.Method);
         Assert.Equal(saved.TotalPrice, payment.Amount);
-        Assert.Equal($"MD-{ItalyTime.ToLocal(DateTimeOffset.UtcNow).Year}-000001", invoice.Number);
+        Assert.Equal($"MD-{OfficeTime.ToLocal(DateTimeOffset.UtcNow).Year}-000001", invoice.Number);
         Assert.Equal(saved.TotalPrice, invoice.TotalAmount);
         Assert.Equal(invoice.TotalAmount, invoice.NetAmount + invoice.VatAmount);
         Assert.Equal("Maria Rossi", invoice.Buyer.Name);
@@ -188,7 +188,7 @@ public sealed class PaymentFlowTests
         Assert.StartsWith("NC-", creditNotes[0].Number);
         Assert.Equal(3, factory.Emails.Sent.Count); // confirmation + two refunds
 
-        var today = DateOnly.FromDateTime(ItalyTime.ToLocal(DateTimeOffset.UtcNow));
+        var today = DateOnly.FromDateTime(OfficeTime.ToLocal(DateTimeOffset.UtcNow));
         var csv = await admin.GetStringAsync($"/api/admin/invoices/export?from={today:yyyy-MM-dd}&to={today:yyyy-MM-dd}");
         Assert.Equal(4, csv.Trim().Split('\n').Length); // header, invoice, two credit notes
         Assert.Contains(";-10,00;", csv);

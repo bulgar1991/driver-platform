@@ -74,7 +74,7 @@ public sealed class InvoiceService(
         try
         {
             var now = clock.GetUtcNow();
-            var year = ItalyTime.ToLocal(now).Year;
+            var year = OfficeTime.ToLocal(now).Year;
             var last = await db.Invoices
                 .Where(i => i.Type == type && i.Year == year)
                 .MaxAsync(i => (int?)i.Sequence, cancellationToken) ?? 0;

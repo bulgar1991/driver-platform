@@ -17,11 +17,12 @@ import {
 } from '@/core/models'
 import { Params } from '@angular/router'
 import {
-  nowInItaly,
+  nowIn,
+  OFFICE_TIME_ZONE,
   ticketTime,
-  todayInItaly,
+  todayInOffice,
   toLocalDateTime,
-} from '@/core/utils/italy-time'
+} from '@/core/utils/local-time'
 
 export type TripForm = FormGroup<{
   pickup: FormControl<GeoPoint | null>
@@ -111,9 +112,12 @@ function returnLegValidator(group: AbstractControl): ValidationErrors | null {
 
 /**
  * The API refuses pickups sooner than its minimum notice; checking here first shows the reason
- * next to the date at once, without a refused request.
+ * next to the date at once, without a refused request. The time is the local time at the pickup.
  */
-function leadTimeValidator(minLeadHours: () => number) {
+function leadTimeValidator(
+  minLeadHours: () => number,
+  pickupZone: () => string
+) {
   return (group: AbstractControl): ValidationErrors | null => {
     const { date, time } = (group as TripForm).getRawValue()
     if (!date || !time) {
@@ -121,21 +125,24 @@ function leadTimeValidator(minLeadHours: () => number) {
     }
     const hours = minLeadHours()
     const pickup = toLocalDateTime(date, time).slice(0, 16)
-    return pickup < nowInItaly(hours * 60) ? { tooSoon: { hours } } : null
+    return pickup < nowIn(pickupZone(), hours * 60)
+      ? { tooSoon: { hours } }
+      : null
   }
 }
 
 /** From, to, when and who (passengers, bags, child seats): the search bar on top of the booking. */
 export function createTripForm(
   fb: FormBuilder,
-  minLeadHours: () => number = () => DEFAULT_MIN_LEAD_HOURS
+  minLeadHours: () => number = () => DEFAULT_MIN_LEAD_HOURS,
+  pickupZone: () => string = () => OFFICE_TIME_ZONE
 ): TripForm {
   const nn = fb.nonNullable
   return fb.group(
     {
       pickup: fb.control<GeoPoint | null>(null, Validators.required),
       dropoff: fb.control<GeoPoint | null>(null, Validators.required),
-      date: nn.control(todayInItaly(1), Validators.required),
+      date: nn.control(todayInOffice(1), Validators.required),
       time: nn.control('10:00', Validators.required),
       // Nobody chosen yet: the customer sets passengers and bags before searching.
       passengers: nn.control(0, [Validators.min(1), Validators.max(8)]),
@@ -153,7 +160,7 @@ export function createTripForm(
     {
       validators: [
         returnLegValidator,
-        leadTimeValidator(minLeadHours),
+        leadTimeValidator(minLeadHours, pickupZone),
         childSeatValidator,
       ],
     }
@@ -162,11 +169,12 @@ export function createTripForm(
 
 export function createBookingForms(
   fb: FormBuilder,
-  minLeadHours?: () => number
+  minLeadHours?: () => number,
+  pickupZone?: () => string
 ): BookingForms {
   const nn = fb.nonNullable
   return {
-    trip: createTripForm(fb, minLeadHours),
+    trip: createTripForm(fb, minLeadHours, pickupZone),
     details: nn.group({
       nameSign: nn.control(false),
       nameSignText: nn.control('', Validators.maxLength(60)),

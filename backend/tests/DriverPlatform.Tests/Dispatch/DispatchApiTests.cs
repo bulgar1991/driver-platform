@@ -35,7 +35,7 @@ public sealed class DispatchApiTests
         InspectionExpiresOn = Today().AddYears(1),
     };
 
-    private static DateOnly Today() => DateOnly.FromDateTime(ItalyTime.ToLocal(DateTimeOffset.UtcNow));
+    private static DateOnly Today() => DateOnly.FromDateTime(OfficeTime.ToLocal(DateTimeOffset.UtcNow));
 
     private static async Task<T> Read<T>(HttpResponseMessage response, HttpStatusCode expected = HttpStatusCode.OK)
     {
@@ -308,7 +308,7 @@ public sealed class DispatchApiTests
         using var factory = new ApiFactory();
         var staff = await factory.CreateDispatcherClientAsync();
         await staff.PostAsJsonAsync("/api/admin/drivers", Driver("+393400000005", nccExpiry: Today().AddDays(10)), TestData.Json);
-        var soon = TestData.Trip() with { PickupAt = ItalyTime.ToLocal(DateTimeOffset.UtcNow).AddHours(5) };
+        var soon = TestData.Trip() with { PickupAt = OfficeTime.ToLocal(DateTimeOffset.UtcNow).AddHours(5) };
         await factory.CreateClient().BookAndPayAsync(soon);
 
         var dashboard = await staff.GetFromJsonAsync<DashboardResponse>("/api/admin/dashboard", TestData.Json);

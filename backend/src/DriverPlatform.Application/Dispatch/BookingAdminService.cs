@@ -38,12 +38,12 @@ public sealed class BookingAdminService(IAppDbContext db, IReviewService reviews
         var bookings = Query();
         if (query.From is { } from)
         {
-            var start = ItalyTime.ToUtc(from.ToDateTime(TimeOnly.MinValue))!.Value;
+            var start = OfficeTime.ToUtc(from.ToDateTime(TimeOnly.MinValue))!.Value;
             bookings = bookings.Where(b => b.PickupAt >= start);
         }
         if (query.To is { } to)
         {
-            var end = ItalyTime.ToUtc(to.AddDays(1).ToDateTime(TimeOnly.MinValue))!.Value;
+            var end = OfficeTime.ToUtc(to.AddDays(1).ToDateTime(TimeOnly.MinValue))!.Value;
             bookings = bookings.Where(b => b.PickupAt < end);
         }
         if (query.Status is { } status)
@@ -133,7 +133,7 @@ public sealed class BookingAdminService(IAppDbContext db, IReviewService reviews
     public async Task<BookingDetail> UpdateFlightAsync(Guid id, BookingFlightRequest request, CancellationToken cancellationToken)
     {
         var booking = await FindAsync(id, cancellationToken);
-        var pickup = ItalyTime.ToLocal(booking.PickupAt);
+        var pickup = RideTime.ToLocal(booking.PickupAt, booking.Pickup);
         booking.FlightNumber = BookingFactory.Normalize(request.FlightNumber)?.ToUpperInvariant();
         booking.FlightDepartsAt = FlightTimes.Check(request.FlightDepartsAt, pickup, "flightDepartsAt");
         booking.FlightLandsAt = FlightTimes.Check(request.FlightLandsAt, pickup, "flightLandsAt");

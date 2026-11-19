@@ -33,7 +33,7 @@ export class AdminFleetService {
     return this.http.get<Driver>(`${this.url}/drivers/${id}`)
   }
 
-  /** Rides with a pickup in that month (Italian time), oldest first. */
+  /** Rides with a pickup in that month (company time zone), oldest first. */
   driverRides(
     id: string,
     year: number,

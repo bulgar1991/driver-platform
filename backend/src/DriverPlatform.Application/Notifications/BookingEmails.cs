@@ -42,7 +42,7 @@ public sealed class BookingEmails(
             var summary = leg.ToLegSummary();
             html.Append("<table style=\"border-collapse:collapse;margin:16px 0;width:100%;max-width:520px\">");
             Row(html, t.Booking, leg.Reference);
-            Row(html, t.Pickup, $"{t.LongDateTime(summary.PickupAt)} {t.ItalianTime}");
+            Row(html, t.Pickup, $"{t.LongDateTime(summary.PickupAt)} {t.PickupLocalTime}");
             Row(html, t.From, leg.PickupMeetingPoint is { } pm ? $"{pm.DisplayName(t)} – {pm.Address}" : leg.Pickup.Address);
             Row(html, t.To, leg.DropoffMeetingPoint is { } dm ? $"{dm.DisplayName(t)} – {dm.Address}" : leg.Dropoff.Address);
             Row(html, t.Vehicle, t.VehicleSummary(leg.VehicleCategory, leg.Passengers, leg.LargeLuggage, leg.SmallLuggage));
