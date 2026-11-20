@@ -28,7 +28,16 @@
   }
 
   &__book {
-    @apply mt-2 flex items-center gap-2 text-xs uppercase tracking-widest text-gold transition-[gap] duration-300 hover:gap-3;
+    @apply mt-2 flex w-fit items-center gap-2 text-xs uppercase tracking-widest text-gold transition-colors duration-300 hover:text-gold-200;
+
+    app-icon {
+      @apply transition-transform duration-300;
+    }
+
+    &:hover app-icon,
+    &:focus-visible app-icon {
+      @apply translate-x-1;
+    }
   }
 
   &__column {

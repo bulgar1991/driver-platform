@@ -81,11 +81,21 @@
   }
 
   &__cta-link {
-    @apply flex items-center gap-2 text-xs uppercase tracking-widest text-gold hover:underline;
+    @apply flex items-center gap-2 text-xs uppercase tracking-widest text-gold transition-colors duration-300 hover:text-gold-200;
 
     &--muted {
-      @apply text-ivory-300;
+      @apply text-ivory-300 hover:text-gold;
     }
+  }
+
+  // Hover: the arrow slides a little to the right, nothing is underlined.
+  &__cta-arrow {
+    @apply transition-transform duration-300;
+  }
+
+  &__cta-link:hover &__cta-arrow,
+  &__cta-link:focus-visible &__cta-arrow {
+    @apply translate-x-1;
   }
 
   &__programme {
