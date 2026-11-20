@@ -60,6 +60,23 @@ public static class DependencyInjection
             services.AddHostedService<HousekeepingWorker>();
         }
 
+        // Admin → Visitors: own statistics, IP places from DB-IP's offline file.
+        var visitorOptions = configuration.GetSection(Visitors.VisitorOptions.SectionName).Get<Visitors.VisitorOptions>() ?? new();
+        services.AddSingleton(visitorOptions);
+        services.AddSingleton<Visitors.DbIpGeoLookup>();
+        services.AddSingleton<IGeoIpLookup>(sp => sp.GetRequiredService<Visitors.DbIpGeoLookup>());
+        services.AddHttpClient(Visitors.DbIpUpdater.HttpClientName, c => c.Timeout = TimeSpan.FromMinutes(5));
+        if (visitorOptions.GeoIpDownload)
+        {
+            services.AddHostedService<Visitors.DbIpUpdater>();
+        }
+        services.AddScoped<Application.Visitors.IVisitorService>(sp => new Application.Visitors.VisitorService(
+            sp.GetRequiredService<IAppDbContext>(),
+            sp.GetRequiredService<IGeoIpLookup>(),
+            sp.GetRequiredService<TimeProvider>(),
+            // Unique-visitor hashes are keyed with the links key: the same visitor gets the same hash.
+            System.Text.Encoding.UTF8.GetBytes("visitors:" + configuration["Links:SigningKey"])));
+
         AddBookingCom(services, configuration);
 
         services.AddMemoryCache();

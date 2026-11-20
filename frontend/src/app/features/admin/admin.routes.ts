@@ -65,6 +65,13 @@ export const ADMIN_ROUTES: Routes = [
       import('./pricing/pricing.component').then(m => m.PricingComponent),
   },
   {
+    path: 'visitors',
+    canActivate: [roleGuard('Admin')],
+    title: $localize`Visitors · ${BRAND.name}:brand:`,
+    loadComponent: () =>
+      import('./visitors/visitors.component').then(m => m.VisitorsComponent),
+  },
+  {
     path: 'content',
     canActivate: [roleGuard('Admin')],
     title: $localize`Website content · ${BRAND.name}:brand:`,

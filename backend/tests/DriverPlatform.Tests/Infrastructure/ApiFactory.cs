@@ -40,6 +40,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
         // Tests deliver webhooks explicitly through IPartnerWebhookDispatcher.
         builder.UseSetting("Webhooks:Enabled", "false");
         builder.UseSetting("Housekeeping:Enabled", "false");
+        builder.UseSetting("Visitors:GeoIpDownload", "false");
         // Most tests sign in without an authenticator; TwoFactorTests switch the requirement on.
         builder.UseSetting("TwoFactor:Required", RequireTwoFactor ? "true" : "false");
         // TestServer requests have no remote address; trust any so X-Forwarded-For tests work.

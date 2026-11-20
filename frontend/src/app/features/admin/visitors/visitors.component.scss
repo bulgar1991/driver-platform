@@ -1,0 +1,131 @@
+.visitors {
+  @apply flex flex-col gap-5;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__periods {
+    @apply flex flex-wrap gap-2;
+  }
+
+  &__period {
+    @apply rounded-full border border-ink-500 px-4 py-1.5 text-xs uppercase tracking-widest text-ivory-300 transition-colors hover:border-ink-400 hover:text-ivory;
+
+    &--active {
+      @apply border-gold bg-gold text-ink hover:text-ink;
+    }
+  }
+
+  &__cards {
+    @apply grid grid-cols-2 gap-3 md:grid-cols-4;
+
+    &--loading {
+      @apply opacity-60;
+    }
+  }
+
+  &__card {
+    @apply flex flex-col gap-1 rounded-sm border border-ink-600 bg-ink-900 p-4;
+  }
+
+  &__card-value {
+    @apply font-display text-3xl text-gold;
+  }
+
+  &__card-label {
+    @apply text-xs uppercase tracking-widest text-ivory-400;
+  }
+
+  &__panel {
+    @apply flex min-w-0 flex-col gap-3 rounded-sm border border-ink-600 bg-ink-900 p-5;
+  }
+
+  &__title {
+    @apply font-display text-lg text-ivory;
+  }
+
+  &__chart {
+    @apply flex h-40 items-end gap-[2px];
+  }
+
+  &__bar-wrap {
+    @apply flex h-full min-w-0 flex-1 items-end;
+  }
+
+  &__bar {
+    @apply block w-full min-h-[2px] rounded-t-sm bg-gold/70 transition-[height] duration-500;
+  }
+
+  &__bar-wrap:hover &__bar {
+    @apply bg-gold;
+  }
+
+  &__axis {
+    @apply flex justify-between text-xs text-ivory-400;
+  }
+
+  &__grid {
+    @apply grid grid-cols-1 gap-5 lg:grid-cols-2 2xl:grid-cols-3;
+  }
+
+  &__list {
+    @apply flex flex-col divide-y divide-ink-700 text-sm;
+  }
+
+  &__row {
+    @apply flex items-center justify-between gap-3 py-2 text-ivory;
+
+    &--sub {
+      @apply pl-4 text-xs text-ivory-300;
+    }
+  }
+
+  &__count {
+    @apply whitespace-nowrap font-semibold text-gold;
+
+    small {
+      @apply ml-1 font-normal text-ivory-400;
+    }
+  }
+
+  &__path {
+    @apply truncate;
+  }
+
+  &__muted {
+    @apply block text-xs text-ivory-400;
+  }
+
+  &__table-wrap {
+    @apply -mx-5 overflow-x-auto px-5;
+  }
+
+  &__table {
+    @apply w-full min-w-[52rem] border-collapse text-sm;
+
+    th {
+      @apply border-b border-ink-600 px-3 py-2 text-left text-xs font-normal uppercase tracking-widest text-ivory-400;
+    }
+
+    td {
+      @apply max-w-[16rem] border-b border-ink-700 px-3 py-2 align-top text-ivory;
+    }
+  }
+
+  &__nowrap {
+    @apply whitespace-nowrap;
+  }
+
+  &__mono {
+    @apply font-mono text-xs;
+  }
+
+  &__note {
+    @apply text-xs text-ivory-400;
+  }
+
+  &__link {
+    @apply text-gold underline-offset-4 hover:underline;
+  }
+}

@@ -17,6 +17,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=build /app ./
+# The IP location file (Admin → Visitors) is downloaded here, into a volume the app user can write.
+RUN mkdir -p /app/geoip && chown "$APP_UID" /app/geoip
 ENV ASPNETCORE_URLS=http://+:8080 \
     ASPNETCORE_ENVIRONMENT=Production \
     DOTNET_gcServer=0

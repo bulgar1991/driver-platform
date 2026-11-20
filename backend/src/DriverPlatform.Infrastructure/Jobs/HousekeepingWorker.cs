@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DriverPlatform.Infrastructure.Jobs;
 
-/// <summary>Hourly clean-up: cancels bookings that were never paid.</summary>
+/// <summary>Hourly clean-up: cancels bookings that were never paid; clears old visitor IPs and visits.</summary>
 public sealed class HousekeepingWorker(IServiceScopeFactory scopes, ILogger<HousekeepingWorker> logger) : BackgroundService
 {
     private static readonly TimeSpan Interval = TimeSpan.FromHours(1);
@@ -23,6 +23,8 @@ public sealed class HousekeepingWorker(IServiceScopeFactory scopes, ILogger<Hous
                 {
                     logger.LogInformation("Cancelled {Count} unpaid booking(s)", cancelled);
                 }
+                // Visitor IPs go after 30 days, visits after 13 months.
+                await scope.ServiceProvider.GetRequiredService<Application.Visitors.IVisitorService>().CleanUpAsync(stoppingToken);
             }
             catch (Exception ex) when (!stoppingToken.IsCancellationRequested)
             {

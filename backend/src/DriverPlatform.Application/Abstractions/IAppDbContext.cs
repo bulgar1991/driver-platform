@@ -28,6 +28,7 @@ public interface IAppDbContext
     DbSet<DriverApplication> DriverApplications { get; }
     DbSet<Photo> Photos { get; }
     DbSet<SiteContent> SiteContents { get; }
+    DbSet<PageVisit> PageVisits { get; }
     DbSet<BookingComRide> BookingComRides { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

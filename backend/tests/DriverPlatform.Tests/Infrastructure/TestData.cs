@@ -79,7 +79,7 @@ public static class TestData
         return booking;
     }
 
-    public static async Task<HttpClient> CreateDispatcherClientAsync(this ApiFactory factory)
+    public static async Task<HttpClient> CreateDispatcherClientAsync(this Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactory<Program> factory)
     {
         const string email = "dispatcher@test.local";
         const string password = "dispatcher-pass-123";
@@ -105,7 +105,7 @@ public static class TestData
         return client;
     }
 
-    public static async Task<HttpClient> CreateAdminClientAsync(this ApiFactory factory)
+    public static async Task<HttpClient> CreateAdminClientAsync(this Microsoft.AspNetCore.Mvc.Testing.WebApplicationFactory<Program> factory)
     {
         var client = factory.CreateClient();
         var login = await client.PostAsJsonAsync("/api/auth/login",

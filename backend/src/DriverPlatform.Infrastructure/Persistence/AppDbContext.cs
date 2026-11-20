@@ -34,6 +34,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, TimePro
     public DbSet<DriverApplication> DriverApplications => Set<DriverApplication>();
     public DbSet<Photo> Photos => Set<Photo>();
     public DbSet<SiteContent> SiteContents => Set<SiteContent>();
+    public DbSet<PageVisit> PageVisits => Set<PageVisit>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);

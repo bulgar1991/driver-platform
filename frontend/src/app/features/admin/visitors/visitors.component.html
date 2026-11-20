@@ -1,0 +1,245 @@
+<div class="visitors">
+  <header class="visitors__header">
+    <div>
+      <p class="eyebrow"><ng-container i18n>Administration</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Visitors</ng-container></h1
+      >
+    </div>
+    <nav class="visitors__periods" i18n-aria-label aria-label="Period">
+      @for (p of periods; track p.days) {
+        <button
+          type="button"
+          class="visitors__period"
+          [class.visitors__period--active]="days() === p.days"
+          [attr.aria-pressed]="days() === p.days"
+          (click)="load(p.days)">
+          {{ p.label }}
+        </button>
+      }
+    </nav>
+  </header>
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  @if (summary(); as s) {
+    <div class="visitors__cards" [class.visitors__cards--loading]="loading()">
+      <div class="visitors__card">
+        <span class="visitors__card-value">{{ s.visits }}</span>
+        <span class="visitors__card-label"
+          ><ng-container i18n>Page views</ng-container></span
+        >
+      </div>
+      <div class="visitors__card">
+        <span class="visitors__card-value">{{ s.visitors }}</span>
+        <span class="visitors__card-label"
+          ><ng-container i18n>Visitors</ng-container></span
+        >
+      </div>
+      <div class="visitors__card">
+        <span class="visitors__card-value">{{ s.visitsToday }}</span>
+        <span class="visitors__card-label"
+          ><ng-container i18n>Page views today</ng-container></span
+        >
+      </div>
+      <div class="visitors__card">
+        <span class="visitors__card-value">{{ s.countries.length }}</span>
+        <span class="visitors__card-label"
+          ><ng-container i18n>Countries</ng-container></span
+        >
+      </div>
+    </div>
+
+    @if (s.days > 1) {
+      <section class="visitors__panel">
+        <h2 class="visitors__title"
+          ><ng-container i18n>Per day</ng-container></h2
+        >
+        <div class="visitors__chart" role="list">
+          @for (d of s.byDay; track d.date) {
+            <div
+              class="visitors__bar-wrap"
+              role="listitem"
+              [attr.title]="(d.date | date: 'd MMM') + ': ' + d.visits">
+              <span
+                class="visitors__bar"
+                [style.height.%]="(d.visits / peak()) * 100"></span>
+            </div>
+          }
+        </div>
+        <div class="visitors__axis">
+          <span>{{ s.byDay[0].date | date: 'd MMM' }}</span>
+          <span>{{ s.byDay[s.byDay.length - 1].date | date: 'd MMM' }}</span>
+        </div>
+      </section>
+    }
+
+    <div class="visitors__grid">
+      <section class="visitors__panel">
+        <h2 class="visitors__title"
+          ><ng-container i18n>Countries</ng-container></h2
+        >
+        <ul class="visitors__list">
+          @for (c of s.countries; track c.key) {
+            <li class="visitors__row">
+              <span>{{ country(c.key) }}</span>
+              <span class="visitors__count"
+                >{{ c.count }}
+                <small>{{ share(c.count, s.visits) }}%</small></span
+              >
+            </li>
+          } @empty {
+            <li class="visitors__muted"
+              ><ng-container i18n>No data yet.</ng-container></li
+            >
+          }
+        </ul>
+      </section>
+
+      <section class="visitors__panel">
+        <h2 class="visitors__title"
+          ><ng-container i18n>Cities</ng-container></h2
+        >
+        <ul class="visitors__list">
+          @for (c of s.cities; track c.city + c.country) {
+            <li class="visitors__row">
+              <span>{{ c.city }}, {{ c.country }}</span>
+              <span class="visitors__count">{{ c.count }}</span>
+            </li>
+          } @empty {
+            <li class="visitors__muted"
+              ><ng-container i18n>No data yet.</ng-container></li
+            >
+          }
+        </ul>
+      </section>
+
+      <section class="visitors__panel">
+        <h2 class="visitors__title"><ng-container i18n>Pages</ng-container></h2>
+        <ul class="visitors__list">
+          @for (p of s.pages; track p.key) {
+            <li class="visitors__row">
+              <span class="visitors__path">{{ p.key }}</span>
+              <span class="visitors__count">{{ p.count }}</span>
+            </li>
+          } @empty {
+            <li class="visitors__muted"
+              ><ng-container i18n>No data yet.</ng-container></li
+            >
+          }
+        </ul>
+      </section>
+
+      <section class="visitors__panel">
+        <h2 class="visitors__title"
+          ><ng-container i18n>Came from</ng-container></h2
+        >
+        <ul class="visitors__list">
+          @for (r of s.referrers; track r.key) {
+            <li class="visitors__row">
+              <span class="visitors__path">{{ r.key }}</span>
+              <span class="visitors__count">{{ r.count }}</span>
+            </li>
+          } @empty {
+            <li class="visitors__muted"
+              ><ng-container i18n
+                >Direct visits only (typed in or bookmarked).</ng-container
+              ></li
+            >
+          }
+        </ul>
+      </section>
+
+      <section class="visitors__panel">
+        <h2 class="visitors__title"
+          ><ng-container i18n>Devices and browsers</ng-container></h2
+        >
+        <ul class="visitors__list">
+          @for (d of s.devices; track d.key) {
+            <li class="visitors__row">
+              <span>{{ devices[d.key] ?? d.key }}</span>
+              <span class="visitors__count"
+                >{{ d.count }}
+                <small>{{ share(d.count, s.visits) }}%</small></span
+              >
+            </li>
+          }
+          @for (b of s.browsers; track b.key) {
+            <li class="visitors__row visitors__row--sub">
+              <span>{{ b.key }}</span>
+              <span class="visitors__count">{{ b.count }}</span>
+            </li>
+          }
+        </ul>
+      </section>
+    </div>
+
+    <section class="visitors__panel">
+      <h2 class="visitors__title"
+        ><ng-container i18n>Latest visits</ng-container></h2
+      >
+      <div class="visitors__table-wrap">
+        <table class="visitors__table">
+          <thead>
+            <tr>
+              <th><ng-container i18n>When</ng-container></th>
+              <th><ng-container i18n>From</ng-container></th>
+              <th><ng-container i18n>IP</ng-container></th>
+              <th><ng-container i18n>Page</ng-container></th>
+              <th><ng-container i18n>Device</ng-container></th>
+              <th><ng-container i18n>Came from</ng-container></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (v of s.recent; track $index) {
+              <tr>
+                <td class="visitors__nowrap">{{
+                  v.at | date: 'd MMM, HH:mm'
+                }}</td>
+                <td
+                  >{{ country(v.country) }}
+                  @if (v.city) {
+                    <span class="visitors__muted">{{ v.city }}</span>
+                  }
+                </td>
+                <td class="visitors__mono">{{ v.ip ?? '—' }}</td>
+                <td class="visitors__path">{{ v.path }}</td>
+                <td
+                  >{{ devices[v.device] ?? v.device }}
+                  <span class="visitors__muted"
+                    >{{ v.browser }} · {{ v.os }}</span
+                  ></td
+                >
+                <td class="visitors__path">{{ v.referrer ?? '—' }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="visitors__muted"
+                  ><ng-container i18n>No visits yet.</ng-container></td
+                >
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <p class="visitors__note">
+        <ng-container i18n
+          >Pages with a private link (bookings, reviews, drivers) and the panel
+          are not counted, nor are search engine robots. IP addresses are
+          cleared after 30 days, visits after 13 months.</ng-container
+        >&ngsp;<a
+          class="visitors__link"
+          href="https://db-ip.com"
+          target="_blank"
+          rel="noopener"
+          i18n
+          >IP Geolocation by DB-IP</a
+        >
+      </p>
+    </section>
+  } @else if (loading()) {
+    <p class="visitors__muted"><ng-container i18n>Loading…</ng-container></p>
+  }
+</div>
