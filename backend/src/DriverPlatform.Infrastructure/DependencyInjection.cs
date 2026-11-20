@@ -37,7 +37,7 @@ public static class DependencyInjection
             .ValidateOnStart();
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
         services.AddSingleton<IQrCodeRenderer, QrCodeRenderer>();
-        services.AddSingleton<IImageConverter, Images.ImageSharpConverter>();
+        services.AddSingleton<IImageConverter, Images.SkiaImageConverter>();
         services.Configure<TwoFactorOptions>(configuration.GetSection(TwoFactorOptions.SectionName));
         services.AddSingleton<ITokenService, JwtTokenService>();
         services.AddScoped<IStaffSessions, CachedStaffSessions>();
