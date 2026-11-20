@@ -146,12 +146,21 @@ public sealed class LanguageTests
     [Fact]
     public void Every_language_formats_money_its_own_way()
     {
-        Assert.Equal("€58.00", Texts.English.Money(58m));
-        Assert.Equal("58,00 €", Texts.Italian.Money(58m));
-        Assert.Equal("1.234,50 €", Texts.German.Money(1234.5m));
+        Assert.Equal("€58.00", Texts.English.Money(58m, "EUR"));
+        Assert.Equal("58,00 €", Texts.Italian.Money(58m, "EUR"));
+        Assert.Equal("1.234,50 €", Texts.German.Money(1234.5m, "EUR"));
         // French groups thousands with a narrow no-break space.
-        Assert.Matches(@"^1\s234,50\s€$", Texts.French.Money(1234.5m));
+        Assert.Matches(@"^1\s234,50\s€$", Texts.French.Money(1234.5m, "EUR"));
         Assert.Same(Texts.English, Texts.For("ru"));
+    }
+
+    [Fact]
+    public void Swiss_francs_are_written_with_their_code_in_every_language()
+    {
+        Assert.Equal("CHF 58.00", Texts.English.Money(58m, "CHF"));
+        Assert.Equal("58,00 CHF", Texts.Italian.Money(58m, "CHF"));
+        Assert.Equal("1.234,50 CHF", Texts.German.Money(1234.5m, "CHF"));
+        Assert.Matches(@"^1\s234,50\sCHF$", Texts.French.Money(1234.5m, "CHF"));
     }
 
     [Fact]

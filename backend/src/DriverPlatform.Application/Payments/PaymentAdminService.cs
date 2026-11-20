@@ -66,7 +66,7 @@ public sealed class PaymentAdminService(
         var amount = request.Amount ?? left;
         if (amount <= 0 || amount > left)
         {
-            throw new RequestValidationException("amount", Texts.Current.RefundRange(Texts.Current.Money(left)));
+            throw new RequestValidationException("amount", Texts.Current.RefundRange(Texts.Current.Money(0.01m, payment.Currency), Texts.Current.Money(left, payment.Currency)));
         }
 
         var refund = new Refund

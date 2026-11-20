@@ -67,7 +67,7 @@ internal sealed partial class GermanTexts
     public override string BookingNotOnShift => "Teilen Sie diese Buchung zuerst einer Schicht zu: Die Vergütung geht an den Fahrer der Schicht.";
     public override string ZoneNotFound => "Zone nicht gefunden.";
     public override string ZoneRateOncePerCategory => "Jede Fahrzeugkategorie kann nur einen Zonenpreis haben.";
-    public override string ZoneRateOutOfRange => "Zonenpreise müssen zwischen 0 und 10.000 € liegen (Grundgebühr bis 1.000 €, Kilometerpreis bis 100 €).";
+    public override string ZoneRateOutOfRange => "Zonenpreise müssen zwischen 0 und 10.000 liegen (Grundgebühr bis 1.000, Kilometerpreis bis 100).";
     public override string ZoneRateNeeded => "Geben Sie den Zonenpreis für mindestens eine Fahrzeugkategorie ein oder wählen Sie Normale Tarife.";
     public override string PickCentre => "Wählen Sie den Mittelpunkt auf der Karte und legen Sie einen Radius fest.";
     public override string PolygonOutsideServiceArea => "Alle Punkte müssen im Einsatzgebiet liegen (Italien, Frankreich, Deutschland, Schweiz).";
@@ -84,7 +84,7 @@ internal sealed partial class GermanTexts
     public override string HttpsOnly => "Verwenden Sie eine https://-Adresse.";
     public override string PaymentNotFound => "Zahlung nicht gefunden.";
     public override string OnlyPaidRefundable => "Nur bezahlte Zahlungen können erstattet werden.";
-    public override string RefundRange(string max) => $"Erstattung zwischen {Money(0.01m)} und {max}.";
+    public override string RefundRange(string min, string max) => $"Erstattung zwischen {min} und {max}.";
     public override string ApplicationNotFound => "Bewerbung nicht gefunden.";
 
     public override string EmailTaken => "Es gibt bereits ein Konto mit dieser E-Mail.";

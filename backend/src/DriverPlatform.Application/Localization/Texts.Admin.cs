@@ -58,7 +58,7 @@ public abstract partial class Texts
     public abstract string HttpsOnly { get; }
     public abstract string PaymentNotFound { get; }
     public abstract string OnlyPaidRefundable { get; }
-    public abstract string RefundRange(string max);
+    public abstract string RefundRange(string min, string max);
     public abstract string ApplicationNotFound { get; }
 
     public abstract string EmailTaken { get; }

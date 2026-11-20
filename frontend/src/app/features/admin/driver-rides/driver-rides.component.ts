@@ -26,6 +26,7 @@ import { problemMessage } from '@/core/utils/problem'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { StatusBadgeComponent } from '@/shared/components/status-badge/status-badge.component'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
+import { CURRENCY_LABEL } from '@/core/currency'
 
 /** /admin/drivers/:id/rides — every ride on the driver's shifts, one month at a time. Admins also type the pay. */
 @Component({
@@ -45,6 +46,8 @@ import { MoneyPipe } from '@/shared/pipes/money.pipe'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DriverRidesComponent {
+  /** "€" or "CHF", for the price labels. */
+  protected readonly currency = CURRENCY_LABEL
   // Route param and ?month=yyyy-MM, bound by withComponentInputBinding.
   readonly id = input.required<string>()
   readonly month = input<string | undefined>(undefined)

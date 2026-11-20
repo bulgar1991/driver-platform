@@ -11,8 +11,10 @@ ARG SITE_LANGUAGE=en
 ARG SERVICE_AREA=europe
 # The company's time zone ("today" in the panel); ride times use the pickup's own zone.
 ARG TIME_ZONE=Europe/Rome
+# The site's currency (EUR or CHF): every price shown.
+ARG CURRENCY=EUR
 RUN test -n "$SITE_DOMAIN" || (echo 'Build argument SITE_DOMAIN is required' && exit 1)
-ENV SITE_URL=https://${SITE_DOMAIN} BRAND=${BRAND} SITE_LANGUAGE=${SITE_LANGUAGE} SERVICE_AREA=${SERVICE_AREA} TIME_ZONE=${TIME_ZONE}
+ENV SITE_URL=https://${SITE_DOMAIN} BRAND=${BRAND} SITE_LANGUAGE=${SITE_LANGUAGE} SERVICE_AREA=${SERVICE_AREA} TIME_ZONE=${TIME_ZONE} CURRENCY=${CURRENCY}
 WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund

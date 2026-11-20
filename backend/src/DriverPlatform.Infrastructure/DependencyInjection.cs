@@ -91,6 +91,8 @@ public static class DependencyInjection
         SiteLanguages.UseMainLanguage(configuration["Site:Language"]);
         // The company's time zone: "today", shift days, months of reports and invoices.
         Application.Geo.OfficeTime.UseZone(configuration["Site:TimeZone"]);
+        // The site's currency: tariffs, new bookings, payments and invoices.
+        Application.Pricing.PricingDefaults.UseCurrency(configuration["Site:Currency"]);
         services.Configure<EmailOptions>(configuration.GetSection(EmailOptions.SectionName));
 
         if (configuration[$"{PaymentsOptions.SectionName}:Provider"] == "Stripe")

@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 namespace DriverPlatform.Infrastructure.Persistence;
 
 /// <summary>Fills an empty database with the starting tariffs from the business plan and a first admin.</summary>
-public sealed class DbSeeder(
+public sealed partial class DbSeeder(
     AppDbContext db,
     IPasswordHasher passwordHasher,
     IDriverLinks driverLinks,
@@ -23,9 +23,16 @@ public sealed class DbSeeder(
     {
         await SeedAdminAsync(cancellationToken);
         await SeedPricingAsync(cancellationToken);
-        await SeedHolidaysAsync(cancellationToken);
         await SeedSettingsAsync(cancellationToken);
-        await SeedZonesAsync(cancellationToken);
+        if (IsSwitzerland)
+        {
+            await SeedSwitzerlandAsync(cancellationToken);
+        }
+        else
+        {
+            await SeedHolidaysAsync(cancellationToken);
+            await SeedZonesAsync(cancellationToken);
+        }
         if (configuration.GetValue<bool>("Bootstrap:DemoFleet"))
         {
             await SeedDemoFleetAsync(cancellationToken);
@@ -34,6 +41,10 @@ public sealed class DbSeeder(
         await SeedTranslationsAsync(cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
     }
+
+    /// <summary>Site:Region (REGION in deploy/.env): "it" (default) or "ch" for a server in Switzerland.</summary>
+    private bool IsSwitzerland =>
+        string.Equals(configuration["Site:Region"]?.Trim(), "ch", StringComparison.OrdinalIgnoreCase);
 
     private async Task SeedAdminAsync(CancellationToken cancellationToken)
     {
@@ -115,16 +126,6 @@ public sealed class DbSeeder(
             return;
         }
 
-        SurchargeRule Holiday(string name, int month, int day, bool yearly = true, int year = 2027) => new()
-        {
-            Name = $"{HolidayPrefix} – {name}",
-            Kind = SurchargeKind.DateRange,
-            Percent = 20m,
-            StartDate = new DateOnly(year, month, day),
-            EndDate = new DateOnly(year, month, day),
-            RepeatsYearly = yearly,
-        };
-
         db.SurchargeRules.AddRange(
             Holiday("New Year's Day", 1, 1),
             Holiday("Epiphany", 1, 6),
@@ -139,6 +140,16 @@ public sealed class DbSeeder(
             Holiday("St Stephen's Day", 12, 26));
     }
 
+    private static SurchargeRule Holiday(string name, int month, int day, bool yearly = true, int year = 2027) => new()
+    {
+        Name = $"{HolidayPrefix} – {name}",
+        Kind = SurchargeKind.DateRange,
+        Percent = 20m,
+        StartDate = new DateOnly(year, month, day),
+        EndDate = new DateOnly(year, month, day),
+        RepeatsYearly = yearly,
+    };
+
     private async Task SeedSettingsAsync(CancellationToken cancellationToken)
     {
         if (await db.PricingSettings.AnyAsync(cancellationToken))
@@ -147,7 +158,7 @@ public sealed class DbSeeder(
         }
         db.PricingSettings.Add(new PricingSettings
         {
-            VatRatePercent = PricingDefaults.VatRatePercent,
+            VatRatePercent = IsSwitzerland ? SwissVatRatePercent : PricingDefaults.VatRatePercent,
             ReturnDiscountPercent = 0m,
             MinLeadTimeHours = PricingDefaults.MinLeadTimeHours,
         });
@@ -274,18 +285,21 @@ public sealed class DbSeeder(
         ["Public holiday – St Stephen's Day"] = new() { It = "Festivo – Santo Stefano", De = "Feiertag – Stephanstag", Fr = "Jour férié – Saint-Étienne" },
     };
 
+    private static bool TryTranslation(string english, out Translations translations) =>
+        SeededTranslations.TryGetValue(english, out translations!) || SwissTranslations.TryGetValue(english, out translations!);
+
     private async Task SeedTranslationsAsync(CancellationToken cancellationToken)
     {
         foreach (var rule in await db.SurchargeRules.ToListAsync(cancellationToken))
         {
-            if (rule.NameTranslations is null && SeededTranslations.TryGetValue(rule.Name, out var name))
+            if (rule.NameTranslations is null && TryTranslation(rule.Name, out var name))
             {
                 rule.NameTranslations = Copy(name);
             }
         }
         foreach (var zone in await db.Zones.ToListAsync(cancellationToken))
         {
-            if (zone.NameTranslations is null && SeededTranslations.TryGetValue(zone.Name, out var name))
+            if (zone.NameTranslations is null && TryTranslation(zone.Name, out var name))
             {
                 zone.NameTranslations = Copy(name);
             }
@@ -301,10 +315,10 @@ public sealed class DbSeeder(
     /// <summary>A copy with the missing seeded translations filled in; null when nothing changes.</summary>
     private static MeetingPoint? Translated(MeetingPoint point)
     {
-        var name = point.NameTranslations is null && SeededTranslations.TryGetValue(point.Name, out var n) ? n : null;
+        var name = point.NameTranslations is null && TryTranslation(point.Name, out var n) ? n : null;
         var instructions = point.ClientInstructionsTranslations is null
             && point.ClientInstructions is { } text
-            && SeededTranslations.TryGetValue(text, out var i) ? i : null;
+            && TryTranslation(text, out var i) ? i : null;
         if (name is null && instructions is null)
         {
             return null;

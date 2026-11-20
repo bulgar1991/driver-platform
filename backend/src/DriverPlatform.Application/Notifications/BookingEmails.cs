@@ -35,7 +35,7 @@ public sealed class BookingEmails(
         var html = new StringBuilder();
         var text = new StringBuilder();
         Paragraph(html, text, t.Dear(outbound.Client.FirstName));
-        Paragraph(html, text, t.PaymentConfirmed(t.Money(invoice.TotalAmount)));
+        Paragraph(html, text, t.PaymentConfirmed(t.Money(invoice.TotalAmount, invoice.Currency)));
 
         foreach (var leg in legs)
         {
@@ -77,7 +77,7 @@ public sealed class BookingEmails(
         {
             Paragraph(html, text, t.BookingCancelled(outbound.Reference));
         }
-        Paragraph(html, text, t.Refunded(t.Money(creditNote.TotalAmount)));
+        Paragraph(html, text, t.Refunded(t.Money(creditNote.TotalAmount, creditNote.Currency)));
         Paragraph(html, text, t.CreditNoteAttached(creditNote.Number));
         Link(html, text, t.ViewBooking, links.ManageUrl(outbound));
         Signature(html, text, t);

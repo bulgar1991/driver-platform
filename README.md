@@ -283,6 +283,8 @@ What differs is chosen per server in `deploy/.env`:
 | `SITE_LANGUAGE` | The language at the root of the site (`en` by default; `it`, `de` or `fr`). |
 | `SERVICE_AREA` | Where trips are served: `europe` (default: EU, EEA, UK, Switzerland, Western Balkans) or ISO codes such as `it,fr,ch,de`. Address search, the price check, the map's first view and the site's wording follow it. |
 | `TIME_ZONE` | The company's own time zone (IANA, default `Europe/Rome`; e.g. `Europe/Zurich`): "today" in the panel, shift days, monthly reports, statements and invoices. Ride times always use the local time at the pickup. |
+| `REGION` | Starting data: `it` (default: Italian VAT 10%, holidays and zones) or `ch` (Swiss VAT 8.1%, Swiss holidays, Zurich/Geneva/Basel airports, main stations, Zermatt and Saas-Fee). On an existing database, `ch` adds the Swiss items once and switches the Italian starting ones off; a VAT rate the staff changed is kept. |
+| `CURRENCY` | The currency of every price, payment, invoice and statement on this site, in every country served: `EUR` (default) or `CHF`. Tariffs and zone prices are entered in it. A booking keeps the currency it was made in; Booking.com rides keep the currency Booking.com sends. |
 | `COMPANY_*` | Company on invoices; `COMPANY_NAME` is also the email sender name and is used on Stripe payments and the partner API page. |
 | `BOOKING_PREFIX`, `INVOICE_PREFIX` | Letters of booking references (`HV-7K3QX9`) and invoice numbers (`HV-2026-000001`), 2–4 letters. |
 

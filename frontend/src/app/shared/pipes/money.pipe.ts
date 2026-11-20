@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core'
+import { SITE_CURRENCY } from '@/core/currency'
 
 const formatters = new Map<string, Intl.NumberFormat>()
 
@@ -9,10 +10,13 @@ function numberLocale(): string {
   return locale.startsWith('en') ? 'en-IE' : locale
 }
 
-/** 58 → "€58.00" (English), "58,00 €" (Italian, German, French). */
+/** 58 → "€58.00" (English), "58,00 €" (Italian, German, French); "CHF 58.00" / "58,00 CHF" in francs. */
 @Pipe({ name: 'money' })
 export class MoneyPipe implements PipeTransform {
-  transform(value: number | null | undefined, currency = 'EUR'): string {
+  transform(
+    value: number | null | undefined,
+    currency: string = SITE_CURRENCY
+  ): string {
     if (value === null || value === undefined) {
       return ''
     }

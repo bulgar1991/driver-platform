@@ -146,7 +146,7 @@
                     min="0"
                     step="0.5"
                     inputmode="decimal"
-                    placeholder="€"
+                    [placeholder]="currency"
                     [attr.aria-label]="tx.pay(r.reference)"
                     [value]="r.driverPay ?? ''"
                     (change)="savePay(r, pay.value)"

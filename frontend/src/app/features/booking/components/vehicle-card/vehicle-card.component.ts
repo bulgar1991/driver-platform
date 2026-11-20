@@ -10,6 +10,7 @@ import { IconComponent } from '@/shared/components/icon/icon.component'
 import { ImageComponent } from '@/shared/components/image/image.component'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { VEHICLE_INFO } from '../../vehicle-info'
+import { SITE_CURRENCY } from '@/core/currency'
 
 /** One car in the results: the drawing, what fits, the price and Select. */
 @Component({
@@ -22,7 +23,7 @@ import { VEHICLE_INFO } from '../../vehicle-info'
 export class VehicleCardComponent {
   readonly vehicle = input.required<VehicleOption>()
   readonly selected = input(false)
-  readonly currency = input('EUR')
+  readonly currency = input(SITE_CURRENCY)
   readonly chosen = output()
 
   protected readonly info = computed(

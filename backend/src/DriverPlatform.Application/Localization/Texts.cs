@@ -35,7 +35,19 @@ public abstract partial class Texts
     /// <summary>Formats dates and amounts: "58,00 €" in Italian, German and French, "€58.00" in English.</summary>
     public abstract CultureInfo Culture { get; }
 
-    public string Money(decimal amount) => amount.ToString("C2", Culture);
+    /// <summary>"€58.00" / "58,00 €", or with a code for other currencies: "CHF 58.00" / "58,00 CHF".</summary>
+    public string Money(decimal amount, string currency)
+    {
+        var format = (NumberFormatInfo)Culture.NumberFormat.Clone();
+        if (currency != "EUR")
+        {
+            format.CurrencySymbol = currency;
+            // A code takes a space: "CHF 58.00", not "CHF58.00".
+            format.CurrencyPositivePattern = format.CurrencyPositivePattern switch { 0 => 2, 1 => 3, var p => p };
+            format.CurrencyNegativePattern = 9;
+        }
+        return amount.ToString("C2", format);
+    }
 
     /// <summary>"Monday 3 May 2027, 14:30".</summary>
     public string LongDateTime(DateTime local) => local.ToString(LongDateTimeFormat, Culture);

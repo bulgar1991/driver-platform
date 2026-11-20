@@ -10,6 +10,10 @@ describe('pipes', () => {
     expect(new MoneyPipe().transform(58)).toBe('€58.00')
     expect(new MoneyPipe().transform(-6.38)).toBe('-€6.38')
     expect(new MoneyPipe().transform(null)).toBe('')
+    // A Swiss site: francs, written with their code.
+    expect(new MoneyPipe().transform(58, 'CHF').replace(/\s/g, ' ')).toBe(
+      'CHF 58.00'
+    )
   })
 
   it('formats durations', () => {

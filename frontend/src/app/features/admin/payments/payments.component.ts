@@ -148,7 +148,7 @@ export class PaymentsComponent implements OnInit {
           )
           this.refunding.set(null)
           this.notify(
-            $localize`Refunded ${v.amount.toFixed(2)} € on ${updated.bookingReference}; the credit note was emailed.`
+            $localize`Refunded ${this.money.transform(v.amount, updated.currency)} on ${updated.bookingReference}; the credit note was emailed.`
           )
         },
         error: err => this.notify(problemMessage(err), true),

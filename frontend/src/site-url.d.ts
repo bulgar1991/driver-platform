@@ -9,3 +9,6 @@ declare const SERVICE_AREA: string
 
 /** The company's time zone (IANA, e.g. "Europe/Zurich"); `ng build --define TIME_ZONE="'Europe/Rome'"`. */
 declare const TIME_ZONE: string
+
+/** The site's currency, a three-letter ISO code ("EUR", "CHF"); `ng build --define CURRENCY="'CHF'"`. */
+declare const CURRENCY: string

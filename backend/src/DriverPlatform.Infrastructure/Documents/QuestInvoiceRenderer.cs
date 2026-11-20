@@ -86,7 +86,7 @@ public sealed class QuestInvoiceRenderer : IInvoiceRenderer
                     });
                     table.Header(h =>
                     {
-                        string[] labels = ["Descrizione / Description", "Q.tà", "IVA", "Imponibile", "IVA €", "Totale"];
+                        string[] labels = ["Descrizione / Description", "Q.tà", "IVA", "Imponibile", $"IVA {Symbol(invoice.Currency)}", "Totale"];
                         for (var i = 0; i < labels.Length; i++)
                         {
                             var cell = h.Cell().BorderBottom(1).BorderColor(Ink).PaddingBottom(4);
@@ -99,23 +99,23 @@ public sealed class QuestInvoiceRenderer : IInvoiceRenderer
                         Cell(table).Text(line.Description);
                         Cell(table).AlignRight().Text(line.Quantity.ToString(CultureInfo.InvariantCulture));
                         Cell(table).AlignRight().Text($"{line.VatRatePercent.ToString("0.##", Italian)}%");
-                        Cell(table).AlignRight().Text(Money(line.NetAmount));
-                        Cell(table).AlignRight().Text(Money(line.VatAmount));
-                        Cell(table).AlignRight().Text(Money(line.TotalAmount));
+                        Cell(table).AlignRight().Text(Money(line.NetAmount, invoice.Currency));
+                        Cell(table).AlignRight().Text(Money(line.VatAmount, invoice.Currency));
+                        Cell(table).AlignRight().Text(Money(line.TotalAmount, invoice.Currency));
                     }
                 });
 
                 content.Item().AlignRight().Width(230).Column(totals =>
                 {
-                    Total(totals, "Imponibile / Net", invoice.NetAmount);
+                    Total(totals, "Imponibile / Net", invoice.NetAmount, invoice.Currency);
                     foreach (var group in invoice.Lines.GroupBy(l => l.VatRatePercent))
                     {
-                        Total(totals, $"IVA / VAT {group.Key.ToString("0.##", Italian)}%", group.Sum(l => l.VatAmount));
+                        Total(totals, $"IVA / VAT {group.Key.ToString("0.##", Italian)}%", group.Sum(l => l.VatAmount), invoice.Currency);
                     }
                     totals.Item().PaddingTop(4).BorderTop(1).BorderColor(Gold).PaddingTop(4).Row(row =>
                     {
                         row.RelativeItem().Text(creditNote ? "Totale rimborsato / Refunded" : "Totale / Total").Bold();
-                        row.AutoItem().Text(Money(invoice.TotalAmount)).Bold().FontSize(12);
+                        row.AutoItem().Text(Money(invoice.TotalAmount, invoice.Currency)).Bold().FontSize(12);
                     });
                 });
 
@@ -155,12 +155,15 @@ public sealed class QuestInvoiceRenderer : IInvoiceRenderer
     private static IContainer Cell(TableDescriptor table) =>
         table.Cell().BorderBottom(0.5f).BorderColor("#DDDDDD").PaddingVertical(5);
 
-    private static void Total(ColumnDescriptor column, string label, decimal amount) =>
+    private static void Total(ColumnDescriptor column, string label, decimal amount, string currency) =>
         column.Item().Row(row =>
         {
             row.RelativeItem().Text(label).FontColor(Muted);
-            row.AutoItem().Text(Money(amount));
+            row.AutoItem().Text(Money(amount, currency));
         });
 
-    private static string Money(decimal amount) => amount.ToString("€ #,##0.00", Italian);
+    /// <summary>"€ 1.234,50" or "CHF 1.234,50": the invoice's own currency.</summary>
+    private static string Money(decimal amount, string currency) => $"{Symbol(currency)} {amount.ToString("#,##0.00", Italian)}";
+
+    private static string Symbol(string currency) => currency == "EUR" ? "€" : currency;
 }

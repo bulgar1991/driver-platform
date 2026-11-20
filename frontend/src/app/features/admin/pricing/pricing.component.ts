@@ -38,6 +38,7 @@ import {
 } from './surcharge-form/surcharge-form.component'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 import { TranslatedPipe } from '@/shared/pipes/translated.pipe'
+import { CURRENCY_LABEL } from '@/core/currency'
 
 type RateForm = FormGroup<{
   category: FormControl<VehicleCategory>
@@ -78,6 +79,8 @@ const EXTRA_LABELS: Record<ExtraType, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PricingComponent implements OnInit {
+  /** "€" or "CHF", for the price labels. */
+  protected readonly currency = CURRENCY_LABEL
   protected readonly tx = {
     baseFee: (category: string) => $localize`${category}:category: base fee`,
     pricePerKm: (category: string) =>

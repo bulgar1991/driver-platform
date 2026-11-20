@@ -46,6 +46,7 @@ import { MapComponent } from '@/shared/components/map/map.component'
 import { ZONE_TYPES } from '../zone-labels'
 import { zonePoints } from '../zone-points'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
+import { CURRENCY_LABEL } from '@/core/currency'
 
 type MeetingPointForm = FormGroup<{
   name: FormControl<string>
@@ -93,6 +94,8 @@ type ClickMode = 'shape' | number
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ZoneEditorComponent {
+  /** "€" or "CHF", for the price labels. */
+  protected readonly currency = CURRENCY_LABEL
   protected readonly text = ADMIN_TEXT
   protected readonly tx = {
     fixedPrice: (car: string) => $localize`Fixed price for ${car}:car:`,

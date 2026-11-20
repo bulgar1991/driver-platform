@@ -13,6 +13,7 @@ services:
         SITE_LANGUAGE: ${SITE_LANGUAGE:-en}
         SERVICE_AREA: ${SERVICE_AREA:-europe}
         TIME_ZONE: ${TIME_ZONE:-Europe/Rome}
+        CURRENCY: ${CURRENCY:-EUR}
     restart: unless-stopped
     ports:
       - "80:80"
@@ -67,6 +68,8 @@ services:
       Company__Name: ${COMPANY_NAME}
       Site__Language: ${SITE_LANGUAGE:-en}
       Site__TimeZone: ${TIME_ZONE:-Europe/Rome}
+      Site__Region: ${REGION:-it}
+      Site__Currency: ${CURRENCY:-EUR}
       Company__ReferencePrefix: ${BOOKING_PREFIX:-MD}
       Company__InvoicePrefix: ${INVOICE_PREFIX:-MD}
       Email__FromName: ${COMPANY_NAME}
