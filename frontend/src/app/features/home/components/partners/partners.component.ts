@@ -5,6 +5,8 @@ import {
   inject,
   input,
 } from '@angular/core'
+import { RouterLink } from '@angular/router'
+import { IconName } from '@/core/models'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { ImageComponent } from '@/shared/components/image/image.component'
 import { SectionHeadingComponent } from '@/shared/components/section-heading/section-heading.component'
@@ -25,6 +27,7 @@ import { HEADINGS } from '../../editable-content'
     ImageComponent,
     SectionHeadingComponent,
     RevealDirective,
+    RouterLink,
   ],
   templateUrl: './partners.component.html',
   styleUrl: './partners.component.scss',
@@ -53,4 +56,73 @@ export class PartnersComponent {
   protected readonly brandName = BRAND.name
   protected readonly contactEmail = CONTACT.email
   protected readonly docsUrl = '/api/partner/openapi/partner.json'
+
+  /** Partners page only: what a partner gets, how to start, and the API in short. */
+  protected readonly benefits: {
+    icon: IconName
+    title: string
+    text: string
+  }[] = [
+    {
+      icon: 'tag',
+      title: $localize`Partner rates`,
+      text: $localize`An agreed discount on every ride, on top of our fixed prices.`,
+    },
+    {
+      icon: 'wallet',
+      title: $localize`One invoice a month`,
+      text: $localize`No card payment per ride: all transfers on one monthly invoice.`,
+    },
+    {
+      icon: 'chat',
+      title: $localize`A personal contact`,
+      text: $localize`One dispatcher who knows your guests and what they need.`,
+    },
+    {
+      icon: 'route',
+      title: $localize`Booking API`,
+      text: $localize`Send bookings straight from your own system, no typing twice.`,
+    },
+  ]
+  protected readonly steps = [
+    {
+      title: $localize`Get in touch`,
+      text: $localize`Tell us about your company and how many transfers you expect.`,
+    },
+    {
+      title: $localize`Agree your rate`,
+      text: $localize`We send you an agreement with your rate and the invoicing details.`,
+    },
+    {
+      title: $localize`Start booking`,
+      text: $localize`Book by e-mail or phone, or connect your system with the API key we give you.`,
+    },
+  ]
+  protected readonly endpoints = [
+    {
+      method: 'POST',
+      path: '/api/partner/v1/quotes',
+      text: $localize`Prices for every vehicle class, with your rate applied`,
+    },
+    {
+      method: 'POST',
+      path: '/api/partner/v1/bookings',
+      text: $localize`Create a booking`,
+    },
+    {
+      method: 'GET',
+      path: '/api/partner/v1/bookings/{reference}',
+      text: $localize`Status of a booking and its driver`,
+    },
+    {
+      method: 'GET',
+      path: '/api/partner/v1/bookings?updatedSince=',
+      text: $localize`Bookings changed since a given time`,
+    },
+    {
+      method: 'POST',
+      path: '/api/partner/v1/bookings/{reference}/cancel',
+      text: $localize`Cancel a booking`,
+    },
+  ]
 }

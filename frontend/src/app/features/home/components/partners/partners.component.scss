@@ -87,4 +87,80 @@
       @apply text-ivory-300;
     }
   }
+
+  &__programme {
+    @apply flex flex-col gap-14 pt-6;
+  }
+
+  &__benefits {
+    @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4;
+  }
+
+  &__benefit {
+    @apply flex flex-col gap-3 rounded-md border border-ink-600 bg-ink-900 p-6;
+  }
+
+  &__benefit-title {
+    @apply font-display text-lg text-ivory;
+  }
+
+  &__benefit-text {
+    @apply text-sm leading-relaxed text-ivory-400;
+  }
+
+  &__subtitle {
+    @apply font-display text-2xl text-ivory sm:text-3xl;
+  }
+
+  &__steps-block {
+    @apply flex flex-col gap-6;
+  }
+
+  &__steps {
+    @apply grid grid-cols-1 gap-6 md:grid-cols-3;
+  }
+
+  &__step {
+    @apply flex items-start gap-4;
+  }
+
+  &__step-number {
+    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-gold/50 font-display text-lg text-gold;
+  }
+
+  &__step-text {
+    @apply mt-1 block text-sm leading-relaxed text-ivory-400;
+  }
+
+  &__api {
+    @apply grid grid-cols-1 gap-8 rounded-md border border-gold/30 bg-ink/80 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)];
+  }
+
+  &__api-intro {
+    @apply flex flex-col items-start gap-4;
+  }
+
+  &__api-text {
+    @apply text-sm leading-relaxed text-ivory-300;
+  }
+
+  &__endpoints {
+    @apply flex flex-col divide-y divide-ink-700;
+  }
+
+  &__endpoint {
+    @apply flex flex-col gap-1 py-3;
+  }
+
+  &__endpoint-path {
+    @apply break-all font-mono text-xs text-ivory;
+  }
+
+  &__method {
+    @apply mr-2 inline-block w-11 font-semibold text-gold;
+  }
+
+  &__endpoint-text {
+    @apply text-sm text-ivory-400;
+  }
 }

@@ -42,6 +42,69 @@
     </ul>
   </div>
 
+  @if (page()) {
+    <div class="page page__section partners__programme">
+      <ul class="partners__benefits">
+        @for (b of benefits; track b.title; let i = $index) {
+          <li class="partners__benefit" appReveal [delay]="i * 80">
+            <span class="partners__icon"><app-icon [name]="b.icon" /></span>
+            <h2 class="partners__benefit-title">{{ b.title }}</h2>
+            <p class="partners__benefit-text">{{ b.text }}</p>
+          </li>
+        }
+      </ul>
+
+      <div class="partners__steps-block" appReveal>
+        <h2 class="partners__subtitle" i18n>How it works</h2>
+        <ol class="partners__steps">
+          @for (s of steps; track s.title; let i = $index) {
+            <li class="partners__step">
+              <span class="partners__step-number">{{ i + 1 }}</span>
+              <span>
+                <strong class="partners__name">{{ s.title }}</strong>
+                <span class="partners__step-text">{{ s.text }}</span>
+              </span>
+            </li>
+          }
+        </ol>
+      </div>
+
+      <div class="partners__api" appReveal>
+        <div class="partners__api-intro">
+          <p class="eyebrow" i18n>For developers</p>
+          <h2 class="partners__subtitle" i18n>Partner API</h2>
+          <p class="partners__api-text" i18n
+            >Connect your hotel, travel or event system and book transfers
+            without leaving it. It is a REST API with JSON: you get an API key
+            from us and send it in the X-Api-Key header. Every status change
+            (driver assigned, ride completed, cancelled) is sent to your webhook
+            URL.</p
+          >
+          <a
+            class="partners__cta-link"
+            [href]="docsUrl"
+            download="partner-api.json">
+            <app-icon name="download" />
+            <ng-container i18n
+              >Download the specification (OpenAPI)</ng-container
+            >
+          </a>
+        </div>
+        <ul class="partners__endpoints">
+          @for (e of endpoints; track e.path) {
+            <li class="partners__endpoint">
+              <code class="partners__endpoint-path"
+                ><span class="partners__method">{{ e.method }}</span>
+                {{ e.path }}</code
+              >
+              <span class="partners__endpoint-text">{{ e.text }}</span>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  }
+
   <div class="page partners__cta" appReveal [delay]="200">
     <p class="partners__cta-text" i18n
       >Want to offer {{ brandName }} to your guests or clients?</p
@@ -55,14 +118,14 @@
           <ng-container i18n>Become a partner</ng-container>
         </a>
       }
-      <a
-        class="partners__cta-link partners__cta-link--muted"
-        [href]="docsUrl"
-        target="_blank"
-        rel="noopener">
-        <app-icon name="link" />
-        <ng-container i18n>Partner API description</ng-container>
-      </a>
+      @if (!page()) {
+        <a
+          class="partners__cta-link partners__cta-link--muted"
+          routerLink="/partners">
+          <app-icon name="arrow-right" />
+          <ng-container i18n>How the partnership works</ng-container>
+        </a>
+      }
     </div>
   </div>
 </section>
