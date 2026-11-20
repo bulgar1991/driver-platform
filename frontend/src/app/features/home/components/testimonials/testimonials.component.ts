@@ -1,14 +1,14 @@
 import { DatePipe } from '@angular/common'
 import {
-  afterNextRender,
   ChangeDetectionStrategy,
   Component,
-  computed,
   DestroyRef,
   ElementRef,
+  afterNextRender,
+  computed,
   inject,
-  signal,
   input,
+  signal,
 } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { RouterLink } from '@angular/router'
@@ -20,6 +20,8 @@ import { IconComponent } from '@/shared/components/icon/icon.component'
 import { SectionHeadingComponent } from '@/shared/components/section-heading/section-heading.component'
 import { RevealDirective } from '@/shared/directives/reveal.directive'
 import { VEHICLE_TEXT } from '../../home.content'
+import { SiteContentService } from '@/core/services/site-content.service'
+import { HEADINGS, VEHICLE_KEY } from '../../editable-content'
 
 const AUTOPLAY_MS = 6000
 const SWIPE_PX = 50
@@ -55,8 +57,18 @@ export class TestimonialsComponent {
     show: (n: number) => $localize`Show review ${n}:number:`,
   }
 
+  private readonly site = inject(SiteContentService)
+  protected readonly heading = computed(() => ({
+    eyebrow: this.site.text(
+      'testimonials.eyebrow',
+      HEADINGS.testimonialsEyebrow
+    ),
+    title: this.site.text('testimonials.title', HEADINGS.testimonialsTitle),
+  }))
   protected vehicleName(category: string): string {
-    return VEHICLE_TEXT[category as VehicleCategory]?.title ?? category
+    const builtIn = VEHICLE_TEXT[category as VehicleCategory]?.title
+    const key = VEHICLE_KEY[category as VehicleCategory]
+    return builtIn && key ? this.site.text(`${key}.title`, builtIn) : category
   }
   protected readonly items = toSignal(
     inject(SiteService)

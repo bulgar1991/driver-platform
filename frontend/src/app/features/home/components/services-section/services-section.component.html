@@ -5,14 +5,12 @@
   aria-label="Our services">
   <div class="page page__section">
     <app-section-heading
-      i18n-eyebrow
-      eyebrow="What we do"
-      i18n-title
-      title="Our Services"
+      [eyebrow]="heading().eyebrow"
+      [title]="heading().title"
       [level]="page() ? 1 : 2"
       appReveal />
     <ul class="services-section__grid">
-      @for (service of services(); track service.title; let i = $index) {
+      @for (service of services(); track $index; let i = $index) {
         <li class="services-section__item" appReveal [delay]="i * 110">
           <app-service-card [service]="service" />
         </li>

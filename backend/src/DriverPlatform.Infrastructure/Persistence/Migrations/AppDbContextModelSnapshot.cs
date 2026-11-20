@@ -1480,6 +1480,69 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("reviews", (string)null);
                 });
 
+            modelBuilder.Entity("DriverPlatform.Domain.Entities.SiteContent", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("De")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("de");
+
+                    b.Property<string>("En")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("en");
+
+                    b.Property<string>("Fr")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("fr");
+
+                    b.Property<int?>("ImageHeight")
+                        .HasColumnType("integer")
+                        .HasColumnName("image_height");
+
+                    b.Property<int?>("ImageWidth")
+                        .HasColumnType("integer")
+                        .HasColumnName("image_width");
+
+                    b.Property<string>("It")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("it");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("key");
+
+                    b.Property<Guid?>("PhotoId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("photo_id");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_site_contents");
+
+                    b.HasIndex("Key")
+                        .IsUnique()
+                        .HasDatabaseName("ix_site_contents_key");
+
+                    b.ToTable("site_contents", (string)null);
+                });
+
             modelBuilder.Entity("DriverPlatform.Domain.Entities.StaffUser", b =>
                 {
                     b.Property<Guid>("Id")

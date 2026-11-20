@@ -18,6 +18,8 @@ import { RevealDirective } from '@/shared/directives/reveal.directive'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { VEHICLE_INFO } from '@/features/booking/vehicle-info'
 import { VEHICLE_TEXT } from '../../home.content'
+import { SiteContentService } from '@/core/services/site-content.service'
+import { HEADINGS, VEHICLE_KEY } from '../../editable-content'
 
 const EXTRA_LABEL: Record<ExtraType, string> = {
   ChildSeat: $localize`Child seat`,
@@ -54,13 +56,28 @@ export class TariffsComponent {
   protected readonly loading = computed(() => this.options() === undefined)
   protected readonly failed = computed(() => this.options() === null)
 
+  private readonly site = inject(SiteContentService)
+  protected readonly heading = computed(() => ({
+    eyebrow: this.site.text('tariffs.eyebrow', HEADINGS.tariffsEyebrow),
+    title: this.site.text('tariffs.title', HEADINGS.tariffsTitle),
+  }))
+  /** Texts and pictures as changed in Admin → Website content, the built-in ones otherwise. */
   protected readonly cards = computed(() =>
-    (this.options()?.vehicles ?? []).map(v => ({
-      ...v,
-      text: VEHICLE_TEXT[v.category],
-      image: (VEHICLE_INFO[v.category] ?? VEHICLE_INFO.Sedan).image,
-      featured: v.category === 'Estate',
-    }))
+    (this.options()?.vehicles ?? []).map(v => {
+      const key = VEHICLE_KEY[v.category] ?? 'vehicle.standard'
+      const text = VEHICLE_TEXT[v.category]
+      const info = VEHICLE_INFO[v.category] ?? VEHICLE_INFO.Sedan
+      return {
+        ...v,
+        text: text && {
+          title: this.site.text(`${key}.title`, text.title),
+          models: this.site.text(`${key}.models`, text.models),
+          bestFor: this.site.text(`${key}.best-for`, text.bestFor),
+        },
+        image: this.site.image(`${key}.image`, info.image),
+        featured: v.category === 'Estate',
+      }
+    })
   )
 
   protected readonly extras = computed(() =>

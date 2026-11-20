@@ -1,0 +1,148 @@
+<div class="content">
+  <header class="content__header">
+    <div>
+      <p class="eyebrow"><ng-container i18n>Administration</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Website content</ng-container></h1
+      >
+    </div>
+    <p class="content__lead"
+      ><ng-container i18n
+        >Texts and pictures of the website. A language left empty shows the
+        built-in text. Pictures: JPEG, PNG or WebP up to 700 KB, saved as WebP.
+        Changes show on the website within a minute.</ng-container
+      ></p
+    >
+  </header>
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  <nav class="content__tabs" i18n-aria-label aria-label="Sections">
+    @for (s of sections; track s.id) {
+      <button
+        type="button"
+        class="content__tab"
+        [class.content__tab--active]="s.id === sectionId()"
+        [attr.aria-pressed]="s.id === sectionId()"
+        (click)="sectionId.set(s.id)">
+        {{ s.title }}
+      </button>
+    }
+  </nav>
+
+  @if (loading()) {
+    <p class="content__muted"><ng-container i18n>Loading…</ng-container></p>
+  } @else {
+    @for (group of section().groups; track group.title) {
+      <section class="content__group">
+        <h2 class="content__group-title">{{ group.title }}</h2>
+        @for (field of group.fields; track field.key) {
+          <div
+            class="content__field"
+            [class.content__field--changed]="changed(field.key)">
+            <div class="content__field-head">
+              <h3 class="content__label">{{ field.label }}</h3>
+              @if (changed(field.key)) {
+                <span class="content__badge"
+                  ><ng-container i18n>Changed</ng-container></span
+                >
+              }
+            </div>
+
+            @if (field.kind === 'image') {
+              <div class="content__image-row">
+                <app-image
+                  class="content__image"
+                  [image]="image(field)"
+                  [alt]="field.label"
+                  sizes="240px" />
+                <div class="content__image-actions">
+                  <label class="content__upload">
+                    <input
+                      class="content__file"
+                      type="file"
+                      [accept]="imageTypes"
+                      [disabled]="busy() === field.key"
+                      (change)="pickImage(field.key, $event)" />
+                    <span class="button button--outline button--sm"
+                      ><app-icon name="edit" />&ngsp;<ng-container i18n
+                        >Upload picture</ng-container
+                      ></span
+                    >
+                  </label>
+                  @if (saved().images[field.key]) {
+                    <button
+                      appButton
+                      size="sm"
+                      variant="ghost"
+                      type="button"
+                      [disabled]="busy() === field.key"
+                      (click)="removeImage(field.key)"
+                      ><ng-container i18n
+                        >Use the built-in picture</ng-container
+                      ></button
+                    >
+                  }
+                </div>
+              </div>
+            } @else {
+              <p class="content__built-in"
+                ><ng-container i18n>Built-in:</ng-container>&ngsp;{{
+                  field.builtIn
+                }}</p
+              >
+              <div class="content__languages">
+                @for (l of languages; track l.code) {
+                  <mat-form-field subscriptSizing="dynamic">
+                    <mat-label>{{ l.name }}</mat-label>
+                    @if (field.kind === 'long') {
+                      <textarea
+                        matInput
+                        rows="3"
+                        maxlength="2000"
+                        [(ngModel)]="draft(field.key)[l.code]"></textarea>
+                    } @else {
+                      <input
+                        matInput
+                        maxlength="2000"
+                        [(ngModel)]="draft(field.key)[l.code]" />
+                    }
+                  </mat-form-field>
+                }
+              </div>
+              <div class="content__actions">
+                @if (saved().texts[field.key]) {
+                  <button
+                    appButton
+                    size="sm"
+                    variant="ghost"
+                    type="button"
+                    [disabled]="busy() === field.key"
+                    (click)="resetText(field.key)"
+                    ><ng-container i18n
+                      >Use the built-in text</ng-container
+                    ></button
+                  >
+                }
+                <button
+                  appButton
+                  size="sm"
+                  type="button"
+                  [disabled]="busy() === field.key || !dirty(field.key)"
+                  (click)="saveText(field.key)">
+                  @if (busy() === field.key) {
+                    <ng-container i18n>Saving…</ng-container>
+                  } @else {
+                    <ng-container i18n>Save</ng-container>
+                  }
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    }
+  }
+</div>

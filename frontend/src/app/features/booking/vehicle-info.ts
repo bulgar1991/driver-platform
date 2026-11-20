@@ -31,3 +31,11 @@ export const VEHICLE_INFO: Record<VehicleCategory, VehicleInfo> = {
     image: IMAGES['car-bus'],
   },
 }
+
+/** Key prefix of each car class in Admin → Website content ("vehicle.bus.title"…). Stored: do not rename. */
+export const VEHICLE_KEY: Record<VehicleCategory, string> = {
+  Sedan: 'vehicle.standard',
+  Business: 'vehicle.business',
+  Estate: 'vehicle.vip',
+  Van: 'vehicle.bus',
+}

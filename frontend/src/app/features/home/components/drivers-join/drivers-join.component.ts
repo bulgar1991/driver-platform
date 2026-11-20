@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   input,
   signal,
@@ -20,7 +21,8 @@ import { CounterComponent } from '@/shared/components/counter/counter.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { RevealDirective } from '@/shared/directives/reveal.directive'
 import { DRIVER_BENEFITS, LANGUAGES } from '../../home.content'
-import { AREA_IN } from '@/core/area'
+import { SiteContentService } from '@/core/services/site-content.service'
+import { HEADINGS } from '../../editable-content'
 
 const LICENCES: { value: DriverLicenceKind; label: string; hint: string }[] = [
   {
@@ -58,7 +60,6 @@ const LICENCES: { value: DriverLicenceKind; label: string; hint: string }[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DriversJoinComponent {
-  protected readonly area = AREA_IN
   /** Texts used in template expressions (the i18n attribute only covers static text). */
   protected readonly t = {
     required: $localize`Required`,
@@ -72,7 +73,24 @@ export class DriversJoinComponent {
   private readonly site = inject(SiteService)
   private readonly fb = inject(FormBuilder).nonNullable
 
-  protected readonly benefits = DRIVER_BENEFITS
+  private readonly content = inject(SiteContentService)
+  /** As changed in Admin → Website content, the built-in texts otherwise. */
+  protected readonly heading = computed(() => ({
+    eyebrow: this.content.text('drivers.eyebrow', HEADINGS.driversEyebrow),
+    title: this.content.text('drivers.title', HEADINGS.driversTitle),
+    accent: this.content.text(
+      'drivers.title-accent',
+      HEADINGS.driversTitleAccent
+    ),
+    lead: this.content.text('drivers.lead', HEADINGS.driversLead),
+  }))
+  protected readonly benefits = computed(() =>
+    DRIVER_BENEFITS.map((b, i) => ({
+      ...b,
+      title: this.content.text(`drivers.${i + 1}.title`, b.title),
+      text: this.content.text(`drivers.${i + 1}.text`, b.text),
+    }))
+  )
   protected readonly licences = LICENCES
   protected readonly languages = LANGUAGES
   protected readonly sending = signal(false)

@@ -14,8 +14,8 @@ namespace DriverPlatform.Tests.Dispatch;
 /// <summary>Pictures and deletion of vehicles and drivers.</summary>
 public sealed class FleetPhotoTests
 {
-    private static readonly byte[] Png = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 1, 2, 3, 4];
-    private static readonly byte[] Jpeg = [0xFF, 0xD8, 0xFF, 0xE0, 5, 6, 7, 8];
+    private static readonly byte[] Png = TestImages.Png(40, 30);
+    private static readonly byte[] Jpeg = TestImages.Jpeg(40, 30);
 
     private static VehicleRequest Vehicle(string plate) => new()
     {
@@ -60,12 +60,12 @@ public sealed class FleetPhotoTests
         var second = await Read<VehicleDto>(await staff.PutAsync($"/api/admin/vehicles/{vehicle.Id}/photo", File(Jpeg)));
         Assert.NotEqual(first.PhotoId, second.PhotoId);
 
-        // Served without a token, as the browser's <img> asks for it; the type comes from the bytes.
+        // Served without a token, as the browser's <img> asks for it; a JPEG upload is stored as WebP.
         using var anonymous = factory.CreateClient();
         var served = await anonymous.GetAsync($"/api/photos/{second.PhotoId}");
         Assert.Equal(HttpStatusCode.OK, served.StatusCode);
-        Assert.Equal("image/jpeg", served.Content.Headers.ContentType?.MediaType);
-        Assert.Equal(Jpeg, await served.Content.ReadAsByteArrayAsync());
+        Assert.Equal("image/webp", served.Content.Headers.ContentType?.MediaType);
+        Assert.True(TestImages.IsWebp(await served.Content.ReadAsByteArrayAsync()));
         Assert.Equal(HttpStatusCode.NotFound, (await anonymous.GetAsync($"/api/photos/{first.PhotoId}")).StatusCode);
 
         var removed = await Read<VehicleDto>(await staff.DeleteAsync($"/api/admin/vehicles/{vehicle.Id}/photo"));
@@ -86,6 +86,20 @@ public sealed class FleetPhotoTests
 
         var withPhoto = await Read<DriverDto>(await staff.PutAsync($"/api/admin/drivers/{driver.Id}/photo", File(Png)));
         Assert.NotNull(withPhoto.PhotoId);
+    }
+
+    [Fact]
+    public async Task A_picture_over_700_kb_is_refused()
+    {
+        using var factory = new ApiFactory();
+        var staff = await factory.CreateDispatcherClientAsync();
+        var driver = await Read<DriverDto>(await staff.PostAsJsonAsync("/api/admin/drivers", Driver("+393400000012"), TestData.Json), HttpStatusCode.Created);
+
+        var big = TestImages.NoisyPng(600, 500);
+        Assert.True(big.Length > Photos.MaxBytes);
+        var response = await staff.PutAsync($"/api/admin/drivers/{driver.Id}/photo", File(big));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
     [Fact]

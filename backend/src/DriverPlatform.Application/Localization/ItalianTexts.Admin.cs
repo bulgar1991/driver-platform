@@ -62,7 +62,7 @@ internal sealed partial class ItalianTexts
     public override string PlateTaken => "Un altro veicolo ha già questa targa.";
     public override string VehicleHasShifts => "Questo veicolo è stato usato nei turni e non può essere eliminato. Togli la spunta da Attivo.";
     public override string DriverHasShifts => "Questo autista ha turni o recensioni e non può essere eliminato. Togli la spunta da Attivo.";
-    public override string PhotoTooLarge => "L'immagine supera i 5 MB.";
+    public override string PhotoTooLarge => "L'immagine supera i 700 KB.";
     public override string PhotoNotAnImage => "Scegli un'immagine JPEG, PNG o WebP.";
     public override string BookingNotOnShift => "Prima assegna questa prenotazione a un turno: il compenso va all'autista del turno.";
     public override string ZoneNotFound => "Zona non trovata.";
@@ -104,4 +104,6 @@ internal sealed partial class ItalianTexts
     public override string TwoFactorEmailSubject(string company) => $"Il tuo codice di accesso – {company}";
     public override string TwoFactorEmailBody(string firstName, string code, int minutes) =>
         $"Ciao {firstName},\n\nil tuo codice di accesso è {code}. È valido per {minutes} minuti.\n\nSe non hai provato ad accedere, cambia la password: qualcuno la conosce.";
+    public override string ContentKeyInvalid => "Chiave di contenuto sconosciuta.";
+    public override string ContentTooLong(int max) => $"I testi hanno al massimo {max} caratteri.";
 }

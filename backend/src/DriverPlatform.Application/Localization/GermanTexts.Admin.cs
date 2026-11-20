@@ -62,7 +62,7 @@ internal sealed partial class GermanTexts
     public override string PlateTaken => "Ein anderes Fahrzeug hat bereits dieses Kennzeichen.";
     public override string VehicleHasShifts => "Dieses Fahrzeug war bereits in Schichten eingeplant und kann nicht gelöscht werden. Entfernen Sie stattdessen das Häkchen bei Aktiv.";
     public override string DriverHasShifts => "Dieser Fahrer hat Schichten oder Bewertungen und kann nicht gelöscht werden. Entfernen Sie stattdessen das Häkchen bei Aktiv.";
-    public override string PhotoTooLarge => "Das Bild ist größer als 5 MB.";
+    public override string PhotoTooLarge => "Das Bild ist größer als 700 KB.";
     public override string PhotoNotAnImage => "Wählen Sie ein JPEG-, PNG- oder WebP-Bild.";
     public override string BookingNotOnShift => "Teilen Sie diese Buchung zuerst einer Schicht zu: Die Vergütung geht an den Fahrer der Schicht.";
     public override string ZoneNotFound => "Zone nicht gefunden.";
@@ -104,4 +104,6 @@ internal sealed partial class GermanTexts
     public override string TwoFactorEmailSubject(string company) => $"Ihr Anmeldecode – {company}";
     public override string TwoFactorEmailBody(string firstName, string code, int minutes) =>
         $"Hallo {firstName},\n\nIhr Anmeldecode lautet {code}. Er gilt {minutes} Minuten.\n\nWenn Sie sich nicht anmelden wollten, ändern Sie Ihr Passwort: Jemand kennt es.";
+    public override string ContentKeyInvalid => "Unbekannter Inhaltsschlüssel.";
+    public override string ContentTooLong(int max) => $"Texte haben höchstens {max} Zeichen.";
 }

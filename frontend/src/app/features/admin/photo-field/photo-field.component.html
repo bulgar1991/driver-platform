@@ -14,8 +14,7 @@
         <input
           class="photo-field__input"
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/heic"
-          [disabled]="busy()"
+          [accept]="types"
           (change)="picked($event)" />
         <span class="button button--outline button--sm"
           ><app-icon name="edit" />&ngsp;
@@ -44,6 +43,12 @@
     } @else if (draft().change() !== undefined) {
       <p class="photo-field__hint"
         ><ng-container i18n>Saved when you save the form.</ng-container></p
+      >
+    } @else {
+      <p class="photo-field__hint"
+        ><ng-container i18n
+          >JPEG, PNG or WebP, up to 700 KB. Saved as WebP.</ng-container
+        ></p
       >
     }
   </div>

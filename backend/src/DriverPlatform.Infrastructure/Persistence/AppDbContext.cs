@@ -33,6 +33,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, TimePro
     public DbSet<BookingComRide> BookingComRides => Set<BookingComRide>();
     public DbSet<DriverApplication> DriverApplications => Set<DriverApplication>();
     public DbSet<Photo> Photos => Set<Photo>();
+    public DbSet<SiteContent> SiteContents => Set<SiteContent>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);

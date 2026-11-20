@@ -4,10 +4,8 @@
   i18n-aria-label
   aria-label="Testimonials">
   <app-section-heading
-    i18n-eyebrow
-    eyebrow="Happy Clients"
-    i18n-title
-    title="Testimonials"
+    [eyebrow]="heading().eyebrow"
+    [title]="heading().title"
     [level]="page() ? 1 : 2"
     appReveal />
 

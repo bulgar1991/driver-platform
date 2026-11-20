@@ -1,3 +1,4 @@
+using DriverPlatform.Application.Content;
 using DriverPlatform.Application.DriverPortal;
 using DriverPlatform.Application.Reviews;
 using Microsoft.AspNetCore.Mvc;
@@ -5,11 +6,21 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace DriverPlatform.Api.Controllers;
 
-/// <summary>Content of the public home page: testimonials and the driver application form.</summary>
+/// <summary>Content of the public home page: website texts and pictures, testimonials, the driver application form.</summary>
 [ApiController]
 [Route("api")]
-public sealed class SiteController(IReviewService reviews, IDriverApplicationService applications) : ControllerBase
+public sealed class SiteController(IReviewService reviews, IDriverApplicationService applications, ISiteContentService content) : ControllerBase
 {
+    /// <summary>Texts and pictures changed in Admin → Website content (the rest is built into the site).</summary>
+    [HttpGet("content")]
+    [EnableRateLimiting(RateLimitPolicies.Public)]
+    public async Task<ActionResult<SiteContentDto>> Content(CancellationToken cancellationToken)
+    {
+        // Short, so an edit shows within a minute.
+        Response.Headers.CacheControl = "public, max-age=60";
+        return Ok(await content.GetAsync(cancellationToken));
+    }
+
     [HttpGet("testimonials")]
     [EnableRateLimiting(RateLimitPolicies.Public)]
     public async Task<ActionResult<IReadOnlyList<Testimonial>>> Testimonials(CancellationToken cancellationToken)

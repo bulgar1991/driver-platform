@@ -64,7 +64,7 @@ internal sealed partial class EnglishTexts
     public override string PlateTaken => "Another vehicle already has this plate.";
     public override string VehicleHasShifts => "This vehicle has been on shifts, so it can't be deleted. Untick Active instead.";
     public override string DriverHasShifts => "This driver has shifts or reviews, so they can't be deleted. Untick Active instead.";
-    public override string PhotoTooLarge => "The picture is larger than 5 MB.";
+    public override string PhotoTooLarge => "The picture is larger than 700 KB.";
     public override string PhotoNotAnImage => "Choose a JPEG, PNG or WebP picture.";
     public override string BookingNotOnShift => "Put this booking on a shift first: pay goes to the shift's driver.";
     public override string ZoneNotFound => "Zone not found.";
@@ -106,4 +106,6 @@ internal sealed partial class EnglishTexts
     public override string TwoFactorEmailSubject(string company) => $"Your sign-in code – {company}";
     public override string TwoFactorEmailBody(string firstName, string code, int minutes) =>
         $"Hello {firstName},\n\nyour sign-in code is {code}. It works for {minutes} minutes.\n\nIf you did not try to sign in, change your password: someone knows it.";
+    public override string ContentKeyInvalid => "Unknown content key.";
+    public override string ContentTooLong(int max) => $"Texts are at most {max} characters.";
 }

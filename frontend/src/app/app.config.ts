@@ -24,6 +24,7 @@ import { errorInterceptor } from './core/interceptors/error.interceptor'
 import { languageInterceptor } from './core/interceptors/language.interceptor'
 import { serverApiInterceptor } from './core/interceptors/server-api.interceptor'
 import { AuthService } from './core/services/auth.service'
+import { SiteContentService } from './core/services/site-content.service'
 import { MagnusPreset } from './theme'
 import { provideClientHydration } from '@angular/platform-browser'
 
@@ -49,6 +50,8 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() =>
       firstValueFrom(inject(AuthService).restoreSession())
     ),
+    // Texts and pictures changed in Admin → Website content; the page doesn't wait for them.
+    provideAppInitializer(() => inject(SiteContentService).load()),
     providePrimeNG({
       theme: {
         preset: MagnusPreset,

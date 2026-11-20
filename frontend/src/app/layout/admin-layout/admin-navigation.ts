@@ -27,6 +27,12 @@ export const ADMIN_NAVIGATION: NavItem[] = [
     roles: ['Admin'],
   },
   {
+    label: $localize`Website content`,
+    path: '/admin/content',
+    icon: 'edit',
+    roles: ['Admin'],
+  },
+  {
     label: $localize`Payments`,
     path: '/admin/payments',
     icon: 'card',

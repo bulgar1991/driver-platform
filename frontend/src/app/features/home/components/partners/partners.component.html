@@ -5,16 +5,11 @@
   aria-label="Our partners and clients">
   <div class="page page__section partners__inner">
     <app-section-heading
-      i18n-eyebrow
-      eyebrow="Our partners"
-      i18n-title
-      title="And clients"
+      [eyebrow]="heading().eyebrow"
+      [title]="heading().title"
       [level]="page() ? 1 : 2"
       appReveal />
-    <p class="partners__lead" appReveal [delay]="80" i18n>
-      Hotels, agencies and cruise companies book for their guests through our
-      partner API or the panel, with agreed rates and monthly invoicing.
-    </p>
+    <p class="partners__lead" appReveal [delay]="80">{{ heading().lead }}</p>
   </div>
 
   <div class="partners__marquee" appReveal [delay]="140">
@@ -32,10 +27,10 @@
           </li>
         }
       } @else {
-        @for (s of segments; track $index; let i = $index) {
+        @for (s of segments(); track $index; let i = $index) {
           <li
             class="partners__item"
-            [attr.aria-hidden]="i >= segments.length / 2 ? 'true' : null">
+            [attr.aria-hidden]="i >= segments().length / 2 ? 'true' : null">
             <span class="partners__icon"><app-icon [name]="s.icon" /></span>
             <span>
               <strong class="partners__name">{{ s.title }}</strong>

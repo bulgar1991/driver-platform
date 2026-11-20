@@ -62,7 +62,7 @@ internal sealed partial class FrenchTexts
     public override string PlateTaken => "Un autre véhicule a déjà cette immatriculation.";
     public override string VehicleHasShifts => "Ce véhicule a déjà servi pour des services : il ne peut pas être supprimé. Décochez Actif.";
     public override string DriverHasShifts => "Ce chauffeur a des services ou des avis : il ne peut pas être supprimé. Décochez Actif.";
-    public override string PhotoTooLarge => "L'image dépasse 5 Mo.";
+    public override string PhotoTooLarge => "L'image dépasse 700 Ko.";
     public override string PhotoNotAnImage => "Choisissez une image JPEG, PNG ou WebP.";
     public override string BookingNotOnShift => "Ajoutez d'abord cette réservation à un service : la rémunération va au chauffeur du service.";
     public override string ZoneNotFound => "Zone introuvable.";
@@ -104,4 +104,6 @@ internal sealed partial class FrenchTexts
     public override string TwoFactorEmailSubject(string company) => $"Votre code de connexion – {company}";
     public override string TwoFactorEmailBody(string firstName, string code, int minutes) =>
         $"Bonjour {firstName},\n\nvotre code de connexion est {code}. Il est valable {minutes} minutes.\n\nSi vous n'avez pas essayé de vous connecter, changez votre mot de passe : quelqu'un le connaît.";
+    public override string ContentKeyInvalid => "Clé de contenu inconnue.";
+    public override string ContentTooLong(int max) => $"Les textes font au plus {max} caractères.";
 }

@@ -17,7 +17,7 @@ public interface IVehicleAdminService
     Task DeleteAsync(Guid id, CancellationToken cancellationToken);
 }
 
-public sealed class VehicleAdminService(IAppDbContext db, IAuditLogger audit, TimeProvider clock) : IVehicleAdminService
+public sealed class VehicleAdminService(IAppDbContext db, IImageConverter images, IAuditLogger audit, TimeProvider clock) : IVehicleAdminService
 {
     public async Task<IReadOnlyList<VehicleDto>> ListAsync(bool includeInactive, CancellationToken cancellationToken)
     {
@@ -55,7 +55,7 @@ public sealed class VehicleAdminService(IAppDbContext db, IAuditLogger audit, Ti
     {
         var vehicle = await FindAsync(id, cancellationToken);
         Photos.Remove(db, vehicle.PhotoId);
-        vehicle.PhotoId = Photos.Add(db, data).Id;
+        vehicle.PhotoId = Photos.Add(db, images, data).Photo.Id;
 
         audit.Log("vehicle.photo_set", nameof(Vehicle), id.ToString(), new { data.Length });
         await db.SaveChangesAsync(cancellationToken);

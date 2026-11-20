@@ -25,7 +25,7 @@ public interface IDriverAdminService
 }
 
 /// <summary>Drivers with shifts or reviews are deactivated, not deleted: those records keep pointing at them.</summary>
-public sealed class DriverAdminService(IAppDbContext db, IDriverLinks links, IAuditLogger audit, TimeProvider clock) : IDriverAdminService
+public sealed class DriverAdminService(IAppDbContext db, IDriverLinks links, IImageConverter images, IAuditLogger audit, TimeProvider clock) : IDriverAdminService
 {
     public async Task<IReadOnlyList<DriverDto>> ListAsync(bool includeInactive, CancellationToken cancellationToken)
     {
@@ -155,7 +155,7 @@ public sealed class DriverAdminService(IAppDbContext db, IDriverLinks links, IAu
     {
         var driver = await FindAsync(id, cancellationToken);
         Photos.Remove(db, driver.PhotoId);
-        driver.PhotoId = Photos.Add(db, data).Id;
+        driver.PhotoId = Photos.Add(db, images, data).Photo.Id;
 
         audit.Log("driver.photo_set", nameof(Driver), id.ToString(), new { data.Length });
         await db.SaveChangesAsync(cancellationToken);

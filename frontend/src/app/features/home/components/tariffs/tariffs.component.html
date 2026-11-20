@@ -4,10 +4,8 @@
   i18n-aria-label
   aria-label="Tariffs">
   <app-section-heading
-    i18n-eyebrow
-    eyebrow="See our"
-    i18n-title
-    title="Tariffs"
+    [eyebrow]="heading().eyebrow"
+    [title]="heading().title"
     [level]="page() ? 1 : 2"
     appReveal />
 
