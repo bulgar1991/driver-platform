@@ -15,6 +15,8 @@ export interface MyBooking {
   reference: string
   status: BookingStatus
   vehicleCategory: VehicleCategory
+  /** The class name in the site's language. */
+  vehicleName: string
   clientName: string
   legs: BookingLegSummary[]
   total: number

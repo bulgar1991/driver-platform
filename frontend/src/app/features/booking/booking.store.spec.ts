@@ -46,6 +46,7 @@ function vehicle(
   }
   return {
     category,
+    name: null,
     maxPassengers: 3,
     maxLuggage: 3,
     available,

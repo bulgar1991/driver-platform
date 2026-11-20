@@ -12,6 +12,7 @@ const booking = (status: MyBooking['status']): MyBooking => ({
   reference: 'MD-ABC234',
   status,
   vehicleCategory: 'Sedan',
+  vehicleName: 'Standard',
   clientName: 'Maria Rossi',
   legs: [],
   total: 58,

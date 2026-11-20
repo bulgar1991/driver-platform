@@ -13,8 +13,10 @@ ARG SERVICE_AREA=europe
 ARG TIME_ZONE=Europe/Rome
 # The site's currency (EUR or CHF): every price shown.
 ARG CURRENCY=EUR
+# Google Tag Manager container ("GTM-…"), empty for none.
+ARG GTM_ID=
 RUN test -n "$SITE_DOMAIN" || (echo 'Build argument SITE_DOMAIN is required' && exit 1)
-ENV SITE_URL=https://${SITE_DOMAIN} BRAND=${BRAND} SITE_LANGUAGE=${SITE_LANGUAGE} SERVICE_AREA=${SERVICE_AREA} TIME_ZONE=${TIME_ZONE} CURRENCY=${CURRENCY}
+ENV SITE_URL=https://${SITE_DOMAIN} BRAND=${BRAND} SITE_LANGUAGE=${SITE_LANGUAGE} SERVICE_AREA=${SERVICE_AREA} TIME_ZONE=${TIME_ZONE} CURRENCY=${CURRENCY} GTM_ID=${GTM_ID}
 WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --ignore-scripts --no-audit --no-fund

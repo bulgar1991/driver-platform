@@ -28,9 +28,21 @@
     <p class="pricing__muted"><ng-container i18n>Loading…</ng-container></p>
   } @else {
     <section class="pricing__card">
-      <h2 class="pricing__title"
-        ><ng-container i18n>Vehicle tariffs</ng-container></h2
-      >
+      <div class="pricing__title-row">
+        <h2 class="pricing__title"
+          ><ng-container i18n>Vehicle tariffs</ng-container></h2
+        >
+        <button
+          appButton
+          size="sm"
+          variant="outline"
+          type="button"
+          (click)="openTariff(null)"
+          ><app-icon name="plus" />&ngsp;<ng-container i18n
+            >Add tariff</ng-container
+          ></button
+        >
+      </div>
       <div class="pricing__table-wrap">
         <table class="pricing__table">
           <thead>
@@ -49,6 +61,11 @@
                   ><ng-container i18n>Save</ng-container></span
                 ></th
               >
+              <th
+                ><span class="pricing__sr"
+                  ><ng-container i18n>Actions</ng-container></span
+                ></th
+              >
             </tr>
           </thead>
           <tbody>
@@ -57,10 +74,19 @@
               track group.controls.category.value;
               let i = $index
             ) {
-              <tr [formGroup]="group">
-                <th scope="row">{{
-                  categoryLabel(group.controls.category.value)
-                }}</th>
+              <tr
+                [formGroup]="group"
+                [class.pricing__row--hidden]="
+                  !rateOf(group.controls.category.value)?.isActive
+                ">
+                <th scope="row">
+                  {{ categoryLabel(group.controls.category.value) }}
+                  @if (!rateOf(group.controls.category.value)?.isActive) {
+                    <span class="pricing__badge"
+                      ><ng-container i18n>Hidden</ng-container></span
+                    >
+                  }
+                </th>
                 <td>
                   <mat-form-field
                     class="pricing__number"
@@ -99,7 +125,7 @@
                       matInput
                       type="number"
                       min="1"
-                      max="8"
+                      max="50"
                       formControlName="maxPassengers"
                       [attr.aria-label]="
                         tx.passengers(
@@ -115,7 +141,7 @@
                       matInput
                       type="number"
                       min="0"
-                      max="16"
+                      max="60"
                       formControlName="maxLuggage"
                       [attr.aria-label]="
                         tx.largeBags(
@@ -135,6 +161,39 @@
                     (click)="saveRate(i)"
                     ><ng-container i18n>Save</ng-container></button
                   >
+                </td>
+                <td class="pricing__row-actions">
+                  @if (rateOf(group.controls.category.value); as rate) {
+                    <button
+                      type="button"
+                      class="pricing__icon-button"
+                      [attr.aria-label]="tx.edit(categoryLabel(rate.category))"
+                      (click)="openTariff(rate)"
+                      ><app-icon name="edit"
+                    /></button>
+                    @if (rate.isActive) {
+                      <button
+                        type="button"
+                        class="pricing__icon-button pricing__icon-button--danger"
+                        [attr.aria-label]="
+                          tx.delete(categoryLabel(rate.category))
+                        "
+                        [disabled]="saving() === 'rate-' + rate.category"
+                        (click)="deleteTariff(rate)"
+                        ><app-icon name="trash"
+                      /></button>
+                    } @else {
+                      <button
+                        appButton
+                        size="sm"
+                        variant="ghost"
+                        type="button"
+                        [disabled]="saving() === 'rate-' + rate.category"
+                        (click)="showTariff(rate)"
+                        ><ng-container i18n>Show again</ng-container></button
+                      >
+                    }
+                  }
                 </td>
               </tr>
             }
@@ -341,4 +400,106 @@
         (cancelled)="dialogOpen.set(false)" />
     }
   </app-dialog>
+</ng-template>
+
+<ng-template
+  [appDialogOpen]="tariffDialog() !== undefined"
+  dialogWidth="36rem"
+  (dialogClosed)="tariffDialog.set(undefined)">
+  <form [formGroup]="tariffForm" (ngSubmit)="saveTariff()" novalidate>
+    <app-dialog
+      [title]="
+        tariffDialog()
+          ? tx.editTariff(categoryLabel(tariffDialog()!.category))
+          : tx.newTariff
+      ">
+      <p class="pricing__muted">
+        @if (tariffDialog()?.isBuiltIn) {
+          <ng-container i18n
+            >Names left empty keep the built-in name. The picture and the texts
+            on the website are in Website content.</ng-container
+          >
+        } @else {
+          <ng-container i18n
+            >The English name is required; other languages left empty show it.
+            The picture and the texts on the website are in Website
+            content.</ng-container
+          >
+        }
+      </p>
+      <div class="pricing__dialog-grid">
+        <mat-form-field>
+          <mat-label>English</mat-label>
+          <input matInput formControlName="nameEn" maxlength="60" />
+          <mat-error i18n>Enter the tariff's name in English.</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Français</mat-label>
+          <input matInput formControlName="nameFr" maxlength="60" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Deutsch</mat-label>
+          <input matInput formControlName="nameDe" maxlength="60" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Italiano</mat-label>
+          <input matInput formControlName="nameIt" maxlength="60" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Base fee ({{ currency }})</mat-label>
+          <input
+            matInput
+            type="number"
+            step="0.5"
+            min="0"
+            formControlName="baseFee" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Per km ({{ currency }})</mat-label>
+          <input
+            matInput
+            type="number"
+            step="0.05"
+            min="0"
+            formControlName="pricePerKm" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Passengers</mat-label>
+          <input
+            matInput
+            type="number"
+            min="1"
+            max="50"
+            formControlName="maxPassengers" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label i18n>Large bags</mat-label>
+          <input
+            matInput
+            type="number"
+            min="0"
+            max="60"
+            formControlName="maxLuggage" />
+        </mat-form-field>
+      </div>
+      <div class="pricing__dialog-actions" dialog-actions>
+        <button
+          appButton
+          type="button"
+          variant="ghost"
+          (click)="tariffDialog.set(undefined)"
+          ><ng-container i18n>Cancel</ng-container></button
+        >
+        <button appButton type="submit" [disabled]="saving() === 'tariff'">
+          @if (saving() === 'tariff') {
+            <ng-container i18n>Saving…</ng-container>
+          } @else if (tariffDialog()) {
+            <ng-container i18n>Save tariff</ng-container>
+          } @else {
+            <ng-container i18n>Add tariff</ng-container>
+          }
+        </button>
+      </div>
+    </app-dialog>
+  </form>
 </ng-template>

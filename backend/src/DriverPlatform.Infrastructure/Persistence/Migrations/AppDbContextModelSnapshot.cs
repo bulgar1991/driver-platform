@@ -1845,6 +1845,12 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
                     b.Property<int>("MaxLuggage")
                         .HasColumnType("integer")
                         .HasColumnName("max_luggage");
@@ -1853,10 +1859,34 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("max_passengers");
 
+                    b.Property<string>("NameDe")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name_de");
+
+                    b.Property<string>("NameEn")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name_en");
+
+                    b.Property<string>("NameFr")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name_fr");
+
+                    b.Property<string>("NameIt")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name_it");
+
                     b.Property<decimal>("PricePerKm")
                         .HasPrecision(8, 2)
                         .HasColumnType("numeric(8,2)")
                         .HasColumnName("price_per_km");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")

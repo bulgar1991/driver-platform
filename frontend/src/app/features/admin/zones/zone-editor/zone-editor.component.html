@@ -200,7 +200,7 @@
 
     @if (pricing() !== 'Standard') {
       <div class="zone-editor__rates" formGroupName="rates">
-        @for (c of categories; track c) {
+        @for (c of categories(); track c) {
           <div class="zone-editor__rate" [formGroupName]="c">
             <span class="zone-editor__rate-name">{{ text.categories[c] }}</span>
             @if (pricing() === 'FixedPrice') {

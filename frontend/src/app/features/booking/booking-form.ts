@@ -145,7 +145,7 @@ export function createTripForm(
       date: nn.control(todayInOffice(1), Validators.required),
       time: nn.control('10:00', Validators.required),
       // Nobody chosen yet: the customer sets passengers and bags before searching.
-      passengers: nn.control(0, [Validators.min(1), Validators.max(8)]),
+      passengers: nn.control(0, [Validators.min(1), Validators.max(50)]),
       largeLuggage: nn.control(0),
       smallLuggage: nn.control(0),
       infantSeats: nn.control(0),

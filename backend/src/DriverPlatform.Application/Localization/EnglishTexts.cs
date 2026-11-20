@@ -9,13 +9,6 @@ internal sealed partial class EnglishTexts : Texts
     // Irish English: euros and day-first dates.
     public override CultureInfo Culture { get; } = CultureInfo.GetCultureInfo("en-IE");
 
-    public override string Category(VehicleCategory category) => category switch
-    {
-        VehicleCategory.Sedan => "Standard",
-        VehicleCategory.Business => "Business",
-        VehicleCategory.Estate => "VIP",
-        _ => "Bus",
-    };
     public override string ReturnDiscount(decimal percent) => $"Return trip −{percent.ToString("0.##", Culture)}%";
     public override string ZoneAccess(string zone) => $"{zone} access";
     public override string ZoneRate(string zone) => $"{zone} rate";

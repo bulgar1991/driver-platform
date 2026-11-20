@@ -60,7 +60,8 @@ public abstract partial class Texts
 
     // Price lines. They are stored on the booking in the language it was made in.
 
-    public abstract string Category(VehicleCategory category);
+    /// <summary>The class name: the one set in Admin → Pricing, or Standard, Business, VIP, Bus.</summary>
+    public string Category(VehicleCategory category) => Pricing.VehicleClasses.Name(category, Language);
     public string FareLine(VehicleCategory category, decimal km) => $"{Category(category)} · {km.ToString("0.0", Culture)} km";
     /// <summary>"Business · Venice airport rate · 13.2 km".</summary>
     public string ZoneFareLine(string zone, VehicleCategory category, decimal km) => $"{Category(category)} · {ZoneRate(zone)} · {km.ToString("0.0", Culture)} km";

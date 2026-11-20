@@ -79,6 +79,15 @@
     <nav class="site-footer__links" i18n-aria-label aria-label="Legal">
       <a class="site-footer__small-link" routerLink="/privacy" i18n>Privacy</a>
       <a class="site-footer__small-link" routerLink="/terms" i18n>Terms</a>
+      @if (consent.enabled) {
+        <button
+          type="button"
+          class="site-footer__small-link"
+          (click)="consent.reopen()"
+          i18n>
+          Cookie settings
+        </button>
+      }
       @for (s of social; track s.url) {
         <a
           class="site-footer__small-link"

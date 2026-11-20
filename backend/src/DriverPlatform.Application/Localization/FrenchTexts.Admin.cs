@@ -106,4 +106,7 @@ internal sealed partial class FrenchTexts
         $"Bonjour {firstName},\n\nvotre code de connexion est {code}. Il est valable {minutes} minutes.\n\nSi vous n'avez pas essayé de vous connecter, changez votre mot de passe : quelqu'un le connaît.";
     public override string ContentKeyInvalid => "Clé de contenu inconnue.";
     public override string ContentTooLong(int max) => $"Les textes font au plus {max} caractères.";
+    public override string TariffNotFound => "Tarif introuvable.";
+    public override string LastTariff => "Au moins un tarif doit rester sur le site.";
+    public override string TariffNameRequired => "Saisissez le nom du tarif en anglais.";
 }

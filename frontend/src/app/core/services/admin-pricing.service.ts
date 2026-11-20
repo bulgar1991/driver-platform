@@ -10,6 +10,8 @@ import {
   SurchargeRuleRequest,
   VehicleCategory,
   VehicleRate,
+  VehicleRateRequest,
+  DeleteVehicleRateResult,
 } from '../models'
 import { API_BASE_URL } from '../tokens/api-base-url.token'
 
@@ -24,9 +26,30 @@ export class AdminPricingService {
 
   updateRate(
     category: VehicleCategory,
-    rate: Omit<VehicleRate, 'category'>
+    rate: VehicleRateRequest
   ): Observable<VehicleRate> {
     return this.http.put<VehicleRate>(`${this.url}/rates/${category}`, rate)
+  }
+
+  /** A new tariff; its code is made from the English name. */
+  createRate(rate: VehicleRateRequest): Observable<VehicleRate> {
+    return this.http.post<VehicleRate>(`${this.url}/rates`, rate)
+  }
+
+  /** Deleted when unused; hidden when bookings or cars use it. */
+  deleteRate(category: VehicleCategory): Observable<DeleteVehicleRateResult> {
+    return this.http.delete<DeleteVehicleRateResult>(
+      `${this.url}/rates/${category}`
+    )
+  }
+
+  setRateActive(
+    category: VehicleCategory,
+    isActive: boolean
+  ): Observable<VehicleRate> {
+    return this.http.put<VehicleRate>(`${this.url}/rates/${category}/active`, {
+      isActive,
+    })
   }
 
   updateExtra(type: ExtraType, amount: number): Observable<ExtraFee> {

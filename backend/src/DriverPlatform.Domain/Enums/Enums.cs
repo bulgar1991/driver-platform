@@ -6,18 +6,6 @@ public enum StaffRole
     Dispatcher,
 }
 
-/// <summary>The tariffs, cheapest first (stored by name, so the order can change). Shown as Standard, Business, VIP, Bus.</summary>
-public enum VehicleCategory
-{
-    /// <summary>Standard: berlină, 1–3 passengers.</summary>
-    Sedan,
-    /// <summary>Business: premium car, 1–3 passengers.</summary>
-    Business,
-    /// <summary>VIP: premium SUV, 1–4 passengers.</summary>
-    Estate,
-    /// <summary>Bus: minibus, 5–8 passengers.</summary>
-    Van,
-}
 
 public enum BookingSource
 {

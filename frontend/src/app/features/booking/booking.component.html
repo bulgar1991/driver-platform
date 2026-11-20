@@ -30,6 +30,7 @@
           [form]="forms.trip"
           [returnDiscount]="store.options()?.returnDiscountPercent ?? null"
           [childSeatPrice]="store.options()?.extras?.ChildSeat ?? null"
+          [maxPassengers]="maxPassengers()"
           (searched)="search()" />
       }
     </div>

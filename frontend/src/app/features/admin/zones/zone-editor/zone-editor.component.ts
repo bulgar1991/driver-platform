@@ -36,6 +36,7 @@ import {
   ZoneRequest,
   ZoneShape,
   ZoneType,
+  BUILT_IN_CATEGORIES,
 } from '@/core/models'
 import { AdminZonesService } from '@/core/services/admin-zones.service'
 import { GeoService } from '@/core/services/geo.service'
@@ -47,6 +48,7 @@ import { ZONE_TYPES } from '../zone-labels'
 import { zonePoints } from '../zone-points'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 import { CURRENCY_LABEL } from '@/core/currency'
+import { VehicleClassService } from '@/core/services/vehicle-class.service'
 
 type MeetingPointForm = FormGroup<{
   name: FormControl<string>
@@ -69,7 +71,7 @@ type ZoneRateForm = FormGroup<{
   pricePerKm: FormControl<number | null>
 }>
 
-const CATEGORIES: VehicleCategory[] = ['Sedan', 'Business', 'Estate', 'Van']
+const BUILT_IN: VehicleCategory[] = [...BUILT_IN_CATEGORIES]
 
 /** What the next map click does: edit the shape, or place meeting point n. */
 type ClickMode = 'shape' | number
@@ -118,7 +120,24 @@ export class ZoneEditorComponent {
   private readonly fb = inject(FormBuilder).nonNullable
 
   protected readonly types = ZONE_TYPES
-  protected readonly categories = CATEGORIES
+  private readonly vehicleClasses = inject(VehicleClassService)
+  /** Visible tariffs (Admin → Pricing); a zone keeps showing prices it has for a hidden one. */
+  protected readonly categories = computed(() => {
+    const visible = this.vehicleClasses
+      .classes()
+      .filter(c => c.isActive)
+      .map(c => c.category)
+    const withPrices = Object.keys(this.form.controls.rates.controls).filter(
+      c => this.hasPrice(c)
+    )
+    return [
+      ...new Set([...(visible.length ? visible : BUILT_IN), ...withPrices]),
+    ]
+  })
+  // A price box group for each class shown (the list arrives after the page opens).
+  private readonly rateControls = effect(() =>
+    this.ensureRateControls(this.categories())
+  )
   protected readonly nameLanguages = [
     { code: 'It', name: $localize`Italian`, control: 'nameIt' },
     { code: 'De', name: $localize`German`, control: 'nameDe' },
@@ -152,7 +171,7 @@ export class ZoneEditorComponent {
     accessFee: [0, [Validators.min(0), Validators.max(500)]],
     pricing: this.fb.control<ZonePricing>('Standard'),
     rates: this.fb.group(
-      Object.fromEntries(CATEGORIES.map(c => [c, this.rateGroup()])) as Record<
+      Object.fromEntries(BUILT_IN.map(c => [c, this.rateGroup()])) as Record<
         VehicleCategory,
         ZoneRateForm
       >
@@ -362,7 +381,7 @@ export class ZoneEditorComponent {
       accessFee: zone?.accessFee ?? 0,
       pricing: zone?.pricing ?? 'Standard',
       rates: Object.fromEntries(
-        CATEGORIES.map(c => {
+        this.prepareRates(zone).map(c => {
           const rate = zone?.rates?.find(r => r.category === c)
           return [
             c,
@@ -392,13 +411,44 @@ export class ZoneEditorComponent {
     >
   ): ZoneRate[] {
     const pricing = this.form.controls.pricing.value
-    return CATEGORIES.map(category => ({
-      category,
-      ...rates[category],
-    })).filter(
-      r =>
-        (pricing === 'FixedPrice' && r.fixedPrice !== null) ||
-        (pricing === 'PerKm' && (r.baseFee !== null || r.pricePerKm !== null))
+    return Object.keys(rates)
+      .map(category => ({
+        category,
+        ...rates[category],
+      }))
+      .filter(
+        r =>
+          (pricing === 'FixedPrice' && r.fixedPrice !== null) ||
+          (pricing === 'PerKm' && (r.baseFee !== null || r.pricePerKm !== null))
+      )
+  }
+
+  /** Boxes for every class shown, and for the classes this zone already has prices for. */
+  private prepareRates(zone: Zone | null): VehicleCategory[] {
+    const codes = [
+      ...new Set([
+        ...this.categories(),
+        ...(zone?.rates ?? []).map(r => r.category),
+      ]),
+    ]
+    this.ensureRateControls(codes)
+    return Object.keys(this.form.controls.rates.controls)
+  }
+
+  private ensureRateControls(codes: VehicleCategory[]): void {
+    const rates = this.form.controls.rates
+    for (const code of codes) {
+      if (!rates.contains(code)) {
+        rates.addControl(code, this.rateGroup())
+      }
+    }
+  }
+
+  private hasPrice(code: VehicleCategory): boolean {
+    const v = this.form.controls.rates.controls[code]?.getRawValue()
+    return (
+      !!v &&
+      (v.fixedPrice !== null || v.baseFee !== null || v.pricePerKm !== null)
     )
   }
 

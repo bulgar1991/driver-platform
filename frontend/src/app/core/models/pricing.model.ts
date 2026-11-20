@@ -1,5 +1,5 @@
 import { Translations } from './geo.model'
-import { VehicleCategory } from './vehicle.model'
+import { VehicleCategory, VehicleClassNames } from './vehicle.model'
 
 export interface VehicleRate {
   category: VehicleCategory
@@ -7,6 +7,27 @@ export interface VehicleRate {
   pricePerKm: number
   maxPassengers: number
   maxLuggage: number
+  names: VehicleClassNames
+  isBuiltIn: boolean
+  /** Hidden tariffs are not offered for new bookings. */
+  isActive: boolean
+  sortOrder: number
+  /** Used by bookings or cars: deleting hides it instead. */
+  inUse: boolean
+}
+
+export interface VehicleRateRequest {
+  baseFee: number
+  pricePerKm: number
+  maxPassengers: number
+  maxLuggage: number
+  names?: VehicleClassNames | null
+}
+
+export interface DeleteVehicleRateResult {
+  deleted: boolean
+  hidden: boolean
+  rates: VehicleRate[]
 }
 
 export type SurchargeKind = 'DaysOfWeek' | 'DateRange' | 'TimeOfDay'

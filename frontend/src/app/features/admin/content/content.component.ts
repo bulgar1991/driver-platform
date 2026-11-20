@@ -3,6 +3,7 @@ import {
   Component,
   computed,
   inject,
+  LOCALE_ID,
   OnInit,
   signal,
 } from '@angular/core'
@@ -10,8 +11,12 @@ import { FormsModule } from '@angular/forms'
 import { MatFormField, MatLabel } from '@angular/material/form-field'
 import { MatInput } from '@angular/material/input'
 import { finalize } from 'rxjs'
-import { SITE_LOCALES } from '@/core/i18n/locales'
-import { ContentText, ImageAsset, SiteContent } from '@/core/models'
+import {
+  ContentText,
+  ImageAsset,
+  SiteContent,
+  VehicleClassNames,
+} from '@/core/models'
 import { AdminContentService } from '@/core/services/admin-content.service'
 import { ToastService } from '@/core/services/toast.service'
 import { IMAGE_TYPES, imageUploadError } from '@/core/utils/image-upload'
@@ -19,7 +24,13 @@ import { problemMessage } from '@/core/utils/problem'
 import {
   EDITABLE_SECTIONS,
   EditableField,
+  vehicleGroup,
 } from '@/features/home/editable-content'
+import { SITE_LOCALES, siteLocale } from '@/core/i18n/locales'
+import {
+  pickName,
+  VehicleClassService,
+} from '@/core/services/vehicle-class.service'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { ImageComponent } from '@/shared/components/image/image.component'
@@ -51,7 +62,21 @@ export class ContentComponent implements OnInit {
   private readonly api = inject(AdminContentService)
   private readonly toast = inject(ToastService)
 
-  protected readonly sections = EDITABLE_SECTIONS
+  private readonly vehicleClasses = inject(VehicleClassService)
+  /** The sections, with the tariffs added in Admin → Pricing in "Cars and tariffs". */
+  protected readonly sections = computed(() => {
+    const added = this.vehicleClasses
+      .classes()
+      .filter(c => !c.isBuiltIn)
+      .map(c => vehicleGroup(c.category, pickName(c.names, this.language)))
+    return EDITABLE_SECTIONS.map(s =>
+      s.id === 'vehicles' && added.length
+        ? { ...s, groups: [...s.groups, ...added] }
+        : s
+    )
+  })
+  private readonly language = siteLocale(inject(LOCALE_ID))
+    .code as keyof VehicleClassNames
   protected readonly languages = SITE_LOCALES.map(l => ({
     code: l.code as Language,
     name: l.name,
@@ -65,7 +90,8 @@ export class ContentComponent implements OnInit {
 
   protected readonly sectionId = signal(EDITABLE_SECTIONS[0].id)
   protected readonly section = computed(
-    () => this.sections.find(s => s.id === this.sectionId()) ?? this.sections[0]
+    () =>
+      this.sections().find(s => s.id === this.sectionId()) ?? this.sections()[0]
   )
   protected readonly saved = signal<SiteContent>({ texts: {}, images: {} })
   protected readonly loading = signal(true)

@@ -16,10 +16,10 @@ import { ImageComponent } from '@/shared/components/image/image.component'
 import { SectionHeadingComponent } from '@/shared/components/section-heading/section-heading.component'
 import { RevealDirective } from '@/shared/directives/reveal.directive'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
-import { VEHICLE_INFO } from '@/features/booking/vehicle-info'
+import { vehicleInfo, vehicleKey } from '@/features/booking/vehicle-info'
 import { VEHICLE_TEXT } from '../../home.content'
 import { SiteContentService } from '@/core/services/site-content.service'
-import { HEADINGS, VEHICLE_KEY } from '../../editable-content'
+import { HEADINGS } from '../../editable-content'
 
 const EXTRA_LABEL: Record<ExtraType, string> = {
   ChildSeat: $localize`Child seat`,
@@ -64,13 +64,18 @@ export class TariffsComponent {
   /** Texts and pictures as changed in Admin → Website content, the built-in ones otherwise. */
   protected readonly cards = computed(() =>
     (this.options()?.vehicles ?? []).map(v => {
-      const key = VEHICLE_KEY[v.category] ?? 'vehicle.standard'
-      const text = VEHICLE_TEXT[v.category]
-      const info = VEHICLE_INFO[v.category] ?? VEHICLE_INFO.Sedan
+      const key = vehicleKey(v.category)
+      // A class added in Admin → Pricing: its name, and the texts written for it in Website content.
+      const text = VEHICLE_TEXT[v.category] ?? {
+        title: v.category,
+        models: '',
+        bestFor: '',
+      }
+      const info = vehicleInfo(v.category, v.name)
       return {
         ...v,
-        text: text && {
-          title: this.site.text(`${key}.title`, text.title),
+        text: {
+          title: this.site.text(`${key}.title`, v.name ?? text.title),
           models: this.site.text(`${key}.models`, text.models),
           bestFor: this.site.text(`${key}.best-for`, text.bestFor),
         },

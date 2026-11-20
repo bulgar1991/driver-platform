@@ -69,9 +69,9 @@ public static class TestData
 
     /// <summary>Books through the API and pays on the fake payment page: the booking ends up "New".</summary>
     public static async Task<CreateBookingResponse> BookAndPayAsync(
-        this HttpClient client, QuoteRequest? trip = null, VehicleCategory category = VehicleCategory.Sedan)
+        this HttpClient client, QuoteRequest? trip = null, VehicleCategory? category = null)
     {
-        var response = await client.PostAsJsonAsync("/api/bookings", Booking(trip ?? Trip()) with { VehicleCategory = category }, Json);
+        var response = await client.PostAsJsonAsync("/api/bookings", Booking(trip ?? Trip()) with { VehicleCategory = category ?? VehicleCategory.Sedan }, Json);
         response.EnsureSuccessStatusCode();
         var booking = (await response.Content.ReadFromJsonAsync<CreateBookingResponse>(Json))!;
         var session = booking.PaymentUrl!.Split('/').Last();

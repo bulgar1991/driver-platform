@@ -1,8 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  inject,
+  LOCALE_ID,
   OnInit,
+  inject,
   signal,
 } from '@angular/core'
 import {
@@ -13,7 +14,7 @@ import {
   Validators,
 } from '@angular/forms'
 import { MatCheckbox } from '@angular/material/checkbox'
-import { MatFormField } from '@angular/material/form-field'
+import { MatError, MatFormField, MatLabel } from '@angular/material/form-field'
 import { MatInput } from '@angular/material/input'
 import {
   DialogComponent,
@@ -26,6 +27,9 @@ import {
   SurchargeRule,
   SurchargeRuleRequest,
   VehicleCategory,
+  VehicleClassNames,
+  VehicleRate,
+  VehicleRateRequest,
 } from '@/core/models'
 import { AdminPricingService } from '@/core/services/admin-pricing.service'
 import { ToastService } from '@/core/services/toast.service'
@@ -39,6 +43,12 @@ import {
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 import { TranslatedPipe } from '@/shared/pipes/translated.pipe'
 import { CURRENCY_LABEL } from '@/core/currency'
+import { siteLocale } from '@/core/i18n/locales'
+import {
+  pickName,
+  VehicleClassService,
+} from '@/core/services/vehicle-class.service'
+import { DialogService } from '@/shared/components/dialog'
 
 type RateForm = FormGroup<{
   category: FormControl<VehicleCategory>
@@ -64,6 +74,8 @@ const EXTRA_LABELS: Record<ExtraType, string> = {
   selector: 'app-pricing',
   imports: [
     MatFormField,
+    MatLabel,
+    MatError,
     MatInput,
     MatCheckbox,
     DialogComponent,
@@ -93,9 +105,36 @@ export class PricingComponent implements OnInit {
     delete: (name: string) => $localize`Delete ${name}:name:`,
     editSurcharge: $localize`Edit surcharge`,
     newSurcharge: $localize`New surcharge`,
+    newTariff: $localize`New tariff`,
+    editTariff: (name: string) => $localize`Tariff ${name}:name:`,
+    deleteTitle: (name: string) => $localize`Delete the ${name}:name: tariff`,
+    deleteUnused: $localize`It is not used by any booking or car, so it is deleted for good, with its zone prices.`,
+    deleteUsed: $localize`Bookings or cars use it, so it is hidden instead: no longer offered for new bookings, but past bookings, invoices and cars keep it. You can show it again later.`,
+    deleteButton: $localize`Delete`,
+    hideButton: $localize`Hide`,
+    added: (name: string) => $localize`${name}:name: tariff added.`,
+    deleted: (name: string) => $localize`${name}:name: tariff deleted.`,
+    hidden: (name: string) =>
+      $localize`${name}:name: tariff hidden: no longer offered for new bookings.`,
+    shown: (name: string) => $localize`${name}:name: tariff shown again.`,
   }
-  protected readonly categoryLabel = (category: VehicleCategory) =>
-    ADMIN_TEXT.categories[category]
+  private readonly language = siteLocale(inject(LOCALE_ID))
+    .code as keyof VehicleClassNames
+  /** The name set here, or the built-in one (Standard, Business, VIP, Bus). */
+  protected readonly categoryLabel = (category: VehicleCategory) => {
+    const rate = this.rateList().find(r => r.category === category)
+    return (
+      pickName(rate?.names, this.language) ?? ADMIN_TEXT.categories[category]
+    )
+  }
+  private readonly dialogs = inject(DialogService)
+  private readonly vehicleClasses = inject(VehicleClassService)
+  /** The tariffs as loaded: names, hidden or not, used or not. */
+  protected readonly rateList = signal<VehicleRate[]>([])
+  /** undefined: closed; null: a new tariff; a tariff: its names and figures. */
+  protected readonly tariffDialog = signal<VehicleRate | null | undefined>(
+    undefined
+  )
 
   private readonly toast = inject(ToastService)
   private readonly api = inject(AdminPricingService)
@@ -130,6 +169,29 @@ export class PricingComponent implements OnInit {
     ],
   })
 
+  protected readonly tariffForm = this.fb.group({
+    nameEn: ['', Validators.maxLength(60)],
+    nameFr: ['', Validators.maxLength(60)],
+    nameDe: ['', Validators.maxLength(60)],
+    nameIt: ['', Validators.maxLength(60)],
+    baseFee: [
+      10,
+      [Validators.required, Validators.min(0), Validators.max(1000)],
+    ],
+    pricePerKm: [
+      2,
+      [Validators.required, Validators.min(0), Validators.max(100)],
+    ],
+    maxPassengers: [
+      4,
+      [Validators.required, Validators.min(1), Validators.max(50)],
+    ],
+    maxLuggage: [
+      4,
+      [Validators.required, Validators.min(0), Validators.max(60)],
+    ],
+  })
+
   ngOnInit(): void {
     this.api
       .get()
@@ -149,8 +211,111 @@ export class PricingComponent implements OnInit {
     const { category, ...rate } = group.getRawValue()
     this.run(`rate-${category}`, this.api.updateRate(category, rate), () => {
       group.markAsPristine()
-      this.notify($localize`${category} tariff saved.`)
+      this.notify(
+        $localize`${this.categoryLabel(category)}:category: tariff saved.`
+      )
     })
+  }
+
+  /** The popup for a new tariff, or for a tariff's names and figures. */
+  protected openTariff(rate: VehicleRate | null): void {
+    const nameEn = this.tariffForm.controls.nameEn
+    // New and added tariffs need an English name; the built-in ones have theirs.
+    nameEn.setValidators(
+      rate?.isBuiltIn
+        ? [Validators.maxLength(60)]
+        : [Validators.required, Validators.maxLength(60)]
+    )
+    this.tariffForm.reset({
+      nameEn: rate?.names.en ?? '',
+      nameFr: rate?.names.fr ?? '',
+      nameDe: rate?.names.de ?? '',
+      nameIt: rate?.names.it ?? '',
+      baseFee: rate?.baseFee ?? 10,
+      pricePerKm: rate?.pricePerKm ?? 2,
+      maxPassengers: rate?.maxPassengers ?? 4,
+      maxLuggage: rate?.maxLuggage ?? 4,
+    })
+    this.tariffDialog.set(rate)
+  }
+
+  protected saveTariff(): void {
+    if (this.tariffForm.invalid) {
+      this.tariffForm.markAllAsTouched()
+      return
+    }
+    const v = this.tariffForm.getRawValue()
+    const request: VehicleRateRequest = {
+      baseFee: v.baseFee,
+      pricePerKm: v.pricePerKm,
+      maxPassengers: v.maxPassengers,
+      maxLuggage: v.maxLuggage,
+      names: { en: v.nameEn, it: v.nameIt, de: v.nameDe, fr: v.nameFr },
+    }
+    const rate = this.tariffDialog()
+    const call = rate
+      ? this.api.updateRate(rate.category, request)
+      : this.api.createRate(request)
+    this.run('tariff', call, saved => {
+      this.tariffDialog.set(undefined)
+      this.reload()
+      this.toast.success(
+        rate
+          ? $localize`${this.categoryLabel(saved.category)}:category: tariff saved.`
+          : this.tx.added(v.nameEn)
+      )
+    })
+  }
+
+  /** Asks first; a tariff in use is hidden, not deleted. */
+  protected deleteTariff(rate: VehicleRate): void {
+    const name = this.categoryLabel(rate.category)
+    this.dialogs
+      .confirm({
+        title: this.tx.deleteTitle(name),
+        message: rate.inUse ? this.tx.deleteUsed : this.tx.deleteUnused,
+        confirm: rate.inUse ? this.tx.hideButton : this.tx.deleteButton,
+        danger: true,
+      })
+      .subscribe(ok => {
+        if (!ok) {
+          return
+        }
+        this.run(
+          `rate-${rate.category}`,
+          this.api.deleteRate(rate.category),
+          result => {
+            this.fillRates(result.rates)
+            this.vehicleClasses.load().subscribe({ error: () => undefined })
+            this.toast.success(
+              result.deleted ? this.tx.deleted(name) : this.tx.hidden(name)
+            )
+          }
+        )
+      })
+  }
+
+  protected showTariff(rate: VehicleRate): void {
+    this.run(
+      `rate-${rate.category}`,
+      this.api.setRateActive(rate.category, true),
+      () => {
+        this.reload()
+        this.toast.success(this.tx.shown(this.categoryLabel(rate.category)))
+      }
+    )
+  }
+
+  protected rateOf(category: VehicleCategory): VehicleRate | undefined {
+    return this.rateList().find(r => r.category === category)
+  }
+
+  private reload(): void {
+    this.api.get().subscribe({
+      next: overview => this.fillRates(overview.rates),
+      error: err => this.notify(problemMessage(err), true),
+    })
+    this.vehicleClasses.load().subscribe({ error: () => undefined })
   }
 
   protected saveExtra(index: number): void {
@@ -253,30 +418,7 @@ export class PricingComponent implements OnInit {
   }
 
   private fill(overview: PricingOverview): void {
-    this.rates.clear()
-    for (const rate of overview.rates) {
-      this.rates.push(
-        this.fb.group({
-          category: this.fb.control<VehicleCategory>(rate.category),
-          baseFee: [
-            rate.baseFee,
-            [Validators.required, Validators.min(0), Validators.max(1000)],
-          ],
-          pricePerKm: [
-            rate.pricePerKm,
-            [Validators.required, Validators.min(0), Validators.max(100)],
-          ],
-          maxPassengers: [
-            rate.maxPassengers,
-            [Validators.required, Validators.min(1), Validators.max(8)],
-          ],
-          maxLuggage: [
-            rate.maxLuggage,
-            [Validators.required, Validators.min(0), Validators.max(16)],
-          ],
-        })
-      )
-    }
+    this.fillRates(overview.rates)
     this.extras.clear()
     for (const extra of overview.extras) {
       this.extras.push(
@@ -291,6 +433,34 @@ export class PricingComponent implements OnInit {
     }
     this.settings.reset(overview.settings)
     this.surcharges.set(overview.surcharges)
+  }
+
+  private fillRates(rates: VehicleRate[]): void {
+    this.rateList.set(rates)
+    this.rates.clear()
+    for (const rate of rates) {
+      this.rates.push(
+        this.fb.group({
+          category: this.fb.control<VehicleCategory>(rate.category),
+          baseFee: [
+            rate.baseFee,
+            [Validators.required, Validators.min(0), Validators.max(1000)],
+          ],
+          pricePerKm: [
+            rate.pricePerKm,
+            [Validators.required, Validators.min(0), Validators.max(100)],
+          ],
+          maxPassengers: [
+            rate.maxPassengers,
+            [Validators.required, Validators.min(1), Validators.max(50)],
+          ],
+          maxLuggage: [
+            rate.maxLuggage,
+            [Validators.required, Validators.min(0), Validators.max(60)],
+          ],
+        })
+      )
+    }
   }
 
   private run<T>(

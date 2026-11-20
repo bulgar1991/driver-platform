@@ -1,7 +1,11 @@
 import { IMAGES } from '@/core/images.generated'
 import { ImageAsset, VehicleCategory } from '@/core/models'
 import { AREA_IN } from '@/core/area'
-import { VEHICLE_INFO, VEHICLE_KEY } from '@/features/booking/vehicle-info'
+import {
+  VEHICLE_KEY,
+  vehicleInfo,
+  vehicleKey,
+} from '@/features/booking/vehicle-info'
 
 export { VEHICLE_KEY }
 import {
@@ -67,6 +71,32 @@ const L = {
   description: $localize`:Website content field:Description on the booking page`,
   heading: $localize`:Website content group:Heading`,
   figure: (n: number) => $localize`:Website content group:Figure ${n}:number:`,
+}
+
+/** A tariff's texts and picture; for a class added in Admin → Pricing, its name and a generic picture. */
+export function vehicleGroup(
+  category: VehicleCategory,
+  name?: string | null
+): EditableGroup {
+  const key = vehicleKey(category)
+  const info = vehicleInfo(category, name)
+  const card = VEHICLE_TEXT[category]
+  const title = name || card?.title || info.title
+  return {
+    title,
+    fields: [
+      text(`${key}.title`, L.title, title),
+      text(`${key}.models`, L.models, card?.models ?? ''),
+      text(`${key}.best-for`, L.bestFor, card?.bestFor ?? ''),
+      text(`${key}.description`, L.description, info.description),
+      {
+        key: `${key}.image`,
+        label: L.picture,
+        kind: 'image',
+        builtIn: info.image,
+      },
+    ],
+  }
 }
 
 const text = (key: string, label: string, builtIn: string): EditableField => ({
@@ -138,26 +168,9 @@ export const EDITABLE_SECTIONS: EditableSection[] = [
           text('tariffs.title', L.title, HEADINGS.tariffsTitle),
         ],
       },
-      ...(Object.keys(VEHICLE_KEY) as VehicleCategory[]).map(category => {
-        const key = VEHICLE_KEY[category]
-        const info = VEHICLE_INFO[category]
-        const card = VEHICLE_TEXT[category]
-        return {
-          title: card?.title ?? info.title,
-          fields: [
-            text(`${key}.title`, L.title, card?.title ?? info.title),
-            text(`${key}.models`, L.models, card?.models ?? ''),
-            text(`${key}.best-for`, L.bestFor, card?.bestFor ?? ''),
-            text(`${key}.description`, L.description, info.description),
-            {
-              key: `${key}.image`,
-              label: L.picture,
-              kind: 'image' as const,
-              builtIn: info.image,
-            },
-          ],
-        }
-      }),
+      ...(Object.keys(VEHICLE_KEY) as VehicleCategory[]).map(category =>
+        vehicleGroup(category)
+      ),
     ],
   },
   {

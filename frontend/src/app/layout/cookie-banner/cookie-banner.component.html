@@ -1,0 +1,33 @@
+@if (open()) {
+  <section
+    class="cookie-banner"
+    role="dialog"
+    aria-labelledby="cookie-banner-title"
+    aria-describedby="cookie-banner-text">
+    <h2 id="cookie-banner-title" class="cookie-banner__title" i18n>
+      Cookies
+    </h2>
+    <p id="cookie-banner-text" class="cookie-banner__text">
+      <ng-container i18n
+        >We use cookies to measure visits and improve our ads, only if you
+        agree. The site works the same either way.</ng-container
+      >&ngsp;<a class="cookie-banner__link" routerLink="/privacy" i18n
+        >Privacy policy</a
+      >
+    </p>
+    <div class="cookie-banner__actions">
+      <button
+        appButton
+        size="sm"
+        variant="outline"
+        type="button"
+        (click)="consent.reject()"
+        i18n>
+        Reject
+      </button>
+      <button appButton size="sm" type="button" (click)="consent.accept()" i18n>
+        Accept
+      </button>
+    </div>
+  </section>
+}

@@ -18,7 +18,9 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
     public async Task<BookingOptionsResponse> GetOptionsAsync(CancellationToken cancellationToken)
     {
         var settings = await db.LoadSettingsAsync(cancellationToken);
-        var rates = (await db.VehicleRates.AsNoTracking().ToListAsync(cancellationToken)).OrderBy(r => r.Category);
+        // Hidden tariffs (Admin → Pricing) are not offered.
+        var rates = (await db.VehicleRates.AsNoTracking().Where(r => r.IsActive).ToListAsync(cancellationToken))
+            .OrderBy(r => r.SortOrder).ThenBy(r => r.Category);
         var extras = await db.ExtraFees.AsNoTracking().ToDictionaryAsync(f => f.Type, f => f.Amount, cancellationToken);
         var rules = await db.SurchargeRules.AsNoTracking().Where(r => r.IsActive).ToListAsync(cancellationToken);
 
@@ -34,7 +36,7 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
             .ToList();
 
         return new BookingOptionsResponse(
-            rates.Select(r => new VehicleCapacity(r.Category, r.MaxPassengers, r.MaxLuggage, r.BaseFee, r.PricePerKm)).ToList(),
+            rates.Select(r => new VehicleCapacity(r.Category, r.Name(texts.Language), r.MaxPassengers, r.MaxLuggage, r.BaseFee, r.PricePerKm)).ToList(),
             extras,
             settings.ReturnDiscountPercent,
             settings.MinLeadTimeHours,
@@ -46,8 +48,9 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
     {
         var settings = await db.LoadSettingsAsync(cancellationToken);
         var zones = await db.Zones.AsNoTracking().Where(z => z.IsActive).ToListAsync(cancellationToken);
-        // Enums are stored as text, so sort by enum value in memory (Standard, Business, VIP, Bus).
-        var rates = (await db.VehicleRates.AsNoTracking().ToListAsync(cancellationToken)).OrderBy(r => r.Category).ToList();
+        // Visible tariffs only, in the panel's order.
+        var rates = (await db.VehicleRates.AsNoTracking().Where(r => r.IsActive).ToListAsync(cancellationToken))
+            .OrderBy(r => r.SortOrder).ThenBy(r => r.Category).ToList();
         var surcharges = await db.SurchargeRules.AsNoTracking().Where(r => r.IsActive).ToListAsync(cancellationToken);
         var extraFees = await db.ExtraFees.AsNoTracking().ToDictionaryAsync(f => f.Type, f => f.Amount, cancellationToken);
 
@@ -95,7 +98,7 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
 
             var total = outboundPrice.Total + (returnPrice?.Total ?? 0);
             return new VehicleOption(
-                rate.Category, rate.MaxPassengers, rate.MaxLuggage, reason is null, reason,
+                rate.Category, rate.Name(texts.Language), rate.MaxPassengers, rate.MaxLuggage, reason is null, reason,
                 total, PriceCalculator.VatIncluded(total, settings.VatRatePercent),
                 outboundPrice, returnPrice);
         }).ToList();

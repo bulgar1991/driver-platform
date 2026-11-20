@@ -218,13 +218,13 @@ public sealed class BookingComSyncTests
     }
 
     [Theory]
-    [InlineData("STANDARD", VehicleCategory.Sedan)]
-    [InlineData("ELECTRIC_STANDARD", VehicleCategory.Sedan)]
-    [InlineData("EXECUTIVE", VehicleCategory.Business)]
-    [InlineData("LUXURY", VehicleCategory.Estate)]
-    [InlineData("PEOPLE_CARRIER", VehicleCategory.Van)]
-    [InlineData("MINIBUS", VehicleCategory.Van)]
-    [InlineData(null, VehicleCategory.Sedan)]
-    public void Booking_com_car_types_map_on_our_tariffs(string? type, VehicleCategory expected) =>
-        Assert.Equal(expected, BookingComSyncService.Category(type));
+    [InlineData("STANDARD", "Sedan")]
+    [InlineData("ELECTRIC_STANDARD", "Sedan")]
+    [InlineData("EXECUTIVE", "Business")]
+    [InlineData("LUXURY", "Estate")]
+    [InlineData("PEOPLE_CARRIER", "Van")]
+    [InlineData("MINIBUS", "Van")]
+    [InlineData(null, "Sedan")]
+    public void Booking_com_car_types_map_on_our_tariffs(string? type, string expected) =>
+        Assert.Equal(VehicleCategory.Parse(expected), BookingComSyncService.Category(type));
 }

@@ -29,6 +29,7 @@ const quote = (): Quote => ({
   vehicles: [
     {
       category: 'Sedan',
+      name: null,
       maxPassengers: 3,
       maxLuggage: 3,
       available: true,

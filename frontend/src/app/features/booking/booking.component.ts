@@ -101,6 +101,11 @@ export class BookingComponent implements OnInit {
   private readonly detailsRef = viewChild<ElementRef<HTMLElement>>('details')
   private readonly resultsRef = viewChild<ElementRef<HTMLElement>>('results')
   private readonly searchBar = viewChild(SearchBarComponent)
+  /** The biggest car offered: the passenger counter goes up to it. */
+  protected readonly maxPassengers = computed(() => {
+    const vehicles = this.store.options()?.vehicles ?? []
+    return vehicles.length ? Math.max(...vehicles.map(v => v.maxPassengers)) : 8
+  })
   private readonly geo = inject(GeoService)
   /** The site language: emails, messages and links for this booking use it. */
   private readonly language = siteLocale(inject(LOCALE_ID)).code

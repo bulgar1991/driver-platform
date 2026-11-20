@@ -40,6 +40,8 @@ public sealed partial class DbSeeder(
         await db.SaveChangesAsync(cancellationToken);
         await SeedTranslationsAsync(cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
+        // Names of the tariffs for price lines, emails and invoices.
+        Application.Pricing.VehicleClasses.Load(await db.VehicleRates.AsNoTracking().ToListAsync(cancellationToken));
     }
 
     /// <summary>Site:Region (REGION in deploy/.env): "it" (default) or "ch" for a server in Switzerland.</summary>
@@ -72,10 +74,10 @@ public sealed partial class DbSeeder(
         // A tariff added later (Business) is also added to a database that already has the others.
         VehicleRate[] tariffs =
         [
-            new() { Category = VehicleCategory.Sedan, BaseFee = 10m, PricePerKm = 1.60m, MaxPassengers = 3, MaxLuggage = 3 },
-            new() { Category = VehicleCategory.Business, BaseFee = 11m, PricePerKm = 1.75m, MaxPassengers = 3, MaxLuggage = 2 },
-            new() { Category = VehicleCategory.Estate, BaseFee = 12m, PricePerKm = 1.90m, MaxPassengers = 4, MaxLuggage = 5 },
-            new() { Category = VehicleCategory.Van, BaseFee = 15m, PricePerKm = 2.20m, MaxPassengers = 8, MaxLuggage = 8 },
+            new() { Category = VehicleCategory.Sedan, BaseFee = 10m, PricePerKm = 1.60m, MaxPassengers = 3, MaxLuggage = 3, SortOrder = 0 },
+            new() { Category = VehicleCategory.Business, BaseFee = 11m, PricePerKm = 1.75m, MaxPassengers = 3, MaxLuggage = 2, SortOrder = 1 },
+            new() { Category = VehicleCategory.Estate, BaseFee = 12m, PricePerKm = 1.90m, MaxPassengers = 4, MaxLuggage = 5, SortOrder = 2 },
+            new() { Category = VehicleCategory.Van, BaseFee = 15m, PricePerKm = 2.20m, MaxPassengers = 8, MaxLuggage = 8, SortOrder = 3 },
         ];
         var existing = await db.VehicleRates.Select(r => r.Category).ToListAsync(cancellationToken);
         db.VehicleRates.AddRange(tariffs.Where(t => !existing.Contains(t.Category)));

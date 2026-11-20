@@ -118,9 +118,9 @@ public sealed record VehicleRequest
     [MaxLength(40)]
     public string? Color { get; init; }
     public VehicleCategory Category { get; init; }
-    [Range(1, 8)]
+    [Range(1, 50)]
     public int Seats { get; init; }
-    [Range(0, 16)]
+    [Range(0, 60)]
     public int LuggageCapacity { get; init; }
     [Range(0, 4)]
     public int ChildSeatsAvailable { get; init; }

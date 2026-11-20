@@ -48,6 +48,8 @@ export class SearchBarComponent {
   readonly returnDiscount = input<number | null>(null)
   /** Price of one child seat, shown next to them. */
   readonly childSeatPrice = input<number | null>(null)
+  /** The biggest car offered (Admin → Pricing): more passengers than that can't be booked. */
+  readonly maxPassengers = input(8)
   /** Every field is filled and valid. */
   readonly searched = output()
 

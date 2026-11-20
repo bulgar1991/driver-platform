@@ -70,6 +70,8 @@ export interface LegPrice {
 
 export interface VehicleOption {
   category: VehicleCategory
+  /** The name set in Admin → Pricing, in the site's language; null: the built-in name. */
+  name: string | null
   maxPassengers: number
   maxLuggage: number
   available: boolean
@@ -90,6 +92,7 @@ export interface Quote {
 
 export interface VehicleTariff {
   category: VehicleCategory
+  name: string | null
   maxPassengers: number
   maxLuggage: number
   baseFee: number

@@ -9,13 +9,6 @@ internal sealed partial class ItalianTexts : Texts
     public override string Language => "it";
     public override CultureInfo Culture { get; } = CultureInfo.GetCultureInfo("it-IT");
 
-    public override string Category(VehicleCategory category) => category switch
-    {
-        VehicleCategory.Sedan => "Standard",
-        VehicleCategory.Business => "Business",
-        VehicleCategory.Estate => "VIP",
-        _ => "Bus",
-    };
     public override string ReturnDiscount(decimal percent) => $"Viaggio di ritorno −{percent.ToString("0.##", Culture)}%";
     public override string ZoneAccess(string zone) => $"Accesso {zone}";
     public override string ZoneRate(string zone) => $"Tariffa {zone}";

@@ -45,7 +45,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, TimePro
 
         // Enums are stored as text so the database stays readable.
         builder.Properties<StaffRole>().HaveConversion<string>().HaveMaxLength(32);
-        builder.Properties<VehicleCategory>().HaveConversion<string>().HaveMaxLength(32);
+        // Tariff classes: the code, as when they were an enum.
+        builder.Properties<VehicleCategory>().HaveConversion<VehicleCategoryConverter>().HaveMaxLength(32);
         builder.Properties<BookingSource>().HaveConversion<string>().HaveMaxLength(32);
         builder.Properties<BookingStatus>().HaveConversion<string>().HaveMaxLength(32);
         builder.Properties<PaymentMethod>().HaveConversion<string>().HaveMaxLength(32);
@@ -156,3 +157,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, TimePro
         }
     }
 }
+
+/// <summary>A tariff class is stored as its code ("Sedan", "Minibus16").</summary>
+internal sealed class VehicleCategoryConverter() : Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<VehicleCategory, string>(
+    category => category.Code,
+    code => VehicleCategory.Parse(code));

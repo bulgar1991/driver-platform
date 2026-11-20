@@ -17,6 +17,8 @@ public sealed record MyBookingResponse(
     string Reference,
     BookingStatus Status,
     VehicleCategory VehicleCategory,
+    /// <summary>The class's name in the request's language (also for classes added in Admin → Pricing).</summary>
+    string VehicleName,
     string ClientName,
     IReadOnlyList<BookingLegSummary> Legs,
     decimal Total,
@@ -55,6 +57,7 @@ public sealed class MyBookingService(IAppDbContext db, IBookingLinks links, IPay
             outbound.Reference,
             outbound.Status,
             outbound.VehicleCategory,
+            Texts.Current.Category(outbound.VehicleCategory),
             $"{outbound.Client.FirstName} {outbound.Client.LastName}".Trim(),
             legs.Select(b => b.ToLegSummary()).ToList(),
             legs.Sum(b => b.TotalPrice),

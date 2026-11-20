@@ -1,3 +1,4 @@
+using DriverPlatform.Domain.Enums;
 using Microsoft.Extensions.Options;
 using DriverPlatform.Application.Common;
 using Microsoft.AspNetCore.Authentication;
@@ -30,6 +31,20 @@ public static class PartnerApi
                 document.Info.Description =
                     "Send transfer bookings in the countries we serve. Authenticate with the X-Api-Key header. " +
                     "Status changes are POSTed to your webhook URL, signed with the Webhook-Signature header.";
+                return Task.CompletedTask;
+            });
+            // A tariff class is a plain code ("Sedan", or one added in the panel), not an object.
+            o.AddSchemaTransformer((schema, context, _) =>
+            {
+                if (context.JsonTypeInfo.Type == typeof(VehicleCategory))
+                {
+                    schema.Type = Microsoft.OpenApi.JsonSchemaType.String;
+                    schema.Pattern = "^[A-Za-z][A-Za-z0-9]{0,31}$";
+                    schema.Description =
+                        "Vehicle class code: Sedan (Standard), Business, Estate (VIP), Van (Bus), or a class the company " +
+                        "added. GET /api/booking-options lists the classes offered now.";
+                    schema.Properties?.Clear();
+                }
                 return Task.CompletedTask;
             });
         });

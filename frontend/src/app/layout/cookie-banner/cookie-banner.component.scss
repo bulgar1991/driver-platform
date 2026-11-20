@@ -1,0 +1,26 @@
+// Bottom of the screen, never over the booking buttons on a phone for long: one tap closes it.
+.cookie-banner {
+  @apply fixed inset-x-4 bottom-4 z-50 mx-auto flex max-w-xl flex-col gap-3 rounded-md border border-gold-700 bg-ink-800/95 p-5 shadow-gold backdrop-blur sm:inset-x-6;
+  animation: fade-up 0.35s ease-out both;
+
+  &__title {
+    @apply font-display text-lg text-ivory;
+  }
+
+  &__text {
+    @apply text-sm leading-relaxed text-ivory-200;
+  }
+
+  &__link {
+    @apply text-gold underline-offset-4 hover:underline;
+  }
+
+  // Reject and Accept equally easy to press, as the rules ask.
+  &__actions {
+    @apply flex flex-wrap justify-end gap-3;
+
+    > * {
+      @apply min-w-28 flex-1 sm:flex-none;
+    }
+  }
+}

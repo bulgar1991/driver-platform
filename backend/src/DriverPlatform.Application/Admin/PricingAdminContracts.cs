@@ -4,19 +4,50 @@ using DriverPlatform.Domain.ValueObjects;
 
 namespace DriverPlatform.Application.Admin;
 
-public sealed record VehicleRateDto(VehicleCategory Category, decimal BaseFee, decimal PricePerKm, int MaxPassengers, int MaxLuggage);
+/// <summary>A tariff in the panel. Names: empty ones show the built-in name (Standard, Business, VIP, Bus).</summary>
+public sealed record VehicleRateDto(
+    VehicleCategory Category,
+    decimal BaseFee,
+    decimal PricePerKm,
+    int MaxPassengers,
+    int MaxLuggage,
+    VehicleClassNames Names,
+    bool IsBuiltIn,
+    bool IsActive,
+    int SortOrder,
+    bool InUse);
 
-public sealed record UpdateVehicleRateRequest
+/// <summary>A tariff's name in the site's languages.</summary>
+public sealed record VehicleClassNames(
+    [MaxLength(60)] string? En,
+    [MaxLength(60)] string? It,
+    [MaxLength(60)] string? De,
+    [MaxLength(60)] string? Fr);
+
+/// <summary>A vehicle class for the staff panel (cars, zones): all of them, hidden ones too.</summary>
+public sealed record VehicleClassDto(VehicleCategory Category, VehicleClassNames Names, bool IsBuiltIn, bool IsActive, int MaxPassengers, int MaxLuggage);
+
+public record UpdateVehicleRateRequest
 {
     [Range(0, 1000)]
     public decimal BaseFee { get; init; }
     [Range(0, 100)]
     public decimal PricePerKm { get; init; }
-    [Range(1, 8)]
+    [Range(1, 50)]
     public int MaxPassengers { get; init; }
-    [Range(0, 16)]
+    [Range(0, 60)]
     public int MaxLuggage { get; init; }
+    /// <summary>Optional for the built-in tariffs; null keeps the names as they are.</summary>
+    public VehicleClassNames? Names { get; init; }
 }
+
+/// <summary>A new tariff: the English name is required (the others fall back to it).</summary>
+public sealed record CreateVehicleRateRequest : UpdateVehicleRateRequest;
+
+public sealed record VehicleRateActiveRequest(bool IsActive);
+
+/// <summary>What deleting did: removed for good, or hidden because bookings or cars still use it.</summary>
+public sealed record DeleteVehicleRateResult(bool Deleted, bool Hidden, IReadOnlyList<VehicleRateDto> Rates);
 
 public sealed record SurchargeRuleDto(
     Guid Id,

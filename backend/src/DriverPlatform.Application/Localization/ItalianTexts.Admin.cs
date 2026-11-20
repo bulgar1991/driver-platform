@@ -106,4 +106,7 @@ internal sealed partial class ItalianTexts
         $"Ciao {firstName},\n\nil tuo codice di accesso è {code}. È valido per {minutes} minuti.\n\nSe non hai provato ad accedere, cambia la password: qualcuno la conosce.";
     public override string ContentKeyInvalid => "Chiave di contenuto sconosciuta.";
     public override string ContentTooLong(int max) => $"I testi hanno al massimo {max} caratteri.";
+    public override string TariffNotFound => "Tariffa non trovata.";
+    public override string LastTariff => "Almeno una tariffa deve restare sul sito.";
+    public override string TariffNameRequired => "Inserisci il nome della tariffa in inglese.";
 }

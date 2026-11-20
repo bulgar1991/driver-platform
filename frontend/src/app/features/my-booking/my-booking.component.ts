@@ -18,7 +18,6 @@ import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
-import { VEHICLE_INFO } from '../booking/vehicle-info'
 import { InstructionsPipe } from '@/shared/pipes/instructions.pipe'
 import { TranslatedPipe } from '@/shared/pipes/translated.pipe'
 import { CarLoaderComponent } from '@/shared/components/car-loader/car-loader.component'
@@ -78,7 +77,6 @@ export class MyBookingComponent {
   protected readonly notFound = signal(false)
   protected readonly waitingForPayment = signal(false)
 
-  protected readonly vehicles = VEHICLE_INFO
   protected readonly statusLabel = STATUS_LABEL
   protected readonly paymentLabel = PAYMENT_LABEL
   protected readonly t = {

@@ -2,8 +2,9 @@ import { DatePipe } from '@angular/common'
 import {
   ChangeDetectionStrategy,
   Component,
-  inject,
   OnInit,
+  computed,
+  inject,
   signal,
 } from '@angular/core'
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
@@ -25,18 +26,7 @@ import { IconComponent } from '@/shared/components/icon/icon.component'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 import { PhotoDraft } from '@/features/admin/photo-field/photo-draft'
 import { PhotoFieldComponent } from '@/features/admin/photo-field/photo-field.component'
-
-const CATEGORIES: {
-  value: VehicleCategory
-  label: string
-  seats: number
-  luggage: number
-}[] = [
-  { value: 'Sedan', label: $localize`Standard (1–3)`, seats: 3, luggage: 3 },
-  { value: 'Business', label: $localize`Business (1–3)`, seats: 3, luggage: 2 },
-  { value: 'Estate', label: $localize`VIP (1–4)`, seats: 4, luggage: 5 },
-  { value: 'Van', label: $localize`Bus (5–8)`, seats: 7, luggage: 8 },
-]
+import { VehicleClassService } from '@/core/services/vehicle-class.service'
 
 /** Business plan §7: category, seats, luggage, child seats, insurance, inspection, service and mileage. */
 @Component({
@@ -73,7 +63,19 @@ export class VehiclesComponent implements OnInit {
   protected readonly api = inject(AdminFleetService)
   private readonly fb = inject(FormBuilder).nonNullable
 
-  protected readonly categories = CATEGORIES
+  private readonly vehicleClasses = inject(VehicleClassService)
+  /** Visible tariffs (Admin → Pricing), plus the car's own class if it was hidden since. */
+  protected readonly categories = computed(() =>
+    this.vehicleClasses
+      .classes()
+      .filter(c => c.isActive || c.category === this.editing()?.category)
+      .map(c => ({
+        value: c.category,
+        label: `${ADMIN_TEXT.categories[c.category]} (1–${c.maxPassengers})`,
+        seats: c.maxPassengers,
+        luggage: c.maxLuggage,
+      }))
+  )
   protected readonly today = todayInOffice()
   protected readonly soon = todayInOffice(30)
   protected readonly vehicles = signal<Vehicle[]>([])
@@ -95,10 +97,10 @@ export class VehiclesComponent implements OnInit {
     model: ['', [Validators.required, Validators.maxLength(60)]],
     color: [''],
     category: this.fb.control<VehicleCategory>('Sedan'),
-    seats: [3, [Validators.required, Validators.min(1), Validators.max(8)]],
+    seats: [3, [Validators.required, Validators.min(1), Validators.max(50)]],
     luggageCapacity: [
       3,
-      [Validators.required, Validators.min(0), Validators.max(16)],
+      [Validators.required, Validators.min(0), Validators.max(60)],
     ],
     childSeatsAvailable: [0, [Validators.min(0), Validators.max(4)]],
     insuranceExpiresOn: [''],
@@ -121,10 +123,12 @@ export class VehiclesComponent implements OnInit {
   /** New car: seats and luggage default to the category's usual capacity. */
   protected categoryChanged(): void {
     if (this.editing() === null) {
-      const c = CATEGORIES.find(
+      const c = this.categories().find(
         x => x.value === this.form.controls.category.value
-      )!
-      this.form.patchValue({ seats: c.seats, luggageCapacity: c.luggage })
+      )
+      if (c) {
+        this.form.patchValue({ seats: c.seats, luggageCapacity: c.luggage })
+      }
     }
   }
 

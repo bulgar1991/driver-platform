@@ -11,7 +11,7 @@ import { IconComponent } from '@/shared/components/icon/icon.component'
 import { ImageComponent } from '@/shared/components/image/image.component'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { SiteContentService } from '@/core/services/site-content.service'
-import { VEHICLE_INFO, VEHICLE_KEY } from '../../vehicle-info'
+import { vehicleInfo, vehicleKey } from '../../vehicle-info'
 import { SITE_CURRENCY } from '@/core/currency'
 
 /** One car in the results: the drawing, what fits, the price and Select. */
@@ -32,9 +32,9 @@ export class VehicleCardComponent {
 
   /** Name, description and picture as changed in Admin → Website content, the built-in ones otherwise. */
   protected readonly info = computed(() => {
-    const category = this.vehicle().category
-    const info = VEHICLE_INFO[category]
-    const key = VEHICLE_KEY[category]
+    const vehicle = this.vehicle()
+    const info = vehicleInfo(vehicle.category, vehicle.name)
+    const key = vehicleKey(vehicle.category)
     return {
       title: this.site.text(`${key}.title`, info.title),
       description: this.site.text(`${key}.description`, info.description),

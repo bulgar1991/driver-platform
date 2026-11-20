@@ -8,7 +8,7 @@ export interface VehicleInfo {
   image: ImageAsset
 }
 
-/** The four tariffs: Standard, Business, VIP and Bus. */
+/** The four built-in tariffs: Standard, Business, VIP and Bus. */
 export const VEHICLE_INFO: Record<VehicleCategory, VehicleInfo> = {
   Sedan: {
     title: $localize`Standard`,
@@ -32,10 +32,34 @@ export const VEHICLE_INFO: Record<VehicleCategory, VehicleInfo> = {
   },
 }
 
-/** Key prefix of each car class in Admin → Website content ("vehicle.bus.title"…). Stored: do not rename. */
+/** Key prefix of the built-in classes in Admin → Website content ("vehicle.bus.title"…). Stored: do not rename. */
 export const VEHICLE_KEY: Record<VehicleCategory, string> = {
   Sedan: 'vehicle.standard',
   Business: 'vehicle.business',
   Estate: 'vehicle.vip',
   Van: 'vehicle.bus',
+}
+
+/** Key prefix in Admin → Website content for any class: "vehicle.minibus16" for one added in Pricing. */
+export function vehicleKey(category: VehicleCategory): string {
+  return VEHICLE_KEY[category] ?? `vehicle.${category.toLowerCase()}`
+}
+
+/**
+ * What the site shows for a class: the built-in name, description and picture, or for a class added
+ * in Admin → Pricing its name (from the API) and a generic picture until one is uploaded.
+ */
+export function vehicleInfo(
+  category: VehicleCategory,
+  name?: string | null
+): VehicleInfo {
+  const builtIn = VEHICLE_INFO[category]
+  if (builtIn) {
+    return name ? { ...builtIn, title: name } : builtIn
+  }
+  return {
+    title: name || category,
+    description: '',
+    image: IMAGES['car-standard'],
+  }
 }

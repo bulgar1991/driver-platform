@@ -106,4 +106,7 @@ internal sealed partial class GermanTexts
         $"Hallo {firstName},\n\nIhr Anmeldecode lautet {code}. Er gilt {minutes} Minuten.\n\nWenn Sie sich nicht anmelden wollten, ändern Sie Ihr Passwort: Jemand kennt es.";
     public override string ContentKeyInvalid => "Unbekannter Inhaltsschlüssel.";
     public override string ContentTooLong(int max) => $"Texte haben höchstens {max} Zeichen.";
+    public override string TariffNotFound => "Tarif nicht gefunden.";
+    public override string LastTariff => "Mindestens ein Tarif muss auf der Website bleiben.";
+    public override string TariffNameRequired => "Geben Sie den Namen des Tarifs auf Englisch ein.";
 }

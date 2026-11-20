@@ -20,6 +20,22 @@ public sealed class PricingController(IPricingAdminService pricing) : Controller
         VehicleCategory category, UpdateVehicleRateRequest request, CancellationToken cancellationToken) =>
         Ok(await pricing.UpdateRateAsync(category, request, cancellationToken));
 
+    /// <summary>A new tariff; its code is made from the English name.</summary>
+    [HttpPost("rates")]
+    public async Task<ActionResult<VehicleRateDto>> CreateRate(CreateVehicleRateRequest request, CancellationToken cancellationToken) =>
+        StatusCode(StatusCodes.Status201Created, await pricing.CreateRateAsync(request, cancellationToken));
+
+    /// <summary>Deleted when unused; hidden when bookings or cars use it.</summary>
+    [HttpDelete("rates/{category}")]
+    public async Task<ActionResult<DeleteVehicleRateResult>> DeleteRate(VehicleCategory category, CancellationToken cancellationToken) =>
+        Ok(await pricing.DeleteRateAsync(category, cancellationToken));
+
+    /// <summary>Show a hidden tariff again, or hide one.</summary>
+    [HttpPut("rates/{category}/active")]
+    public async Task<ActionResult<VehicleRateDto>> SetRateActive(
+        VehicleCategory category, VehicleRateActiveRequest request, CancellationToken cancellationToken) =>
+        Ok(await pricing.SetRateActiveAsync(category, request.IsActive, cancellationToken));
+
     [HttpPut("extras/{type}")]
     public async Task<ActionResult<ExtraFeeDto>> UpdateExtra(
         ExtraType type, UpdateExtraFeeRequest request, CancellationToken cancellationToken) =>

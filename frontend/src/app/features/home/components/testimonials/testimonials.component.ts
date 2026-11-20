@@ -21,7 +21,8 @@ import { SectionHeadingComponent } from '@/shared/components/section-heading/sec
 import { RevealDirective } from '@/shared/directives/reveal.directive'
 import { VEHICLE_TEXT } from '../../home.content'
 import { SiteContentService } from '@/core/services/site-content.service'
-import { HEADINGS, VEHICLE_KEY } from '../../editable-content'
+import { HEADINGS } from '../../editable-content'
+import { vehicleKey } from '@/features/booking/vehicle-info'
 
 const AUTOPLAY_MS = 6000
 const SWIPE_PX = 50
@@ -67,8 +68,7 @@ export class TestimonialsComponent {
   }))
   protected vehicleName(category: string): string {
     const builtIn = VEHICLE_TEXT[category as VehicleCategory]?.title
-    const key = VEHICLE_KEY[category as VehicleCategory]
-    return builtIn && key ? this.site.text(`${key}.title`, builtIn) : category
+    return this.site.text(`${vehicleKey(category)}.title`, builtIn ?? category)
   }
   protected readonly items = toSignal(
     inject(SiteService)

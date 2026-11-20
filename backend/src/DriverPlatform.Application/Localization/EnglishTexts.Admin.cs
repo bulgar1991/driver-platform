@@ -108,4 +108,7 @@ internal sealed partial class EnglishTexts
         $"Hello {firstName},\n\nyour sign-in code is {code}. It works for {minutes} minutes.\n\nIf you did not try to sign in, change your password: someone knows it.";
     public override string ContentKeyInvalid => "Unknown content key.";
     public override string ContentTooLong(int max) => $"Texts are at most {max} characters.";
+    public override string TariffNotFound => "Tariff not found.";
+    public override string LastTariff => "At least one tariff must stay on the site.";
+    public override string TariffNameRequired => "Enter the tariff's name in English.";
 }

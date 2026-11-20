@@ -356,15 +356,15 @@ public sealed class ShiftService(
         return problems;
     }
 
-    /// <summary>A bigger category may serve a smaller one (a van can do a sedan ride), never the other way.</summary>
+    /// <summary>The car's class must fit the booking's: see <see cref="VehicleClasses.CanServe"/>.</summary>
     private static List<string> VehicleProblems(Vehicle vehicle, IReadOnlyList<Booking> bookings, DateOnly lastDate, Busy busy)
     {
         var problems = DocumentRules.ExpiredOn(vehicle, lastDate);
         foreach (var b in bookings)
         {
-            if (vehicle.Category < b.VehicleCategory)
+            if (!VehicleClasses.CanServe(vehicle.Category, b.VehicleCategory))
             {
-                problems.Add($"{b.Reference} was booked as {b.VehicleCategory}");
+                problems.Add($"{b.Reference} was booked as {Texts.Current.Category(b.VehicleCategory)}");
             }
             if (b.Passengers > vehicle.Seats)
             {

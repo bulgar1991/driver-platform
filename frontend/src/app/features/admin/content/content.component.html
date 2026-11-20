@@ -20,7 +20,7 @@
   }
 
   <nav class="content__tabs" i18n-aria-label aria-label="Sections">
-    @for (s of sections; track s.id) {
+    @for (s of sections(); track s.id) {
       <button
         type="button"
         class="content__tab"

@@ -79,4 +79,7 @@ public abstract partial class Texts
     public abstract string TwoFactorEmailBody(string firstName, string code, int minutes);
     public abstract string ContentKeyInvalid { get; }
     public abstract string ContentTooLong(int max);
+    public abstract string TariffNotFound { get; }
+    public abstract string LastTariff { get; }
+    public abstract string TariffNameRequired { get; }
 }

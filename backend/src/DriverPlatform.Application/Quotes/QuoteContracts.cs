@@ -42,11 +42,11 @@ public sealed record QuoteRequest
     public required PointInput Dropoff { get; init; }
     /// <summary>Local time at the pickup, without an offset, e.g. "2026-11-02T14:30:00".</summary>
     public DateTime PickupAt { get; init; }
-    [Range(1, 8)]
+    [Range(1, 50)]
     public int Passengers { get; init; } = 1;
-    [Range(0, 16)]
+    [Range(0, 60)]
     public int LargeLuggage { get; init; }
-    [Range(0, 16)]
+    [Range(0, 60)]
     public int SmallLuggage { get; init; }
     [MaxLength(3)]
     public List<ChildSeatInput> ChildSeats { get; init; } = [];
@@ -91,6 +91,8 @@ public sealed record QuoteLeg(
 
 public sealed record VehicleOption(
     VehicleCategory Category,
+    /// <summary>The name set in Admin → Pricing, in the request's language; null: the site's own name.</summary>
+    string? Name,
     int MaxPassengers,
     int MaxLuggage,
     bool Available,
@@ -108,7 +110,7 @@ public sealed record QuoteResponse(
     decimal VatRatePercent);
 
 /// <summary>Capacity and public tariff of a vehicle class (price = base fee + km × price per km, before surcharges).</summary>
-public sealed record VehicleCapacity(VehicleCategory Category, int MaxPassengers, int MaxLuggage, decimal BaseFee, decimal PricePerKm);
+public sealed record VehicleCapacity(VehicleCategory Category, string? Name, int MaxPassengers, int MaxLuggage, decimal BaseFee, decimal PricePerKm);
 
 /// <summary>An active surcharge as shown on the public tariffs; public holidays are grouped into one line.</summary>
 public sealed record PublicSurcharge(string Name, decimal Percent);

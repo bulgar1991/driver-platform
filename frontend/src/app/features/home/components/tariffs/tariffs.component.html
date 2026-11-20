@@ -40,28 +40,41 @@
             class="tariffs__car"
             [image]="card.image"
             [alt]="
-              (card.text?.title ?? card.category) +
-              ', ' +
-              (card.text?.models ?? '')
+              card.text.title +
+              (card.text.models ? ', ' + card.text.models : '')
             "
             sizes="(min-width: 640px) 22rem, 80vw" />
-          <h3 class="tariffs__name">{{ card.text?.title ?? card.category }}</h3>
-          <p class="tariffs__description" i18n>
-            {{
-              card.text?.bestFor  // i18n(ph="best_for")
-            }}, up to
-            {{
-              card.maxPassengers // i18n(ph="passengers")
-            }}
-            passengers and
-            {{
-              card.maxLuggage // i18n(ph="bags")
-            }}
-            large bags.
-            {{
-              card.text?.models  // i18n(ph="models")
-            }}.
-          </p>
+          <h3 class="tariffs__name">{{ card.text.title }}</h3>
+          @if (card.text.bestFor && card.text.models) {
+            <p class="tariffs__description" i18n>
+              {{
+                card.text.bestFor  // i18n(ph="best_for")
+              }}, up to
+              {{
+                card.maxPassengers // i18n(ph="passengers")
+              }}
+              passengers and
+              {{
+                card.maxLuggage // i18n(ph="bags")
+              }}
+              large bags.
+              {{
+                card.text.models  // i18n(ph="models")
+              }}.
+            </p>
+          } @else {
+            <p class="tariffs__description" i18n>
+              Up to
+              {{
+                card.maxPassengers // i18n(ph="passengers")
+              }}
+              passengers and
+              {{
+                card.maxLuggage // i18n(ph="bags")
+              }}
+              large bags.
+            </p>
+          }
           <p class="tariffs__price">
             <span class="tariffs__amount">{{ card.pricePerKm | money }}</span>
             <span class="tariffs__unit" i18n="unit after a price per kilometre"

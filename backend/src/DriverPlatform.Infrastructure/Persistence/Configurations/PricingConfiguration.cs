@@ -9,6 +9,11 @@ internal sealed class VehicleRateConfiguration : IEntityTypeConfiguration<Vehicl
     public void Configure(EntityTypeBuilder<VehicleRate> builder)
     {
         builder.HasIndex(r => r.Category).IsUnique();
+        foreach (var name in new[] { nameof(VehicleRate.NameEn), nameof(VehicleRate.NameIt), nameof(VehicleRate.NameDe), nameof(VehicleRate.NameFr) })
+        {
+            builder.Property(name).HasMaxLength(60);
+        }
+        builder.Property(r => r.IsActive).HasDefaultValue(true);
         builder.Property(r => r.PricePerKm).HasPrecision(8, 2);
     }
 }

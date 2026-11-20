@@ -12,3 +12,6 @@ declare const TIME_ZONE: string
 
 /** The site's currency, a three-letter ISO code ("EUR", "CHF"); `ng build --define CURRENCY="'CHF'"`. */
 declare const CURRENCY: string
+
+/** Google Tag Manager container ("GTM-XXXX"), empty for none; `ng build --define GTM_ID="'GTM-…'"`. */
+declare const GTM_ID: string

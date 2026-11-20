@@ -12,6 +12,7 @@ import { LogoComponent } from '@/shared/components/logo/logo.component'
 import { StaffRole } from '@/core/models'
 import { LanguageSwitchComponent } from '../language-switch/language-switch.component'
 import { ADMIN_NAVIGATION } from './admin-navigation'
+import { VehicleClassService } from '@/core/services/vehicle-class.service'
 
 @Component({
   selector: 'app-admin-layout',
@@ -29,6 +30,13 @@ import { ADMIN_NAVIGATION } from './admin-navigation'
 })
 export class AdminLayoutComponent {
   private readonly auth = inject(AuthService)
+
+  constructor() {
+    // Tariff names for every page of the panel (cars, zones, bookings, shifts).
+    inject(VehicleClassService)
+      .load()
+      .subscribe({ error: () => undefined })
+  }
 
   protected readonly user = this.auth.currentUser
   protected readonly menuOpen = signal(false)

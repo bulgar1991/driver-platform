@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { CONTACT, SERVICES, SOCIAL } from '@/features/home/home.content'
 import { IconComponent } from '@/shared/components/icon/icon.component'
@@ -7,6 +7,7 @@ import { LanguageSwitchComponent } from '../language-switch/language-switch.comp
 import { SITE_PAGES } from '../site-header/site-header.component'
 import { BRAND } from '@/core/brand'
 import { AREA_IN } from '@/core/area'
+import { ConsentService } from '@/core/services/consent.service'
 
 @Component({
   selector: 'app-site-footer',
@@ -16,6 +17,8 @@ import { AREA_IN } from '@/core/area'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SiteFooterComponent {
+  /** "Cookie settings": change the answer given in the cookie banner. */
+  protected readonly consent = inject(ConsentService)
   protected readonly year = new Date().getFullYear()
   protected readonly pages = SITE_PAGES
   protected readonly services = SERVICES

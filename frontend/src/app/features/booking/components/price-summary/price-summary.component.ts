@@ -9,7 +9,7 @@ import { LegPrice, Quote, QuoteLeg, VehicleOption } from '@/core/models'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { DurationPipe } from '@/shared/pipes/duration.pipe'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
-import { VEHICLE_INFO } from '../../vehicle-info'
+import { vehicleInfo } from '../../vehicle-info'
 import { TranslatedPipe } from '@/shared/pipes/translated.pipe'
 
 interface LegView {
@@ -32,7 +32,7 @@ export class PriceSummaryComponent {
 
   protected readonly title = computed(() => {
     const vehicle = this.vehicle()
-    return vehicle ? VEHICLE_INFO[vehicle.category].title : null
+    return vehicle ? vehicleInfo(vehicle.category, vehicle.name).title : null
   })
 
   protected readonly legs = computed<LegView[]>(() => {
