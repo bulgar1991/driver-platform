@@ -45,6 +45,41 @@ internal sealed partial class GermanTexts
     public override string RecordNotFound => "Nicht gefunden. Vielleicht wurde es bereits gelöscht.";
     public override string AttendanceTypeInUse => "Diese Art wird im Kalender verwendet. Ändern Sie zuerst diese Tage.";
     public override string RangeTooLong(int days) => $"Wählen Sie höchstens {days} Tage.";
+    public override string ReportNeedsFilter => "Wählen Sie Fahrer, Partner oder Fahrzeug (oder einen einzelnen Tag) für diesen Bericht.";
+    public override string Report(ReportWord word) => word switch
+    {
+        ReportWord.ListTitle => "Fahrten",
+        ReportWord.DailyTitle => "Einsatzplan",
+        ReportWord.DriverTitle => "Fahrerbericht",
+        ReportWord.PartnerTitle => "Partnerabrechnung",
+        ReportWord.VehicleTitle => "Fahrzeugbericht",
+        ReportWord.Period => "Zeitraum",
+        ReportWord.Generated => "Erstellt",
+        ReportWord.Date => "Datum",
+        ReportWord.Time => "Zeit",
+        ReportWord.Reference => "Referenz",
+        ReportWord.Customer => "Kunde",
+        ReportWord.Route => "Strecke",
+        ReportWord.Km => "km",
+        ReportWord.Pax => "Pers.",
+        ReportWord.Vehicle => "Fahrzeug",
+        ReportWord.Driver => "Fahrer",
+        ReportWord.Status => "Status",
+        ReportWord.Price => "Preis",
+        ReportWord.Pay => "Lohn",
+        ReportWord.Total => "Total",
+        ReportWord.Rides => "Fahrten",
+        ReportWord.Cancelled => "Storniert",
+        ReportWord.Distance => "Distanz",
+        ReportWord.Truncated => "Mehr Fahrten gefunden, als in einen Bericht passen: Suche eingrenzen.",
+        ReportWord.NotAssigned => "Noch nicht zugewiesen",
+        ReportWord.Flight => "Flug",
+        ReportWord.Page => "Seite",
+        ReportWord.Filters => "Filter",
+        ReportWord.Passengers => "Fahrgäste",
+        ReportWord.Class => "Klasse",
+        _ => word.ToString(),
+    };
 
     public override string DocumentName(DriverDocumentType type) => type switch
     {

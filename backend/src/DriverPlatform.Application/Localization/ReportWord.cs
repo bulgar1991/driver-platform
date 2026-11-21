@@ -1,0 +1,36 @@
+namespace DriverPlatform.Application.Localization;
+
+/// <summary>Words of the PDF reports of Admin → Search.</summary>
+public enum ReportWord
+{
+    ListTitle,
+    DailyTitle,
+    DriverTitle,
+    PartnerTitle,
+    VehicleTitle,
+    Period,
+    Generated,
+    Date,
+    Time,
+    Reference,
+    Customer,
+    Route,
+    Km,
+    Pax,
+    Vehicle,
+    Driver,
+    Status,
+    Price,
+    Pay,
+    Total,
+    Rides,
+    Cancelled,
+    Distance,
+    Truncated,
+    NotAssigned,
+    Flight,
+    Page,
+    Filters,
+    Passengers,
+    Class,
+}

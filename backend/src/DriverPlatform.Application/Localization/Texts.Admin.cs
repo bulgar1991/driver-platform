@@ -27,6 +27,8 @@ public abstract partial class Texts
     public abstract string RecordNotFound { get; }
     public abstract string AttendanceTypeInUse { get; }
     public abstract string RangeTooLong(int days);
+    public abstract string ReportNeedsFilter { get; }
+    public abstract string Report(ReportWord word);
 
     public abstract string DocumentName(DriverDocumentType type);
     public abstract string VehicleInsurance { get; }

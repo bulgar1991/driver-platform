@@ -1,0 +1,208 @@
+.search {
+  @apply flex flex-col gap-5;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__panel {
+    @apply flex flex-col gap-4 rounded-sm border border-ink-600 bg-ink-900/80 p-4 sm:p-5;
+  }
+
+  &__presets {
+    @apply flex flex-wrap gap-2;
+  }
+
+  &__preset {
+    @apply rounded-full border border-ink-600 px-3.5 py-1.5 text-xs text-ivory-300 transition-colors hover:border-gold/60 hover:text-ivory;
+
+    &--on {
+      @apply border-gold bg-gold/15 text-gold;
+    }
+  }
+
+  &__statuses {
+    @apply flex flex-wrap items-center gap-2 border-t border-ink-700 pt-4;
+
+    .search__label {
+      @apply mb-0 mr-1;
+    }
+  }
+
+  &__main {
+    @apply grid grid-cols-2 items-center gap-3 md:grid-cols-[11rem_11rem_minmax(0,1fr)_auto];
+  }
+
+  &__text {
+    @apply col-span-2 md:col-span-1;
+  }
+
+  &__filters {
+    @apply grid grid-cols-1 items-center gap-3 border-t border-ink-700 pt-4 sm:grid-cols-2 lg:grid-cols-4;
+  }
+
+  &__checks {
+    @apply flex flex-wrap items-center gap-x-4 sm:col-span-2 lg:col-span-1;
+  }
+
+  &__summary {
+    @apply flex flex-col gap-4 transition-opacity;
+
+    &--loading {
+      @apply opacity-60;
+    }
+  }
+
+  &__totals {
+    @apply grid gap-2;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  }
+
+  &__total {
+    @apply rounded-sm border border-ink-600 bg-ink-900 px-3 py-2.5;
+
+    dt {
+      @apply text-[10px] uppercase tracking-widest text-ivory-400;
+    }
+
+    dd {
+      @apply mt-1 font-display text-xl text-ivory;
+
+      small {
+        @apply font-sans text-[10px] tracking-widest text-ivory-400;
+      }
+    }
+
+    &--gold {
+      @apply border-gold/50 bg-gradient-to-br from-gold/15 to-transparent;
+
+      dd {
+        @apply text-gold;
+      }
+    }
+  }
+
+  &__label {
+    @apply mb-2 text-[10px] uppercase tracking-widest text-ivory-400;
+  }
+
+  &__hint {
+    @apply normal-case tracking-normal text-ivory-400;
+  }
+
+  &__report-list {
+    @apply grid gap-2;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  }
+
+  // A report: icon, name and what it contains. Appears when the filters allow it.
+  &__report {
+    @apply flex items-center gap-3 rounded-sm border border-ink-600 bg-ink-900 px-3.5 py-3 text-left transition-[border-color,transform] duration-200 hover:-translate-y-px hover:border-gold/70 disabled:pointer-events-none disabled:opacity-50;
+    animation: search-in 0.25s ease-out;
+
+    app-icon {
+      @apply h-9 w-9 shrink-0 rounded-full border border-gold/50 p-2 text-gold;
+    }
+
+    strong {
+      @apply flex items-center gap-2 text-sm font-normal text-ivory;
+    }
+
+    small {
+      @apply block text-xs text-ivory-400;
+    }
+  }
+
+  &__pdf {
+    @apply rounded-sm bg-danger/15 px-1.5 py-px text-[9px] font-semibold not-italic tracking-widest text-danger;
+  }
+
+  &__table-wrap {
+    @apply max-h-[70vh] overflow-auto rounded-sm border border-ink-600 bg-ink-900;
+  }
+
+  &__table {
+    @apply w-full min-w-[64rem] border-collapse text-sm;
+
+    th {
+      @apply sticky top-0 z-10 border-b border-ink-600 bg-ink-900 px-3 py-3 text-left text-[10px] font-normal uppercase tracking-widest text-ivory-400;
+    }
+
+    td {
+      @apply border-b border-ink-700 px-3 py-2.5 align-top text-ivory;
+    }
+  }
+
+  &__row {
+    @apply cursor-pointer transition-colors hover:bg-ink-800 focus-visible:bg-ink-800 focus-visible:outline-none;
+
+    &--cancelled td {
+      @apply text-ivory-400 line-through;
+    }
+  }
+
+  &__num {
+    @apply text-right tabular-nums;
+  }
+
+  &__nowrap {
+    @apply whitespace-nowrap;
+  }
+
+  &__ref {
+    @apply whitespace-nowrap font-mono text-xs text-gold;
+  }
+
+  &__muted {
+    @apply block text-xs text-ivory-400;
+  }
+
+  &__pending {
+    @apply text-warning;
+  }
+
+  &__status {
+    @apply inline-block whitespace-nowrap rounded-sm px-2 py-0.5 text-[10px] uppercase tracking-widest;
+
+    &--neutral {
+      @apply bg-ink-700 text-ivory-300;
+    }
+
+    &--warning {
+      @apply bg-warning/15 text-warning;
+    }
+
+    &--info {
+      @apply bg-sky-500/15 text-sky-300;
+    }
+
+    &--success {
+      @apply bg-success/15 text-success;
+    }
+
+    &--danger {
+      @apply bg-danger/15 text-danger;
+    }
+  }
+
+  &__empty {
+    @apply px-4 py-10 text-center text-sm text-ivory-400;
+  }
+}
+
+@keyframes search-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search__report {
+    animation: none;
+  }
+}
+
+::ng-deep .search-drawer {
+  @apply w-full max-w-lg;
+}

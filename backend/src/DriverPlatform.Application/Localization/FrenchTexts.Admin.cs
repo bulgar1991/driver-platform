@@ -45,6 +45,41 @@ internal sealed partial class FrenchTexts
     public override string RecordNotFound => "Introuvable. Il a peut-être déjà été supprimé.";
     public override string AttendanceTypeInUse => "Ce type est utilisé dans le calendrier. Modifiez d'abord ces jours.";
     public override string RangeTooLong(int days) => $"Choisissez au maximum {days} jours.";
+    public override string ReportNeedsFilter => "Choisissez le chauffeur, le partenaire ou le véhicule (ou un seul jour) de ce rapport.";
+    public override string Report(ReportWord word) => word switch
+    {
+        ReportWord.ListTitle => "Services",
+        ReportWord.DailyTitle => "Feuille d'exploitation",
+        ReportWord.DriverTitle => "Rapport chauffeur",
+        ReportWord.PartnerTitle => "Relevé partenaire",
+        ReportWord.VehicleTitle => "Rapport véhicule",
+        ReportWord.Period => "Période",
+        ReportWord.Generated => "Généré",
+        ReportWord.Date => "Date",
+        ReportWord.Time => "Heure",
+        ReportWord.Reference => "Référence",
+        ReportWord.Customer => "Client",
+        ReportWord.Route => "Trajet",
+        ReportWord.Km => "km",
+        ReportWord.Pax => "Pass.",
+        ReportWord.Vehicle => "Véhicule",
+        ReportWord.Driver => "Chauffeur",
+        ReportWord.Status => "Statut",
+        ReportWord.Price => "Prix",
+        ReportWord.Pay => "Paie",
+        ReportWord.Total => "Total",
+        ReportWord.Rides => "Courses",
+        ReportWord.Cancelled => "Annulées",
+        ReportWord.Distance => "Distance",
+        ReportWord.Truncated => "Plus de courses trouvées qu'un rapport ne peut contenir : affinez la recherche.",
+        ReportWord.NotAssigned => "Pas encore attribuées",
+        ReportWord.Flight => "Vol",
+        ReportWord.Page => "Page",
+        ReportWord.Filters => "Filtres",
+        ReportWord.Passengers => "Passagers",
+        ReportWord.Class => "Classe",
+        _ => word.ToString(),
+    };
 
     public override string DocumentName(DriverDocumentType type) => type switch
     {

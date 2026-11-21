@@ -45,6 +45,41 @@ internal sealed partial class ItalianTexts
     public override string RecordNotFound => "Non trovato. Forse è già stato eliminato.";
     public override string AttendanceTypeInUse => "Questo tipo è usato nel calendario. Modificare prima quei giorni.";
     public override string RangeTooLong(int days) => $"Scegliere al massimo {days} giorni.";
+    public override string ReportNeedsFilter => "Scegli l'autista, il partner o il veicolo (o un solo giorno) del report.";
+    public override string Report(ReportWord word) => word switch
+    {
+        ReportWord.ListTitle => "Servizi",
+        ReportWord.DailyTitle => "Foglio operativo",
+        ReportWord.DriverTitle => "Report autista",
+        ReportWord.PartnerTitle => "Estratto conto partner",
+        ReportWord.VehicleTitle => "Report veicolo",
+        ReportWord.Period => "Periodo",
+        ReportWord.Generated => "Generato",
+        ReportWord.Date => "Data",
+        ReportWord.Time => "Ora",
+        ReportWord.Reference => "Riferimento",
+        ReportWord.Customer => "Cliente",
+        ReportWord.Route => "Percorso",
+        ReportWord.Km => "km",
+        ReportWord.Pax => "Pax",
+        ReportWord.Vehicle => "Veicolo",
+        ReportWord.Driver => "Autista",
+        ReportWord.Status => "Stato",
+        ReportWord.Price => "Prezzo",
+        ReportWord.Pay => "Paga",
+        ReportWord.Total => "Totale",
+        ReportWord.Rides => "Corse",
+        ReportWord.Cancelled => "Annullate",
+        ReportWord.Distance => "Distanza",
+        ReportWord.Truncated => "Più corse di quante ne stiano in un report: restringi la ricerca.",
+        ReportWord.NotAssigned => "Non ancora assegnate",
+        ReportWord.Flight => "Volo",
+        ReportWord.Page => "Pagina",
+        ReportWord.Filters => "Filtri",
+        ReportWord.Passengers => "Passeggeri",
+        ReportWord.Class => "Classe",
+        _ => word.ToString(),
+    };
 
     public override string DocumentName(DriverDocumentType type) => type switch
     {

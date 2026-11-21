@@ -46,6 +46,41 @@ internal sealed partial class EnglishTexts
     public override string RecordNotFound => "Not found. It may have been deleted already.";
     public override string AttendanceTypeInUse => "This kind is used in the calendar. Change those days first.";
     public override string RangeTooLong(int days) => $"Pick at most {days} days.";
+    public override string ReportNeedsFilter => "Pick the driver, partner or vehicle (or a single day) this report is about.";
+    public override string Report(ReportWord word) => word switch
+    {
+        ReportWord.ListTitle => "Services",
+        ReportWord.DailyTitle => "Operations sheet",
+        ReportWord.DriverTitle => "Driver report",
+        ReportWord.PartnerTitle => "Partner statement",
+        ReportWord.VehicleTitle => "Vehicle report",
+        ReportWord.Period => "Period",
+        ReportWord.Generated => "Generated",
+        ReportWord.Date => "Date",
+        ReportWord.Time => "Time",
+        ReportWord.Reference => "Reference",
+        ReportWord.Customer => "Customer",
+        ReportWord.Route => "Route",
+        ReportWord.Km => "km",
+        ReportWord.Pax => "Pax",
+        ReportWord.Vehicle => "Vehicle",
+        ReportWord.Driver => "Driver",
+        ReportWord.Status => "Status",
+        ReportWord.Price => "Price",
+        ReportWord.Pay => "Pay",
+        ReportWord.Total => "Total",
+        ReportWord.Rides => "Rides",
+        ReportWord.Cancelled => "Cancelled",
+        ReportWord.Distance => "Distance",
+        ReportWord.Truncated => "More rides matched than fit in one report: narrow the search.",
+        ReportWord.NotAssigned => "Not assigned yet",
+        ReportWord.Flight => "Flight",
+        ReportWord.Page => "Page",
+        ReportWord.Filters => "Filters",
+        ReportWord.Passengers => "Passengers",
+        ReportWord.Class => "Class",
+        _ => word.ToString(),
+    };
 
     public override string DocumentName(DriverDocumentType type) => type switch
     {

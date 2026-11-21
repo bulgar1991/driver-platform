@@ -1,0 +1,387 @@
+<div class="search">
+  <header class="search__header">
+    <div>
+      <p class="eyebrow"><ng-container i18n>Services</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Search</ng-container></h1
+      >
+    </div>
+  </header>
+
+  <form
+    class="search__panel"
+    [formGroup]="form"
+    (ngSubmit)="search()"
+    novalidate>
+    <div
+      class="search__presets"
+      role="group"
+      aria-label="Period"
+      i18n-aria-label>
+      @for (p of presets; track p.key) {
+        <button
+          type="button"
+          class="search__preset"
+          [class.search__preset--on]="activePreset() === p.key"
+          [attr.aria-pressed]="activePreset() === p.key"
+          (click)="usePreset(p)">
+          {{ p.label }}
+        </button>
+      }
+    </div>
+
+    <div class="search__main">
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>From</mat-label>
+        <input
+          matInput
+          type="date"
+          formControlName="from"
+          (change)="datesChanged()" />
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>To</mat-label>
+        <input
+          matInput
+          type="date"
+          formControlName="to"
+          (change)="datesChanged()" />
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic" class="search__text">
+        <mat-label i18n>Text</mat-label>
+        <input
+          matInput
+          type="search"
+          formControlName="text"
+          i18n-placeholder
+          placeholder="Reference, name, phone, email, address, flight…" />
+      </mat-form-field>
+      <button appButton type="submit" [disabled]="loading()"
+        ><ng-container i18n>Search</ng-container></button
+      >
+    </div>
+
+    <div
+      class="search__statuses"
+      role="group"
+      aria-label="Status"
+      i18n-aria-label>
+      <span class="search__label" i18n>Status</span>
+      @for (st of statuses; track st) {
+        <button
+          type="button"
+          class="search__preset search__preset--status"
+          [class.search__preset--on]="form.controls.statuses.value.includes(st)"
+          [attr.aria-pressed]="form.controls.statuses.value.includes(st)"
+          (click)="toggleStatus(st)">
+          {{ statusLabel[st] }}
+        </button>
+      }
+    </div>
+
+    <div class="search__filters">
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>Source</mat-label>
+        <mat-select formControlName="source">
+          <mat-option [value]="null"
+            ><ng-container i18n>All</ng-container></mat-option
+          >
+          @for (s of sources; track s.value) {
+            <mat-option [value]="s.value">{{ s.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>Partner</mat-label>
+        <mat-select formControlName="partnerId">
+          <mat-option [value]="null"
+            ><ng-container i18n>All</ng-container></mat-option
+          >
+          @for (o of options()?.partners ?? []; track o.id) {
+            <mat-option [value]="o.id">{{ o.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>Driver</mat-label>
+        <mat-select formControlName="driverId">
+          <mat-option [value]="null"
+            ><ng-container i18n>All</ng-container></mat-option
+          >
+          @for (o of options()?.drivers ?? []; track o.id) {
+            <mat-option [value]="o.id">{{ o.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>Vehicle</mat-label>
+        <mat-select formControlName="vehicleId">
+          <mat-option [value]="null"
+            ><ng-container i18n>All</ng-container></mat-option
+          >
+          @for (o of options()?.vehicles ?? []; track o.id) {
+            <mat-option [value]="o.id">{{ o.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>Class</mat-label>
+        <mat-select formControlName="category">
+          <mat-option [value]="null"
+            ><ng-container i18n>All</ng-container></mat-option
+          >
+          @for (c of classes(); track c.category) {
+            <mat-option [value]="c.category">{{
+              text.categories[c.category]
+            }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>Payment</mat-label>
+        <mat-select formControlName="payment">
+          @for (p of payments; track p.value) {
+            <mat-option [value]="p.value">{{ p.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <div class="search__checks">
+        <mat-checkbox formControlName="unassigned"
+          ><ng-container i18n>Not assigned yet</ng-container></mat-checkbox
+        >
+        <mat-checkbox formControlName="includeCancelled"
+          ><ng-container i18n>Include cancelled</ng-container></mat-checkbox
+        >
+      </div>
+      <button
+        appButton
+        size="sm"
+        variant="ghost"
+        type="button"
+        (click)="reset()"
+        ><app-icon name="refresh" />&ngsp;<ng-container i18n
+          >Reset</ng-container
+        ></button
+      >
+    </div>
+  </form>
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  @if (result(); as r) {
+    <section
+      class="search__summary"
+      [class.search__summary--loading]="loading()">
+      <dl class="search__totals">
+        <div class="search__total">
+          <dt i18n>Rides</dt>
+          <dd>{{ r.totals.rides }}</dd>
+        </div>
+        @if (r.totals.cancelled) {
+          <div class="search__total">
+            <dt i18n>Cancelled</dt>
+            <dd>{{ r.totals.cancelled }}</dd>
+          </div>
+        }
+        <div class="search__total search__total--gold">
+          <dt i18n>Revenue</dt>
+          <dd>
+            {{ r.totals.revenue | number: '1.2-2' }}
+            <small>{{ r.currency }}</small>
+          </dd>
+        </div>
+        @if (r.totals.driverPay !== null) {
+          <div class="search__total">
+            <dt i18n>Driver pay</dt>
+            <dd>
+              {{ r.totals.driverPay | number: '1.2-2' }}
+              <small>{{ r.currency }}</small>
+            </dd>
+          </div>
+        }
+        <div class="search__total">
+          <dt i18n>Distance</dt>
+          <dd>{{ r.totals.km | number: '1.0-0' }} <small>km</small></dd>
+        </div>
+        <div class="search__total">
+          <dt i18n>Passengers</dt>
+          <dd>{{ r.totals.passengers }}</dd>
+        </div>
+      </dl>
+
+      <div class="search__reports">
+        <p class="search__label">
+          <ng-container i18n>Reports for this search</ng-container>
+          @if (!focused()) {
+            <span class="search__hint" i18n
+              >· pick a driver, partner, vehicle or a single day for more</span
+            >
+          }
+        </p>
+        <div class="search__report-list">
+          <button
+            type="button"
+            class="search__report"
+            [disabled]="!r.rides.length"
+            (click)="exportExcel()">
+            <app-icon name="download" />
+            <span>
+              <strong i18n>Excel</strong>
+              <small i18n>Every column, to filter and sum</small>
+            </span>
+          </button>
+          @for (kind of reports(); track kind) {
+            <button
+              type="button"
+              class="search__report search__report--pdf"
+              [disabled]="printing() !== null || !r.rides.length"
+              (click)="print(kind)">
+              <app-icon [name]="reportInfo[kind].icon" />
+              <span>
+                <strong
+                  >{{ reportInfo[kind].label }}
+                  <em class="search__pdf">PDF</em></strong
+                >
+                <small>{{
+                  printing() === kind ? '…' : reportInfo[kind].hint
+                }}</small>
+              </span>
+            </button>
+          }
+        </div>
+      </div>
+    </section>
+
+    @if (r.truncated) {
+      <p class="alert alert--warning" role="status" i18n
+        >Only the first 2,000 rides are shown. Narrow the search to see all of
+        them.</p
+      >
+    }
+
+    <div class="search__table-wrap">
+      <table class="search__table">
+        <thead>
+          <tr>
+            <th i18n>When</th>
+            <th i18n>Reference</th>
+            <th i18n>Customer</th>
+            <th i18n>Route</th>
+            <th class="search__num" i18n>Pax</th>
+            <th i18n>Driver · vehicle</th>
+            <th i18n>Status</th>
+            <th i18n>Payment</th>
+            <th class="search__num" i18n>Price</th>
+            @if (isAdmin) {
+              <th class="search__num" i18n>Pay</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (ride of r.rides; track ride.id) {
+            <tr
+              class="search__row"
+              [class.search__row--cancelled]="ride.status === 'Cancelled'"
+              tabindex="0"
+              (click)="openId.set(ride.id)"
+              (keydown.enter)="openId.set(ride.id)">
+              <td class="search__nowrap">
+                {{ ride.pickupLocal | date: 'EEE d MMM y' }}
+                <span class="search__muted"
+                  >{{ ride.pickupLocal | date: 'HH:mm' }} ·
+                  {{ ride.durationMinutes }} min</span
+                >
+              </td>
+              <td>
+                <span class="search__ref">{{ ride.reference }}</span>
+                @if (ride.externalReference) {
+                  <span class="search__muted">{{
+                    ride.externalReference
+                  }}</span>
+                }
+              </td>
+              <td>
+                {{ ride.clientName }}
+                <span class="search__muted">{{
+                  ride.partnerName ?? ride.clientPhone
+                }}</span>
+              </td>
+              <td>
+                {{ ride.pickupLabel }}
+                <span class="search__muted"
+                  >→ {{ ride.dropoffLabel }} ·
+                  {{ ride.distanceKm | number: '1.0-0' }} km</span
+                >
+              </td>
+              <td class="search__num">{{ ride.passengers }}</td>
+              <td>
+                @if (ride.driverName) {
+                  {{ ride.driverName }}
+                  <span class="search__muted">{{ ride.vehiclePlate }}</span>
+                } @else {
+                  <span class="search__pending" i18n>Not assigned</span>
+                  <span class="search__muted">{{
+                    text.categories[ride.vehicleCategory]
+                  }}</span>
+                }
+              </td>
+              <td>
+                <span
+                  class="search__status search__status--{{
+                    statusTone[ride.status]
+                  }}"
+                  >{{ statusLabel[ride.status] }}</span
+                >
+              </td>
+              <td class="search__nowrap">
+                {{
+                  ride.paymentStatus
+                    ? (paymentLabel[ride.paymentStatus] ?? ride.paymentStatus)
+                    : invoiced
+                }}
+              </td>
+              <td class="search__num search__nowrap">
+                {{ ride.totalPrice | number: '1.2-2' }}
+              </td>
+              @if (isAdmin) {
+                <td class="search__num search__nowrap">
+                  {{
+                    ride.driverPay !== null
+                      ? (ride.driverPay | number: '1.2-2')
+                      : '—'
+                  }}
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr>
+              <td [attr.colspan]="isAdmin ? 10 : 9" class="search__empty">
+                @if (!loading()) {
+                  <ng-container i18n
+                    >No rides match these filters.</ng-container
+                  >
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else if (loading()) {
+    <p class="search__muted" i18n>Searching…</p>
+  }
+</div>
+
+<p-drawer
+  position="right"
+  styleClass="search-drawer"
+  [visible]="openId() !== null"
+  (visibleChange)="$event || openId.set(null)"
+  i18n-header
+  header="Booking">
+  @if (openId(); as id) {
+    <app-booking-detail [bookingId]="id" (changed)="search()" />
+  }
+</p-drawer>
