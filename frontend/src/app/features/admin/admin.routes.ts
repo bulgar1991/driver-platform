@@ -16,6 +16,12 @@ export const ADMIN_ROUTES: Routes = [
       import('./bookings/bookings.component').then(m => m.BookingsComponent),
   },
   {
+    path: 'calendar',
+    title: $localize`Calendar · ${BRAND.name}:brand:`,
+    loadComponent: () =>
+      import('./calendar/calendar.component').then(m => m.CalendarComponent),
+  },
+  {
     path: 'shifts',
     title: $localize`Shifts · ${BRAND.name}:brand:`,
     loadComponent: () =>

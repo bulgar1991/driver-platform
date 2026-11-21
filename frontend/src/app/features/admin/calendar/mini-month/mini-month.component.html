@@ -1,0 +1,40 @@
+<div class="mini-month">
+  <div class="mini-month__head">
+    <button
+      type="button"
+      class="mini-month__nav"
+      i18n-aria-label
+      aria-label="Previous month"
+      (click)="browse(-1)"
+      ><app-icon name="arrow-left"
+    /></button>
+    <span class="mini-month__title">{{ month() | date: 'MMMM y' }}</span>
+    <button
+      type="button"
+      class="mini-month__nav"
+      i18n-aria-label
+      aria-label="Next month"
+      (click)="browse(1)"
+      ><app-icon name="arrow-right"
+    /></button>
+  </div>
+  <div class="mini-month__grid" role="grid">
+    @for (d of weekdays(); track d) {
+      <span class="mini-month__weekday">{{ d | date: 'EEEEE' }}</span>
+    }
+    @for (c of cells(); track c.date) {
+      <button
+        type="button"
+        class="mini-month__day"
+        [class.mini-month__day--out]="!c.inMonth"
+        [class.mini-month__day--weekend]="c.weekend"
+        [class.mini-month__day--today]="c.date === today()"
+        [class.mini-month__day--range]="c.date >= from() && c.date <= to()"
+        [attr.aria-label]="c.date | date: 'fullDate'"
+        [attr.aria-current]="c.date === today() ? 'date' : null"
+        (click)="picked.emit(c.date)">
+        {{ c.day }}
+      </button>
+    }
+  </div>
+</div>

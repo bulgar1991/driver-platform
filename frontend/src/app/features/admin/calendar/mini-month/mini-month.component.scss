@@ -1,0 +1,43 @@
+.mini-month {
+  @apply select-none;
+
+  &__head {
+    @apply mb-2 flex items-center justify-between;
+  }
+
+  &__title {
+    @apply text-xs uppercase tracking-widest text-ivory capitalize;
+  }
+
+  &__nav {
+    @apply flex h-7 w-7 items-center justify-center rounded-sm text-ivory-400 transition-colors hover:bg-ink-700 hover:text-gold;
+  }
+
+  &__grid {
+    @apply grid grid-cols-7 gap-0.5 text-center;
+  }
+
+  &__weekday {
+    @apply py-1 text-[10px] uppercase text-ivory-400;
+  }
+
+  &__day {
+    @apply h-7 rounded-sm text-xs text-ivory-200 transition-colors hover:bg-ink-700;
+
+    &--weekend {
+      @apply text-gold-300;
+    }
+
+    &--out {
+      @apply opacity-35;
+    }
+
+    &--range {
+      @apply bg-gold/15 text-ivory;
+    }
+
+    &--today {
+      @apply font-semibold ring-1 ring-gold;
+    }
+  }
+}

@@ -1,0 +1,537 @@
+<div class="cal">
+  <aside class="cal__side" aria-label="Calendar options" i18n-aria-label>
+    <app-mini-month
+      [anchor]="anchor()"
+      [from]="range().from"
+      [to]="range().to"
+      [today]="today"
+      (picked)="goTo($event)" />
+
+    <div class="cal__block">
+      <p class="cal__label" i18n>Period</p>
+      <div class="cal__chips">
+        @for (p of periods; track p.value) {
+          <button
+            type="button"
+            class="cal__chip"
+            [class.cal__chip--on]="period() === p.value"
+            [attr.aria-pressed]="period() === p.value"
+            (click)="setPeriod(p.value)">
+            {{ p.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="cal__block">
+      <p class="cal__label" i18n>Rows</p>
+      <div class="cal__segments">
+        @for (g of groups; track g.value) {
+          <button
+            type="button"
+            class="cal__segment"
+            [class.cal__segment--on]="groupBy() === g.value"
+            [attr.aria-pressed]="groupBy() === g.value"
+            (click)="groupBy.set(g.value)">
+            <app-icon [name]="g.icon" />
+            {{ g.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <div class="cal__block">
+      <mat-form-field subscriptSizing="dynamic" class="cal__search">
+        <mat-label i18n>Find</mat-label>
+        <input
+          matInput
+          type="search"
+          [value]="search()"
+          (input)="search.set($any($event.target).value)"
+          i18n-placeholder
+          placeholder="Reference, customer, place, plate…" />
+      </mat-form-field>
+      <mat-checkbox
+        [checked]="onlyPending()"
+        (change)="onlyPending.set($event.checked)"
+        ><ng-container i18n>Only rides to assign</ng-container></mat-checkbox
+      >
+      <mat-checkbox
+        [checked]="showCancelled()"
+        (change)="showCancelled.set($event.checked)"
+        ><ng-container i18n>Show cancelled</ng-container></mat-checkbox
+      >
+    </div>
+
+    <nav
+      class="cal__block cal__links"
+      aria-label="Related pages"
+      i18n-aria-label>
+      <a class="cal__link" routerLink="/admin/bookings"
+        ><app-icon name="calendar" /><ng-container i18n
+          >Bookings</ng-container
+        ></a
+      >
+      <a class="cal__link" routerLink="/admin/shifts"
+        ><app-icon name="route" /><ng-container i18n>Shifts</ng-container></a
+      >
+      <a class="cal__link" routerLink="/admin/attendance"
+        ><app-icon name="users" /><ng-container i18n
+          >Attendance</ng-container
+        ></a
+      >
+    </nav>
+
+    <div class="cal__block">
+      <p class="cal__label" i18n>Legend</p>
+      <ul class="cal__legend">
+        @for (t of tones; track t.tone) {
+          <li class="cal__legend-item">
+            <span class="cal__swatch cal__bar--{{ t.tone }}"></span>
+            {{ t.label }}
+          </li>
+        }
+      </ul>
+    </div>
+  </aside>
+
+  <section class="cal__main">
+    <header class="cal__header">
+      <div class="cal__nav">
+        <button
+          type="button"
+          class="cal__arrow"
+          i18n-aria-label
+          aria-label="Previous period"
+          (click)="step(-1)"
+          ><app-icon name="arrow-left"
+        /></button>
+        <h1 class="cal__title">
+          @if (range().from === range().to) {
+            {{ range().from | date: 'EEEE d MMMM y' }}
+          } @else {
+            {{ range().from | date: 'd MMM' }} –
+            {{ range().to | date: 'd MMM y' }}
+          }
+        </h1>
+        <button
+          type="button"
+          class="cal__arrow"
+          i18n-aria-label
+          aria-label="Next period"
+          (click)="step(1)"
+          ><app-icon name="arrow-right"
+        /></button>
+        <button
+          appButton
+          size="sm"
+          variant="ghost"
+          type="button"
+          [disabled]="anchor() === today"
+          (click)="goTo(today)"
+          ><ng-container i18n>Today</ng-container></button
+        >
+      </div>
+      <div class="cal__tools">
+        <div class="cal__modes" role="group" aria-label="View" i18n-aria-label>
+          <button
+            type="button"
+            class="cal__mode"
+            [class.cal__mode--on]="mode() === 'timeline'"
+            [attr.aria-pressed]="mode() === 'timeline'"
+            (click)="mode.set('timeline')"
+            ><app-icon name="route" /><ng-container i18n
+              >Timeline</ng-container
+            ></button
+          >
+          <button
+            type="button"
+            class="cal__mode"
+            [class.cal__mode--on]="mode() === 'table'"
+            [attr.aria-pressed]="mode() === 'table'"
+            (click)="mode.set('table')"
+            ><app-icon name="grid" /><ng-container i18n
+              >Table</ng-container
+            ></button
+          >
+        </div>
+        <button
+          appButton
+          size="sm"
+          variant="outline"
+          type="button"
+          [disabled]="!rides().length"
+          (click)="export()"
+          ><app-icon name="download" />&ngsp;<ng-container i18n
+            >Export (Excel)</ng-container
+          ></button
+        >
+      </div>
+    </header>
+
+    <dl class="cal__totals">
+      <div class="cal__total">
+        <dt i18n>Services</dt>
+        <dd>{{ totals().services }}</dd>
+      </div>
+      <div class="cal__total" [class.cal__total--alert]="totals().pending > 0">
+        <dt i18n>To assign</dt>
+        <dd>{{ totals().pending }}</dd>
+      </div>
+      <div class="cal__total">
+        <dt i18n>Revenue</dt>
+        <dd>
+          {{ totals().revenue | number: '1.0-0' }}
+          <small>{{ data()?.currency }}</small>
+        </dd>
+      </div>
+      <div class="cal__total">
+        <dt i18n>Partners</dt>
+        <dd>
+          {{ totals().partner | number: '1.0-0' }}
+          <small>{{ data()?.currency }}</small>
+        </dd>
+      </div>
+      <div class="cal__total">
+        <dt i18n>Website</dt>
+        <dd>
+          {{ totals().website | number: '1.0-0' }}
+          <small>{{ data()?.currency }}</small>
+        </dd>
+      </div>
+      @if (isAdmin) {
+        <div class="cal__total">
+          <dt i18n>Driver pay</dt>
+          <dd>
+            {{ totals().driverPay | number: '1.0-0' }}
+            <small>{{ data()?.currency }}</small>
+          </dd>
+        </div>
+        <div class="cal__total cal__total--gold">
+          <dt i18n>After driver pay</dt>
+          <dd>
+            {{ totals().margin | number: '1.0-0' }}
+            <small>{{ data()?.currency }}</small>
+          </dd>
+        </div>
+      }
+      <div class="cal__total">
+        <dt i18n>Distance</dt>
+        <dd>{{ totals().km | number: '1.0-0' }} <small>km</small></dd>
+      </div>
+    </dl>
+
+    @if (error(); as message) {
+      <p class="alert alert--error" role="alert">{{ message }}</p>
+    }
+
+    @if (mode() === 'timeline') {
+      <div
+        #scrollBox
+        class="cal__scroll"
+        [class.cal__scroll--loading]="loading()">
+        <div class="cal__timeline" [style.--track]="trackWidth() + 'px'">
+          <div class="cal__axis">
+            <div class="cal__corner">
+              {{ groupLabel() }}
+            </div>
+            <div class="cal__axis-track">
+              @for (t of ticks(); track t.left) {
+                <span
+                  class="cal__tick"
+                  [class.cal__tick--major]="t.major"
+                  [style.left.%]="t.left">
+                  @if (t.label.length > 2) {
+                    <span class="cal__tick-day">{{
+                      t.date | date: 'EEE d'
+                    }}</span>
+                  } @else {
+                    {{ t.label }}
+                  }
+                </span>
+              }
+            </div>
+          </div>
+
+          <div
+            #rowsBox
+            class="cal__rows"
+            (pointerdown)="pointerDown($event)"
+            (pointermove)="pointerMove($event)"
+            (pointerup)="pointerUp()"
+            (pointercancel)="pointerUp()">
+            <div class="cal__grid" aria-hidden="true">
+              @for (t of ticks(); track t.left) {
+                <span
+                  class="cal__gridline"
+                  [class.cal__gridline--major]="t.major"
+                  [class.cal__gridline--weekend]="
+                    t.major && t.weekend && period() !== 'day'
+                  "
+                  [style.left.%]="t.left"></span>
+              }
+              @if (nowLeft(); as left) {
+                <span class="cal__now" [style.left.%]="left"
+                  ><span class="cal__now-dot"></span
+                ></span>
+              }
+            </div>
+
+            @for (row of rows(); track row.key) {
+              <div
+                class="cal__row"
+                [class.cal__row--pending]="row.pending"
+                [style.height.px]="rowHeight(row)">
+                <button
+                  type="button"
+                  class="cal__row-head"
+                  i18n-title
+                  title="Select every ride of this row"
+                  (click)="selectRow(row)">
+                  <span class="cal__row-title">{{ row.title }}</span>
+                  @if (row.subtitle) {
+                    <span class="cal__row-sub">{{ row.subtitle }}</span>
+                  }
+                  @if (row.bars.length) {
+                    <span class="cal__row-count">{{ row.bars.length }}</span>
+                  }
+                </button>
+                <div class="cal__track">
+                  @for (b of row.backdrop; track $index) {
+                    <span
+                      class="cal__absence"
+                      [style.left.%]="b.left"
+                      [style.width.%]="b.width"
+                      [style.--absence]="b.color"
+                      [attr.title]="b.label"
+                      ><span class="cal__absence-label">{{
+                        b.label
+                      }}</span></span
+                    >
+                  }
+                  @for (bar of row.bars; track bar.ride.id) {
+                    <button
+                      type="button"
+                      class="cal__bar cal__bar--{{ tone(bar.ride) }}"
+                      [class.cal__bar--selected]="selected().has(bar.ride.id)"
+                      [class.cal__bar--clip-start]="bar.clippedStart"
+                      [class.cal__bar--clip-end]="bar.clippedEnd"
+                      [style.left.%]="bar.left"
+                      [style.width.%]="bar.width"
+                      [style.top.px]="lanePad + bar.lane * laneHeight"
+                      [attr.title]="barTitle(bar)"
+                      (click)="barClick($event, bar.ride)"
+                      (contextmenu)="barMenu($event, bar.ride)">
+                      <span class="cal__bar-time">{{
+                        bar.ride.pickupLocal.slice(11, 16)
+                      }}</span>
+                      <span class="cal__bar-text"
+                        >{{ bar.ride.partnerName ?? bar.ride.clientName }} ·
+                        {{ bar.ride.pickupLabel }} →
+                        {{ bar.ride.dropoffLabel }}</span
+                      >
+                    </button>
+                  }
+                </div>
+              </div>
+            } @empty {
+              <p class="cal__empty">
+                @if (!loading()) {
+                  <ng-container i18n>No rows to show.</ng-container>
+                }
+              </p>
+            }
+
+            @if (band(); as b) {
+              <span
+                class="cal__band"
+                [style.left.px]="b.x"
+                [style.top.px]="b.y"
+                [style.width.px]="b.w"
+                [style.height.px]="b.h"></span>
+            }
+          </div>
+        </div>
+      </div>
+      <p class="cal__hint" i18n
+        >Click a ride to open it. Right-click, Ctrl/⌘-click, a row name or a
+        rectangle drawn with the mouse selects rides; Esc clears the
+        selection.</p
+      >
+    } @else {
+      <div class="cal__table-wrap">
+        <table class="cal__table">
+          <thead>
+            <tr>
+              <th>
+                <span class="sr-only" i18n>Select</span>
+              </th>
+              <th i18n>When</th>
+              <th i18n>Reference</th>
+              <th i18n>Customer</th>
+              <th i18n>Route</th>
+              <th i18n>Pax</th>
+              <th i18n>Driver · vehicle</th>
+              <th i18n>Status</th>
+              <th class="cal__num" i18n>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of tableRides(); track r.id) {
+              <tr
+                class="cal__table-row"
+                [class.cal__table-row--selected]="selected().has(r.id)"
+                (click)="openId.set(r.id)">
+                <td (click)="$event.stopPropagation()">
+                  <mat-checkbox
+                    [checked]="selected().has(r.id)"
+                    (change)="toggle(r.id)"
+                    [attr.aria-label]="r.reference" />
+                </td>
+                <td class="cal__nowrap">
+                  {{ r.pickupLocal | date: 'EEE d MMM, HH:mm' }}
+                  <span class="cal__muted">{{ r.durationMinutes }} min</span>
+                </td>
+                <td class="cal__ref">{{ r.reference }}</td>
+                <td>
+                  {{ r.clientName }}
+                  @if (r.partnerName) {
+                    <span class="cal__muted">{{ r.partnerName }}</span>
+                  }
+                </td>
+                <td>
+                  {{ r.pickupLabel }}
+                  <span class="cal__muted">→ {{ r.dropoffLabel }}</span>
+                </td>
+                <td>{{ r.passengers }}</td>
+                <td>
+                  @if (r.driverName) {
+                    {{ r.driverName }}
+                    <span class="cal__muted">{{ r.vehiclePlate }}</span>
+                  } @else {
+                    <span class="cal__pending">{{ tx.notAssigned }}</span>
+                  }
+                </td>
+                <td>
+                  <span class="cal__status cal__bar--{{ tone(r) }}">{{
+                    r.shiftStatus && r.status === 'Assigned'
+                      ? shiftLabel[r.shiftStatus]
+                      : statusLabel[r.status]
+                  }}</span>
+                </td>
+                <td class="cal__num cal__nowrap">
+                  {{ r.totalPrice | number: '1.2-2' }}
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="9" class="cal__empty">
+                  @if (!loading()) {
+                    <ng-container i18n>No rides in this period.</ng-container>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    @if (selectionInfo().count) {
+      <div
+        class="cal__selection"
+        role="region"
+        aria-label="Selection"
+        i18n-aria-label>
+        <span class="cal__selection-count">
+          <strong>{{ selectionInfo().count }}</strong>
+          <ng-container i18n>selected</ng-container>
+          <span class="cal__muted"
+            >{{ selectionInfo().revenue | number: '1.0-0' }}
+            {{ data()?.currency }}</span
+          >
+        </span>
+        <div class="cal__selection-actions">
+          @if (selectionInfo().allPending) {
+            <button appButton size="sm" type="button" (click)="buildShift()"
+              ><app-icon name="route" />&ngsp;<ng-container i18n
+                >Assign driver and vehicle</ng-container
+              ></button
+            >
+          }
+          @if (selectionInfo().shiftId; as shiftId) {
+            <button
+              appButton
+              size="sm"
+              type="button"
+              (click)="openShift(shiftId)"
+              ><app-icon name="edit" />&ngsp;<ng-container i18n
+                >Open the shift</ng-container
+              ></button
+            >
+          }
+          @if (!selectionInfo().allPending && !selectionInfo().shiftId) {
+            <span class="cal__muted" i18n
+              >Select rides still to assign, or rides of one shift.</span
+            >
+          }
+          <button
+            appButton
+            size="sm"
+            variant="outline"
+            type="button"
+            (click)="export()"
+            ><app-icon name="download" />&ngsp;<ng-container i18n
+              >Export</ng-container
+            ></button
+          >
+          <button
+            appButton
+            size="sm"
+            variant="ghost"
+            type="button"
+            (click)="selectAllShown()"
+            ><ng-container i18n>All shown</ng-container></button
+          >
+          <button
+            appButton
+            size="sm"
+            variant="ghost"
+            type="button"
+            (click)="resetSelection()"
+            ><app-icon name="close" />&ngsp;<ng-container i18n
+              >Clear</ng-container
+            ></button
+          >
+        </div>
+      </div>
+    }
+  </section>
+</div>
+
+<p-drawer
+  position="right"
+  styleClass="cal-drawer"
+  [visible]="openId() !== null"
+  (visibleChange)="$event || openId.set(null)"
+  [header]="tx.booking">
+  @if (openId(); as id) {
+    <app-booking-detail [bookingId]="id" (changed)="load()" />
+  }
+</p-drawer>
+
+<ng-template
+  [appDialogOpen]="editorOpen()"
+  dialogWidth="44rem"
+  (dialogClosed)="editorOpen.set(false)">
+  <app-dialog [title]="editingShift() ? tx.editShift : tx.newShift">
+    @if (editorOpen()) {
+      <app-shift-editor
+        [shift]="editingShift()"
+        [candidates]="candidates()"
+        [preselected]="preselected()"
+        (saved)="shiftSaved($event)"
+        (closed)="editorOpen.set(false)" />
+    }
+  </app-dialog>
+</ng-template>

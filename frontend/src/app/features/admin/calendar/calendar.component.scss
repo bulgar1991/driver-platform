@@ -1,0 +1,458 @@
+// Services calendar. Bars are absolutely placed by percentage, so the browser lays out each row once;
+// hover and selection only change colours and a transform (no layout work while moving the mouse).
+$head: 13.5rem;
+$lane: 30px;
+$pad: 6px;
+
+.cal {
+  @apply grid grid-cols-1 gap-5 xl:grid-cols-[16rem_minmax(0,1fr)];
+
+  // Side panel
+  &__side {
+    @apply flex flex-col gap-5 rounded-sm border border-ink-600 bg-ink-900/80 p-4 xl:sticky xl:top-20 xl:max-h-[calc(100vh-6rem)] xl:self-start xl:overflow-y-auto;
+  }
+
+  &__block {
+    @apply flex flex-col gap-2 border-t border-ink-700 pt-4;
+  }
+
+  &__label {
+    @apply text-[10px] uppercase tracking-widest text-ivory-400;
+  }
+
+  &__chips {
+    @apply grid grid-cols-3 gap-1.5;
+  }
+
+  &__chip {
+    @apply rounded-sm border border-ink-600 px-2 py-1.5 text-xs text-ivory-300 transition-colors hover:border-gold/60 hover:text-ivory;
+
+    &--on {
+      @apply border-gold bg-gold/15 text-gold;
+    }
+  }
+
+  &__segments {
+    @apply grid grid-cols-2 gap-1.5;
+  }
+
+  &__segment {
+    @apply flex items-center gap-2 rounded-sm border border-ink-600 px-2.5 py-2 text-xs text-ivory-300 transition-colors hover:border-gold/60 hover:text-ivory;
+
+    app-icon {
+      @apply h-4 w-4;
+    }
+
+    &--on {
+      @apply border-gold bg-gold/15 text-gold;
+    }
+  }
+
+  &__search {
+    @apply w-full;
+  }
+
+  &__links {
+    @apply gap-1;
+  }
+
+  &__link {
+    @apply flex items-center gap-2.5 rounded-sm px-2 py-1.5 text-sm text-ivory-300 transition-colors hover:bg-ink-700 hover:text-gold;
+
+    app-icon {
+      @apply h-4 w-4;
+    }
+  }
+
+  &__legend {
+    @apply grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs text-ivory-300;
+  }
+
+  &__legend-item {
+    @apply flex items-center gap-2;
+  }
+
+  &__swatch {
+    @apply inline-block h-3 w-5 shrink-0 rounded-[3px];
+  }
+
+  // Main area
+  &__main {
+    @apply flex min-w-0 flex-col gap-4 pb-20;
+  }
+
+  &__header {
+    @apply flex flex-wrap items-center justify-between gap-3;
+  }
+
+  &__nav {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  &__arrow {
+    @apply flex h-9 w-9 items-center justify-center rounded-full border border-ink-600 text-ivory-300 transition-colors hover:border-gold hover:text-gold;
+  }
+
+  &__title {
+    @apply min-w-[14rem] text-center font-display text-xl capitalize text-ivory sm:text-2xl;
+  }
+
+  &__tools {
+    @apply flex flex-wrap items-center gap-3;
+  }
+
+  &__modes {
+    @apply flex rounded-sm border border-ink-600 p-0.5;
+  }
+
+  &__mode {
+    @apply flex items-center gap-2 rounded-sm px-3 py-1.5 text-xs uppercase tracking-widest text-ivory-400 transition-colors hover:text-ivory;
+
+    app-icon {
+      @apply h-4 w-4;
+    }
+
+    &--on {
+      @apply bg-gold/15 text-gold;
+    }
+  }
+
+  // Totals strip
+  &__totals {
+    @apply grid gap-2;
+    grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  }
+
+  &__total {
+    @apply rounded-sm border border-ink-600 bg-ink-900 px-3 py-2.5;
+
+    dt {
+      @apply text-[10px] uppercase tracking-widest text-ivory-400;
+    }
+
+    dd {
+      @apply mt-1 font-display text-xl text-ivory;
+
+      small {
+        @apply font-sans text-[10px] tracking-widest text-ivory-400;
+      }
+    }
+
+    &--alert {
+      @apply border-warning/40;
+
+      dd {
+        @apply text-warning;
+      }
+    }
+
+    &--gold {
+      @apply border-gold/50 bg-gradient-to-br from-gold/15 to-transparent;
+
+      dd {
+        @apply text-gold;
+      }
+    }
+  }
+
+  // Timeline
+  &__scroll {
+    @apply relative max-h-[68vh] overflow-auto rounded-sm border border-ink-600 bg-ink-950;
+    overscroll-behavior: contain;
+    transition: opacity 0.2s;
+
+    &--loading {
+      @apply opacity-60;
+    }
+  }
+
+  &__timeline {
+    width: calc(#{$head} + var(--track));
+    min-width: 100%;
+  }
+
+  &__axis {
+    @apply sticky top-0 z-30 flex h-10 border-b border-ink-600 bg-ink-900/95 backdrop-blur;
+  }
+
+  &__corner {
+    @apply sticky left-0 z-10 flex shrink-0 items-center border-r border-ink-600 bg-ink-900 px-3 text-[10px] uppercase tracking-widest text-ivory-400;
+    width: $head;
+  }
+
+  &__axis-track {
+    @apply relative flex-1;
+  }
+
+  &__tick {
+    @apply absolute top-0 flex h-full items-center pl-1.5 text-[11px] tabular-nums text-ivory-400;
+
+    &--major {
+      @apply text-ivory-200;
+    }
+  }
+
+  &__tick-day {
+    @apply whitespace-nowrap text-[11px] uppercase tracking-wider;
+  }
+
+  &__rows {
+    @apply relative select-none;
+    touch-action: pan-x pan-y;
+  }
+
+  // One layer of grid lines for all rows: far fewer elements than lines per row.
+  &__grid {
+    @apply pointer-events-none absolute bottom-0 right-0 top-0;
+    left: $head;
+  }
+
+  &__gridline {
+    @apply absolute bottom-0 top-0 w-px bg-ink-800;
+
+    &--major {
+      @apply bg-ink-600;
+    }
+
+    &--weekend {
+      @apply bg-ink-600;
+      box-shadow: 0 0 0 0 transparent;
+    }
+  }
+
+  &__now {
+    @apply absolute bottom-0 top-0 z-20 w-0.5 bg-gold;
+    box-shadow: 0 0 12px rgb(201 164 92 / 0.6);
+  }
+
+  &__now-dot {
+    @apply absolute -left-[5px] -top-1 h-3 w-3 rounded-full bg-gold;
+  }
+
+  &__row {
+    @apply relative flex border-b border-ink-800;
+
+    &:hover {
+      @apply bg-white/[0.015];
+    }
+
+    &--pending {
+      @apply bg-warning/[0.04];
+
+      .cal__row-title {
+        @apply text-warning;
+      }
+    }
+  }
+
+  &__row-head {
+    @apply sticky left-0 z-10 flex shrink-0 flex-col items-start justify-center border-r border-ink-600 bg-ink-900 px-3 text-left transition-colors hover:bg-ink-800;
+    width: $head;
+  }
+
+  &__row-title {
+    @apply w-full truncate pr-6 text-sm text-ivory;
+  }
+
+  &__row-sub {
+    @apply w-full truncate text-[10px] text-ivory-400;
+  }
+
+  &__row-count {
+    @apply absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-ink-700 px-1.5 text-[10px] tabular-nums text-ivory-300;
+  }
+
+  &__track {
+    @apply relative flex-1;
+  }
+
+  &__absence {
+    @apply absolute bottom-0 top-0 overflow-hidden;
+    background: repeating-linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--absence) 22%, transparent) 0 6px,
+      color-mix(in srgb, var(--absence) 8%, transparent) 6px 12px
+    );
+    border-left: 2px solid var(--absence);
+  }
+
+  &__absence-label {
+    @apply absolute bottom-0.5 left-1.5 whitespace-nowrap text-[10px] uppercase tracking-wider;
+    color: var(--absence);
+  }
+
+  // A ride
+  &__bar {
+    @apply absolute z-10 flex items-center gap-1.5 overflow-hidden whitespace-nowrap rounded-[5px] border px-2 text-left text-[11px] leading-none;
+    height: $lane - 4px;
+    min-width: 6px;
+    transition:
+      transform 0.15s ease,
+      filter 0.15s ease;
+
+    &:hover {
+      @apply z-20;
+      transform: translateY(-1px);
+      filter: brightness(1.15);
+    }
+
+    &:focus-visible {
+      @apply outline outline-2 outline-offset-1 outline-gold;
+    }
+
+    &--pending {
+      @apply border-warning/70 bg-warning/20 text-warning;
+    }
+
+    &--draft {
+      @apply border-dashed border-gold/70 bg-gold/10 text-gold-200;
+    }
+
+    &--sent {
+      @apply border-sky-400/60 bg-sky-500/20 text-sky-100;
+    }
+
+    &--confirmed {
+      @apply border-success/70 bg-success/25 text-emerald-50;
+    }
+
+    &--onboard {
+      @apply border-teal-300/70 bg-teal-400/30 text-teal-50;
+    }
+
+    &--done {
+      @apply border-ink-500 bg-ink-700 text-ivory-400;
+    }
+
+    &--cancelled {
+      @apply border-danger/50 text-danger/80 line-through;
+      background: repeating-linear-gradient(
+        -45deg,
+        rgb(239 68 68 / 0.12) 0 5px,
+        transparent 5px 10px
+      );
+    }
+
+    &--selected {
+      @apply z-20 ring-2 ring-gold ring-offset-1 ring-offset-ink-950;
+    }
+
+    &--clip-start {
+      @apply rounded-l-none border-l-0;
+    }
+
+    &--clip-end {
+      @apply rounded-r-none border-r-0;
+    }
+  }
+
+  &__bar-time {
+    @apply font-semibold tabular-nums;
+  }
+
+  &__bar-text {
+    @apply truncate opacity-90;
+  }
+
+  &__band {
+    @apply pointer-events-none absolute z-40 rounded-sm border border-gold bg-gold/10;
+  }
+
+  &__empty {
+    @apply px-4 py-10 text-center text-sm text-ivory-400;
+  }
+
+  &__hint {
+    @apply text-xs text-ivory-400;
+  }
+
+  // Table mode
+  &__table-wrap {
+    @apply max-h-[70vh] overflow-auto rounded-sm border border-ink-600 bg-ink-900;
+  }
+
+  &__table {
+    @apply w-full min-w-[60rem] border-collapse text-sm;
+
+    th {
+      @apply sticky top-0 z-10 border-b border-ink-600 bg-ink-900 px-3 py-3 text-left text-[10px] font-normal uppercase tracking-widest text-ivory-400;
+    }
+
+    td {
+      @apply border-b border-ink-700 px-3 py-2.5 align-top text-ivory;
+    }
+  }
+
+  &__table-row {
+    @apply cursor-pointer transition-colors hover:bg-ink-800;
+
+    &--selected {
+      @apply bg-gold/10;
+    }
+  }
+
+  &__num {
+    @apply text-right tabular-nums;
+  }
+
+  &__nowrap {
+    @apply whitespace-nowrap;
+  }
+
+  &__ref {
+    @apply whitespace-nowrap font-mono text-xs text-gold;
+  }
+
+  &__muted {
+    @apply block text-xs text-ivory-400;
+  }
+
+  &__pending {
+    @apply text-warning;
+  }
+
+  &__status {
+    @apply inline-block whitespace-nowrap rounded-sm border px-2 py-0.5 text-[10px] uppercase tracking-widest no-underline;
+  }
+
+  // Booking manager: what is selected, and what can be done with it
+  &__selection {
+    @apply sticky bottom-4 z-40 flex flex-wrap items-center justify-between gap-3 rounded-sm border border-gold/60 bg-ink-900/95 px-4 py-3 shadow-gold backdrop-blur;
+    animation: cal-rise 0.2s ease-out;
+  }
+
+  &__selection-count {
+    @apply flex items-baseline gap-2 text-sm text-ivory;
+
+    strong {
+      @apply font-display text-2xl text-gold;
+    }
+
+    .cal__muted {
+      @apply inline;
+    }
+  }
+
+  &__selection-actions {
+    @apply flex flex-wrap items-center gap-2;
+  }
+}
+
+@keyframes cal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cal__bar,
+  .cal__selection {
+    animation: none;
+    transition: none;
+  }
+}
+
+::ng-deep .cal-drawer {
+  @apply w-full max-w-lg;
+}

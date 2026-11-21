@@ -2,6 +2,7 @@ import { NavItem } from '@/core/models'
 
 export const ADMIN_NAVIGATION: NavItem[] = [
   { label: $localize`Dashboard`, path: '/admin', icon: 'grid' },
+  { label: $localize`Calendar`, path: '/admin/calendar', icon: 'calendar' },
   { label: $localize`Bookings`, path: '/admin/bookings', icon: 'calendar' },
   { label: $localize`Shifts`, path: '/admin/shifts', icon: 'route' },
   { label: $localize`Drivers`, path: '/admin/drivers', icon: 'users' },
