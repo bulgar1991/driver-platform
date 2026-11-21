@@ -38,6 +38,13 @@ internal sealed partial class GermanTexts
         $"Nur {minutes} Min. zwischen {earlier} und {later}, plus die Fahrt zur nächsten Abholung.";
     public override string MarkedNotAvailable => "Als nicht verfügbar markiert";
     public override string OnAnotherShift => "Zu dieser Zeit bereits in einer anderen Schicht";
+    public override string AbsentOn(string reason, DateOnly date) => $"{reason} am {date:dd.MM.yyyy} (Anwesenheitskalender)";
+    public override string NotEmployed => "An diesem Datum nicht beschäftigt";
+    public override string GiveBothTimes => "Geben Sie Beginn und Ende an, oder keines von beiden für einen ganzen Tag.";
+    public override string GiveDateOrKm => "Geben Sie ein Datum oder einen Kilometerstand an.";
+    public override string RecordNotFound => "Nicht gefunden. Vielleicht wurde es bereits gelöscht.";
+    public override string AttendanceTypeInUse => "Diese Art wird im Kalender verwendet. Ändern Sie zuerst diese Tage.";
+    public override string RangeTooLong(int days) => $"Wählen Sie höchstens {days} Tage.";
 
     public override string DocumentName(DriverDocumentType type) => type switch
     {

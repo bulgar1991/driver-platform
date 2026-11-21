@@ -29,6 +29,10 @@ public interface IAppDbContext
     DbSet<Photo> Photos { get; }
     DbSet<SiteContent> SiteContents { get; }
     DbSet<PageVisit> PageVisits { get; }
+    DbSet<AttendanceType> AttendanceTypes { get; }
+    DbSet<AttendanceEntry> AttendanceEntries { get; }
+    DbSet<VehicleExpiration> VehicleExpirations { get; }
+    DbSet<VehicleRefuel> VehicleRefuels { get; }
     DbSet<BookingComRide> BookingComRides { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

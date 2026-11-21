@@ -52,17 +52,22 @@ public sealed class NotificationService(
             _ => t.NewShift(when, rides, shift.Vehicle.PlateNumber),
         };
 
-        await SendAsync(kind, NotificationChannel.WhatsApp, driver.Phone, log =>
+        // Email only when the driver has an address: otherwise WhatsApp, whatever was chosen.
+        var byEmail = driver.NotifyBy != DriverNotify.WhatsApp && !string.IsNullOrEmpty(driver.Email);
+        if (driver.NotifyBy != DriverNotify.Email || !byEmail)
         {
-            log.DriverId = driver.Id;
-            log.AssignmentId = shift.Id;
-        }, () => whatsApp.SendTemplateAsync(driver.Phone, kind, t.Language, [driver.FirstName, headline, url], cancellationToken), cancellationToken);
+            await SendAsync(kind, NotificationChannel.WhatsApp, driver.Phone, log =>
+            {
+                log.DriverId = driver.Id;
+                log.AssignmentId = shift.Id;
+            }, () => whatsApp.SendTemplateAsync(driver.Phone, kind, t.Language, [driver.FirstName, headline, url], cancellationToken), cancellationToken);
+        }
 
-        if (!string.IsNullOrEmpty(driver.Email))
+        if (byEmail)
         {
             var lines = shift.Bookings.Where(b => b.Status != BookingStatus.Cancelled).OrderBy(b => b.PickupAt)
                 .Select(b => b.Describe(t)).ToList();
-            await SendEmailAsync(kind, driver.Email, $"{driver.FirstName} {driver.LastName}", headline,
+            await SendEmailAsync(kind, driver.Email!, $"{driver.FirstName} {driver.LastName}", headline,
                 [t.Hello(driver.FirstName), headline, .. lines], (t.OpenMyShifts, url),
                 log => { log.DriverId = driver.Id; log.AssignmentId = shift.Id; }, cancellationToken);
         }

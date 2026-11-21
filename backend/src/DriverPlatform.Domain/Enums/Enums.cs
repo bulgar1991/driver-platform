@@ -188,3 +188,19 @@ public enum DriverApplicationStatus
     Accepted,
     Rejected,
 }
+
+public enum DriverContractType
+{
+    Employee,
+    FixedTerm,
+    Freelance,
+    Agency,
+}
+
+/// <summary>Where shift messages go: WhatsApp and email (email only when an address is on file), or just one.</summary>
+public enum DriverNotify
+{
+    WhatsAppAndEmail,
+    WhatsApp,
+    Email,
+}

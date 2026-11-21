@@ -1,0 +1,223 @@
+.attendance {
+  @apply flex flex-col gap-4;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__tools,
+  &__month {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  &__filters {
+    @apply flex flex-wrap items-center gap-3;
+
+    mat-form-field {
+      @apply w-40;
+    }
+  }
+
+  &__nav {
+    @apply flex h-9 w-9 items-center justify-center rounded-sm border border-ink-600 text-ivory-300 hover:border-gold hover:text-gold;
+  }
+
+  &__count {
+    @apply text-xs text-ivory-400;
+  }
+
+  &__wrap {
+    @apply max-h-[70vh] overflow-auto rounded-sm border border-ink-600 bg-ink-900;
+  }
+
+  &__grid {
+    @apply border-separate border-spacing-0 text-xs;
+
+    th,
+    td {
+      @apply border-b border-r border-ink-700;
+    }
+  }
+
+  // Name column stays put while the days scroll.
+  &__person {
+    @apply sticky left-0 z-10 min-w-[11rem] max-w-[14rem] bg-ink-900 px-3 py-1.5 text-left font-normal;
+
+    &--head {
+      @apply top-0 z-30 text-[10px] uppercase tracking-widest text-ivory-400;
+    }
+  }
+
+  &__name {
+    @apply block truncate text-ivory;
+  }
+
+  &__sub {
+    @apply block truncate text-[10px] text-ivory-400;
+  }
+
+  &__day {
+    @apply sticky top-0 z-20 min-w-[2.6rem] bg-ink-800 px-1 py-1.5 text-center font-normal text-ivory-300;
+
+    &--weekend {
+      @apply bg-ink-700;
+    }
+
+    &--today {
+      @apply bg-gold/30 text-ivory;
+    }
+  }
+
+  &__weekday {
+    @apply block text-[10px] uppercase text-ivory-400;
+  }
+
+  &__cell {
+    @apply p-0;
+
+    &--weekend {
+      @apply bg-ink-800;
+    }
+
+    // Before hiring or after the last day: greyed out.
+    &--out {
+      background: repeating-linear-gradient(
+        45deg,
+        transparent 0 4px,
+        rgb(255 255 255 / 0.05) 4px 8px
+      );
+    }
+  }
+
+  &__cell-button {
+    @apply flex h-8 w-full items-center justify-center text-[11px] font-semibold text-ink-950 transition hover:outline hover:outline-1 hover:outline-gold disabled:cursor-not-allowed disabled:hover:outline-0;
+    background: var(--event, transparent);
+
+    // Some hours only: striped, so whole days stand out.
+    &--partial {
+      background: repeating-linear-gradient(
+        135deg,
+        var(--event) 0 5px,
+        transparent 5px 9px
+      );
+      @apply text-ivory;
+    }
+  }
+
+  &__total {
+    @apply bg-ink-800 px-1 py-1.5 text-center text-sm font-semibold text-ivory;
+
+    &--low {
+      @apply bg-danger/25 text-danger;
+    }
+  }
+
+  tfoot .attendance__person {
+    @apply bg-ink-800 text-[10px] uppercase tracking-widest text-ivory-300;
+  }
+
+  &__empty {
+    @apply px-4 py-6 text-center text-sm text-ivory-400;
+  }
+
+  &__bottom {
+    @apply flex flex-wrap items-start justify-between gap-6;
+  }
+
+  &__legend-title {
+    @apply mb-2 flex items-center gap-3 text-xs uppercase tracking-widest text-ivory-400;
+  }
+
+  &__legend-list {
+    @apply flex flex-wrap gap-x-5 gap-y-2 text-sm text-ivory;
+  }
+
+  &__legend-item {
+    @apply flex items-center gap-2;
+  }
+
+  &__swatch {
+    @apply inline-flex h-6 min-w-[1.75rem] items-center justify-center rounded-sm px-1 text-[11px] font-semibold text-ink-950;
+
+    &--partial {
+      background: repeating-linear-gradient(
+        135deg,
+        var(--event) 0 5px,
+        transparent 5px 9px
+      );
+      @apply border border-ink-600 text-ivory;
+    }
+
+    &--small {
+      @apply mr-2 h-3 w-3 min-w-0 align-middle;
+    }
+  }
+
+  &__alert {
+    @apply w-56;
+  }
+
+  &__form {
+    @apply grid grid-cols-2 gap-x-4 gap-y-1;
+  }
+
+  &__form-wide {
+    @apply col-span-2;
+  }
+
+  &__actions {
+    @apply flex w-full flex-wrap items-center justify-end gap-3;
+  }
+
+  &__remove {
+    @apply mr-auto;
+  }
+
+  &__types {
+    @apply mb-4 flex flex-col divide-y divide-ink-700;
+  }
+
+  &__type {
+    @apply flex items-center gap-3 py-2;
+
+    &--editing {
+      @apply bg-gold/10;
+    }
+  }
+
+  &__type-name {
+    @apply flex-1 text-sm text-ivory;
+  }
+
+  &__icon {
+    @apply inline-flex h-8 w-8 items-center justify-center rounded-sm text-ivory-300 hover:bg-ink-700 hover:text-gold disabled:opacity-40;
+
+    &--danger {
+      @apply hover:text-danger;
+    }
+  }
+
+  &__type-form {
+    @apply grid grid-cols-2 items-start gap-x-4 gap-y-1 border-t border-ink-600 pt-4;
+
+    .attendance__legend-title {
+      @apply col-span-2;
+    }
+  }
+
+  &__color {
+    @apply flex items-center gap-3 pb-5 text-sm text-ivory-300;
+
+    input {
+      @apply h-10 w-16 cursor-pointer rounded-sm border border-ink-600 bg-transparent;
+    }
+  }
+
+  &__upper {
+    @apply uppercase;
+  }
+
+  &__type-actions {
+    @apply flex justify-end gap-2;
+  }
+}

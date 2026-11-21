@@ -24,6 +24,7 @@ public sealed partial class DbSeeder(
         await SeedAdminAsync(cancellationToken);
         await SeedPricingAsync(cancellationToken);
         await SeedSettingsAsync(cancellationToken);
+        await SeedAttendanceTypesAsync(cancellationToken);
         if (IsSwitzerland)
         {
             await SeedSwitzerlandAsync(cancellationToken);
@@ -381,6 +382,37 @@ public sealed partial class DbSeeder(
     };
 
     /// <summary>Development only (Bootstrap:DemoFleet): a few drivers and cars to try the dispatcher panel with.</summary>
+    /// <summary>Kinds of event for the attendance calendar; renamed, recoloured or removed in the panel.</summary>
+    private async Task SeedAttendanceTypesAsync(CancellationToken cancellationToken)
+    {
+        if (await db.AttendanceTypes.AnyAsync(cancellationToken))
+        {
+            return;
+        }
+        (string En, string It, string Code, string Color, bool Off)[] kinds =
+        [
+            ("Holiday", "Ferie", "H", "#22c55e", true),
+            ("Sick leave", "Malattia", "S", "#eab308", true),
+            ("Day off", "Riposo", "R", "#3b82f6", true),
+            ("Training", "Formazione", "T", "#a855f7", true),
+            ("Public holiday rest", "Recupero festività", "PH", "#ec4899", true),
+            ("On call", "Disposizione", "C", "#ef4444", false),
+        ];
+        var order = 0;
+        foreach (var k in kinds)
+        {
+            db.AttendanceTypes.Add(new AttendanceType
+            {
+                Name = IsSwitzerland ? k.En : k.It,
+                Code = k.Code,
+                Color = k.Color,
+                MakesUnavailable = k.Off,
+                SortOrder = order += 10,
+            });
+        }
+        logger.LogInformation("Seeded {Count} attendance event kinds", kinds.Length);
+    }
+
     private async Task SeedDemoFleetAsync(CancellationToken cancellationToken)
     {
         if (await db.Drivers.AnyAsync(cancellationToken) || await db.Vehicles.AnyAsync(cancellationToken))

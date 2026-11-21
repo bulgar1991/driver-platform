@@ -1,0 +1,171 @@
+<div class="stats">
+  <header class="stats__header">
+    <div>
+      <p class="eyebrow">
+        <a class="stats__back" routerLink="/admin/attendance"
+          ><app-icon name="arrow-left" />&ngsp;<ng-container i18n
+            >Attendance calendar</ng-container
+          ></a
+        >
+      </p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Attendance statistics</ng-container></h1
+      >
+    </div>
+    <button
+      appButton
+      size="sm"
+      variant="outline"
+      type="button"
+      [disabled]="!rows().length"
+      (click)="export()"
+      ><app-icon name="download" />&ngsp;<ng-container i18n
+        >Export (Excel)</ng-container
+      ></button
+    >
+  </header>
+
+  <div class="stats__filters">
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label i18n>Driver</mat-label>
+      <mat-select [value]="driverId()" (valueChange)="driverId.set($event)">
+        <mat-option value=""><ng-container i18n>All</ng-container></mat-option>
+        @for (p of people(); track p.id) {
+          <mat-option [value]="p.id"
+            >{{ p.lastName }} {{ p.firstName }}</mat-option
+          >
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label i18n>Start date</mat-label>
+      <input
+        #fromInput
+        matInput
+        type="date"
+        [value]="from()"
+        (change)="setPeriod(fromInput.value, toInput.value)" />
+    </mat-form-field>
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label i18n>End date</mat-label>
+      <input
+        #toInput
+        matInput
+        type="date"
+        [value]="to()"
+        (change)="setPeriod(fromInput.value, toInput.value)" />
+    </mat-form-field>
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label i18n>Contract type</mat-label>
+      <mat-select [value]="contract()" (valueChange)="contract.set($event)">
+        <mat-option value=""><ng-container i18n>All</ng-container></mat-option>
+        @for (c of contractTypes; track c.value) {
+          <mat-option [value]="c.value">{{ c.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label i18n>Function</mat-label>
+      <mat-select
+        [value]="jobFunction()"
+        (valueChange)="jobFunction.set($event)">
+        <mat-option value=""><ng-container i18n>All</ng-container></mat-option>
+        @for (f of functions(); track f) {
+          <mat-option [value]="f">{{ f }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label i18n>Event</mat-label>
+      <mat-select [value]="typeId()" (valueChange)="typeId.set($event)">
+        <mat-option value=""><ng-container i18n>All</ng-container></mat-option>
+        @for (t of types(); track t.id) {
+          <mat-option [value]="t.id">{{ t.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  @if (totals().length) {
+    <ul class="stats__totals">
+      @for (t of totals(); track t.type.id) {
+        <li class="stats__total">
+          <span class="stats__swatch" [style.background]="t.type.color">{{
+            t.type.code
+          }}</span>
+          <span>
+            <strong class="stats__total-name">{{ t.type.name }}</strong>
+            <span class="stats__muted">
+              @if (t.days) {
+                <ng-container i18n>{t.days, plural,
+                  =1 {1 day}
+                  other {{{ t.days }} days}
+                }</ng-container>
+              }
+              @if (t.days && t.minutes) {
+                ·
+              }
+              @if (t.minutes) {
+                {{ formatMinutes(t.minutes) }}
+              }
+            </span>
+          </span>
+        </li>
+      }
+    </ul>
+  }
+
+  <div class="stats__wrap">
+    <table class="stats__table">
+      <thead>
+        <tr>
+          <th i18n>Driver</th>
+          <th i18n>Date</th>
+          <th i18n>Day</th>
+          <th i18n>Event</th>
+          <th i18n>Begin</th>
+          <th i18n>End</th>
+          <th i18n>Duration</th>
+          <th i18n>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of rows(); track r.entry.id) {
+          <tr>
+            <td>{{ r.person.lastName }} {{ r.person.firstName }}</td>
+            <td class="stats__nowrap">{{
+              r.entry.date | date: 'dd/MM/yyyy'
+            }}</td>
+            <td class="stats__capital">{{ r.entry.date | date: 'EEEE' }}</td>
+            <td>
+              <span
+                class="stats__swatch stats__swatch--small"
+                [style.background]="r.type.color"></span>
+              {{ r.type.name }}
+            </td>
+            <td>{{ shortTime(r.entry.startTime) }}</td>
+            <td>{{ shortTime(r.entry.endTime) }}</td>
+            <td class="stats__nowrap">{{
+              r.minutes === null ? wholeDay : formatMinutes(r.minutes)
+            }}</td>
+            <td class="stats__notes">{{ r.entry.notes }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <p class="stats__summary">
+    @if (loading()) {
+      <ng-container i18n>Loading…</ng-container>
+    } @else {
+      <ng-container i18n
+        >{{ rows().length }} found · whole days: {{ wholeDays() }} · hours:
+        {{ formatMinutes(hours()) }}</ng-container
+      >
+    }
+  </p>
+</div>

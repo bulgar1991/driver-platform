@@ -28,6 +28,14 @@
 
   &__row {
     @apply cursor-pointer transition hover:bg-ink-800;
+
+    &--selected {
+      @apply bg-gold/10 hover:bg-gold/15;
+    }
+  }
+
+  &__edit-icon {
+    @apply h-3.5 w-3.5 opacity-60;
   }
 
   &__name {
@@ -73,6 +81,10 @@
     &--off {
       @apply bg-ink-700 text-ivory-300;
     }
+
+    &--alert {
+      @apply bg-warning/15 text-warning;
+    }
   }
 
   &__form {
@@ -83,8 +95,26 @@
     @apply grid grid-cols-1 items-start gap-x-4 gap-y-1 sm:grid-cols-2;
   }
 
+  // Three columns from tablets up: for the longer cards (personnel record, vehicle details).
+  &__grid--3 {
+    @apply md:grid-cols-3;
+  }
+
+  &__span-2 {
+    @apply sm:col-span-2;
+  }
+
   &__switches {
     @apply flex flex-col justify-center gap-1 pb-5;
+
+    &--span {
+      @apply sm:col-span-2 md:col-span-1;
+    }
+  }
+
+  // Equipment ticks: a row that wraps.
+  &__features {
+    @apply flex flex-wrap gap-x-6 gap-y-1;
   }
 
   &__documents {

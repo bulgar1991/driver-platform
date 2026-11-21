@@ -16,6 +16,12 @@ export interface DriverDocument {
   expiresOn?: string | null
 }
 
+export type DriverContractType =
+  'Employee' | 'FixedTerm' | 'Freelance' | 'Agency'
+
+/** Where shift messages go; email only when the driver has an address. */
+export type DriverNotify = 'WhatsAppAndEmail' | 'WhatsApp' | 'Email'
+
 export interface DriverRequest {
   firstName: string
   lastName: string
@@ -28,6 +34,24 @@ export interface DriverRequest {
   isAvailable: boolean
   notes?: string | null
   documents: DriverDocument[]
+  employeeNumber?: string | null
+  /** Tax code or social security number. */
+  taxCode?: string | null
+  /** yyyy-MM-dd */
+  dateOfBirth?: string | null
+  placeOfBirth?: string | null
+  hiredOn?: string | null
+  /** Last working day. */
+  leftOn?: string | null
+  contractType: DriverContractType
+  maxDrivingHours?: number | null
+  hourlyCost?: number | null
+  jobFunction?: string | null
+  /** Left out of the attendance calendar. */
+  excludeFromAttendance: boolean
+  address?: string | null
+  homePhone?: string | null
+  notifyBy: DriverNotify
 }
 
 export interface Driver extends DriverRequest {

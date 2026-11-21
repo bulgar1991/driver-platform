@@ -38,6 +38,13 @@ internal sealed partial class FrenchTexts
         $"Seulement {minutes} min entre {earlier} et {later}, plus le trajet jusqu'à la prise en charge suivante.";
     public override string MarkedNotAvailable => "Indiqué comme indisponible";
     public override string OnAnotherShift => "Déjà dans un autre service à cette heure";
+    public override string AbsentOn(string reason, DateOnly date) => $"{reason} le {date:dd.MM.yyyy} (calendrier des présences)";
+    public override string NotEmployed => "Pas en service à cette date";
+    public override string GiveBothTimes => "Indiquez l'heure de début et de fin, ou aucune pour une journée entière.";
+    public override string GiveDateOrKm => "Indiquez une date ou un relevé du compteur.";
+    public override string RecordNotFound => "Introuvable. Il a peut-être déjà été supprimé.";
+    public override string AttendanceTypeInUse => "Ce type est utilisé dans le calendrier. Modifiez d'abord ces jours.";
+    public override string RangeTooLong(int days) => $"Choisissez au maximum {days} jours.";
 
     public override string DocumentName(DriverDocumentType type) => type switch
     {

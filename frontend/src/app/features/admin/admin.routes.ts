@@ -36,6 +36,22 @@ export const ADMIN_ROUTES: Routes = [
       ),
   },
   {
+    path: 'attendance',
+    title: $localize`Attendance · ${BRAND.name}:brand:`,
+    loadComponent: () =>
+      import('./attendance/attendance.component').then(
+        m => m.AttendanceComponent
+      ),
+  },
+  {
+    path: 'attendance/statistics',
+    title: $localize`Attendance statistics · ${BRAND.name}:brand:`,
+    loadComponent: () =>
+      import('./attendance/attendance-stats.component').then(
+        m => m.AttendanceStatsComponent
+      ),
+  },
+  {
     path: 'driver-pay',
     canActivate: [roleGuard('Admin')],
     title: $localize`Driver pay · ${BRAND.name}:brand:`,

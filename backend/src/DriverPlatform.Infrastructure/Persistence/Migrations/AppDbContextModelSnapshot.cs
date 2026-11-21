@@ -109,6 +109,109 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                     b.ToTable("assignments", (string)null);
                 });
 
+            modelBuilder.Entity("DriverPlatform.Domain.Entities.AttendanceEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date")
+                        .HasColumnName("date");
+
+                    b.Property<Guid>("DriverId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("driver_id");
+
+                    b.Property<TimeOnly?>("EndTime")
+                        .HasColumnType("time without time zone")
+                        .HasColumnName("end_time");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("notes");
+
+                    b.Property<TimeOnly?>("StartTime")
+                        .HasColumnType("time without time zone")
+                        .HasColumnName("start_time");
+
+                    b.Property<Guid>("TypeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("type_id");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_attendance_entries");
+
+                    b.HasIndex("Date")
+                        .HasDatabaseName("ix_attendance_entries_date");
+
+                    b.HasIndex("TypeId")
+                        .HasDatabaseName("ix_attendance_entries_type_id");
+
+                    b.HasIndex("DriverId", "Date")
+                        .IsUnique()
+                        .HasDatabaseName("ix_attendance_entries_driver_id_date");
+
+                    b.ToTable("attendance_entries", (string)null);
+                });
+
+            modelBuilder.Entity("DriverPlatform.Domain.Entities.AttendanceType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("code");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)")
+                        .HasColumnName("color");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("MakesUnavailable")
+                        .HasColumnType("boolean")
+                        .HasColumnName("makes_unavailable");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_attendance_types");
+
+                    b.ToTable("attendance_types", (string)null);
+                });
+
             modelBuilder.Entity("DriverPlatform.Domain.Entities.AuditLog", b =>
                 {
                     b.Property<long>("Id")
@@ -577,25 +680,63 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(64)")
                         .HasColumnName("access_token_hash");
 
+                    b.Property<string>("Address")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("address");
+
                     b.Property<decimal>("CommissionPercent")
                         .HasPrecision(5, 2)
                         .HasColumnType("numeric(5,2)")
                         .HasColumnName("commission_percent");
 
+                    b.Property<string>("ContractType")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("contract_type");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
+
+                    b.Property<DateOnly?>("DateOfBirth")
+                        .HasColumnType("date")
+                        .HasColumnName("date_of_birth");
 
                     b.Property<string>("Email")
                         .HasMaxLength(254)
                         .HasColumnType("character varying(254)")
                         .HasColumnName("email");
 
+                    b.Property<string>("EmployeeNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("employee_number");
+
+                    b.Property<bool>("ExcludeFromAttendance")
+                        .HasColumnType("boolean")
+                        .HasColumnName("exclude_from_attendance");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("first_name");
+
+                    b.Property<DateOnly?>("HiredOn")
+                        .HasColumnType("date")
+                        .HasColumnName("hired_on");
+
+                    b.Property<string>("HomePhone")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("home_phone");
+
+                    b.Property<decimal?>("HourlyCost")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)")
+                        .HasColumnName("hourly_cost");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
@@ -604,6 +745,11 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("boolean")
                         .HasColumnName("is_available");
+
+                    b.Property<string>("JobFunction")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("job_function");
 
                     b.PrimitiveCollection<List<string>>("Languages")
                         .IsRequired()
@@ -616,14 +762,29 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(500)")
                         .HasColumnName("last_name");
 
+                    b.Property<DateOnly?>("LeftOn")
+                        .HasColumnType("date")
+                        .HasColumnName("left_on");
+
                     b.Property<int>("LinkVersion")
                         .HasColumnType("integer")
                         .HasColumnName("link_version");
+
+                    b.Property<decimal?>("MaxDrivingHours")
+                        .HasPrecision(4, 1)
+                        .HasColumnType("numeric(4,1)")
+                        .HasColumnName("max_driving_hours");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)")
                         .HasColumnName("notes");
+
+                    b.Property<string>("NotifyBy")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("notify_by");
 
                     b.Property<string>("Phone")
                         .IsRequired()
@@ -635,10 +796,20 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("photo_id");
 
+                    b.Property<string>("PlaceOfBirth")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("place_of_birth");
+
                     b.PrimitiveCollection<List<string>>("PreferredAreas")
                         .IsRequired()
                         .HasColumnType("text[]")
                         .HasColumnName("preferred_areas");
+
+                    b.Property<string>("TaxCode")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("tax_code");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -1813,24 +1984,59 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<bool>("AutomaticGearbox")
+                        .HasColumnType("boolean")
+                        .HasColumnName("automatic_gearbox");
+
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)")
                         .HasColumnName("category");
 
+                    b.Property<string>("ChassisNumber")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("chassis_number");
+
                     b.Property<int>("ChildSeatsAvailable")
                         .HasColumnType("integer")
                         .HasColumnName("child_seats_available");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("code");
 
                     b.Property<string>("Color")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("color");
 
+                    b.Property<decimal?>("CostPerKm")
+                        .HasPrecision(8, 3)
+                        .HasColumnType("numeric(8,3)")
+                        .HasColumnName("cost_per_km");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
+
+                    b.Property<Guid?>("DefaultDriverId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("default_driver_id");
+
+                    b.Property<bool>("HasDvd")
+                        .HasColumnType("boolean")
+                        .HasColumnName("has_dvd");
+
+                    b.Property<bool>("HasWc")
+                        .HasColumnType("boolean")
+                        .HasColumnName("has_wc");
+
+                    b.Property<bool>("HasWifi")
+                        .HasColumnType("boolean")
+                        .HasColumnName("has_wifi");
 
                     b.Property<DateOnly?>("InspectionExpiresOn")
                         .HasColumnType("date")
@@ -1843,6 +2049,11 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
                         .HasColumnName("is_active");
+
+                    b.Property<string>("LeasingCompany")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("leasing_company");
 
                     b.Property<int>("LuggageCapacity")
                         .HasColumnType("integer")
@@ -1883,6 +2094,10 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(16)")
                         .HasColumnName("plate_number");
 
+                    b.Property<DateOnly?>("RegisteredOn")
+                        .HasColumnType("date")
+                        .HasColumnName("registered_on");
+
                     b.Property<int>("Seats")
                         .HasColumnType("integer")
                         .HasColumnName("seats");
@@ -1891,8 +2106,15 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
+                    b.Property<bool>("WheelchairRamp")
+                        .HasColumnType("boolean")
+                        .HasColumnName("wheelchair_ramp");
+
                     b.HasKey("Id")
                         .HasName("pk_vehicles");
+
+                    b.HasIndex("DefaultDriverId")
+                        .HasDatabaseName("ix_vehicles_default_driver_id");
 
                     b.HasIndex("PhotoId")
                         .HasDatabaseName("ix_vehicles_photo_id");
@@ -1902,6 +2124,53 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_vehicles_plate_number");
 
                     b.ToTable("vehicles", (string)null);
+                });
+
+            modelBuilder.Entity("DriverPlatform.Domain.Entities.VehicleExpiration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<int?>("DueKm")
+                        .HasColumnType("integer")
+                        .HasColumnName("due_km");
+
+                    b.Property<DateOnly?>("DueOn")
+                        .HasColumnType("date")
+                        .HasColumnName("due_on");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("notes");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("VehicleId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("vehicle_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_vehicle_expirations");
+
+                    b.HasIndex("VehicleId")
+                        .HasDatabaseName("ix_vehicle_expirations_vehicle_id");
+
+                    b.ToTable("vehicle_expirations", (string)null);
                 });
 
             modelBuilder.Entity("DriverPlatform.Domain.Entities.VehicleRate", b =>
@@ -1981,6 +2250,64 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("ix_vehicle_rates_category");
 
                     b.ToTable("vehicle_rates", (string)null);
+                });
+
+            modelBuilder.Entity("DriverPlatform.Domain.Entities.VehicleRefuel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<decimal?>("Cost")
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)")
+                        .HasColumnName("cost");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date")
+                        .HasColumnName("date");
+
+                    b.Property<Guid?>("DriverId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("driver_id");
+
+                    b.Property<decimal>("Liters")
+                        .HasPrecision(8, 2)
+                        .HasColumnType("numeric(8,2)")
+                        .HasColumnName("liters");
+
+                    b.Property<int>("OdometerKm")
+                        .HasColumnType("integer")
+                        .HasColumnName("odometer_km");
+
+                    b.Property<string>("Station")
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)")
+                        .HasColumnName("station");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid>("VehicleId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("vehicle_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_vehicle_refuels");
+
+                    b.HasIndex("DriverId")
+                        .HasDatabaseName("ix_vehicle_refuels_driver_id");
+
+                    b.HasIndex("VehicleId", "Date")
+                        .HasDatabaseName("ix_vehicle_refuels_vehicle_id_date");
+
+                    b.ToTable("vehicle_refuels", (string)null);
                 });
 
             modelBuilder.Entity("DriverPlatform.Domain.Entities.Zone", b =>
@@ -2073,6 +2400,27 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                     b.Navigation("Driver");
 
                     b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("DriverPlatform.Domain.Entities.AttendanceEntry", b =>
+                {
+                    b.HasOne("DriverPlatform.Domain.Entities.Driver", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_attendance_entries_drivers_driver_id");
+
+                    b.HasOne("DriverPlatform.Domain.Entities.AttendanceType", "Type")
+                        .WithMany()
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_attendance_entries_attendance_types_type_id");
+
+                    b.Navigation("Driver");
+
+                    b.Navigation("Type");
                 });
 
             modelBuilder.Entity("DriverPlatform.Domain.Entities.Booking", b =>
@@ -2691,11 +3039,49 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("DriverPlatform.Domain.Entities.Vehicle", b =>
                 {
+                    b.HasOne("DriverPlatform.Domain.Entities.Driver", null)
+                        .WithMany()
+                        .HasForeignKey("DefaultDriverId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_vehicles_drivers_default_driver_id");
+
                     b.HasOne("DriverPlatform.Domain.Entities.Photo", null)
                         .WithMany()
                         .HasForeignKey("PhotoId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("fk_vehicles_photos_photo_id");
+                });
+
+            modelBuilder.Entity("DriverPlatform.Domain.Entities.VehicleExpiration", b =>
+                {
+                    b.HasOne("DriverPlatform.Domain.Entities.Vehicle", "Vehicle")
+                        .WithMany("Expirations")
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_vehicle_expirations_vehicles_vehicle_id");
+
+                    b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("DriverPlatform.Domain.Entities.VehicleRefuel", b =>
+                {
+                    b.HasOne("DriverPlatform.Domain.Entities.Driver", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_vehicle_refuels_drivers_driver_id");
+
+                    b.HasOne("DriverPlatform.Domain.Entities.Vehicle", "Vehicle")
+                        .WithMany("Refuels")
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_vehicle_refuels_vehicles_vehicle_id");
+
+                    b.Navigation("Driver");
+
+                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("DriverPlatform.Domain.Entities.Zone", b =>
@@ -2911,6 +3297,13 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("DriverPlatform.Domain.Entities.Payment", b =>
                 {
                     b.Navigation("Refunds");
+                });
+
+            modelBuilder.Entity("DriverPlatform.Domain.Entities.Vehicle", b =>
+                {
+                    b.Navigation("Expirations");
+
+                    b.Navigation("Refuels");
                 });
 #pragma warning restore 612, 618
         }

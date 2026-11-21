@@ -328,7 +328,8 @@ public sealed class ShiftService(
         return new ShiftResult(await ToDtoAsync(saved, cancellationToken), warnings);
     }
 
-    private sealed record Busy(HashSet<Guid> Drivers, HashSet<Guid> Vehicles);
+    /// <param name="Absent">Drivers off that day in the attendance calendar or not employed then, with the reason.</param>
+    private sealed record Busy(HashSet<Guid> Drivers, HashSet<Guid> Vehicles, Dictionary<Guid, string> Absent);
 
     /// <summary>Drivers and cars already in an open shift that overlaps [start, end], with the buffer on both sides.</summary>
     private async Task<Busy> BusyAsync(DateTimeOffset start, DateTimeOffset end, Guid? exceptShiftId, CancellationToken cancellationToken)
@@ -339,7 +340,9 @@ public sealed class ShiftService(
             .Where(a => a.Id != exceptShiftId && Open.Contains(a.Status) && a.StartsAt < to && a.EndsAt > from)
             .Select(a => new { a.DriverId, a.VehicleId })
             .ToListAsync(cancellationToken);
-        return new Busy(overlapping.Select(a => a.DriverId).ToHashSet(), overlapping.Select(a => a.VehicleId).ToHashSet());
+        var absent = await Attendance.AttendanceService.AbsentAsync(db,
+            DateOnly.FromDateTime(OfficeTime.ToLocal(start)), DateOnly.FromDateTime(OfficeTime.ToLocal(end)), cancellationToken);
+        return new Busy(overlapping.Select(a => a.DriverId).ToHashSet(), overlapping.Select(a => a.VehicleId).ToHashSet(), absent);
     }
 
     private static List<string> DriverProblems(Driver driver, DateOnly lastDate, Busy busy)
@@ -352,6 +355,10 @@ public sealed class ShiftService(
         if (busy.Drivers.Contains(driver.Id))
         {
             problems.Add(Texts.Current.OnAnotherShift);
+        }
+        if (busy.Absent.TryGetValue(driver.Id, out var absence))
+        {
+            problems.Add(absence);
         }
         return problems;
     }

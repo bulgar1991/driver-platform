@@ -39,7 +39,10 @@
       </thead>
       <tbody>
         @for (v of vehicles(); track v.id) {
-          <tr class="fleet__row" (click)="open(v)">
+          <tr
+            class="fleet__row"
+            [class.fleet__row--selected]="selectedId() === v.id"
+            (click)="select(v)">
             <td>
               <div class="fleet__identity">
                 <span class="fleet__thumb">
@@ -49,12 +52,21 @@
                     <app-icon name="car" />
                   }
                 </span>
-                <button
-                  type="button"
-                  class="fleet__name"
-                  (click)="open(v); $event.stopPropagation()"
-                  >{{ v.plateNumber }}</button
-                >
+                <div>
+                  <button
+                    type="button"
+                    class="fleet__name"
+                    i18n-title
+                    title="Edit vehicle"
+                    (click)="open(v); $event.stopPropagation()"
+                    >{{ v.plateNumber }}&ngsp;<app-icon
+                      class="fleet__edit-icon"
+                      name="edit"
+                  /></button>
+                  @if (v.code) {
+                    <span class="fleet__muted">{{ v.code }}</span>
+                  }
+                </div>
               </div>
             </td>
             <td>
@@ -98,6 +110,13 @@
               }}
             </td>
             <td>
+              @if (v.documentAlerts) {
+                <span class="fleet__badge fleet__badge--alert"
+                  ><ng-container i18n
+                    >{{ v.documentAlerts }} due</ng-container
+                  ></span
+                >&ngsp;
+              }
               <span
                 class="fleet__badge"
                 [class.fleet__badge--off]="!v.isActive">
@@ -123,11 +142,26 @@
       </tbody>
     </table>
   </div>
+  @if (vehicles().length) {
+    <p class="fleet__muted"
+      ><ng-container i18n
+        >Click a row to see its deadlines and refuellings; click the plate to
+        edit the vehicle.</ng-container
+      ></p
+    >
+  }
+
+  @if (selected(); as v) {
+    <app-vehicle-log
+      [vehicle]="v"
+      [drivers]="drivers()"
+      (changed)="logChanged()" />
+  }
 </div>
 
 <ng-template
   [appDialogOpen]="editing() !== undefined"
-  dialogWidth="46rem"
+  dialogWidth="58rem"
   (dialogClosed)="editing.set(undefined)">
   <form [formGroup]="form" (ngSubmit)="save()" novalidate>
     <app-dialog [title]="editing() ? tx.editVehicle : tx.newVehicle">
@@ -234,6 +268,89 @@
             formControlName="nextServiceOn" />
         </mat-form-field>
       </div>
+      <fieldset class="fleet__documents">
+        <legend class="fleet__legend"
+          ><ng-container i18n>Registration and costs</ng-container></legend
+        >
+        <div class="fleet__grid fleet__grid--3">
+          <mat-form-field>
+            <mat-label i18n>Fleet code</mat-label>
+            <input
+              matInput
+              id="vCode"
+              formControlName="code"
+              i18n-placeholder
+              placeholder="e.g. T1" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>First registration</mat-label>
+            <input
+              matInput
+              id="vRegistered"
+              type="date"
+              formControlName="registeredOn" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Chassis number (VIN)</mat-label>
+            <input
+              matInput
+              id="vChassis"
+              class="fleet__upper"
+              formControlName="chassisNumber" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Cost per km</mat-label>
+            <input
+              matInput
+              id="vCostKm"
+              type="number"
+              min="0"
+              step="0.01"
+              formControlName="costPerKm" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Default driver</mat-label>
+            <mat-select id="vDriver" formControlName="defaultDriverId">
+              <mat-option [value]="null"
+                ><ng-container i18n>None</ng-container></mat-option
+              >
+              @for (d of drivers(); track d.id) {
+                <mat-option [value]="d.id"
+                  >{{ d.firstName }} {{ d.lastName }}</mat-option
+                >
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Leasing / rental company</mat-label>
+            <input matInput id="vLeasing" formControlName="leasingCompany" />
+          </mat-form-field>
+        </div>
+      </fieldset>
+
+      <fieldset class="fleet__documents">
+        <legend class="fleet__legend"
+          ><ng-container i18n>Equipment</ng-container></legend
+        >
+        <div class="fleet__features">
+          <mat-checkbox class="fleet__check" formControlName="hasWifi"
+            ><ng-container i18n>Wi-Fi</ng-container></mat-checkbox
+          >
+          <mat-checkbox class="fleet__check" formControlName="hasDvd"
+            ><ng-container i18n>DVD / screens</ng-container></mat-checkbox
+          >
+          <mat-checkbox class="fleet__check" formControlName="hasWc"
+            ><ng-container i18n>WC</ng-container></mat-checkbox
+          >
+          <mat-checkbox class="fleet__check" formControlName="automaticGearbox"
+            ><ng-container i18n>Automatic gearbox</ng-container></mat-checkbox
+          >
+          <mat-checkbox class="fleet__check" formControlName="wheelchairRamp"
+            ><ng-container i18n>Wheelchair ramp</ng-container></mat-checkbox
+          >
+        </div>
+      </fieldset>
+
       <mat-checkbox class="fleet__check" formControlName="isActive"
         ><ng-container i18n>Active</ng-container></mat-checkbox
       >

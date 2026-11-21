@@ -56,6 +56,9 @@
                     (click)="open(d); $event.stopPropagation()"
                     >{{ d.firstName }} {{ d.lastName }}</button
                   >
+                  @if (d.employeeNumber || d.jobFunction) {
+                    <span class="fleet__muted">{{ staffLine(d) }}</span>
+                  }
                   @if (d.preferredAreas.length) {
                     <span class="fleet__muted">{{
                       d.preferredAreas.join(', ')
@@ -139,7 +142,7 @@
 
 <ng-template
   [appDialogOpen]="editing() !== undefined"
-  dialogWidth="46rem"
+  dialogWidth="58rem"
   (dialogClosed)="editing.set(undefined)">
   <form [formGroup]="form" (ngSubmit)="save()" novalidate>
     <app-dialog [title]="editing() ? tx.editDriver : tx.newDriver">
@@ -207,6 +210,118 @@
           >
         </div>
       </div>
+
+      <fieldset class="fleet__documents">
+        <legend class="fleet__legend"
+          ><ng-container i18n>Personnel record</ng-container></legend
+        >
+        <div class="fleet__grid fleet__grid--3">
+          <mat-form-field>
+            <mat-label i18n>Employee number</mat-label>
+            <input matInput id="dEmployee" formControlName="employeeNumber" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Tax code / social security no.</mat-label>
+            <input matInput id="dTax" formControlName="taxCode" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Function</mat-label>
+            <input
+              matInput
+              id="dFunction"
+              formControlName="jobFunction"
+              i18n-placeholder
+              placeholder="Driver, chauffeur, mechanic…" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Date of birth</mat-label>
+            <input
+              matInput
+              id="dBirth"
+              type="date"
+              formControlName="dateOfBirth" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Place of birth</mat-label>
+            <input matInput id="dBirthPlace" formControlName="placeOfBirth" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Contract type</mat-label>
+            <mat-select id="dContract" formControlName="contractType">
+              @for (c of contractTypes; track c.value) {
+                <mat-option [value]="c.value">{{ c.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Hired on</mat-label>
+            <input matInput id="dHired" type="date" formControlName="hiredOn" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Last working day</mat-label>
+            <input matInput id="dLeft" type="date" formControlName="leftOn" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Max driving hours / day</mat-label>
+            <input
+              matInput
+              id="dHours"
+              type="number"
+              min="0"
+              max="24"
+              step="0.5"
+              formControlName="maxDrivingHours" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Cost per hour</mat-label>
+            <input
+              matInput
+              id="dCost"
+              type="number"
+              min="0"
+              step="0.5"
+              formControlName="hourlyCost" />
+          </mat-form-field>
+          <div class="fleet__switches fleet__switches--span">
+            <mat-checkbox
+              class="fleet__check"
+              formControlName="excludeFromAttendance"
+              ><ng-container i18n
+                >Leave out of the attendance calendar</ng-container
+              ></mat-checkbox
+            >
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="fleet__documents">
+        <legend class="fleet__legend"
+          ><ng-container i18n>Contact and notifications</ng-container></legend
+        >
+        <div class="fleet__grid fleet__grid--3">
+          <mat-form-field class="fleet__span-2">
+            <mat-label i18n>Address</mat-label>
+            <input matInput id="dAddress" formControlName="address" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Home phone</mat-label>
+            <input
+              matInput
+              id="dHomePhone"
+              type="tel"
+              formControlName="homePhone" />
+            <mat-error>{{ tx.phoneHint }}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Send shifts by</mat-label>
+            <mat-select id="dNotify" formControlName="notifyBy">
+              @for (n of notifyOptions; track n.value) {
+                <mat-option [value]="n.value">{{ n.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </fieldset>
 
       <fieldset class="fleet__documents" formArrayName="documents">
         <legend class="fleet__legend"

@@ -34,6 +34,29 @@ public sealed record DriverRequest
     public string? Notes { get; init; }
     [MaxLength(20)]
     public List<DriverDocumentDto> Documents { get; init; } = [];
+
+    [MaxLength(20)]
+    public string? EmployeeNumber { get; init; }
+    [MaxLength(32)]
+    public string? TaxCode { get; init; }
+    public DateOnly? DateOfBirth { get; init; }
+    [MaxLength(100)]
+    public string? PlaceOfBirth { get; init; }
+    public DateOnly? HiredOn { get; init; }
+    public DateOnly? LeftOn { get; init; }
+    public DriverContractType ContractType { get; init; }
+    [Range(0, 24)]
+    public decimal? MaxDrivingHours { get; init; }
+    [Range(0, 10_000)]
+    public decimal? HourlyCost { get; init; }
+    [MaxLength(60)]
+    public string? JobFunction { get; init; }
+    public bool ExcludeFromAttendance { get; init; }
+    [MaxLength(200)]
+    public string? Address { get; init; }
+    [Phone, MaxLength(32)]
+    public string? HomePhone { get; init; }
+    public DriverNotify NotifyBy { get; init; }
 }
 
 public sealed record DriverDto(
@@ -57,7 +80,21 @@ public sealed record DriverDto(
     decimal? Rating,
     int RatingCount,
     int CompletedRides,
-    int CancelledShifts);
+    int CancelledShifts,
+    string? EmployeeNumber,
+    string? TaxCode,
+    DateOnly? DateOfBirth,
+    string? PlaceOfBirth,
+    DateOnly? HiredOn,
+    DateOnly? LeftOn,
+    DriverContractType ContractType,
+    decimal? MaxDrivingHours,
+    decimal? HourlyCost,
+    string? JobFunction,
+    bool ExcludeFromAttendance,
+    string? Address,
+    string? HomePhone,
+    DriverNotify NotifyBy);
 
 public sealed record DriverLinkResponse(string Url);
 
@@ -132,6 +169,22 @@ public sealed record VehicleRequest
     public bool IsActive { get; init; } = true;
     [MaxLength(2000)]
     public string? Notes { get; init; }
+
+    [MaxLength(20)]
+    public string? Code { get; init; }
+    public DateOnly? RegisteredOn { get; init; }
+    [MaxLength(32)]
+    public string? ChassisNumber { get; init; }
+    [Range(0, 100)]
+    public decimal? CostPerKm { get; init; }
+    public Guid? DefaultDriverId { get; init; }
+    [MaxLength(100)]
+    public string? LeasingCompany { get; init; }
+    public bool HasDvd { get; init; }
+    public bool HasWifi { get; init; }
+    public bool HasWc { get; init; }
+    public bool AutomaticGearbox { get; init; }
+    public bool WheelchairRamp { get; init; }
 }
 
 public sealed record VehicleDto(
@@ -152,4 +205,16 @@ public sealed record VehicleDto(
     string? Notes,
     /// <summary>Picture at GET /api/photos/{id}; null when there is none.</summary>
     Guid? PhotoId,
-    int DocumentAlerts);
+    int DocumentAlerts,
+    string? Code,
+    DateOnly? RegisteredOn,
+    string? ChassisNumber,
+    decimal? CostPerKm,
+    Guid? DefaultDriverId,
+    string? DefaultDriverName,
+    string? LeasingCompany,
+    bool HasDvd,
+    bool HasWifi,
+    bool HasWc,
+    bool AutomaticGearbox,
+    bool WheelchairRamp);

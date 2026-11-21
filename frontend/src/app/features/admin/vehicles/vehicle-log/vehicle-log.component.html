@@ -1,0 +1,305 @@
+@if (error(); as message) {
+  <p class="alert alert--error" role="alert">{{ message }}</p>
+}
+
+<div class="vehicle-log">
+  <section class="vehicle-log__panel" aria-labelledby="expirations-title">
+    <h2 id="expirations-title" class="vehicle-log__title">
+      <ng-container i18n>Deadlines</ng-container>
+      <span class="vehicle-log__plate">{{ vehicle().plateNumber }}</span>
+    </h2>
+    <p class="vehicle-log__hint" i18n
+      >Insurance and inspection are in the vehicle form. Add here road tax,
+      tachograph, services by date or by kilometres, and anything else that
+      expires.</p
+    >
+
+    <div class="vehicle-log__table-wrap">
+      <table class="vehicle-log__table">
+        <thead>
+          <tr>
+            <th i18n>Type</th>
+            <th i18n>Date</th>
+            <th i18n>Odometer</th>
+            <th i18n>Notes</th>
+            <th><span class="sr-only" i18n>Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (e of log()?.expirations ?? []; track e.id) {
+            <tr
+              [class.vehicle-log__danger]="expirationTone(e) === 'danger'"
+              [class.vehicle-log__warning]="expirationTone(e) === 'warning'"
+              [class.vehicle-log__editing]="editingExpiration()?.id === e.id">
+              <td>{{ e.title }}</td>
+              <td class="vehicle-log__nowrap">{{
+                e.dueOn ? (e.dueOn | date: 'd MMM y') : '—'
+              }}</td>
+              <td class="vehicle-log__nowrap">{{
+                e.dueKm !== null ? (e.dueKm | number) + ' km' : '—'
+              }}</td>
+              <td class="vehicle-log__muted">{{ e.notes }}</td>
+              <td class="vehicle-log__row-actions">
+                <button
+                  type="button"
+                  class="vehicle-log__icon"
+                  i18n-aria-label
+                  aria-label="Edit deadline"
+                  (click)="editExpiration(e)"
+                  ><app-icon name="edit"
+                /></button>
+                <button
+                  type="button"
+                  class="vehicle-log__icon vehicle-log__icon--danger"
+                  i18n-aria-label
+                  aria-label="Delete deadline"
+                  [disabled]="busy()"
+                  (click)="deleteExpiration(e)"
+                  ><app-icon name="trash"
+                /></button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="vehicle-log__muted" i18n
+                >No deadlines yet.</td
+              >
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <form
+      class="vehicle-log__form"
+      [formGroup]="expirationForm"
+      (ngSubmit)="saveExpiration()"
+      novalidate>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>Type</mat-label>
+        <input
+          matInput
+          formControlName="title"
+          list="expiration-titles"
+          autocomplete="off" />
+        <datalist id="expiration-titles">
+          @for (t of titles; track t) {
+            <option [value]="t"></option>
+          }
+        </datalist>
+        <mat-error>{{ text.required }}</mat-error>
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>Due on</mat-label>
+        <input matInput type="date" formControlName="dueOn" />
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>or at km</mat-label>
+        <input matInput type="number" min="0" formControlName="dueKm" />
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic" class="vehicle-log__wide">
+        <mat-label i18n>Notes</mat-label>
+        <input matInput formControlName="notes" />
+      </mat-form-field>
+      <div class="vehicle-log__form-actions">
+        @if (editingExpiration()) {
+          <button
+            appButton
+            size="sm"
+            variant="ghost"
+            type="button"
+            (click)="cancelExpiration()"
+            ><ng-container i18n>Cancel</ng-container></button
+          >
+        }
+        <button appButton size="sm" type="submit" [disabled]="busy()">
+          @if (editingExpiration()) {
+            <ng-container i18n>Save deadline</ng-container>
+          } @else {
+            <app-icon name="plus" />&ngsp;<ng-container i18n
+              >Add deadline</ng-container
+            >
+          }
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <section class="vehicle-log__panel" aria-labelledby="refuels-title">
+    <h2 id="refuels-title" class="vehicle-log__title">
+      <ng-container i18n>Refuellings and mileage</ng-container>
+      <span class="vehicle-log__plate">{{ vehicle().plateNumber }}</span>
+    </h2>
+
+    <div class="vehicle-log__period">
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>From</mat-label>
+        <input
+          #fromInput
+          matInput
+          type="date"
+          [value]="from()"
+          (change)="setPeriod(fromInput.value, toInput.value)" />
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>To</mat-label>
+        <input
+          #toInput
+          matInput
+          type="date"
+          [value]="to()"
+          (change)="setPeriod(fromInput.value, toInput.value)" />
+      </mat-form-field>
+      <button
+        appButton
+        size="sm"
+        variant="outline"
+        type="button"
+        [disabled]="!log()?.refuels?.length"
+        (click)="exportRefuels()"
+        ><app-icon name="download" />&ngsp;<ng-container i18n
+          >Export (Excel)</ng-container
+        ></button
+      >
+    </div>
+
+    @if (log(); as l) {
+      <dl class="vehicle-log__stats">
+        <div>
+          <dt i18n>Mileage</dt>
+          <dd>{{ l.mileageKm | number }} km</dd>
+        </div>
+        <div>
+          <dt i18n>Driven in the period</dt>
+          <dd>{{
+            l.distanceKm !== null ? (l.distanceKm | number) + ' km' : '—'
+          }}</dd>
+        </div>
+        <div>
+          <dt i18n>Fuel</dt>
+          <dd>{{ l.totalLiters | number: '1.0-1' }} l</dd>
+        </div>
+        <div>
+          <dt i18n>Cost</dt>
+          <dd>{{ l.totalCost | number: '1.2-2' }} {{ currency }}</dd>
+        </div>
+        <div>
+          <dt i18n>Average consumption</dt>
+          <dd>{{
+            l.averageConsumption !== null
+              ? (l.averageConsumption | number: '1.1-1') + ' l/100 km'
+              : '—'
+          }}</dd>
+        </div>
+      </dl>
+    }
+
+    <form
+      class="vehicle-log__form"
+      [formGroup]="refuelForm"
+      (ngSubmit)="addRefuel()"
+      novalidate>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>Date</mat-label>
+        <input matInput type="date" formControlName="date" />
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>Odometer (km)</mat-label>
+        <input matInput type="number" min="0" formControlName="odometerKm" />
+        <mat-error>{{ text.required }}</mat-error>
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>Litres</mat-label>
+        <input
+          matInput
+          type="number"
+          min="0"
+          step="0.01"
+          formControlName="liters" />
+        <mat-error>{{ text.required }}</mat-error>
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>Cost ({{ currency }})</mat-label>
+        <input
+          matInput
+          type="number"
+          min="0"
+          step="0.01"
+          formControlName="cost" />
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>Station / tank</mat-label>
+        <input matInput formControlName="station" />
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>Driver</mat-label>
+        <mat-select formControlName="driverId">
+          <mat-option [value]="null">—</mat-option>
+          @for (d of drivers(); track d.id) {
+            <mat-option [value]="d.id"
+              >{{ d.firstName }} {{ d.lastName }}</mat-option
+            >
+          }
+        </mat-select>
+      </mat-form-field>
+      <div class="vehicle-log__form-actions">
+        <button appButton size="sm" type="submit" [disabled]="busy()"
+          ><app-icon name="plus" />&ngsp;<ng-container i18n
+            >Add refuelling</ng-container
+          ></button
+        >
+      </div>
+    </form>
+
+    <div class="vehicle-log__table-wrap">
+      <table class="vehicle-log__table">
+        <thead>
+          <tr>
+            <th i18n>Date</th>
+            <th i18n>Odometer</th>
+            <th i18n>Litres</th>
+            <th i18n>Cost</th>
+            <th i18n>Station / tank</th>
+            <th i18n>Driver</th>
+            <th><span class="sr-only" i18n>Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of log()?.refuels ?? []; track r.id) {
+            <tr>
+              <td class="vehicle-log__nowrap">{{
+                r.date | date: 'd MMM y'
+              }}</td>
+              <td class="vehicle-log__nowrap"
+                >{{ r.odometerKm | number }} km</td
+              >
+              <td>{{ r.liters | number: '1.0-2' }}</td>
+              <td class="vehicle-log__nowrap">{{
+                r.cost !== null ? (r.cost | number: '1.2-2') : '—'
+              }}</td>
+              <td>{{ r.station }}</td>
+              <td>{{ r.driverName }}</td>
+              <td class="vehicle-log__row-actions">
+                <button
+                  type="button"
+                  class="vehicle-log__icon vehicle-log__icon--danger"
+                  i18n-aria-label
+                  aria-label="Delete refuelling"
+                  [disabled]="busy()"
+                  (click)="deleteRefuel(r.id)"
+                  ><app-icon name="trash"
+                /></button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="vehicle-log__muted" i18n
+                >No refuellings in this period.</td
+              >
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

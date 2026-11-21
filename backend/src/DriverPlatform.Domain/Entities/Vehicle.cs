@@ -21,4 +21,22 @@ public class Vehicle : Entity
     public bool IsActive { get; set; } = true;
     public string? Notes { get; set; }
     public Guid? PhotoId { get; set; }
+
+    /// <summary>Internal fleet code ("T1", "Van 2").</summary>
+    public string? Code { get; set; }
+    public DateOnly? RegisteredOn { get; set; }
+    public string? ChassisNumber { get; set; }
+    public decimal? CostPerKm { get; set; }
+    /// <summary>Driver who usually drives it; suggested first when building a shift.</summary>
+    public Guid? DefaultDriverId { get; set; }
+    /// <summary>Leasing or rental company, when the car is not owned.</summary>
+    public string? LeasingCompany { get; set; }
+    public bool HasDvd { get; set; }
+    public bool HasWifi { get; set; }
+    public bool HasWc { get; set; }
+    public bool AutomaticGearbox { get; set; }
+    public bool WheelchairRamp { get; set; }
+
+    public ICollection<VehicleExpiration> Expirations { get; set; } = [];
+    public ICollection<VehicleRefuel> Refuels { get; set; } = [];
 }

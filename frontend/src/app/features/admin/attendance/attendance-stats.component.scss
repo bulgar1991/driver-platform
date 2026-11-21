@@ -1,0 +1,75 @@
+.stats {
+  @apply flex flex-col gap-4;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__back {
+    @apply inline-flex items-center gap-1 hover:text-gold;
+  }
+
+  &__filters {
+    @apply flex flex-wrap items-center gap-3;
+
+    mat-form-field {
+      @apply w-44;
+    }
+  }
+
+  &__totals {
+    @apply flex flex-wrap gap-3;
+  }
+
+  &__total {
+    @apply flex items-center gap-3 rounded-sm border border-ink-600 bg-ink-900 px-3 py-2;
+  }
+
+  &__total-name {
+    @apply block text-sm font-normal text-ivory;
+  }
+
+  &__swatch {
+    @apply inline-flex h-6 min-w-[1.75rem] items-center justify-center rounded-sm px-1 text-[11px] font-semibold text-ink-950;
+
+    &--small {
+      @apply mr-2 h-3 w-3 min-w-0 align-middle;
+    }
+  }
+
+  &__wrap {
+    @apply overflow-x-auto rounded-sm border border-ink-600 bg-ink-900;
+  }
+
+  &__table {
+    @apply w-full min-w-[48rem] border-collapse text-sm;
+
+    th {
+      @apply border-b border-ink-600 px-4 py-3 text-left text-xs font-normal uppercase tracking-widest text-ivory-400;
+    }
+
+    td {
+      @apply border-b border-ink-700 px-4 py-2 text-ivory;
+    }
+  }
+
+  &__nowrap {
+    @apply whitespace-nowrap;
+  }
+
+  &__capital {
+    @apply capitalize;
+  }
+
+  &__muted {
+    @apply block text-xs text-ivory-400;
+  }
+
+  &__notes {
+    @apply text-xs text-ivory-400;
+  }
+
+  &__summary {
+    @apply text-sm italic text-ivory-300;
+  }
+}

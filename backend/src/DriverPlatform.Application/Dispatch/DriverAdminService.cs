@@ -214,6 +214,24 @@ public sealed class DriverAdminService(IAppDbContext db, IDriverLinks links, IIm
         driver.IsActive = request.IsActive;
         driver.IsAvailable = request.IsAvailable;
         driver.Notes = string.IsNullOrWhiteSpace(request.Notes) ? null : request.Notes.Trim();
+        if (request.LeftOn is { } left && request.HiredOn is { } hired && left < hired)
+        {
+            throw new RequestValidationException("leftOn", Texts.Current.EndBeforeStart);
+        }
+        driver.EmployeeNumber = Clean(request.EmployeeNumber);
+        driver.TaxCode = Clean(request.TaxCode)?.ToUpperInvariant();
+        driver.DateOfBirth = request.DateOfBirth;
+        driver.PlaceOfBirth = Clean(request.PlaceOfBirth);
+        driver.HiredOn = request.HiredOn;
+        driver.LeftOn = request.LeftOn;
+        driver.ContractType = request.ContractType;
+        driver.MaxDrivingHours = request.MaxDrivingHours;
+        driver.HourlyCost = request.HourlyCost;
+        driver.JobFunction = Clean(request.JobFunction);
+        driver.ExcludeFromAttendance = request.ExcludeFromAttendance;
+        driver.Address = Clean(request.Address);
+        driver.HomePhone = Clean(request.HomePhone);
+        driver.NotifyBy = request.NotifyBy;
 
         // Documents are replaced as a list: kept by id, the others added or removed.
         var keep = request.Documents.Where(d => d.Id is not null).Select(d => d.Id!.Value).ToHashSet();
@@ -245,7 +263,11 @@ public sealed class DriverAdminService(IAppDbContext db, IDriverLinks links, IIm
         stats?.Rating,
         stats?.RatingCount ?? 0,
         stats?.CompletedRides ?? 0,
-        stats?.CancelledShifts ?? 0);
+        stats?.CancelledShifts ?? 0,
+        d.EmployeeNumber, d.TaxCode, d.DateOfBirth, d.PlaceOfBirth, d.HiredOn, d.LeftOn, d.ContractType, d.MaxDrivingHours,
+        d.HourlyCost, d.JobFunction, d.ExcludeFromAttendance, d.Address, d.HomePhone, d.NotifyBy);
+
+    private static string? Clean(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     private DateOnly Today() => DateOnly.FromDateTime(OfficeTime.ToLocal(clock.GetUtcNow()));
 

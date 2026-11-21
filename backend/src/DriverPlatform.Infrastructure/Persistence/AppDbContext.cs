@@ -35,6 +35,10 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, TimePro
     public DbSet<Photo> Photos => Set<Photo>();
     public DbSet<SiteContent> SiteContents => Set<SiteContent>();
     public DbSet<PageVisit> PageVisits => Set<PageVisit>();
+    public DbSet<AttendanceType> AttendanceTypes => Set<AttendanceType>();
+    public DbSet<AttendanceEntry> AttendanceEntries => Set<AttendanceEntry>();
+    public DbSet<VehicleExpiration> VehicleExpirations => Set<VehicleExpiration>();
+    public DbSet<VehicleRefuel> VehicleRefuels => Set<VehicleRefuel>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
@@ -56,6 +60,8 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, TimePro
         builder.Properties<InvoiceStatus>().HaveConversion<string>().HaveMaxLength(32);
         builder.Properties<AssignmentStatus>().HaveConversion<string>().HaveMaxLength(32);
         builder.Properties<DriverDocumentType>().HaveConversion<string>().HaveMaxLength(32);
+        builder.Properties<DriverContractType>().HaveConversion<string>().HaveMaxLength(32);
+        builder.Properties<DriverNotify>().HaveConversion<string>().HaveMaxLength(32);
         builder.Properties<ZoneType>().HaveConversion<string>().HaveMaxLength(32);
         builder.Properties<ZonePricing>().HaveConversion<string>().HaveMaxLength(32);
         builder.Properties<ZoneShape>().HaveConversion<string>().HaveMaxLength(32);

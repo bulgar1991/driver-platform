@@ -8,6 +8,11 @@ import {
   DriverRides,
   Review,
   Vehicle,
+  VehicleExpiration,
+  VehicleExpirationRequest,
+  VehicleLog,
+  VehicleRefuel,
+  VehicleRefuelRequest,
   VehicleRequest,
 } from '../models'
 import { API_BASE_URL } from '../tokens/api-base-url.token'
@@ -120,6 +125,54 @@ export class AdminFleetService {
     return photo
       ? this.http.put<Vehicle>(`${this.url}/vehicles/${id}/photo`, form(photo))
       : this.http.delete<Vehicle>(`${this.url}/vehicles/${id}/photo`)
+  }
+
+  /** Deadlines, and refuellings between the dates (yyyy-MM-dd; default the last 12 months). */
+  vehicleLog(id: string, from?: string, to?: string): Observable<VehicleLog> {
+    let params = new HttpParams()
+    if (from) {
+      params = params.set('from', from)
+    }
+    if (to) {
+      params = params.set('to', to)
+    }
+    return this.http.get<VehicleLog>(`${this.url}/vehicles/${id}/log`, {
+      params,
+    })
+  }
+
+  saveExpiration(
+    vehicleId: string,
+    request: VehicleExpirationRequest,
+    id?: string
+  ): Observable<VehicleExpiration> {
+    const base = `${this.url}/vehicles/${vehicleId}/expirations`
+    return id
+      ? this.http.put<VehicleExpiration>(`${base}/${id}`, request)
+      : this.http.post<VehicleExpiration>(base, request)
+  }
+
+  deleteExpiration(vehicleId: string, id: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.url}/vehicles/${vehicleId}/expirations/${id}`
+    )
+  }
+
+  /** A higher odometer reading also becomes the car's mileage. */
+  addRefuel(
+    vehicleId: string,
+    request: VehicleRefuelRequest
+  ): Observable<VehicleRefuel> {
+    return this.http.post<VehicleRefuel>(
+      `${this.url}/vehicles/${vehicleId}/refuels`,
+      request
+    )
+  }
+
+  deleteRefuel(vehicleId: string, id: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.url}/vehicles/${vehicleId}/refuels/${id}`
+    )
   }
 }
 

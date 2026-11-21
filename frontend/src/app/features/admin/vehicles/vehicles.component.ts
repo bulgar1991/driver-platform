@@ -17,7 +17,8 @@ import {
   DialogOpenDirective,
 } from '@/shared/components/dialog'
 import { finalize, of, switchMap } from 'rxjs'
-import { Vehicle, VehicleCategory } from '@/core/models'
+import { Driver, Vehicle, VehicleCategory } from '@/core/models'
+import { VehicleLogComponent } from './vehicle-log/vehicle-log.component'
 import { AdminFleetService } from '@/core/services/admin-fleet.service'
 import { todayInOffice } from '@/core/utils/local-time'
 import { problemMessage } from '@/core/utils/problem'
@@ -46,6 +47,7 @@ import { VehicleClassService } from '@/core/services/vehicle-class.service'
     ButtonComponent,
     IconComponent,
     PhotoFieldComponent,
+    VehicleLogComponent,
   ],
   templateUrl: './vehicles.component.html',
   styleUrl: './vehicles.component.scss',
@@ -87,6 +89,13 @@ export class VehiclesComponent implements OnInit {
   protected readonly formError = signal<string | null>(null)
   protected readonly confirmDelete = signal(false)
   protected readonly photo = new PhotoDraft()
+  /** The car whose deadlines and refuellings show under the list. */
+  protected readonly selectedId = signal<string | null>(null)
+  protected readonly selected = computed(
+    () => this.vehicles().find(v => v.id === this.selectedId()) ?? null
+  )
+  /** For the default driver and the refuellings. */
+  protected readonly drivers = signal<Driver[]>([])
 
   protected readonly form = this.fb.group({
     plateNumber: [
@@ -109,9 +118,33 @@ export class VehiclesComponent implements OnInit {
     mileageKm: [0, [Validators.min(0)]],
     isActive: [true],
     notes: [''],
+    code: ['', Validators.maxLength(20)],
+    registeredOn: [''],
+    chassisNumber: ['', Validators.maxLength(32)],
+    costPerKm: this.fb.control<number | null>(null, [
+      Validators.min(0),
+      Validators.max(100),
+    ]),
+    defaultDriverId: this.fb.control<string | null>(null),
+    leasingCompany: ['', Validators.maxLength(100)],
+    hasDvd: [false],
+    hasWifi: [false],
+    hasWc: [false],
+    automaticGearbox: [false],
+    wheelchairRamp: [false],
   })
 
   ngOnInit(): void {
+    this.load()
+    this.api.drivers().subscribe({ next: list => this.drivers.set(list) })
+  }
+
+  protected select(vehicle: Vehicle): void {
+    this.selectedId.set(this.selectedId() === vehicle.id ? null : vehicle.id)
+  }
+
+  /** The log changed the mileage or the deadlines: refresh the list's alerts. */
+  protected logChanged(): void {
     this.load()
   }
 
@@ -149,6 +182,17 @@ export class VehiclesComponent implements OnInit {
       mileageKm: vehicle?.mileageKm ?? 0,
       isActive: vehicle?.isActive ?? true,
       notes: vehicle?.notes ?? '',
+      code: vehicle?.code ?? '',
+      registeredOn: vehicle?.registeredOn ?? '',
+      chassisNumber: vehicle?.chassisNumber ?? '',
+      costPerKm: vehicle?.costPerKm ?? null,
+      defaultDriverId: vehicle?.defaultDriverId ?? null,
+      leasingCompany: vehicle?.leasingCompany ?? '',
+      hasDvd: vehicle?.hasDvd ?? false,
+      hasWifi: vehicle?.hasWifi ?? false,
+      hasWc: vehicle?.hasWc ?? false,
+      automaticGearbox: vehicle?.automaticGearbox ?? false,
+      wheelchairRamp: vehicle?.wheelchairRamp ?? false,
     })
     this.photo.reset(this.api.photoUrl(vehicle?.photoId ?? null))
     this.confirmDelete.set(false)
@@ -172,6 +216,10 @@ export class VehiclesComponent implements OnInit {
           insuranceExpiresOn: v.insuranceExpiresOn || null,
           inspectionExpiresOn: v.inspectionExpiresOn || null,
           nextServiceOn: v.nextServiceOn || null,
+          code: v.code.trim() || null,
+          registeredOn: v.registeredOn || null,
+          chassisNumber: v.chassisNumber.trim() || null,
+          leasingCompany: v.leasingCompany.trim() || null,
         },
         this.editing()?.id
       )

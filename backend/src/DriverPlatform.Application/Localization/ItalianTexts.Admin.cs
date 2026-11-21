@@ -38,6 +38,13 @@ internal sealed partial class ItalianTexts
         $"Solo {minutes} min tra {earlier} e {later}, più il tragitto fino alla partenza successiva.";
     public override string MarkedNotAvailable => "Segnato come non disponibile";
     public override string OnAnotherShift => "Già in un altro turno a quest'ora";
+    public override string AbsentOn(string reason, DateOnly date) => $"{reason} il {date:dd.MM.yyyy} (calendario presenze)";
+    public override string NotEmployed => "Non in servizio in questa data";
+    public override string GiveBothTimes => "Indicare sia l'ora di inizio sia quella di fine, oppure nessuna per l'intera giornata.";
+    public override string GiveDateOrKm => "Indicare una data o una lettura del contachilometri.";
+    public override string RecordNotFound => "Non trovato. Forse è già stato eliminato.";
+    public override string AttendanceTypeInUse => "Questo tipo è usato nel calendario. Modificare prima quei giorni.";
+    public override string RangeTooLong(int days) => $"Scegliere al massimo {days} giorni.";
 
     public override string DocumentName(DriverDocumentType type) => type switch
     {

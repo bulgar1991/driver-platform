@@ -23,7 +23,14 @@ import {
   DialogOpenDirective,
 } from '@/shared/components/dialog'
 import { finalize, of, switchMap } from 'rxjs'
-import { Driver, DriverDocument, DriverDocumentType } from '@/core/models'
+import {
+  Driver,
+  DriverContractType,
+  DriverDocument,
+  DriverDocumentType,
+  DriverNotify,
+} from '@/core/models'
+import { CONTRACT_TYPES, NOTIFY_OPTIONS } from '@/features/admin/staff-labels'
 import { AdminFleetService } from '@/core/services/admin-fleet.service'
 import { ToastService } from '@/core/services/toast.service'
 import { todayInOffice } from '@/core/utils/local-time'
@@ -95,6 +102,8 @@ export class DriversComponent implements OnInit {
   private readonly fb = inject(FormBuilder).nonNullable
 
   protected readonly documentTypes = DOCUMENT_TYPES
+  protected readonly contractTypes = CONTRACT_TYPES
+  protected readonly notifyOptions = NOTIFY_OPTIONS
   protected readonly documentLabel = Object.fromEntries(
     DOCUMENT_TYPES.map(t => [t.value, t.label])
   ) as Record<DriverDocumentType, string>
@@ -127,6 +136,26 @@ export class DriversComponent implements OnInit {
     isAvailable: [true],
     notes: [''],
     documents: this.fb.array<DocumentForm>([]),
+    employeeNumber: ['', Validators.maxLength(20)],
+    taxCode: ['', Validators.maxLength(32)],
+    dateOfBirth: [''],
+    placeOfBirth: ['', Validators.maxLength(100)],
+    hiredOn: [''],
+    leftOn: [''],
+    contractType: this.fb.control<DriverContractType>('Employee'),
+    maxDrivingHours: this.fb.control<number | null>(null, [
+      Validators.min(0),
+      Validators.max(24),
+    ]),
+    hourlyCost: this.fb.control<number | null>(null, [
+      Validators.min(0),
+      Validators.max(10000),
+    ]),
+    jobFunction: ['', Validators.maxLength(60)],
+    excludeFromAttendance: [false],
+    address: ['', Validators.maxLength(200)],
+    homePhone: ['', Validators.pattern(/^\+?[0-9 ()-]{6,20}$/)],
+    notifyBy: this.fb.control<DriverNotify>('WhatsAppAndEmail'),
   })
 
   ngOnInit(): void {
@@ -160,6 +189,20 @@ export class DriversComponent implements OnInit {
       isActive: driver?.isActive ?? true,
       isAvailable: driver?.isAvailable ?? true,
       notes: driver?.notes ?? '',
+      employeeNumber: driver?.employeeNumber ?? '',
+      taxCode: driver?.taxCode ?? '',
+      dateOfBirth: driver?.dateOfBirth ?? '',
+      placeOfBirth: driver?.placeOfBirth ?? '',
+      hiredOn: driver?.hiredOn ?? '',
+      leftOn: driver?.leftOn ?? '',
+      contractType: driver?.contractType ?? 'Employee',
+      maxDrivingHours: driver?.maxDrivingHours ?? null,
+      hourlyCost: driver?.hourlyCost ?? null,
+      jobFunction: driver?.jobFunction ?? '',
+      excludeFromAttendance: driver?.excludeFromAttendance ?? false,
+      address: driver?.address ?? '',
+      homePhone: driver?.homePhone ?? '',
+      notifyBy: driver?.notifyBy ?? 'WhatsAppAndEmail',
     })
     this.photo.reset(this.api.photoUrl(driver?.photoId ?? null))
     this.confirmDelete.set(false)
@@ -227,6 +270,15 @@ export class DriversComponent implements OnInit {
           ...v,
           email: v.email.trim() || null,
           notes: v.notes.trim() || null,
+          employeeNumber: v.employeeNumber.trim() || null,
+          taxCode: v.taxCode.trim() || null,
+          dateOfBirth: v.dateOfBirth || null,
+          placeOfBirth: v.placeOfBirth.trim() || null,
+          hiredOn: v.hiredOn || null,
+          leftOn: v.leftOn || null,
+          jobFunction: v.jobFunction.trim() || null,
+          address: v.address.trim() || null,
+          homePhone: v.homePhone.trim() || null,
           languages: list(v.languages),
           preferredAreas: list(v.preferredAreas),
           documents: v.documents.map(d => ({
@@ -279,6 +331,13 @@ export class DriversComponent implements OnInit {
           this.formError.set(problemMessage(err))
         },
       })
+  }
+
+  /** "E-17 · Chauffeur" under the name. */
+  protected staffLine(driver: Driver): string {
+    return [driver.employeeNumber, driver.jobFunction]
+      .filter(Boolean)
+      .join(' · ')
   }
 
   /** Earliest expiry among the driver's documents, for the list. */

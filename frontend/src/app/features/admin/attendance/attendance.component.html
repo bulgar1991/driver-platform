@@ -1,0 +1,499 @@
+<div class="attendance">
+  <header class="attendance__header">
+    <div>
+      <p class="eyebrow"><ng-container i18n>Staff</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Attendance calendar</ng-container></h1
+      >
+    </div>
+    <div class="attendance__tools">
+      <a
+        appButton
+        size="sm"
+        variant="outline"
+        routerLink="/admin/attendance/statistics"
+        ><app-icon name="grid" />&ngsp;<ng-container i18n
+          >Statistics</ng-container
+        ></a
+      >
+      <button
+        appButton
+        size="sm"
+        variant="outline"
+        type="button"
+        [disabled]="!people().length"
+        (click)="export()"
+        ><app-icon name="download" />&ngsp;<ng-container i18n
+          >Export (Excel)</ng-container
+        ></button
+      >
+    </div>
+  </header>
+
+  <div class="attendance__filters">
+    <div class="attendance__month">
+      <button
+        type="button"
+        class="attendance__nav"
+        i18n-aria-label
+        aria-label="Previous month"
+        (click)="shiftMonth(-1)"
+        ><app-icon name="arrow-left"
+      /></button>
+      <button
+        appButton
+        size="sm"
+        variant="ghost"
+        type="button"
+        (click)="thisMonth()"
+        ><ng-container i18n>This month</ng-container></button
+      >
+      <button
+        type="button"
+        class="attendance__nav"
+        i18n-aria-label
+        aria-label="Next month"
+        (click)="shiftMonth(1)"
+        ><app-icon name="arrow-right"
+      /></button>
+    </div>
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label i18n>Start date</mat-label>
+      <input
+        #fromInput
+        matInput
+        type="date"
+        [value]="from()"
+        (change)="setPeriod(fromInput.value, toInput.value)" />
+    </mat-form-field>
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label i18n>End date</mat-label>
+      <input
+        #toInput
+        matInput
+        type="date"
+        [value]="to()"
+        (change)="setPeriod(fromInput.value, toInput.value)" />
+    </mat-form-field>
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label i18n>Contract type</mat-label>
+      <mat-select [value]="contract()" (valueChange)="contract.set($event)">
+        <mat-option value=""><ng-container i18n>All</ng-container></mat-option>
+        @for (c of contractTypes; track c.value) {
+          <mat-option [value]="c.value">{{ c.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label i18n>Function</mat-label>
+      <mat-select
+        [value]="jobFunction()"
+        (valueChange)="jobFunction.set($event)">
+        <mat-option value=""><ng-container i18n>All</ng-container></mat-option>
+        @for (f of functions(); track f) {
+          <mat-option [value]="f">{{ f }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label i18n>Operative</mat-label>
+      <mat-select [value]="operative()" (valueChange)="operative.set($event)">
+        <mat-option value="yes"
+          ><ng-container i18n>Yes</ng-container></mat-option
+        >
+        <mat-option value="no"><ng-container i18n>No</ng-container></mat-option>
+        <mat-option value="all"
+          ><ng-container i18n>All</ng-container></mat-option
+        >
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field subscriptSizing="dynamic">
+      <mat-label i18n>Event</mat-label>
+      <mat-select [value]="typeFilter()" (valueChange)="typeFilter.set($event)">
+        <mat-option value=""><ng-container i18n>All</ng-container></mat-option>
+        @for (t of types(); track t.id) {
+          <mat-option [value]="t.id">{{ t.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  <p class="attendance__count">
+    @if (loading()) {
+      <ng-container i18n>Loading…</ng-container>
+    } @else {
+      <ng-container i18n>{{ people().length }} shown</ng-container>
+      &ngsp;·&ngsp;<ng-container i18n
+        >Click a day to add or change an event.</ng-container
+      >
+    }
+  </p>
+
+  <div class="attendance__wrap">
+    <table class="attendance__grid">
+      <thead>
+        <tr>
+          <th class="attendance__person attendance__person--head" scope="col"
+            ><ng-container i18n>Staff member</ng-container></th
+          >
+          @for (day of days(); track day) {
+            <th
+              scope="col"
+              class="attendance__day"
+              [class.attendance__day--weekend]="isWeekend(day)"
+              [class.attendance__day--today]="day === today">
+              <span class="attendance__weekday">{{ day | date: 'EEEEE' }}</span>
+              {{ day | date: 'dd/MM' }}
+            </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of people(); track p.id) {
+          <tr>
+            <th class="attendance__person" scope="row">
+              <span class="attendance__name"
+                >{{ p.lastName }} {{ p.firstName }}</span
+              >
+              @if (p.employeeNumber || p.jobFunction) {
+                <span class="attendance__sub">{{
+                  p.employeeNumber && p.jobFunction
+                    ? p.employeeNumber + ' · ' + p.jobFunction
+                    : p.employeeNumber || p.jobFunction
+                }}</span>
+              }
+            </th>
+            @for (day of days(); track day) {
+              @let e = entry(p.id, day);
+              @let t = type(e);
+              <td
+                class="attendance__cell"
+                [class.attendance__cell--weekend]="isWeekend(day)"
+                [class.attendance__cell--out]="!employedOn(p, day)">
+                <button
+                  type="button"
+                  class="attendance__cell-button"
+                  [class.attendance__cell-button--partial]="!!e?.startTime"
+                  [style.--event]="t?.color ?? null"
+                  [attr.title]="cellTitle(p, day) || null"
+                  [attr.aria-label]="
+                    p.firstName +
+                    ' ' +
+                    p.lastName +
+                    ', ' +
+                    day +
+                    (t ? ': ' + cellTitle(p, day) : '')
+                  "
+                  [disabled]="!employedOn(p, day)"
+                  (click)="openCell(p, day)"
+                  >{{ t?.code ?? '' }}</button
+                >
+              </td>
+            }
+          </tr>
+        } @empty {
+          <tr>
+            <td class="attendance__empty" [attr.colspan]="days().length + 1">
+              @if (!loading()) {
+                <ng-container i18n
+                  >Nobody to show. Staff come from Drivers; check the filters
+                  above.</ng-container
+                >
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+      @if (people().length) {
+        <tfoot>
+          <tr>
+            <th class="attendance__person" scope="row"
+              ><ng-container i18n>Available</ng-container></th
+            >
+            @for (n of available(); track $index) {
+              <td
+                class="attendance__total"
+                [class.attendance__total--low]="
+                  alertBelow() !== null && n < alertBelow()!
+                ">
+                {{ n }}
+              </td>
+            }
+          </tr>
+        </tfoot>
+      }
+    </table>
+  </div>
+
+  <div class="attendance__bottom">
+    <section class="attendance__legend" aria-labelledby="legend-title">
+      <h2 id="legend-title" class="attendance__legend-title">
+        <ng-container i18n>Legend</ng-container>
+        @if (isAdmin) {
+          <button
+            appButton
+            size="sm"
+            variant="ghost"
+            type="button"
+            (click)="managingTypes.set(true); editType(null)"
+            ><app-icon name="edit" />&ngsp;<ng-container i18n
+              >Manage events</ng-container
+            ></button
+          >
+        }
+      </h2>
+      <ul class="attendance__legend-list">
+        @for (t of types(); track t.id) {
+          <li class="attendance__legend-item">
+            <span class="attendance__swatch" [style.background]="t.color">{{
+              t.code
+            }}</span>
+            {{ t.name }}
+            @if (!t.makesUnavailable) {
+              <span class="attendance__sub"
+                ><ng-container i18n>(still available)</ng-container></span
+              >
+            }
+          </li>
+        }
+        <li class="attendance__legend-item">
+          <span
+            class="attendance__swatch attendance__swatch--partial"
+            style="--event: #a3a3a3"
+            >A</span
+          >
+          <ng-container i18n
+            >Striped: only some hours (still available that day)</ng-container
+          >
+        </li>
+      </ul>
+    </section>
+
+    <mat-form-field subscriptSizing="dynamic" class="attendance__alert">
+      <mat-label i18n>Alert when available below</mat-label>
+      <input
+        #alertInput
+        matInput
+        type="number"
+        min="0"
+        [value]="alertBelow() ?? ''"
+        (change)="setAlert(alertInput.value)" />
+    </mat-form-field>
+  </div>
+</div>
+
+<ng-template
+  [appDialogOpen]="editing() !== null"
+  dialogWidth="40rem"
+  (dialogClosed)="editing.set(null)">
+  @if (editing(); as cell) {
+    <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+      <app-dialog [title]="cell.person.firstName + ' ' + cell.person.lastName">
+        @if (formError(); as message) {
+          <p class="alert alert--error" role="alert">{{ message }}</p>
+        }
+        <div class="attendance__form">
+          <mat-form-field class="attendance__form-wide">
+            <mat-label i18n>Event</mat-label>
+            <mat-select formControlName="typeId">
+              @for (t of types(); track t.id) {
+                <mat-option [value]="t.id">
+                  <span
+                    class="attendance__swatch attendance__swatch--small"
+                    [style.background]="t.color"></span>
+                  {{ t.name }}
+                </mat-option>
+              }
+            </mat-select>
+            <mat-error>{{ text.required }}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>From</mat-label>
+            <input matInput type="date" formControlName="from" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>To</mat-label>
+            <input matInput type="date" formControlName="to" />
+          </mat-form-field>
+          <mat-checkbox class="attendance__form-wide" formControlName="wholeDay"
+            ><ng-container i18n>Whole day</ng-container></mat-checkbox
+          >
+          @if (!form.controls.wholeDay.value) {
+            <mat-form-field>
+              <mat-label i18n>Begin</mat-label>
+              <input matInput type="time" formControlName="startTime" />
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label i18n>End</mat-label>
+              <input matInput type="time" formControlName="endTime" />
+            </mat-form-field>
+          }
+          @if (form.controls.from.value !== form.controls.to.value) {
+            <mat-checkbox
+              class="attendance__form-wide"
+              formControlName="skipWeekends"
+              ><ng-container i18n
+                >Skip Saturdays and Sundays</ng-container
+              ></mat-checkbox
+            >
+          }
+          <mat-form-field class="attendance__form-wide">
+            <mat-label i18n>Notes</mat-label>
+            <input matInput formControlName="notes" />
+          </mat-form-field>
+        </div>
+        <div class="attendance__actions" dialog-actions>
+          @if (
+            cell.entry || form.controls.from.value !== form.controls.to.value
+          ) {
+            <button
+              appButton
+              size="sm"
+              variant="ghost"
+              type="button"
+              class="attendance__remove"
+              [disabled]="saving()"
+              (click)="clear()"
+              ><app-icon name="trash" />&ngsp;<ng-container i18n
+                >Remove</ng-container
+              ></button
+            >
+          }
+          <button
+            appButton
+            type="button"
+            variant="ghost"
+            (click)="editing.set(null)"
+            ><ng-container i18n>Cancel</ng-container></button
+          >
+          <button appButton type="submit" [disabled]="saving()"
+            ><ng-container i18n>Save</ng-container></button
+          >
+        </div>
+      </app-dialog>
+    </form>
+  }
+</ng-template>
+
+<ng-template
+  [appDialogOpen]="managingTypes()"
+  dialogWidth="40rem"
+  (dialogClosed)="managingTypes.set(false)">
+  <app-dialog [title]="manageTitle">
+    @if (typeError(); as message) {
+      <p class="alert alert--error" role="alert">{{ message }}</p>
+    }
+    <ul class="attendance__types">
+      @for (t of types(); track t.id) {
+        <li
+          class="attendance__type"
+          [class.attendance__type--editing]="editingType()?.id === t.id">
+          <span class="attendance__swatch" [style.background]="t.color">{{
+            t.code
+          }}</span>
+          <span class="attendance__type-name">
+            {{ t.name }}
+            <span class="attendance__sub">
+              @if (t.makesUnavailable) {
+                <ng-container i18n>Not available that day</ng-container>
+              } @else {
+                <ng-container i18n>Still available</ng-container>
+              }
+            </span>
+          </span>
+          <button
+            type="button"
+            class="attendance__icon"
+            i18n-aria-label
+            aria-label="Edit"
+            (click)="editType(t)"
+            ><app-icon name="edit"
+          /></button>
+          <button
+            type="button"
+            class="attendance__icon attendance__icon--danger"
+            i18n-aria-label
+            aria-label="Delete"
+            [disabled]="saving()"
+            (click)="deleteType(t)"
+            ><app-icon name="trash"
+          /></button>
+        </li>
+      }
+    </ul>
+
+    <form
+      class="attendance__type-form"
+      [formGroup]="typeForm"
+      (ngSubmit)="saveType()"
+      novalidate>
+      <p class="attendance__legend-title">
+        @if (editingType()) {
+          <ng-container i18n>Change event</ng-container>
+        } @else {
+          <ng-container i18n>New event</ng-container>
+        }
+      </p>
+      <mat-form-field>
+        <mat-label i18n>Name</mat-label>
+        <input matInput formControlName="name" />
+        <mat-error>{{ text.required }}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>Code (1–3 letters)</mat-label>
+        <input matInput class="attendance__upper" formControlName="code" />
+        <mat-error i18n>One to three letters or digits.</mat-error>
+      </mat-form-field>
+      <label class="attendance__color">
+        <span i18n>Colour</span>
+        <input type="color" formControlName="color" />
+      </label>
+      <mat-form-field>
+        <mat-label i18n>Order</mat-label>
+        <input matInput type="number" min="0" formControlName="sortOrder" />
+      </mat-form-field>
+      <mat-checkbox
+        class="attendance__form-wide"
+        formControlName="makesUnavailable"
+        ><ng-container i18n
+          >A whole day of it means not available (no shifts that
+          day)</ng-container
+        ></mat-checkbox
+      >
+      <div class="attendance__form-wide attendance__type-actions">
+        @if (editingType()) {
+          <button
+            appButton
+            size="sm"
+            variant="ghost"
+            type="button"
+            (click)="editType(null)"
+            ><ng-container i18n>Cancel</ng-container></button
+          >
+        }
+        <button appButton size="sm" type="submit" [disabled]="saving()">
+          @if (editingType()) {
+            <ng-container i18n>Save event</ng-container>
+          } @else {
+            <app-icon name="plus" />&ngsp;<ng-container i18n
+              >Add event</ng-container
+            >
+          }
+        </button>
+      </div>
+    </form>
+    <div dialog-actions>
+      <button
+        appButton
+        type="button"
+        variant="ghost"
+        (click)="managingTypes.set(false)"
+        ><ng-container i18n>Close</ng-container></button
+      >
+    </div>
+  </app-dialog>
+</ng-template>

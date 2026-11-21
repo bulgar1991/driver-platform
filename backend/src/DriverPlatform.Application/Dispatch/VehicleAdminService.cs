@@ -21,34 +21,35 @@ public sealed class VehicleAdminService(IAppDbContext db, IImageConverter images
 {
     public async Task<IReadOnlyList<VehicleDto>> ListAsync(bool includeInactive, CancellationToken cancellationToken)
     {
-        var vehicles = await db.Vehicles.AsNoTracking()
+        var vehicles = await db.Vehicles.AsNoTracking().Include(v => v.Expirations)
             .Where(v => includeInactive || v.IsActive)
             .OrderBy(v => v.PlateNumber)
             .ToListAsync(cancellationToken);
-        return vehicles.OrderBy(v => v.Category).ThenBy(v => v.PlateNumber).Select(ToDto).ToList();
+        var names = await DriverNamesAsync(vehicles, cancellationToken);
+        return vehicles.OrderBy(v => v.Category).ThenBy(v => v.PlateNumber).Select(v => ToDto(v, names)).ToList();
     }
 
     public async Task<VehicleDto> CreateAsync(VehicleRequest request, CancellationToken cancellationToken)
     {
         await EnsureUniquePlateAsync(request.PlateNumber, null, cancellationToken);
         var vehicle = new Vehicle();
-        Apply(vehicle, request);
+        await ApplyAsync(vehicle, request, cancellationToken);
         db.Vehicles.Add(vehicle);
 
         audit.Log("vehicle.created", nameof(Vehicle), vehicle.Id.ToString(), new { vehicle.PlateNumber, vehicle.Category });
         await db.SaveChangesAsync(cancellationToken);
-        return ToDto(vehicle);
+        return await ToDtoAsync(vehicle, cancellationToken);
     }
 
     public async Task<VehicleDto> UpdateAsync(Guid id, VehicleRequest request, CancellationToken cancellationToken)
     {
         var vehicle = await FindAsync(id, cancellationToken);
         await EnsureUniquePlateAsync(request.PlateNumber, id, cancellationToken);
-        Apply(vehicle, request);
+        await ApplyAsync(vehicle, request, cancellationToken);
 
         audit.Log("vehicle.updated", nameof(Vehicle), id.ToString(), request);
         await db.SaveChangesAsync(cancellationToken);
-        return ToDto(vehicle);
+        return await ToDtoAsync(vehicle, cancellationToken);
     }
 
     public async Task<VehicleDto> SetPhotoAsync(Guid id, byte[] data, CancellationToken cancellationToken)
@@ -59,7 +60,7 @@ public sealed class VehicleAdminService(IAppDbContext db, IImageConverter images
 
         audit.Log("vehicle.photo_set", nameof(Vehicle), id.ToString(), new { data.Length });
         await db.SaveChangesAsync(cancellationToken);
-        return ToDto(vehicle);
+        return await ToDtoAsync(vehicle, cancellationToken);
     }
 
     public async Task<VehicleDto> RemovePhotoAsync(Guid id, CancellationToken cancellationToken)
@@ -70,7 +71,7 @@ public sealed class VehicleAdminService(IAppDbContext db, IImageConverter images
 
         audit.Log("vehicle.photo_removed", nameof(Vehicle), id.ToString());
         await db.SaveChangesAsync(cancellationToken);
-        return ToDto(vehicle);
+        return await ToDtoAsync(vehicle, cancellationToken);
     }
 
     /// <summary>Only a vehicle never put on a shift: past shifts must keep pointing at it, so those are deactivated.</summary>
@@ -101,8 +102,23 @@ public sealed class VehicleAdminService(IAppDbContext db, IImageConverter images
         }
     }
 
-    private static void Apply(Vehicle vehicle, VehicleRequest request)
+    private async Task ApplyAsync(Vehicle vehicle, VehicleRequest request, CancellationToken cancellationToken)
     {
+        if (request.DefaultDriverId is { } driverId && !await db.Drivers.AnyAsync(d => d.Id == driverId, cancellationToken))
+        {
+            throw new RequestValidationException("defaultDriverId", Texts.Current.DriverNotFound);
+        }
+        vehicle.Code = Clean(request.Code);
+        vehicle.RegisteredOn = request.RegisteredOn;
+        vehicle.ChassisNumber = Clean(request.ChassisNumber)?.ToUpperInvariant();
+        vehicle.CostPerKm = request.CostPerKm;
+        vehicle.DefaultDriverId = request.DefaultDriverId;
+        vehicle.LeasingCompany = Clean(request.LeasingCompany);
+        vehicle.HasDvd = request.HasDvd;
+        vehicle.HasWifi = request.HasWifi;
+        vehicle.HasWc = request.HasWc;
+        vehicle.AutomaticGearbox = request.AutomaticGearbox;
+        vehicle.WheelchairRamp = request.WheelchairRamp;
         vehicle.PlateNumber = NormalizePlate(request.PlateNumber);
         vehicle.Make = request.Make.Trim();
         vehicle.Model = request.Model.Trim();
@@ -119,10 +135,31 @@ public sealed class VehicleAdminService(IAppDbContext db, IImageConverter images
         vehicle.Notes = string.IsNullOrWhiteSpace(request.Notes) ? null : request.Notes.Trim();
     }
 
-    private VehicleDto ToDto(Vehicle v) => new(
+    private async Task<VehicleDto> ToDtoAsync(Vehicle vehicle, CancellationToken cancellationToken)
+    {
+        var expirations = await db.VehicleExpirations.AsNoTracking().Where(e => e.VehicleId == vehicle.Id).ToListAsync(cancellationToken);
+        return ToDto(vehicle, await DriverNamesAsync([vehicle], cancellationToken), expirations);
+    }
+
+    private async Task<Dictionary<Guid, string>> DriverNamesAsync(IReadOnlyCollection<Vehicle> vehicles, CancellationToken cancellationToken)
+    {
+        var ids = vehicles.Where(v => v.DefaultDriverId is not null).Select(v => v.DefaultDriverId!.Value).Distinct().ToList();
+        return ids.Count == 0
+            ? []
+            : await db.Drivers.AsNoTracking().Where(d => ids.Contains(d.Id))
+                .ToDictionaryAsync(d => d.Id, d => d.FirstName + " " + d.LastName, cancellationToken);
+    }
+
+    private VehicleDto ToDto(Vehicle v, IReadOnlyDictionary<Guid, string> driverNames, IEnumerable<VehicleExpiration>? expirations = null) => new(
         v.Id, v.PlateNumber, v.Make, v.Model, v.Color, v.Category, v.Seats, v.LuggageCapacity, v.ChildSeatsAvailable,
         v.InsuranceExpiresOn, v.InspectionExpiresOn, v.NextServiceOn, v.MileageKm, v.IsActive, v.Notes, v.PhotoId,
-        DocumentRules.AlertCount(DocumentRules.Dated(v), DateOnly.FromDateTime(OfficeTime.ToLocal(clock.GetUtcNow()))));
+        DocumentRules.AlertCount(DocumentRules.Dated(v), DateOnly.FromDateTime(OfficeTime.ToLocal(clock.GetUtcNow())))
+            + VehicleLogService.DueSoon(expirations ?? v.Expirations, v.MileageKm, DateOnly.FromDateTime(OfficeTime.ToLocal(clock.GetUtcNow()))),
+        v.Code, v.RegisteredOn, v.ChassisNumber, v.CostPerKm, v.DefaultDriverId,
+        v.DefaultDriverId is { } id ? driverNames.GetValueOrDefault(id) : null,
+        v.LeasingCompany, v.HasDvd, v.HasWifi, v.HasWc, v.AutomaticGearbox, v.WheelchairRamp);
+
+    private static string? Clean(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     /// <summary>"ab 123 cd" → "AB123CD".</summary>
     internal static string NormalizePlate(string plate) =>

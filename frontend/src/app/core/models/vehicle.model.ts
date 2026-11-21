@@ -46,11 +46,76 @@ export interface VehicleRequest {
   mileageKm: number
   isActive: boolean
   notes?: string | null
+  /** Internal fleet code ("T1"). */
+  code?: string | null
+  /** yyyy-MM-dd */
+  registeredOn?: string | null
+  chassisNumber?: string | null
+  costPerKm?: number | null
+  defaultDriverId?: string | null
+  /** Leasing or rental company. */
+  leasingCompany?: string | null
+  hasDvd: boolean
+  hasWifi: boolean
+  hasWc: boolean
+  automaticGearbox: boolean
+  wheelchairRamp: boolean
 }
 
 export interface Vehicle extends VehicleRequest {
   id: string
   /** Picture at GET /api/photos/{id}. */
   photoId: string | null
+  /** Insurance, inspection and other deadlines past or within 30 days (or 1,000 km). */
   documentAlerts: number
+  defaultDriverName: string | null
+}
+
+/** A deadline besides insurance and inspection: road tax, tachograph, service… */
+export interface VehicleExpiration {
+  id: string
+  title: string
+  /** yyyy-MM-dd */
+  dueOn: string | null
+  dueKm: number | null
+  notes: string | null
+}
+
+export interface VehicleExpirationRequest {
+  title: string
+  dueOn?: string | null
+  dueKm?: number | null
+  notes?: string | null
+}
+
+export interface VehicleRefuel {
+  id: string
+  /** yyyy-MM-dd */
+  date: string
+  odometerKm: number
+  liters: number
+  cost: number | null
+  station: string | null
+  driverId: string | null
+  driverName: string | null
+}
+
+export interface VehicleRefuelRequest {
+  date: string
+  odometerKm: number
+  liters: number
+  cost?: number | null
+  station?: string | null
+  driverId?: string | null
+}
+
+export interface VehicleLog {
+  expirations: VehicleExpiration[]
+  refuels: VehicleRefuel[]
+  mileageKm: number
+  distanceKm: number | null
+  totalLiters: number
+  totalCost: number
+  /** Litres per 100 km; null with fewer than two readings. */
+  averageConsumption: number | null
 }

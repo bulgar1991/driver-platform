@@ -20,6 +20,13 @@ public abstract partial class Texts
     public abstract string TightGap(int minutes, string earlier, string later);
     public abstract string MarkedNotAvailable { get; }
     public abstract string OnAnotherShift { get; }
+    public abstract string AbsentOn(string reason, DateOnly date);
+    public abstract string NotEmployed { get; }
+    public abstract string GiveBothTimes { get; }
+    public abstract string GiveDateOrKm { get; }
+    public abstract string RecordNotFound { get; }
+    public abstract string AttendanceTypeInUse { get; }
+    public abstract string RangeTooLong(int days);
 
     public abstract string DocumentName(DriverDocumentType type);
     public abstract string VehicleInsurance { get; }
