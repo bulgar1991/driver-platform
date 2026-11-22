@@ -64,7 +64,7 @@ public sealed class BookingEmails(
         Paragraph(html, text, t.InvoiceAttached(invoice.Number));
         Signature(html, text, t);
 
-        await SendAsync(outbound, invoice, t.ConfirmedSubject(outbound.Reference), html, text, cancellationToken);
+        await SendAsync(NotificationKind.BookingConfirmation, outbound, invoice, t.ConfirmedSubject(outbound.Reference), html, text, cancellationToken);
     }
 
     public async Task SendCreditNoteAsync(Booking outbound, Invoice creditNote, bool cancelled, CancellationToken cancellationToken)
@@ -83,16 +83,30 @@ public sealed class BookingEmails(
         Signature(html, text, t);
 
         await SendAsync(
-            outbound, creditNote,
+            NotificationKind.BookingRefund, outbound, creditNote,
             cancelled ? t.CancelledSubject(outbound.Reference) : t.RefundSubject(outbound.Reference),
             html, text, cancellationToken);
     }
 
     private async Task SendAsync(
-        Booking outbound, Invoice document, string subject, StringBuilder html, StringBuilder text, CancellationToken cancellationToken)
+        NotificationKind kind, Booking outbound, Invoice document, string subject, StringBuilder html, StringBuilder text,
+        CancellationToken cancellationToken)
     {
+        // Every attempt goes in the sent-messages log, the skipped ones too (no email address).
+        var log = new NotificationLog
+        {
+            Kind = kind,
+            Channel = NotificationChannel.Email,
+            Recipient = outbound.Client.Email ?? "",
+            Subject = subject.Length > 300 ? subject[..300] : subject,
+            BookingId = outbound.Id,
+            CreatedAt = clock.GetUtcNow(),
+        };
+        db.NotificationLogs.Add(log);
         if (string.IsNullOrEmpty(outbound.Client.Email))
         {
+            log.Status = NotificationStatus.Skipped;
+            await db.SaveChangesAsync(cancellationToken);
             return;
         }
 
@@ -111,6 +125,7 @@ public sealed class BookingEmails(
         try
         {
             await sender.SendAsync(message, cancellationToken);
+            log.Status = NotificationStatus.Sent;
             document.Status = InvoiceStatus.Sent;
             document.EmailSentAt = clock.GetUtcNow();
             await db.SaveChangesAsync(cancellationToken);
@@ -119,6 +134,9 @@ public sealed class BookingEmails(
         {
             // The invoice stays "Issued"; it can be resent from the panel.
             logger.LogError(ex, "Could not email {Number} for {Reference}", document.Number, outbound.Reference);
+            log.Status = NotificationStatus.Failed;
+            log.Error = ex.Message.Length > 480 ? ex.Message[..480] : ex.Message;
+            await db.SaveChangesAsync(cancellationToken);
         }
     }
 

@@ -44,6 +44,8 @@ internal sealed partial class GermanTexts
     public override string GiveDateOrKm => "Geben Sie ein Datum oder einen Kilometerstand an.";
     public override string GiveNewDate => "Geben Sie das neue Ablaufdatum an.";
     public override string UnknownLanguage => "Wählen Sie Italienisch, Englisch, Deutsch oder Französisch.";
+    public override string MessageNotFound => "Nachricht nicht gefunden.";
+    public override string MessageCannotBeResent => "Diese Nachricht kann nicht erneut gesendet werden.";
     public override string RecordNotFound => "Nicht gefunden. Vielleicht wurde es bereits gelöscht.";
     public override string AttendanceTypeInUse => "Diese Art wird im Kalender verwendet. Ändern Sie zuerst diese Tage.";
     public override string RangeTooLong(int days) => $"Wählen Sie höchstens {days} Tage.";

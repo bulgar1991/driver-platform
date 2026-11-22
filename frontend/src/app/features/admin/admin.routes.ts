@@ -62,6 +62,12 @@ export const ADMIN_ROUTES: Routes = [
       ),
   },
   {
+    path: 'messages',
+    title: $localize`Sent messages · ${BRAND.name}:brand:`,
+    loadComponent: () =>
+      import('./messages/messages.component').then(m => m.MessagesComponent),
+  },
+  {
     path: 'expirations',
     title: $localize`Expirations · ${BRAND.name}:brand:`,
     loadComponent: () =>

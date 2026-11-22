@@ -44,6 +44,8 @@ internal sealed partial class FrenchTexts
     public override string GiveDateOrKm => "Indiquez une date ou un relevé du compteur.";
     public override string GiveNewDate => "Indiquez la nouvelle date d'échéance.";
     public override string UnknownLanguage => "Choisissez italien, anglais, allemand ou français.";
+    public override string MessageNotFound => "Message introuvable.";
+    public override string MessageCannotBeResent => "Ce message ne peut pas être renvoyé.";
     public override string RecordNotFound => "Introuvable. Il a peut-être déjà été supprimé.";
     public override string AttendanceTypeInUse => "Ce type est utilisé dans le calendrier. Modifiez d'abord ces jours.";
     public override string RangeTooLong(int days) => $"Choisissez au maximum {days} jours.";

@@ -10,6 +10,8 @@ internal sealed class NotificationLogConfiguration : IEntityTypeConfiguration<No
     {
         builder.Property(n => n.Recipient).HasMaxLength(254);
         builder.Property(n => n.ProviderMessageId).HasMaxLength(128);
+        builder.Property(n => n.Subject).HasMaxLength(300);
+        builder.HasIndex(n => n.CreatedAt);
         builder.HasIndex(n => n.AssignmentId);
         builder.HasIndex(n => n.BookingId);
         builder.HasIndex(n => n.DriverId);

@@ -41,6 +41,7 @@ public static class DependencyInjection
         services.AddScoped<ICalendarService, CalendarService>();
         services.AddScoped<Search.ISearchService, Search.SearchService>();
         services.AddScoped<Statistics.IStatisticsService, Statistics.StatisticsService>();
+        services.AddScoped<Messages.IMessageLogService, Messages.MessageLogService>();
         services.AddScoped<Attendance.IAttendanceService, Attendance.AttendanceService>();
         services.AddScoped<IBookingAdminService, BookingAdminService>();
         services.AddScoped<IShiftService, ShiftService>();

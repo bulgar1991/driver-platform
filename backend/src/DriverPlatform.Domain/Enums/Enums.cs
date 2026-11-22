@@ -154,6 +154,10 @@ public enum NotificationKind
     ClientDriverDetails,
     /// <summary>Client: the one-time review link after drop-off.</summary>
     ReviewRequest,
+    /// <summary>Client: payment confirmed, with the invoice attached.</summary>
+    BookingConfirmation,
+    /// <summary>Client: a refund or cancellation, with the credit note attached.</summary>
+    BookingRefund,
 }
 
 public enum NotificationStatus

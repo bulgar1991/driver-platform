@@ -26,6 +26,8 @@ public abstract partial class Texts
     public abstract string GiveDateOrKm { get; }
     public abstract string GiveNewDate { get; }
     public abstract string UnknownLanguage { get; }
+    public abstract string MessageNotFound { get; }
+    public abstract string MessageCannotBeResent { get; }
     public abstract string RecordNotFound { get; }
     public abstract string AttendanceTypeInUse { get; }
     public abstract string RangeTooLong(int days);

@@ -60,6 +60,7 @@ public sealed class NotificationService(
             {
                 log.DriverId = driver.Id;
                 log.AssignmentId = shift.Id;
+                log.Subject = headline;
             }, () => whatsApp.SendTemplateAsync(driver.Phone, kind, t.Language, [driver.FirstName, headline, url], cancellationToken), cancellationToken);
         }
 
@@ -96,7 +97,8 @@ public sealed class NotificationService(
             var details = $"{driver.FirstName}, {driver.Phone}, {car} ({vehicle.PlateNumber})";
             var manage = bookingLinks.ManageUrl(booking.ReturnOfBookingId is null ? booking : await OutboundAsync(booking, cancellationToken));
 
-            await SendAsync(NotificationKind.ClientDriverDetails, NotificationChannel.WhatsApp, client.Phone, log => log.BookingId = booking.Id,
+            await SendAsync(NotificationKind.ClientDriverDetails, NotificationChannel.WhatsApp, client.Phone,
+                log => { log.BookingId = booking.Id; log.Subject = t.DriverSubject(booking.Reference); },
                 () => whatsApp.SendTemplateAsync(client.Phone, NotificationKind.ClientDriverDetails, client.Language,
                     [client.FirstName, booking.Reference, pickup, where, details], cancellationToken), cancellationToken);
             if (!string.IsNullOrEmpty(client.Email))
@@ -131,7 +133,8 @@ public sealed class NotificationService(
         }
         else
         {
-            await SendAsync(NotificationKind.ReviewRequest, NotificationChannel.WhatsApp, client.Phone, log => log.BookingId = booking.Id,
+            await SendAsync(NotificationKind.ReviewRequest, NotificationChannel.WhatsApp, client.Phone,
+                log => { log.BookingId = booking.Id; log.Subject = Texts.For(client.Language).ReviewSubject(booking.Reference); },
                 () => whatsApp.SendTemplateAsync(client.Phone, NotificationKind.ReviewRequest, client.Language,
                     [client.FirstName, booking.Reference, reviewUrl], cancellationToken), cancellationToken);
         }
@@ -177,7 +180,7 @@ public sealed class NotificationService(
             "</div>";
         var text = string.Join("\n\n", lines) + $"\n\n{button.Label}: {button.Url}\n";
 
-        return SendAsync(kind, NotificationChannel.Email, to, link, async () =>
+        return SendAsync(kind, NotificationChannel.Email, to, log => { log.Subject = subject; link(log); }, async () =>
         {
             await email.SendAsync(new EmailMessage(to, toName, subject, html, text, []), cancellationToken);
             return null;
@@ -200,6 +203,10 @@ public sealed class NotificationService(
             CreatedAt = clock.GetUtcNow(),
         };
         link(log);
+        if (log.Subject is { Length: > 300 } long_)
+        {
+            log.Subject = long_[..300];
+        }
         if (string.IsNullOrWhiteSpace(recipient))
         {
             log.Status = NotificationStatus.Skipped;

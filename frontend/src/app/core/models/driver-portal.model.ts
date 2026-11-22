@@ -77,7 +77,12 @@ export interface Review {
 
 export type NotificationChannel = 'Email' | 'WhatsApp' | 'Sms'
 export type NotificationKind =
-  'DriverShift' | 'DriverShiftChanged' | 'ClientDriverDetails' | 'ReviewRequest'
+  | 'DriverShift'
+  | 'DriverShiftChanged'
+  | 'ClientDriverDetails'
+  | 'ReviewRequest'
+  | 'BookingConfirmation'
+  | 'BookingRefund'
 export type NotificationStatus = 'Sent' | 'Failed' | 'Skipped'
 
 export interface MessageSummary {

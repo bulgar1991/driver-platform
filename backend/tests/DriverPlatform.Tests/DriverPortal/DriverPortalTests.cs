@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using DriverPlatform.Application.Dispatch;
 using DriverPlatform.Application.DriverPortal;
 using DriverPlatform.Application.Geo;
+using DriverPlatform.Application.Messages;
 using DriverPlatform.Application.Reviews;
 using DriverPlatform.Domain.Enums;
 using DriverPlatform.Infrastructure.Persistence;
@@ -287,5 +288,40 @@ public sealed class DriverPortalTests
         Assert.Equal(NotificationStatus.Failed, whatsApp.Status);
         Assert.Contains("not on WhatsApp", whatsApp.Error);
         Assert.Equal(NotificationStatus.Sent, shift.Messages.Single(m => m.Channel == NotificationChannel.Email).Status);
+    }
+
+    [Fact]
+    public async Task The_messages_log_lists_what_went_out_and_sends_a_failed_message_again()
+    {
+        var s = await SetupAsync();
+        using var _ = s.Factory;
+        s.Factory.WhatsApp.Failing.Add(DriverPhone);
+        await SetShiftStatus(s, AssignmentStatus.Sent);
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var range = $"from={today.AddDays(-1):yyyy-MM-dd}&to={today.AddDays(1):yyyy-MM-dd}";
+        var all = (await s.Staff.GetFromJsonAsync<MessageList>($"/api/admin/messages?{range}", TestData.Json))!;
+        var failed = (await s.Staff.GetFromJsonAsync<MessageList>($"/api/admin/messages?{range}&status=Failed", TestData.Json))!;
+        var toDrivers = (await s.Staff.GetFromJsonAsync<MessageList>($"/api/admin/messages?{range}&audience=Driver", TestData.Json))!;
+
+        // The booking confirmation (now logged too) and the shift by WhatsApp and email.
+        Assert.Contains(all.Items, m => m.Kind == NotificationKind.BookingConfirmation && m.Status == NotificationStatus.Sent
+            && m.Subject != null && m.BookingReference != null);
+        Assert.Equal(1, all.Counts.Failed);
+        var item = Assert.Single(failed.Items);
+        Assert.Equal((NotificationKind.DriverShift, NotificationChannel.WhatsApp, true), (item.Kind, item.Channel, item.CanResend));
+        Assert.NotNull(item.DriverName);
+        Assert.NotNull(item.Subject);
+        Assert.All(toDrivers.Items, m => Assert.Contains(m.Kind, new[] { NotificationKind.DriverShift, NotificationKind.DriverShiftChanged }));
+
+        s.Factory.WhatsApp.Failing.Clear();
+        var resent = await s.Staff.PostAsync($"/api/admin/messages/{item.Id}/resend", null);
+        Assert.Equal(HttpStatusCode.NoContent, resent.StatusCode);
+        var after = (await s.Staff.GetFromJsonAsync<MessageList>($"/api/admin/messages?{range}&channel=WhatsApp&audience=Driver", TestData.Json))!;
+        Assert.Equal(NotificationStatus.Sent, after.Items[0].Status);
+        Assert.Equal(2, after.Total);
+
+        Assert.Equal(HttpStatusCode.NotFound, (await s.Staff.PostAsync("/api/admin/messages/999999/resend", null)).StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, (await s.Public.GetAsync($"/api/admin/messages?{range}")).StatusCode);
     }
 }

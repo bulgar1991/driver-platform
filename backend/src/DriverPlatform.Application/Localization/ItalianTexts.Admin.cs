@@ -44,6 +44,8 @@ internal sealed partial class ItalianTexts
     public override string GiveDateOrKm => "Indicare una data o una lettura del contachilometri.";
     public override string GiveNewDate => "Indicare la nuova data di scadenza.";
     public override string UnknownLanguage => "Scegliere italiano, inglese, tedesco o francese.";
+    public override string MessageNotFound => "Messaggio non trovato.";
+    public override string MessageCannotBeResent => "Questo messaggio non può essere reinviato.";
     public override string RecordNotFound => "Non trovato. Forse è già stato eliminato.";
     public override string AttendanceTypeInUse => "Questo tipo è usato nel calendario. Modificare prima quei giorni.";
     public override string RangeTooLong(int days) => $"Scegliere al massimo {days} giorni.";

@@ -1187,6 +1187,11 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(32)")
                         .HasColumnName("status");
 
+                    b.Property<string>("Subject")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("subject");
+
                     b.HasKey("Id")
                         .HasName("pk_notification_logs");
 
@@ -1195,6 +1200,9 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("BookingId")
                         .HasDatabaseName("ix_notification_logs_booking_id");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("ix_notification_logs_created_at");
 
                     b.HasIndex("DriverId")
                         .HasDatabaseName("ix_notification_logs_driver_id");

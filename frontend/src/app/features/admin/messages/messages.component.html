@@ -1,0 +1,289 @@
+<section class="msg">
+  <header class="msg__header">
+    <div>
+      <p class="eyebrow"
+        ><ng-container i18n>WhatsApp and email</ng-container></p
+      >
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Sent messages</ng-container></h1
+      >
+    </div>
+  </header>
+
+  <div class="msg__toolbar">
+    <div class="msg__row">
+      <div class="msg__chips" role="group" i18n-aria-label aria-label="Period">
+        @for (p of presets; track p.key) {
+          <button
+            type="button"
+            class="msg__chip"
+            [class.msg__chip--on]="activePreset() === p.key"
+            [attr.aria-pressed]="activePreset() === p.key"
+            (click)="usePreset(p)">
+            {{ p.label }}
+          </button>
+        }
+      </div>
+      <div class="msg__dates">
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label i18n>From</mat-label>
+          <input
+            matInput
+            type="date"
+            [value]="from()"
+            (change)="setFrom($any($event.target).value)" />
+        </mat-form-field>
+        <mat-form-field subscriptSizing="dynamic">
+          <mat-label i18n>To</mat-label>
+          <input
+            matInput
+            type="date"
+            [value]="to()"
+            (change)="setTo($any($event.target).value)" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="msg__filters">
+      <mat-form-field subscriptSizing="dynamic" class="msg__search">
+        <mat-label i18n>Search</mat-label>
+        <input
+          matInput
+          type="search"
+          [value]="search()"
+          (input)="typedSearch($any($event.target).value)"
+          i18n-placeholder
+          placeholder="Name, phone, email, booking reference…" />
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>Message</mat-label>
+        <mat-select
+          [value]="kind() ?? 'all'"
+          (selectionChange)="
+            setKind($event.value === 'all' ? null : $event.value)
+          ">
+          <mat-option value="all" i18n>All messages</mat-option>
+          @for (k of kinds; track k.value) {
+            <mat-option [value]="k.value">{{ k.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="msg__row msg__row--chips">
+      <div
+        class="msg__chips"
+        role="group"
+        i18n-aria-label
+        aria-label="Recipients">
+        @for (a of audiences; track a.value) {
+          <button
+            type="button"
+            class="msg__chip"
+            [class.msg__chip--on]="audience() === a.value"
+            [attr.aria-pressed]="audience() === a.value"
+            (click)="setAudience(a.value)">
+            {{ a.label }}
+          </button>
+        }
+      </div>
+      <div class="msg__chips" role="group" i18n-aria-label aria-label="Channel">
+        @for (c of channels; track c.label) {
+          <button
+            type="button"
+            class="msg__chip"
+            [class.msg__chip--on]="channel() === c.value"
+            [attr.aria-pressed]="channel() === c.value"
+            (click)="setChannel(c.value)">
+            {{ c.label }}
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  @if (list(); as l) {
+    <div class="msg__cards">
+      <button
+        type="button"
+        class="msg__card"
+        [class.msg__card--on]="status() === null"
+        (click)="setStatus(null)">
+        <span class="msg__card-label" i18n>All</span>
+        <span class="msg__card-value">{{ l.counts.total }}</span>
+        <span class="msg__card-foot"
+          >WhatsApp {{ l.counts.whatsApp }} ·
+          <ng-container i18n>Email</ng-container> {{ l.counts.email }}</span
+        >
+      </button>
+      <button
+        type="button"
+        class="msg__card msg__card--sent"
+        [class.msg__card--on]="status() === 'Sent'"
+        [attr.aria-pressed]="status() === 'Sent'"
+        (click)="setStatus('Sent')">
+        <span class="msg__card-label" i18n>Sent</span>
+        <span class="msg__card-value">{{ l.counts.sent }}</span>
+      </button>
+      <button
+        type="button"
+        class="msg__card msg__card--failed"
+        [class.msg__card--alert]="l.counts.failed > 0"
+        [class.msg__card--on]="status() === 'Failed'"
+        [attr.aria-pressed]="status() === 'Failed'"
+        (click)="setStatus('Failed')">
+        <span class="msg__card-label" i18n>Failed</span>
+        <span class="msg__card-value">{{ l.counts.failed }}</span>
+      </button>
+      <button
+        type="button"
+        class="msg__card"
+        [class.msg__card--on]="status() === 'Skipped'"
+        [attr.aria-pressed]="status() === 'Skipped'"
+        (click)="setStatus('Skipped')">
+        <span class="msg__card-label" i18n>Not sent</span>
+        <span class="msg__card-value">{{ l.counts.skipped }}</span>
+        <span class="msg__card-foot" i18n>no phone or email</span>
+      </button>
+    </div>
+  }
+
+  @if (error(); as e) {
+    <p class="msg__error" role="alert">{{ e }}</p>
+  }
+
+  <div class="msg__list" [class.msg__list--loading]="loading()">
+    @for (m of list()?.items ?? []; track m.id) {
+      <article
+        class="msg__item"
+        [class]="'msg__item msg__item--' + m.status.toLowerCase()">
+        <div class="msg__when">
+          <strong>{{ m.sentLocal | date: 'HH:mm' }}</strong>
+          <small>{{ m.sentLocal | date: 'd MMM' }}</small>
+        </div>
+
+        <span
+          class="msg__channel"
+          [class.msg__channel--wa]="m.channel === 'WhatsApp'"
+          [attr.title]="m.channel === 'Email' ? 'Email' : m.channel">
+          <app-icon
+            [name]="m.channel === 'Email' ? 'mail' : 'chat'"
+            class="h-4 w-4" />
+        </span>
+
+        <div class="msg__main">
+          <p class="msg__title">
+            <span
+              class="msg__kind"
+              [class.msg__kind--driver]="isDriverMessage(m)"
+              >{{ kindLabel[m.kind] }}</span
+            >
+            @if (m.subject) {
+              <span class="msg__subject">{{ m.subject }}</span>
+            }
+          </p>
+          <p class="msg__to">
+            @if (isDriverMessage(m)) {
+              @if (m.driverId) {
+                <a
+                  routerLink="/admin/drivers"
+                  [queryParams]="{ edit: m.driverId }"
+                  >{{ m.driverName }}</a
+                >
+              }
+              @if (m.shiftDate) {
+                <span class="msg__muted"
+                  >·
+                  <ng-container i18n
+                    >shift of {{ m.shiftDate | date: 'd MMM' }}</ng-container
+                  ></span
+                >
+              }
+            } @else if (m.clientName) {
+              <a
+                routerLink="/admin/customers"
+                [queryParams]="{ open: m.clientId }"
+                >{{ m.clientName }}</a
+              >
+            }
+            <span class="msg__address">{{ m.recipient || '—' }}</span>
+            @if (m.bookingReference) {
+              <button
+                type="button"
+                class="msg__ref"
+                (click)="bookingId.set(m.bookingId)"
+                >{{ m.bookingReference }}</button
+              >
+            }
+          </p>
+          @if (m.error) {
+            <p class="msg__why">{{ m.error }}</p>
+          }
+        </div>
+
+        <div class="msg__end">
+          <span
+            class="msg__status"
+            [class]="'msg__status msg__status--' + m.status.toLowerCase()">
+            {{ statusLabel[m.status] }}
+          </span>
+          @if (m.canResend) {
+            <button
+              type="button"
+              class="msg__resend"
+              [class.msg__resend--strong]="m.status !== 'Sent'"
+              [disabled]="resending().has(m.id)"
+              (click)="resend(m)"
+              i18n-title
+              title="Send again">
+              <app-icon name="refresh" class="h-3.5 w-3.5" />
+              @if (m.status !== 'Sent') {
+                <span class="msg__resend-text" i18n>Send again</span>
+              }
+            </button>
+          }
+        </div>
+      </article>
+    } @empty {
+      @if (!loading()) {
+        <p class="msg__empty" i18n>No messages match these filters.</p>
+      }
+    }
+  </div>
+
+  @if (pages() > 1) {
+    <nav class="msg__pager" i18n-aria-label aria-label="Pages">
+      <button
+        type="button"
+        class="msg__page"
+        [disabled]="page() === 1"
+        (click)="goTo(page() - 1)"
+        i18n-aria-label
+        aria-label="Previous page"
+        >‹</button
+      >
+      <span class="msg__page-text" i18n
+        >Page {{ page() }} of {{ pages() }}</span
+      >
+      <button
+        type="button"
+        class="msg__page"
+        [disabled]="page() === pages()"
+        (click)="goTo(page() + 1)"
+        i18n-aria-label
+        aria-label="Next page"
+        >›</button
+      >
+    </nav>
+  }
+</section>
+
+<p-drawer
+  position="right"
+  styleClass="msg-drawer"
+  [visible]="bookingId() !== null"
+  (visibleChange)="$event || bookingId.set(null)">
+  @if (bookingId(); as id) {
+    <app-booking-detail [bookingId]="id" />
+  }
+</p-drawer>

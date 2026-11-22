@@ -11,6 +11,8 @@ public class NotificationLog
     public NotificationStatus Status { get; set; }
     /// <summary>Phone number or email address.</summary>
     public string Recipient { get; set; } = "";
+    /// <summary>The email subject, or what a WhatsApp message was about.</summary>
+    public string? Subject { get; set; }
     public Guid? DriverId { get; set; }
     public Guid? AssignmentId { get; set; }
     public Guid? BookingId { get; set; }

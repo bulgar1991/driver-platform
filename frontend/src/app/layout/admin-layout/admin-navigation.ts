@@ -22,6 +22,7 @@ export const ADMIN_NAVIGATION: NavItem[] = [
     icon: 'wallet',
     roles: ['Admin'],
   },
+  { label: $localize`Messages`, path: '/admin/messages', icon: 'chat' },
   { label: $localize`Applications`, path: '/admin/applications', icon: 'mail' },
   { label: $localize`Reviews`, path: '/admin/reviews', icon: 'star' },
   {

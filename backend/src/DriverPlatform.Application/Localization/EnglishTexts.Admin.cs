@@ -45,6 +45,8 @@ internal sealed partial class EnglishTexts
     public override string GiveDateOrKm => "Give a date or an odometer reading.";
     public override string GiveNewDate => "Give the new expiry date.";
     public override string UnknownLanguage => "Choose Italian, English, German or French.";
+    public override string MessageNotFound => "Message not found.";
+    public override string MessageCannotBeResent => "This message cannot be sent again.";
     public override string RecordNotFound => "Not found. It may have been deleted already.";
     public override string AttendanceTypeInUse => "This kind is used in the calendar. Change those days first.";
     public override string RangeTooLong(int days) => $"Pick at most {days} days.";
