@@ -1,0 +1,296 @@
+.cust {
+  @apply flex flex-col gap-5;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__totals {
+    @apply grid grid-cols-2 gap-2 lg:grid-cols-4;
+  }
+
+  &__total {
+    @apply rounded-sm border border-ink-600 bg-ink-900 px-4 py-3;
+
+    dt {
+      @apply text-[10px] uppercase tracking-widest text-ivory-400;
+    }
+
+    dd {
+      @apply mt-1 font-display text-2xl text-ivory tabular-nums;
+
+      small {
+        @apply ml-1 font-sans text-[11px] tracking-widest text-ivory-400;
+      }
+    }
+
+    &--gold {
+      @apply border-gold/50 bg-gradient-to-br from-gold/15 to-transparent;
+
+      dd {
+        @apply text-gold;
+      }
+    }
+  }
+
+  &__toolbar {
+    @apply grid gap-3 rounded-sm border border-ink-600 bg-ink-900/80 p-4 md:grid-cols-[minmax(0,1fr)_16rem];
+  }
+
+  &__chips {
+    @apply flex flex-wrap gap-1.5 md:col-span-2;
+  }
+
+  &__chip {
+    @apply rounded-full border border-ink-600 px-3 py-1 text-xs text-ivory-300 transition-colors hover:border-gold/60 hover:text-ivory;
+
+    &--on {
+      @apply border-gold bg-gold/15 text-gold;
+    }
+  }
+
+  // ── Table ────────────────────────────────────────────────────────────────
+  &__table-wrap {
+    @apply overflow-auto rounded-sm border border-ink-600 bg-ink-900 transition-opacity;
+
+    &--loading {
+      @apply opacity-60;
+    }
+  }
+
+  &__table {
+    @apply w-full min-w-[56rem] border-collapse text-sm;
+
+    th {
+      @apply sticky top-0 z-10 border-b border-ink-600 bg-ink-900 px-3 py-3 text-left text-[10px] font-normal uppercase tracking-widest text-ivory-400;
+    }
+
+    td {
+      @apply border-b border-ink-700 px-3 py-2.5 align-middle text-ivory;
+    }
+  }
+
+  &__row {
+    @apply cursor-pointer transition-colors hover:bg-ink-800 focus-visible:bg-ink-800 focus-visible:outline-none;
+
+    &--open {
+      @apply bg-gold/5;
+
+      td:first-child {
+        box-shadow: inset 3px 0 0 theme('colors.gold.DEFAULT');
+      }
+    }
+  }
+
+  &__who {
+    @apply flex items-center gap-3;
+  }
+
+  // A monogram in the brand's gold ring.
+  &__avatar {
+    @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gold/50 bg-gradient-to-br from-gold/20 to-transparent font-display text-xs tracking-wider text-gold;
+  }
+
+  &__name {
+    @apply flex min-w-0 flex-col;
+  }
+
+  &__flags {
+    @apply mt-0.5 flex items-center gap-1.5;
+  }
+
+  &__lang {
+    @apply rounded-sm border border-ink-500 px-1 text-[9px] uppercase tracking-widest text-ivory-400;
+  }
+
+  &__flag {
+    @apply h-3.5 w-3.5 text-gold/80;
+  }
+
+  &__contact {
+    @apply text-xs;
+
+    a {
+      @apply block w-fit text-ivory-300 transition-colors hover:text-gold;
+    }
+  }
+
+  &__num {
+    @apply text-right tabular-nums;
+
+    small {
+      @apply text-[10px] text-ivory-400;
+    }
+  }
+
+  &__cancelled {
+    @apply block text-danger/80;
+  }
+
+  &__nowrap {
+    @apply whitespace-nowrap;
+  }
+
+  &__next {
+    @apply rounded-sm bg-success/15 px-2 py-0.5 text-xs text-success;
+  }
+
+  &__muted {
+    @apply text-ivory-400;
+  }
+
+  &__empty {
+    @apply px-4 py-10 text-center text-sm text-ivory-400;
+  }
+
+  &__pager {
+    @apply flex items-center justify-center gap-3;
+  }
+
+  &__page {
+    @apply flex h-9 w-9 items-center justify-center rounded-full border border-ink-600 text-ivory-300 transition-colors hover:border-gold hover:text-gold disabled:pointer-events-none disabled:opacity-40;
+  }
+
+  &__page-text {
+    @apply text-xs uppercase tracking-widest text-ivory-400;
+  }
+
+  // ── Drawer: the customer's card ─────────────────────────────────────────
+  &__back {
+    @apply mb-4 flex items-center gap-2 text-xs uppercase tracking-widest text-gold transition-colors hover:text-gold-200;
+  }
+
+  &__card {
+    @apply flex flex-col gap-4;
+  }
+
+  &__stats {
+    @apply grid grid-cols-2 gap-2 sm:grid-cols-4;
+
+    div {
+      @apply rounded-sm border border-ink-600 bg-ink-800/60 px-3 py-2;
+    }
+
+    dt {
+      @apply text-[9px] uppercase tracking-widest text-ivory-400;
+    }
+
+    dd {
+      @apply mt-0.5 font-display text-lg text-ivory tabular-nums;
+
+      small {
+        @apply font-sans text-[10px] text-ivory-400;
+      }
+    }
+  }
+
+  &__since {
+    @apply text-xs text-ivory-400;
+  }
+
+  &__section {
+    @apply flex items-center gap-2 border-b border-ink-700 pb-2 text-xs uppercase tracking-luxe text-ivory;
+  }
+
+  &__count {
+    @apply rounded-full bg-ink-700 px-2 py-px text-[10px] tracking-normal text-ivory-300;
+  }
+
+  &__form {
+    @apply flex flex-col gap-3;
+  }
+
+  &__fields {
+    @apply grid items-center gap-x-3 sm:grid-cols-2;
+  }
+
+  &__wide {
+    @apply sm:col-span-2;
+  }
+
+  &__form-actions {
+    @apply flex flex-wrap items-center justify-between gap-3;
+  }
+
+  &__history {
+    @apply flex flex-col gap-1.5;
+  }
+
+  &__ride {
+    @apply grid w-full items-center gap-3 rounded-sm border border-ink-700 bg-ink-900 px-3 py-2.5 text-left transition-colors hover:border-gold/60;
+    grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+
+    &--future {
+      @apply border-l-2 border-l-success;
+    }
+  }
+
+  &__ride-when {
+    @apply flex flex-col text-xs;
+
+    strong {
+      @apply font-normal text-ivory;
+    }
+
+    small {
+      @apply text-ivory-400;
+    }
+  }
+
+  &__ride-route {
+    @apply flex min-w-0 flex-col text-xs text-ivory-300;
+
+    > span {
+      @apply truncate;
+    }
+
+    small {
+      @apply mt-0.5 truncate text-[11px] text-ivory-400;
+    }
+  }
+
+  &__ride-to {
+    @apply text-ivory-400;
+  }
+
+  &__ride-end {
+    @apply flex flex-col items-end gap-1;
+  }
+
+  &__ride-price {
+    @apply text-sm tabular-nums text-ivory;
+
+    small {
+      @apply text-[10px] text-ivory-400;
+    }
+  }
+
+  &__status {
+    @apply inline-block whitespace-nowrap rounded-sm px-2 py-0.5 text-[9px] uppercase tracking-widest;
+
+    &--neutral {
+      @apply bg-ink-700 text-ivory-300;
+    }
+
+    &--warning {
+      @apply bg-warning/15 text-warning;
+    }
+
+    &--info {
+      @apply bg-sky-500/15 text-sky-300;
+    }
+
+    &--success {
+      @apply bg-success/15 text-success;
+    }
+
+    &--danger {
+      @apply bg-danger/15 text-danger;
+    }
+  }
+}
+
+// PrimeNG sets 20rem on a right drawer; the card needs room for the form and the rides.
+::ng-deep .p-drawer.cust-drawer {
+  width: min(44rem, 100vw) !important;
+}

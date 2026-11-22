@@ -43,6 +43,7 @@ internal sealed partial class FrenchTexts
     public override string GiveBothTimes => "Indiquez l'heure de début et de fin, ou aucune pour une journée entière.";
     public override string GiveDateOrKm => "Indiquez une date ou un relevé du compteur.";
     public override string GiveNewDate => "Indiquez la nouvelle date d'échéance.";
+    public override string UnknownLanguage => "Choisissez italien, anglais, allemand ou français.";
     public override string RecordNotFound => "Introuvable. Il a peut-être déjà été supprimé.";
     public override string AttendanceTypeInUse => "Ce type est utilisé dans le calendrier. Modifiez d'abord ces jours.";
     public override string RangeTooLong(int days) => $"Choisissez au maximum {days} jours.";

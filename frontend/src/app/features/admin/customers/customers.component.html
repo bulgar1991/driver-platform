@@ -1,0 +1,394 @@
+<div class="cust">
+  <header class="cust__header">
+    <div>
+      <p class="eyebrow"><ng-container i18n>People who booked</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Customers</ng-container></h1
+      >
+    </div>
+    <button
+      appButton
+      variant="outline"
+      size="sm"
+      type="button"
+      [disabled]="exporting() || !list()?.total"
+      (click)="exportExcel()"
+      ><app-icon name="download" />&ngsp;<ng-container i18n
+        >Excel</ng-container
+      ></button
+    >
+  </header>
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  @if (list(); as l) {
+    <dl class="cust__totals">
+      <div class="cust__total">
+        <dt><ng-container i18n>Customers</ng-container></dt>
+        <dd>{{ l.summary.customers | number }}</dd>
+      </div>
+      <div class="cust__total">
+        <dt><ng-container i18n>Returning</ng-container></dt>
+        <dd>
+          {{ l.summary.returning | number }}
+          @if (l.summary.customers > 0) {
+            <small
+              >{{
+                (l.summary.returning / l.summary.customers) * 100
+                  | number: '1.0-0'
+              }}%</small
+            >
+          }
+        </dd>
+      </div>
+      <div class="cust__total">
+        <dt><ng-container i18n>With a ride booked</ng-container></dt>
+        <dd>{{ l.summary.upcoming | number }}</dd>
+      </div>
+      <div class="cust__total cust__total--gold">
+        <dt><ng-container i18n>Spent</ng-container></dt>
+        <dd>
+          {{ l.summary.spent | number: '1.0-0' }}
+          <small>{{ l.currency }}</small>
+        </dd>
+      </div>
+    </dl>
+  }
+
+  <div class="cust__toolbar">
+    <mat-form-field class="cust__search" subscriptSizing="dynamic">
+      <mat-label i18n>Name, phone, email or booking reference</mat-label>
+      <input
+        matInput
+        type="search"
+        [value]="search()"
+        (input)="typedSearch($any($event.target).value)" />
+    </mat-form-field>
+    <mat-form-field class="cust__sort" subscriptSizing="dynamic">
+      <mat-label i18n>Order</mat-label>
+      <mat-select [value]="sort()" (valueChange)="setSort($event)">
+        @for (s of sorts; track s.value) {
+          <mat-option [value]="s.value">{{ s.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <div class="cust__chips" role="group" aria-label="Show" i18n-aria-label>
+      @for (f of filters; track f.value) {
+        <button
+          type="button"
+          class="cust__chip"
+          [class.cust__chip--on]="filter() === f.value"
+          [attr.aria-pressed]="filter() === f.value"
+          (click)="setFilter(f.value)">
+          {{ f.label }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="cust__table-wrap" [class.cust__table-wrap--loading]="loading()">
+    <table class="cust__table">
+      <thead>
+        <tr>
+          <th><ng-container i18n>Customer</ng-container></th>
+          <th><ng-container i18n>Contact</ng-container></th>
+          <th><ng-container i18n>Partner</ng-container></th>
+          <th class="cust__num"><ng-container i18n>Rides</ng-container></th>
+          <th class="cust__num"><ng-container i18n>Spent</ng-container></th>
+          <th><ng-container i18n>Last ride</ng-container></th>
+          <th><ng-container i18n>Next ride</ng-container></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of list()?.items ?? []; track c.id) {
+          <tr
+            class="cust__row"
+            [class.cust__row--open]="openId() === c.id"
+            tabindex="0"
+            (click)="open(c.id)"
+            (keydown.enter)="open(c.id)">
+            <td>
+              <div class="cust__who">
+                <span class="cust__avatar">{{ initials(c.name) }}</span>
+                <span class="cust__name">
+                  {{ c.name }}
+                  <span class="cust__flags">
+                    <span class="cust__lang">{{ c.language }}</span>
+                    @if (c.hasNotes) {
+                      <app-icon
+                        name="chat"
+                        class="cust__flag"
+                        i18n-title
+                        title="Has notes for the driver" />
+                    }
+                    @if (c.marketingConsent) {
+                      <app-icon
+                        name="mail"
+                        class="cust__flag"
+                        i18n-title
+                        title="Accepts offers" />
+                    }
+                  </span>
+                </span>
+              </div>
+            </td>
+            <td class="cust__contact">
+              <a [href]="'tel:' + c.phone" (click)="$event.stopPropagation()">{{
+                c.phone
+              }}</a>
+              @if (c.email) {
+                <a
+                  [href]="'mailto:' + c.email"
+                  (click)="$event.stopPropagation()"
+                  >{{ c.email }}</a
+                >
+              }
+            </td>
+            <td class="cust__muted">{{ c.partnerName ?? '—' }}</td>
+            <td class="cust__num">
+              {{ c.rides }}
+              @if (c.cancelled) {
+                <small class="cust__cancelled"
+                  ><ng-container i18n
+                    >{{ c.cancelled }} cancelled</ng-container
+                  ></small
+                >
+              }
+            </td>
+            <td class="cust__num">
+              {{ c.spent | number: '1.0-0' }}
+              <small>{{ list()?.currency }}</small>
+            </td>
+            <td class="cust__nowrap">
+              {{ c.lastRide ? (c.lastRide | date: 'd MMM y') : '—' }}
+            </td>
+            <td class="cust__nowrap">
+              @if (c.nextRide) {
+                <span class="cust__next">{{
+                  c.nextRide | date: 'd MMM y'
+                }}</span>
+              } @else {
+                <span class="cust__muted">—</span>
+              }
+            </td>
+          </tr>
+        } @empty {
+          @if (list()) {
+            <tr>
+              <td colspan="7" class="cust__empty">
+                <ng-container i18n>No customer matches.</ng-container>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (pages() > 1) {
+    <nav class="cust__pager" aria-label="Pages" i18n-aria-label>
+      <button
+        type="button"
+        class="cust__page"
+        [disabled]="page() === 1"
+        (click)="goTo(page() - 1)"
+        i18n-aria-label
+        aria-label="Previous page">
+        <app-icon name="arrow-left" />
+      </button>
+      <span class="cust__page-text"
+        ><ng-container i18n
+          >Page {{ page() }} of {{ pages() }}</ng-container
+        ></span
+      >
+      <button
+        type="button"
+        class="cust__page"
+        [disabled]="page() === pages()"
+        (click)="goTo(page() + 1)"
+        i18n-aria-label
+        aria-label="Next page">
+        <app-icon name="arrow-right" />
+      </button>
+    </nav>
+  }
+</div>
+
+<p-drawer
+  position="right"
+  styleClass="cust-drawer"
+  [visible]="openId() !== null"
+  (visibleChange)="$event || close()"
+  [header]="detail() ? detail()!.firstName + ' ' + detail()!.lastName : ''">
+  @if (rideId(); as id) {
+    <button type="button" class="cust__back" (click)="rideId.set(null)">
+      <app-icon name="arrow-left" />
+      <ng-container i18n>Back to the customer</ng-container>
+    </button>
+    <app-booking-detail [bookingId]="id" (changed)="rideChanged()" />
+  } @else if (detail(); as d) {
+    <div class="cust__card">
+      <dl class="cust__stats">
+        <div>
+          <dt><ng-container i18n>Rides</ng-container></dt>
+          <dd>{{ d.rides }}</dd>
+        </div>
+        <div>
+          <dt><ng-container i18n>Spent</ng-container></dt>
+          <dd>
+            {{ d.spent | number: '1.0-0' }} <small>{{ d.currency }}</small>
+          </dd>
+        </div>
+        <div>
+          <dt><ng-container i18n>Average ride</ng-container></dt>
+          <dd>
+            {{
+              d.averageRide !== null ? (d.averageRide | number: '1.0-0') : '—'
+            }}
+            <small>{{ d.currency }}</small>
+          </dd>
+        </div>
+        <div>
+          <dt><ng-container i18n>Cancelled</ng-container></dt>
+          <dd>{{ d.cancelled }}</dd>
+        </div>
+      </dl>
+      <p class="cust__since">
+        <ng-container i18n
+          >Customer since {{ d.createdAt | date: 'd MMM y' }}</ng-container
+        >
+        @if (d.partners.length) {
+          · <ng-container i18n>via {{ d.partners.join(', ') }}</ng-container>
+        }
+        @if (d.gdprConsentAt) {
+          ·
+          <ng-container i18n
+            >privacy accepted
+            {{ d.gdprConsentAt | date: 'd MMM y' }}</ng-container
+          >
+        }
+      </p>
+
+      <form
+        class="cust__form"
+        [formGroup]="form"
+        (ngSubmit)="save()"
+        novalidate>
+        <h3 class="cust__section"><ng-container i18n>Card</ng-container></h3>
+        @if (formError(); as message) {
+          <p class="alert alert--error" role="alert">{{ message }}</p>
+        }
+        <div class="cust__fields">
+          <mat-form-field>
+            <mat-label i18n>First name</mat-label>
+            <input matInput formControlName="firstName" />
+            <mat-error>{{ text.required }}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Last name</mat-label>
+            <input matInput formControlName="lastName" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Phone</mat-label>
+            <input matInput type="tel" formControlName="phone" />
+            <mat-error i18n>Enter a valid phone number</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Email</mat-label>
+            <input matInput type="email" formControlName="email" />
+            <mat-error>{{ text.validEmail }}</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label i18n>Language of emails</mat-label>
+            <mat-select formControlName="language">
+              @for (l of languages; track l.value) {
+                <mat-option [value]="l.value">{{ l.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-checkbox formControlName="marketingConsent"
+            ><ng-container i18n>Accepts offers</ng-container></mat-checkbox
+          >
+          <mat-form-field class="cust__wide">
+            <mat-label i18n>Notes for the driver</mat-label>
+            <textarea
+              matInput
+              rows="3"
+              formControlName="notesForDriver"
+              i18n-placeholder
+              placeholder="Habits, needs, how to greet them. The driver sees this on every ride; the customer never does."></textarea>
+          </mat-form-field>
+        </div>
+        <div class="cust__form-actions">
+          <a
+            appButton
+            variant="ghost"
+            size="sm"
+            routerLink="/admin/search"
+            [queryParams]="{
+              from: '2020-01-01',
+              to: today.slice(0, 4) + '-12-31',
+              text: d.phone,
+            }"
+            ><app-icon name="grid" />&ngsp;<ng-container i18n
+              >Open in Search</ng-container
+            ></a
+          >
+          <button appButton size="sm" type="submit" [disabled]="saving()"
+            ><ng-container i18n>Save</ng-container></button
+          >
+        </div>
+      </form>
+
+      <h3 class="cust__section">
+        <ng-container i18n>Rides</ng-container>
+        <span class="cust__count">{{ d.history.length }}</span>
+      </h3>
+      <ul class="cust__history">
+        @for (r of d.history; track r.id) {
+          <li>
+            <button
+              type="button"
+              class="cust__ride"
+              [class.cust__ride--future]="r.pickupLocal.slice(0, 10) >= today"
+              (click)="rideId.set(r.id)">
+              <span class="cust__ride-when">
+                <strong>{{ r.pickupLocal | date: 'd MMM y' }}</strong>
+                <small>{{ r.pickupLocal | date: 'HH:mm' }}</small>
+              </span>
+              <span class="cust__ride-route">
+                <span>{{ r.pickupLabel }}</span>
+                <span class="cust__ride-to">→ {{ r.dropoffLabel }}</span>
+                <small
+                  >{{ r.reference }} · {{ text.categories[r.vehicleCategory] }}
+                  @if (r.driverName) {
+                    · {{ r.driverName }}
+                  }
+                  @if (r.partnerName) {
+                    · {{ r.partnerName }}
+                  }
+                </small>
+              </span>
+              <span class="cust__ride-end">
+                <span
+                  class="cust__status cust__status--{{ statusTone[r.status] }}"
+                  >{{ statusLabel[r.status] }}</span
+                >
+                <span class="cust__ride-price"
+                  >{{ r.totalPrice | number: '1.0-0' }}
+                  <small>{{ d.currency }}</small></span
+                >
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+    </div>
+  } @else if (detailLoading()) {
+    <p class="cust__muted"><ng-container i18n>Loading…</ng-container></p>
+  } @else if (formError(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+</p-drawer>

@@ -43,6 +43,7 @@ internal sealed partial class ItalianTexts
     public override string GiveBothTimes => "Indicare sia l'ora di inizio sia quella di fine, oppure nessuna per l'intera giornata.";
     public override string GiveDateOrKm => "Indicare una data o una lettura del contachilometri.";
     public override string GiveNewDate => "Indicare la nuova data di scadenza.";
+    public override string UnknownLanguage => "Scegliere italiano, inglese, tedesco o francese.";
     public override string RecordNotFound => "Non trovato. Forse è già stato eliminato.";
     public override string AttendanceTypeInUse => "Questo tipo è usato nel calendario. Modificare prima quei giorni.";
     public override string RangeTooLong(int days) => $"Scegliere al massimo {days} giorni.";
