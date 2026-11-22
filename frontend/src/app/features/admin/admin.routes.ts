@@ -54,6 +54,14 @@ export const ADMIN_ROUTES: Routes = [
       import('./customers/customers.component').then(m => m.CustomersComponent),
   },
   {
+    path: 'statistics',
+    title: $localize`Statistics · ${BRAND.name}:brand:`,
+    loadComponent: () =>
+      import('./statistics/statistics.component').then(
+        m => m.StatisticsComponent
+      ),
+  },
+  {
     path: 'expirations',
     title: $localize`Expirations · ${BRAND.name}:brand:`,
     loadComponent: () =>

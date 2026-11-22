@@ -1,0 +1,378 @@
+.stats {
+  @apply flex flex-col gap-5;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__compare {
+    @apply mt-1 text-xs text-ivory-400;
+  }
+
+  &__toolbar {
+    @apply flex flex-col gap-3 rounded-sm border border-ink-600 bg-ink-900/80 p-4 lg:flex-row lg:items-center lg:justify-between;
+  }
+
+  &__chips {
+    @apply flex flex-wrap gap-1.5;
+  }
+
+  &__chip {
+    @apply rounded-full border border-ink-600 px-3 py-1 text-xs text-ivory-300 transition-colors hover:border-gold/60 hover:text-ivory;
+
+    &--on {
+      @apply border-gold bg-gold/15 text-gold;
+    }
+  }
+
+  &__dates {
+    @apply grid grid-cols-2 gap-3 lg:w-80;
+  }
+
+  &__error {
+    @apply rounded-sm border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger;
+  }
+
+  &__body {
+    @apply grid gap-4 transition-opacity lg:grid-cols-2;
+
+    &--loading {
+      @apply opacity-60;
+    }
+  }
+
+  // ── Headline numbers ────────────────────────────────────────────────────
+  &__kpis {
+    @apply grid grid-cols-2 gap-2 sm:grid-cols-4 lg:col-span-2;
+  }
+
+  &__kpi {
+    @apply flex flex-col rounded-sm border border-ink-600 bg-ink-900 px-4 py-3;
+
+    dt {
+      @apply text-[10px] uppercase tracking-widest text-ivory-400;
+    }
+
+    dd {
+      @apply mt-1 font-display text-2xl text-ivory tabular-nums;
+
+      small {
+        @apply ml-1 font-sans text-[11px] tracking-widest text-ivory-400;
+      }
+    }
+
+    &--gold {
+      @apply border-gold/50 bg-gradient-to-br from-gold/15 to-transparent;
+
+      dd {
+        @apply text-gold;
+      }
+    }
+  }
+
+  &__kpi-foot {
+    @apply mt-1 flex flex-wrap items-center gap-x-2 text-[11px] text-ivory-400;
+  }
+
+  &__delta {
+    @apply inline-flex items-center gap-1 tabular-nums text-ivory-400;
+
+    &--good {
+      @apply text-success;
+    }
+
+    &--bad {
+      @apply text-danger;
+    }
+  }
+
+  &__notice {
+    @apply flex items-center gap-2 rounded-sm border border-warning/40 bg-warning/10 px-4 py-2.5 text-sm text-ivory transition-colors hover:border-warning lg:col-span-2;
+  }
+
+  // ── Panels ──────────────────────────────────────────────────────────────
+  &__panel {
+    @apply flex min-w-0 flex-col gap-3 rounded-sm border border-ink-600 bg-ink-900 p-4;
+
+    &--wide {
+      @apply lg:col-span-2;
+    }
+  }
+
+  &__panel-head {
+    @apply flex flex-wrap items-center justify-between gap-2;
+
+    h2 {
+      @apply text-xs uppercase tracking-luxe text-ivory;
+
+      small {
+        @apply ml-1 normal-case tracking-normal text-ivory-400;
+      }
+    }
+  }
+
+  &__toggle {
+    @apply flex rounded-full border border-ink-600 p-0.5;
+
+    button {
+      @apply rounded-full px-3 py-1 text-xs text-ivory-300 transition-colors hover:text-ivory;
+
+      &.on {
+        @apply bg-gold/15 text-gold;
+      }
+    }
+  }
+
+  &__legend {
+    @apply flex gap-4 text-[11px] text-ivory-300;
+
+    li {
+      @apply flex items-center gap-1.5;
+    }
+  }
+
+  &__key {
+    @apply inline-block h-2.5 w-2.5 shrink-0 rounded-sm;
+
+    &--now {
+      @apply bg-gold;
+    }
+
+    &--prev {
+      @apply h-0.5 w-3 rounded-none bg-ivory-200;
+    }
+  }
+
+  // ── Timeline: gold bars, a pale tick at the previous period's value ─────
+  &__chart {
+    @apply relative flex h-56 items-end gap-0.5 border-b border-ink-500;
+    background-image: linear-gradient(
+      to top,
+      theme('colors.ink.700') 1px,
+      transparent 1px
+    );
+    background-size: 100% 25%;
+  }
+
+  &__col {
+    @apply relative flex h-full flex-1 cursor-default items-end justify-center focus-visible:outline-none;
+
+    &--hover .stats__bar {
+      @apply bg-gold-300;
+    }
+
+    &--hover {
+      @apply bg-ink-800/60;
+    }
+  }
+
+  &__bar {
+    @apply w-full max-w-10 rounded-t bg-gold transition-[height] duration-300;
+    min-height: 0;
+  }
+
+  &__prev {
+    @apply pointer-events-none absolute left-1/2 h-0.5 w-full max-w-10 -translate-x-1/2 bg-ivory-200;
+  }
+
+  &__tip {
+    @apply pointer-events-none absolute bottom-full left-0 z-20 mb-2 flex w-max flex-col gap-1 rounded-sm border border-ink-500 bg-ink-800 px-3 py-2 text-xs text-ivory shadow-lg;
+
+    &--left {
+      @apply left-auto right-0;
+    }
+
+    > span {
+      @apply flex items-center gap-1.5 tabular-nums;
+    }
+  }
+
+  &__tip-prev {
+    @apply text-ivory-300;
+  }
+
+  &__axis {
+    @apply flex gap-0.5 text-[10px] text-ivory-400;
+
+    span {
+      @apply flex-1 overflow-visible whitespace-nowrap text-center;
+      min-width: 0;
+    }
+  }
+
+  // ── Ranked shares ───────────────────────────────────────────────────────
+  &__shares {
+    @apply flex flex-col gap-3;
+  }
+
+  &__share-head {
+    @apply mb-1 flex items-baseline justify-between gap-3 text-sm text-ivory;
+
+    a {
+      @apply transition-colors hover:text-gold;
+    }
+  }
+
+  &__share-value {
+    @apply whitespace-nowrap tabular-nums;
+
+    small {
+      @apply text-[11px] text-ivory-400;
+    }
+  }
+
+  &__track {
+    @apply h-1.5 w-full overflow-hidden rounded-full bg-ink-700;
+
+    &--thin {
+      @apply mt-1 h-1;
+    }
+  }
+
+  &__fill {
+    @apply h-full rounded-full bg-gold transition-[width] duration-300;
+  }
+
+  // ── Heatmap: one hue, light to strong ───────────────────────────────────
+  &__heat-readout {
+    @apply text-xs tabular-nums text-ivory-300;
+  }
+
+  &__heat-scroll {
+    @apply overflow-x-auto;
+  }
+
+  &__heat {
+    @apply w-full min-w-[40rem] table-fixed border-separate;
+    border-spacing: 2px;
+
+    th {
+      @apply px-1 text-[9px] font-normal text-ivory-400;
+    }
+
+    th:first-child {
+      @apply w-12;
+    }
+
+    tbody th {
+      @apply pr-2 text-right uppercase tracking-widest;
+    }
+
+    td {
+      @apply h-6 rounded-sm;
+    }
+  }
+
+  .lvl-0 {
+    @apply bg-ink-800;
+  }
+
+  .lvl-1 {
+    @apply bg-gold/15;
+  }
+
+  .lvl-2 {
+    @apply bg-gold/30;
+  }
+
+  .lvl-3 {
+    @apply bg-gold/50;
+  }
+
+  .lvl-4 {
+    @apply bg-gold/75;
+  }
+
+  .lvl-5 {
+    @apply bg-gold;
+  }
+
+  &__heat-scale {
+    @apply flex items-center justify-end gap-1 text-[10px] text-ivory-400;
+
+    i {
+      @apply inline-block h-2.5 w-4 rounded-sm;
+    }
+  }
+
+  // ── Lead time ───────────────────────────────────────────────────────────
+  &__lead {
+    @apply flex flex-col gap-2.5;
+
+    li {
+      @apply grid items-center gap-3;
+      grid-template-columns: 6.5rem minmax(0, 1fr) 4rem;
+    }
+  }
+
+  &__lead-label {
+    @apply text-xs text-ivory-300;
+  }
+
+  &__lead-value {
+    @apply text-right text-sm tabular-nums text-ivory;
+
+    small {
+      @apply ml-1 text-[10px] text-ivory-400;
+    }
+  }
+
+  // ── Money ───────────────────────────────────────────────────────────────
+  &__money {
+    @apply flex flex-col text-sm;
+
+    div {
+      @apply flex justify-between border-b border-ink-700 py-2;
+    }
+
+    dt {
+      @apply text-ivory-300;
+    }
+
+    dd {
+      @apply tabular-nums text-ivory;
+    }
+  }
+
+  &__money-total {
+    @apply border-b-0;
+
+    dt,
+    dd {
+      @apply font-display text-lg text-gold;
+    }
+  }
+
+  &__note {
+    @apply text-[11px] text-ivory-400;
+  }
+
+  // ── Tables ──────────────────────────────────────────────────────────────
+  &__table-wrap {
+    @apply overflow-x-auto;
+  }
+
+  &__table {
+    @apply w-full text-sm;
+
+    th {
+      @apply border-b border-ink-600 px-2 py-2 text-left text-[10px] font-normal uppercase tracking-widest text-ivory-400;
+    }
+
+    td {
+      @apply border-b border-ink-700 px-2 py-2 align-top text-ivory;
+
+      a {
+        @apply transition-colors hover:text-gold;
+      }
+    }
+
+    .num {
+      @apply text-right tabular-nums;
+    }
+  }
+
+  &__empty {
+    @apply py-6 text-center text-sm text-ivory-400;
+  }
+}

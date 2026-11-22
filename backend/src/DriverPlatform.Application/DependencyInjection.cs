@@ -40,6 +40,7 @@ public static class DependencyInjection
         services.AddScoped<Customers.ICustomerService, Customers.CustomerService>();
         services.AddScoped<ICalendarService, CalendarService>();
         services.AddScoped<Search.ISearchService, Search.SearchService>();
+        services.AddScoped<Statistics.IStatisticsService, Statistics.StatisticsService>();
         services.AddScoped<Attendance.IAttendanceService, Attendance.AttendanceService>();
         services.AddScoped<IBookingAdminService, BookingAdminService>();
         services.AddScoped<IShiftService, ShiftService>();

@@ -1,0 +1,530 @@
+<section class="stats">
+  <header class="stats__header">
+    <div>
+      <p class="eyebrow"
+        ><ng-container i18n>How the business is going</ng-container></p
+      >
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Statistics</ng-container></h1
+      >
+      @if (data(); as d) {
+        <p class="stats__compare" i18n>
+          Compared with {{ d.previousFrom | date: 'd MMM' }} –
+          {{ d.previousTo | date: 'd MMM y' }}
+        </p>
+      }
+    </div>
+    <button
+      appButton
+      variant="outline"
+      size="sm"
+      [disabled]="!data()"
+      (click)="exportExcel()">
+      <app-icon name="download" class="h-4 w-4" />
+      <ng-container i18n>Excel export</ng-container>
+    </button>
+  </header>
+
+  <div class="stats__toolbar">
+    <div class="stats__chips" role="group" i18n-aria-label aria-label="Period">
+      @for (p of presets; track p.key) {
+        <button
+          type="button"
+          class="stats__chip"
+          [class.stats__chip--on]="activePreset() === p.key"
+          [attr.aria-pressed]="activePreset() === p.key"
+          (click)="usePreset(p)">
+          {{ p.label }}
+        </button>
+      }
+    </div>
+    <div class="stats__dates">
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>From</mat-label>
+        <input
+          matInput
+          type="date"
+          [ngModel]="from()"
+          (ngModelChange)="from.set($event)"
+          (change)="datesChanged()" />
+      </mat-form-field>
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>To</mat-label>
+        <input
+          matInput
+          type="date"
+          [ngModel]="to()"
+          (ngModelChange)="to.set($event)"
+          (change)="datesChanged()" />
+      </mat-form-field>
+    </div>
+  </div>
+
+  @if (error(); as e) {
+    <p class="stats__error" role="alert">{{ e }}</p>
+  }
+
+  @if (data(); as d) {
+    <div class="stats__body" [class.stats__body--loading]="loading()">
+      <!-- Headline numbers -->
+      <dl class="stats__kpis">
+        @for (k of kpis(); track k.label) {
+          <div class="stats__kpi" [class.stats__kpi--gold]="k.gold">
+            <dt>{{ k.label }}</dt>
+            <dd>
+              @switch (k.format) {
+                @case ('money') {
+                  {{ k.value | number: '1.0-0' }}<small>{{ d.currency }}</small>
+                }
+                @case ('percent') {
+                  {{ k.value | percent: '1.0-1' }}
+                }
+                @default {
+                  {{ k.value | number: '1.0-0' }}
+                }
+              }
+            </dd>
+            <p class="stats__kpi-foot">
+              @if (k.delta; as dl) {
+                <span
+                  class="stats__delta"
+                  [class.stats__delta--good]="dl.up !== !!k.lowerIsBetter"
+                  [class.stats__delta--bad]="
+                    dl.up === !!k.lowerIsBetter && dl.change !== 0
+                  ">
+                  <span aria-hidden="true">{{ dl.up ? '▲' : '▼' }}</span>
+                  {{
+                    (dl.change < 0 ? -dl.change : dl.change) | percent: '1.0-0'
+                  }}
+                </span>
+              } @else {
+                <span class="stats__delta" i18n>no comparison</span>
+              }
+              @if (k.hint) {
+                <span>{{ k.hint }}</span>
+              }
+            </p>
+          </div>
+        }
+      </dl>
+
+      @if (d.unassigned > 0) {
+        <a
+          class="stats__notice"
+          routerLink="/admin/search"
+          [queryParams]="{ from: d.from, to: d.to, unassigned: true }">
+          <app-icon name="info" class="h-4 w-4" />
+          <ng-container i18n>{d.unassigned, plural,
+            =1 {1 ride of this period has no driver yet}
+            other {{{ d.unassigned }} rides of this period have no driver yet}
+          }</ng-container>
+          <span aria-hidden="true">→</span>
+        </a>
+      }
+
+      <!-- Timeline -->
+      <article class="stats__panel stats__panel--wide">
+        <header class="stats__panel-head">
+          <h2>
+            @if (metric() === 'revenue') {
+              <ng-container i18n>Revenue over time</ng-container>
+            } @else {
+              <ng-container i18n>Rides over time</ng-container>
+            }
+            <small>
+              @switch (d.bucket) {
+                @case ('Day') {
+                  <ng-container i18n>by day</ng-container>
+                }
+                @case ('Week') {
+                  <ng-container i18n>by week</ng-container>
+                }
+                @default {
+                  <ng-container i18n>by month</ng-container>
+                }
+              }
+            </small>
+          </h2>
+          <div class="stats__toggle" role="group">
+            <button
+              type="button"
+              [class.on]="metric() === 'revenue'"
+              [attr.aria-pressed]="metric() === 'revenue'"
+              (click)="metric.set('revenue')"
+              i18n>
+              Revenue
+            </button>
+            <button
+              type="button"
+              [class.on]="metric() === 'rides'"
+              [attr.aria-pressed]="metric() === 'rides'"
+              (click)="metric.set('rides')"
+              i18n>
+              Rides
+            </button>
+          </div>
+        </header>
+        <ul class="stats__legend">
+          <li
+            ><span class="stats__key stats__key--now"></span
+            ><ng-container i18n>This period</ng-container></li
+          >
+          <li
+            ><span class="stats__key stats__key--prev"></span
+            ><ng-container i18n>Previous period</ng-container></li
+          >
+        </ul>
+
+        <div class="stats__chart" (mouseleave)="hover.set(null)">
+          @for (b of bars(); track b.point.start; let i = $index) {
+            <div
+              class="stats__col"
+              tabindex="0"
+              [class.stats__col--hover]="hover() === i"
+              (mouseenter)="hover.set(i)"
+              (focus)="hover.set(i)"
+              (blur)="hover.set(null)">
+              <div class="stats__bar" [style.height.%]="b.height"></div>
+              @if (b.previous > 0) {
+                <div
+                  class="stats__prev"
+                  [style.bottom.%]="b.previousHeight"></div>
+              }
+              @if (hover() === i) {
+                <div
+                  class="stats__tip"
+                  [class.stats__tip--left]="i > bars().length / 2"
+                  role="tooltip">
+                  <strong>
+                    {{
+                      b.point.start
+                        | date: (d.bucket === 'Month' ? 'MMMM y' : 'EEE d MMM')
+                    }}
+                    @if (d.bucket === 'Week') {
+                      <ng-container i18n>(week)</ng-container>
+                    }
+                  </strong>
+                  <span>
+                    <span class="stats__key stats__key--now"></span>
+                    {{ b.point.revenue | number: '1.0-0' }} {{ d.currency }} ·
+                    <ng-container i18n>{b.point.rides, plural,
+                      =1 {1 ride}
+                      other {{{ b.point.rides }} rides}
+                    }</ng-container>
+                  </span>
+                  <span class="stats__tip-prev">
+                    <span class="stats__key stats__key--prev"></span>
+                    {{ b.point.previousRevenue | number: '1.0-0' }}
+                    {{ d.currency }} ·
+                    <ng-container i18n>{b.point.previousRides, plural,
+                      =1 {1 ride}
+                      other {{{ b.point.previousRides }} rides}
+                    }</ng-container>
+                  </span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+        <div class="stats__axis" aria-hidden="true">
+          @for (b of bars(); track b.point.start; let i = $index) {
+            <span>
+              @if (i % labelEvery() === 0) {
+                {{
+                  b.point.start | date: (d.bucket === 'Month' ? 'MMM' : 'd/M')
+                }}
+              }
+            </span>
+          }
+        </div>
+      </article>
+
+      <!-- Where rides come from, and in which class -->
+      <article class="stats__panel">
+        <header class="stats__panel-head">
+          <h2 i18n>Where rides come from</h2>
+        </header>
+        @if (d.channels.length === 0) {
+          <p class="stats__empty" i18n>No rides in this period.</p>
+        }
+        <ul class="stats__shares">
+          @for (s of d.channels; track s.key) {
+            <li>
+              <div class="stats__share-head">
+                @if (
+                  s.key !== 'Website' &&
+                  s.key !== 'Booking' &&
+                  s.key !== 'Partner'
+                ) {
+                  <a
+                    routerLink="/admin/search"
+                    [queryParams]="searchParams('partnerId', s.key)"
+                    >{{ channelLabel(s) }}</a
+                  >
+                } @else {
+                  <span>{{ channelLabel(s) }}</span>
+                }
+                <span class="stats__share-value">
+                  {{ s.revenue | number: '1.0-0' }} {{ d.currency }}
+                  <small>
+                    · {{ s.rides }} ·
+                    {{
+                      (d.totals.revenue ? s.revenue / d.totals.revenue : 0)
+                        | percent: '1.0-0'
+                    }}
+                  </small>
+                </span>
+              </div>
+              <div class="stats__track">
+                <div
+                  class="stats__fill"
+                  [style.width.%]="share(s, d.channels)"></div>
+              </div>
+            </li>
+          }
+        </ul>
+      </article>
+
+      <article class="stats__panel">
+        <header class="stats__panel-head">
+          <h2 i18n>Classes</h2>
+        </header>
+        @if (d.categories.length === 0) {
+          <p class="stats__empty" i18n>No rides in this period.</p>
+        }
+        <ul class="stats__shares">
+          @for (s of d.categories; track s.key) {
+            <li>
+              <div class="stats__share-head">
+                <span>{{ categoryLabel(s) }}</span>
+                <span class="stats__share-value">
+                  {{ s.revenue | number: '1.0-0' }} {{ d.currency }}
+                  <small
+                    >· {{ s.rides }} · {{ s.km | number: '1.0-0' }} km</small
+                  >
+                </span>
+              </div>
+              <div class="stats__track">
+                <div
+                  class="stats__fill"
+                  [style.width.%]="share(s, d.categories)"></div>
+              </div>
+            </li>
+          }
+        </ul>
+      </article>
+
+      <!-- Busy hours -->
+      <article class="stats__panel stats__panel--wide">
+        <header class="stats__panel-head">
+          <h2 i18n>Busy hours <small>pickups by weekday and hour</small></h2>
+          @if (heatHover(); as h) {
+            <p class="stats__heat-readout">
+              {{ weekdays[h.day] }} {{ h.hour }}:00–{{ h.hour + 1 }}:00 ·
+              <ng-container i18n>{d.heatmap[h.day][h.hour], plural,
+                =1 {1 ride}
+                other {{{ d.heatmap[h.day][h.hour] }} rides}
+              }</ng-container>
+            </p>
+          }
+        </header>
+        <div class="stats__heat-scroll">
+          <table class="stats__heat" (mouseleave)="heatHover.set(null)">
+            <thead>
+              <tr>
+                <th></th>
+                @for (h of hours; track h) {
+                  <th scope="col">{{ h % 3 === 0 ? h : '' }}</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of d.heatmap; track $index; let day = $index) {
+                <tr>
+                  <th scope="row">{{ weekdays[day] }}</th>
+                  @for (v of row; track $index; let hour = $index) {
+                    <td
+                      [class]="'lvl-' + heatLevel(v)"
+                      [attr.title]="weekdays[day] + ' ' + hour + ':00 · ' + v"
+                      (mouseenter)="heatHover.set({ day, hour })"></td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="stats__heat-scale" aria-hidden="true">
+          <span i18n>Fewer</span>
+          @for (l of [1, 2, 3, 4, 5]; track l) {
+            <i [class]="'lvl-' + l"></i>
+          }
+          <span i18n>More</span>
+        </div>
+      </article>
+
+      <!-- How far ahead -->
+      <article class="stats__panel">
+        <header class="stats__panel-head">
+          <h2 i18n>How far ahead clients book</h2>
+        </header>
+        <ul class="stats__lead">
+          @for (n of d.leadTime; track $index; let i = $index) {
+            <li>
+              <span class="stats__lead-label">{{ leadLabels[i] }}</span>
+              <div class="stats__track">
+                <div
+                  class="stats__fill"
+                  [style.width.%]="(n / leadMax()) * 100"></div>
+              </div>
+              <span class="stats__lead-value">
+                {{ n }}
+                <small>{{
+                  (d.totals.rides ? n / d.totals.rides : 0) | percent: '1.0-0'
+                }}</small>
+              </span>
+            </li>
+          }
+        </ul>
+      </article>
+
+      <article class="stats__panel">
+        <header class="stats__panel-head">
+          <h2 i18n>Money</h2>
+        </header>
+        <dl class="stats__money">
+          <div>
+            <dt i18n>Revenue</dt>
+            <dd>{{ d.totals.revenue | number: '1.2-2' }} {{ d.currency }}</dd>
+          </div>
+          <div>
+            <dt i18n>Refunded</dt>
+            <dd
+              >− {{ d.totals.refunded | number: '1.2-2' }} {{ d.currency }}</dd
+            >
+          </div>
+          @if (d.totals.driverPay !== null) {
+            <div>
+              <dt i18n>Driver pay</dt>
+              <dd
+                >− {{ d.totals.driverPay | number: '1.2-2' }}
+                {{ d.currency }}</dd
+              >
+            </div>
+          }
+          <div class="stats__money-total">
+            <dt i18n>What remains</dt>
+            <dd>
+              {{
+                d.totals.revenue - d.totals.refunded - (d.totals.driverPay ?? 0)
+                  | number: '1.2-2'
+              }}
+              {{ d.currency }}
+            </dd>
+          </div>
+        </dl>
+        <p class="stats__note" i18n>
+          Before fuel, partner commissions and other costs.
+        </p>
+      </article>
+
+      <!-- Drivers and vehicles -->
+      <article class="stats__panel">
+        <header class="stats__panel-head">
+          <h2 i18n>Drivers</h2>
+        </header>
+        @if (d.drivers.length === 0) {
+          <p class="stats__empty" i18n
+            >No rides with a driver in this period.</p
+          >
+        } @else {
+          <div class="stats__table-wrap">
+            <table class="stats__table">
+              <thead>
+                <tr>
+                  <th i18n>Driver</th>
+                  <th class="num" i18n>Rides</th>
+                  <th class="num" i18n>Km</th>
+                  <th class="num" i18n>Revenue</th>
+                  @if (d.totals.driverPay !== null) {
+                    <th class="num" i18n>Pay</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (s of d.drivers; track s.key) {
+                  <tr>
+                    <td>
+                      <a
+                        routerLink="/admin/search"
+                        [queryParams]="searchParams('driverId', s.key)"
+                        >{{ s.label }}</a
+                      >
+                      <div class="stats__track stats__track--thin">
+                        <div
+                          class="stats__fill"
+                          [style.width.%]="share(s, d.drivers)"></div>
+                      </div>
+                    </td>
+                    <td class="num">{{ s.rides }}</td>
+                    <td class="num">{{ s.km | number: '1.0-0' }}</td>
+                    <td class="num">{{ s.revenue | number: '1.0-0' }}</td>
+                    @if (s.pay !== null) {
+                      <td class="num">{{ s.pay | number: '1.0-0' }}</td>
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </article>
+
+      <article class="stats__panel">
+        <header class="stats__panel-head">
+          <h2 i18n>Vehicles</h2>
+        </header>
+        @if (d.vehicles.length === 0) {
+          <p class="stats__empty" i18n
+            >No rides with a vehicle in this period.</p
+          >
+        } @else {
+          <div class="stats__table-wrap">
+            <table class="stats__table">
+              <thead>
+                <tr>
+                  <th i18n>Vehicle</th>
+                  <th class="num" i18n>Rides</th>
+                  <th class="num" i18n>Km</th>
+                  <th class="num" i18n>Revenue</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (s of d.vehicles; track s.key) {
+                  <tr>
+                    <td>
+                      <a
+                        routerLink="/admin/search"
+                        [queryParams]="searchParams('vehicleId', s.key)"
+                        >{{ s.label }}</a
+                      >
+                      <div class="stats__track stats__track--thin">
+                        <div
+                          class="stats__fill"
+                          [style.width.%]="share(s, d.vehicles)"></div>
+                      </div>
+                    </td>
+                    <td class="num">{{ s.rides }}</td>
+                    <td class="num">{{ s.km | number: '1.0-0' }}</td>
+                    <td class="num">{{ s.revenue | number: '1.0-0' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </article>
+    </div>
+  } @else if (loading()) {
+    <p class="stats__empty" i18n>Loading…</p>
+  }
+</section>
