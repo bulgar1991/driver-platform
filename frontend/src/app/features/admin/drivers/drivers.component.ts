@@ -13,7 +13,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms'
-import { RouterLink } from '@angular/router'
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field'
 import { MatInput } from '@angular/material/input'
 import { MatOption, MatSelect } from '@angular/material/select'
@@ -30,7 +30,11 @@ import {
   DriverDocumentType,
   DriverNotify,
 } from '@/core/models'
-import { CONTRACT_TYPES, NOTIFY_OPTIONS } from '@/features/admin/staff-labels'
+import {
+  CONTRACT_TYPES,
+  DOCUMENT_TYPES,
+  NOTIFY_OPTIONS,
+} from '@/features/admin/staff-labels'
 import { AdminFleetService } from '@/core/services/admin-fleet.service'
 import { ToastService } from '@/core/services/toast.service'
 import { todayInOffice } from '@/core/utils/local-time'
@@ -40,18 +44,6 @@ import { IconComponent } from '@/shared/components/icon/icon.component'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 import { PhotoDraft } from '@/features/admin/photo-field/photo-draft'
 import { PhotoFieldComponent } from '@/features/admin/photo-field/photo-field.component'
-
-export const DOCUMENT_TYPES: { value: DriverDocumentType; label: string }[] = [
-  { value: 'DrivingLicence', label: $localize`Driving licence` },
-  { value: 'NccLicence', label: $localize`NCC licence` },
-  { value: 'TaxiLicence', label: $localize`Taxi licence` },
-  {
-    value: 'ProfessionalCertificate',
-    label: $localize`Professional certificate (CAP/KB)`,
-  },
-  { value: 'Insurance', label: $localize`Insurance` },
-  { value: 'CriminalRecord', label: $localize`Criminal record` },
-]
 
 type DocumentForm = FormGroup<{
   id: FormControl<string | null>
@@ -99,6 +91,10 @@ export class DriversComponent implements OnInit {
 
   private readonly toast = inject(ToastService)
   protected readonly api = inject(AdminFleetService)
+  private readonly route = inject(ActivatedRoute)
+  private readonly router = inject(Router)
+  /** ?edit=<id> (a link from Expirations): that card opens once the list is in. */
+  private pendingEdit = this.route.snapshot.queryParamMap.get('edit')
   private readonly fb = inject(FormBuilder).nonNullable
 
   protected readonly documentTypes = DOCUMENT_TYPES
@@ -364,8 +360,33 @@ export class DriversComponent implements OnInit {
       .drivers(this.showInactive())
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        next: list => this.drivers.set(list),
+        next: list => {
+          this.drivers.set(list)
+          this.openPending(list)
+        },
         error: err => this.error.set(problemMessage(err)),
       })
+  }
+
+  private openPending(list: Driver[]): void {
+    const id = this.pendingEdit
+    if (!id) return
+    const found = list.find(x => x.id === id)
+    if (!found && !this.showInactive()) {
+      // It may be a deactivated one: look among those too.
+      this.showInactive.set(true)
+      this.load()
+      return
+    }
+    this.pendingEdit = null
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { edit: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    })
+    if (found) {
+      this.open(found)
+    }
   }
 }

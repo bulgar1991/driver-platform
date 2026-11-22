@@ -1,0 +1,382 @@
+<div class="exp">
+  <header class="exp__header">
+    <div>
+      <p class="eyebrow"><ng-container i18n>Drivers and fleet</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Expirations</ng-container></h1
+      >
+    </div>
+    <div class="exp__header-actions">
+      <mat-checkbox [checked]="showInactive()" (change)="toggleInactive()"
+        ><ng-container i18n>Show inactive</ng-container></mat-checkbox
+      >
+      <button
+        appButton
+        variant="outline"
+        size="sm"
+        type="button"
+        [disabled]="!visible().length"
+        (click)="exportExcel()"
+        ><app-icon name="download" />&ngsp;<ng-container i18n
+          >Excel</ng-container
+        ></button
+      >
+    </div>
+  </header>
+
+  @if (error(); as message) {
+    <p class="alert alert--error" role="alert">{{ message }}</p>
+  }
+
+  <!-- The cards are the quickest filter: click again to show everything. -->
+  <div class="exp__cards" role="group" aria-label="Show" i18n-aria-label>
+    <button
+      type="button"
+      class="exp__card exp__card--danger"
+      [class.exp__card--on]="focus() === 'expired'"
+      [attr.aria-pressed]="focus() === 'expired'"
+      (click)="setFocus('expired')">
+      <span class="exp__card-value">{{ counts().expired }}</span>
+      <span class="exp__card-label"
+        ><ng-container i18n>Expired</ng-container></span
+      >
+    </button>
+    <button
+      type="button"
+      class="exp__card exp__card--warning"
+      [class.exp__card--on]="focus() === 'week'"
+      [attr.aria-pressed]="focus() === 'week'"
+      (click)="setFocus('week')">
+      <span class="exp__card-value">{{ counts().week }}</span>
+      <span class="exp__card-label"
+        ><ng-container i18n>Within 7 days</ng-container></span
+      >
+    </button>
+    <button
+      type="button"
+      class="exp__card exp__card--gold"
+      [class.exp__card--on]="focus() === 'soon'"
+      [attr.aria-pressed]="focus() === 'soon'"
+      (click)="setFocus('soon')">
+      <span class="exp__card-value">{{ counts().soon }}</span>
+      <span class="exp__card-label">
+        <ng-container i18n
+          >Within {{ data()?.alertDays ?? 30 }} days or
+          {{ data()?.alertKm ?? 1000 | number }} km</ng-container
+        >
+      </span>
+    </button>
+    <div class="exp__card exp__card--static">
+      <span class="exp__card-value">{{ missing().length }}</span>
+      <span class="exp__card-label"
+        ><ng-container i18n>Dates missing</ng-container></span
+      >
+    </div>
+  </div>
+
+  <div class="exp__toolbar">
+    <div class="exp__segment" role="group" aria-label="Who" i18n-aria-label>
+      @for (o of whoOptions; track o.value) {
+        <button
+          type="button"
+          class="exp__chip"
+          [class.exp__chip--on]="who() === o.value"
+          [attr.aria-pressed]="who() === o.value"
+          (click)="who.set(o.value)">
+          {{ o.label }}
+        </button>
+      }
+    </div>
+    <div
+      class="exp__segment"
+      role="group"
+      aria-label="Period"
+      i18n-aria-label
+      [class.exp__segment--off]="focus() !== 'all'">
+      <span class="exp__label"><ng-container i18n>Ahead</ng-container></span>
+      @for (h of horizons; track h.label) {
+        <button
+          type="button"
+          class="exp__chip"
+          [class.exp__chip--on]="horizon() === h.days"
+          [attr.aria-pressed]="horizon() === h.days"
+          (click)="horizon.set(h.days); focus.set('all')">
+          {{ h.label }}
+        </button>
+      }
+    </div>
+    <mat-form-field class="exp__search" subscriptSizing="dynamic">
+      <mat-label i18n>Search a name, plate or document</mat-label>
+      <input
+        matInput
+        type="search"
+        [value]="query()"
+        (input)="query.set($any($event.target).value)" />
+    </mat-form-field>
+  </div>
+
+  <div class="exp__layout" [class.exp__layout--loading]="loading()">
+    <section class="exp__list" aria-live="polite">
+      @for (g of groups(); track g.key) {
+        <div
+          class="exp__group"
+          [class.exp__group--overdue]="g.kind === 'overdue'">
+          <h2 class="exp__group-title">
+            @switch (g.kind) {
+              @case ('overdue') {
+                <ng-container i18n>Overdue</ng-container>
+              }
+              @case ('odometer') {
+                <ng-container i18n>By odometer</ng-container>
+              }
+              @default {
+                {{ g.month | date: 'MMMM y' }}
+              }
+            }
+            <span class="exp__group-count">{{ g.items.length }}</span>
+          </h2>
+          <ul class="exp__items">
+            @for (
+              i of g.items;
+              track i.source + i.ownerId + (i.recordId ?? '')
+            ) {
+              <li
+                class="exp__item"
+                [class.exp__item--expired]="i.state === 'Expired'"
+                [class.exp__item--soon]="i.state === 'DueSoon'"
+                [class.exp__item--inactive]="!i.ownerActive">
+                <div class="exp__date">
+                  @if (i.dueOn) {
+                    <span class="exp__day">{{ i.dueOn | date: 'd' }}</span>
+                    <span class="exp__month">{{
+                      i.dueOn | date: 'MMM yy'
+                    }}</span>
+                  } @else {
+                    <app-icon name="route" class="exp__date-icon" />
+                    <span class="exp__month">km</span>
+                  }
+                </div>
+
+                <div class="exp__body">
+                  <p class="exp__title">
+                    {{ label(i) }}
+                    @if (i.reference) {
+                      <span class="exp__ref">{{ i.reference }}</span>
+                    }
+                  </p>
+                  <a
+                    class="exp__owner"
+                    [routerLink]="ownerLink(i.ownerKind)"
+                    [queryParams]="{ edit: i.ownerId }">
+                    <app-icon
+                      [name]="i.ownerKind === 'Driver' ? 'users' : 'car'"
+                      class="exp__owner-icon" />
+                    <span>{{ i.ownerName }}</span>
+                    @if (i.ownerDetail) {
+                      <span class="exp__owner-detail">{{ i.ownerDetail }}</span>
+                    }
+                    @if (!i.ownerActive) {
+                      <span class="exp__tag"
+                        ><ng-container i18n>Inactive</ng-container></span
+                      >
+                    }
+                  </a>
+                </div>
+
+                <div class="exp__when">
+                  @if (i.daysLeft !== null) {
+                    <span class="exp__countdown">
+                      @if (i.daysLeft < 0) {
+                        <ng-container i18n>{abs(i.daysLeft), plural,
+                          =1 {1 day ago}
+                          other {{{ abs(i.daysLeft) }} days ago}
+                        }</ng-container>
+                      } @else if (i.daysLeft === 0) {
+                        <ng-container i18n>Today</ng-container>
+                      } @else if (i.daysLeft === 1) {
+                        <ng-container i18n>Tomorrow</ng-container>
+                      } @else {
+                        <ng-container i18n
+                          >in {{ i.daysLeft }} days</ng-container
+                        >
+                      }
+                    </span>
+                  }
+                  @if (i.kmLeft !== null) {
+                    <span
+                      class="exp__countdown"
+                      [class.exp__countdown--minor]="i.daysLeft !== null">
+                      @if (i.kmLeft <= 0) {
+                        <ng-container i18n
+                          >{{ abs(i.kmLeft) | number }} km over</ng-container
+                        >
+                      } @else {
+                        <ng-container i18n
+                          >in {{ i.kmLeft | number }} km</ng-container
+                        >
+                      }
+                    </span>
+                    <span class="exp__sub"
+                      ><ng-container i18n
+                        >at {{ i.dueKm | number }} km</ng-container
+                      ></span
+                    >
+                  }
+                  @if (i.state === 'DueSoon') {
+                    <span class="exp__meter" aria-hidden="true"
+                      ><span [style.width.%]="urgency(i)"></span
+                    ></span>
+                  }
+                </div>
+
+                <button
+                  appButton
+                  size="sm"
+                  [variant]="i.state === 'Later' ? 'ghost' : 'outline'"
+                  type="button"
+                  class="exp__renew"
+                  (click)="openRenew(i)"
+                  [attr.aria-label]="renewLabel"
+                  ><app-icon name="refresh" /><span class="exp__renew-text"
+                    >&ngsp;<ng-container i18n>Renew</ng-container></span
+                  ></button
+                >
+              </li>
+            }
+          </ul>
+        </div>
+      } @empty {
+        @if (data()) {
+          <div class="exp__empty">
+            <app-icon name="check" class="exp__empty-icon" />
+            <p>
+              @if (focus() === 'all') {
+                <ng-container i18n
+                  >Nothing expires in this period.</ng-container
+                >
+              } @else {
+                <ng-container i18n>No deadline in this group.</ng-container>
+              }
+            </p>
+          </div>
+        }
+      }
+      @if (focus() === 'all' && hiddenLater() > 0) {
+        <button type="button" class="exp__more" (click)="horizon.set(null)">
+          <ng-container i18n
+            >{hiddenLater(), plural,
+              =1 {1 later deadline}
+              other {{{ hiddenLater() }} later deadlines}
+            }
+            not shown. Show all</ng-container
+          >
+          <app-icon name="arrow-right" />
+        </button>
+      }
+    </section>
+
+    <aside class="exp__side">
+      <h2 class="exp__side-title">
+        <app-icon name="info" />
+        <ng-container i18n>Dates missing</ng-container>
+      </h2>
+      <p class="exp__side-hint">
+        <ng-container i18n
+          >Shifts warn about these until the date is filled in on the
+          card.</ng-container
+        >
+      </p>
+      <ul class="exp__missing">
+        @for (m of missing(); track m.ownerId + m.problem) {
+          <li>
+            <a
+              class="exp__owner"
+              [routerLink]="ownerLink(m.ownerKind)"
+              [queryParams]="{ edit: m.ownerId }">
+              <app-icon
+                [name]="m.ownerKind === 'Driver' ? 'users' : 'car'"
+                class="exp__owner-icon" />
+              <span>{{ m.ownerName }}</span>
+            </a>
+            <span class="exp__problem">{{ m.problem }}</span>
+          </li>
+        } @empty {
+          <li class="exp__side-ok">
+            <app-icon name="check" />
+            <ng-container i18n
+              >Every driver and car has its dates.</ng-container
+            >
+          </li>
+        }
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<ng-template
+  [appDialogOpen]="renewing() !== null"
+  dialogWidth="30rem"
+  (dialogClosed)="renewing.set(null)">
+  @if (renewing(); as item) {
+    <form [formGroup]="form" (ngSubmit)="saveRenew()" novalidate>
+      <app-dialog [title]="label(item)">
+        <p class="exp__dialog-owner">
+          <app-icon [name]="item.ownerKind === 'Driver' ? 'users' : 'car'" />
+          {{ item.ownerName }}
+          @if (item.dueOn) {
+            <span class="exp__sub">
+              ·
+              <ng-container i18n
+                >now {{ item.dueOn | date: 'd MMM y' }}</ng-container
+              >
+            </span>
+          }
+        </p>
+        @if (formError(); as message) {
+          <p class="alert alert--error" role="alert">{{ message }}</p>
+        }
+        <div
+          class="exp__steps"
+          role="group"
+          aria-label="Extend"
+          i18n-aria-label>
+          @for (s of renewSteps(item); track s.label) {
+            <button type="button" class="exp__chip" (click)="applyStep(s)">
+              {{ s.label }}
+            </button>
+          }
+        </div>
+        <div class="exp__dialog-fields">
+          <mat-form-field>
+            <mat-label i18n>New expiry date</mat-label>
+            <input matInput type="date" formControlName="dueOn" />
+          </mat-form-field>
+          @if (item.source === 'VehicleDeadline') {
+            <mat-form-field>
+              <mat-label i18n>Due at km</mat-label>
+              <input
+                matInput
+                type="number"
+                min="0"
+                step="1000"
+                formControlName="dueKm" />
+              <mat-error i18n>Enter a valid reading</mat-error>
+            </mat-form-field>
+          }
+        </div>
+        <div class="exp__dialog-actions" dialog-actions>
+          <button
+            appButton
+            type="button"
+            variant="ghost"
+            (click)="renewing.set(null)"
+            ><ng-container i18n>Cancel</ng-container></button
+          >
+          <button appButton type="submit" [disabled]="saving()"
+            ><ng-container i18n>Save</ng-container></button
+          >
+        </div>
+      </app-dialog>
+    </form>
+  }
+</ng-template>

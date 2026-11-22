@@ -7,6 +7,7 @@ import {
   inject,
   signal,
 } from '@angular/core'
+import { ActivatedRoute, Router } from '@angular/router'
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
 import { MatError, MatFormField, MatLabel } from '@angular/material/form-field'
 import { MatInput } from '@angular/material/input'
@@ -63,6 +64,10 @@ export class VehiclesComponent implements OnInit {
   }
 
   protected readonly api = inject(AdminFleetService)
+  private readonly route = inject(ActivatedRoute)
+  private readonly router = inject(Router)
+  /** ?edit=<id> (a link from Expirations): that card opens once the list is in. */
+  private pendingEdit = this.route.snapshot.queryParamMap.get('edit')
   private readonly fb = inject(FormBuilder).nonNullable
 
   private readonly vehicleClasses = inject(VehicleClassService)
@@ -279,8 +284,34 @@ export class VehiclesComponent implements OnInit {
       .vehicles(this.showInactive())
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        next: list => this.vehicles.set(list),
+        next: list => {
+          this.vehicles.set(list)
+          this.openPending(list)
+        },
         error: err => this.error.set(problemMessage(err)),
       })
+  }
+
+  private openPending(list: Vehicle[]): void {
+    const id = this.pendingEdit
+    if (!id) return
+    const found = list.find(x => x.id === id)
+    if (!found && !this.showInactive()) {
+      // It may be a deactivated one: look among those too.
+      this.showInactive.set(true)
+      this.load()
+      return
+    }
+    this.pendingEdit = null
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { edit: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    })
+    if (found) {
+      this.selectedId.set(found.id)
+      this.open(found)
+    }
   }
 }

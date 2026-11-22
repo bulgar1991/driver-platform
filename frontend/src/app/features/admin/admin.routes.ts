@@ -48,6 +48,14 @@ export const ADMIN_ROUTES: Routes = [
       ),
   },
   {
+    path: 'expirations',
+    title: $localize`Expirations · ${BRAND.name}:brand:`,
+    loadComponent: () =>
+      import('./expirations/expirations.component').then(
+        m => m.ExpirationsComponent
+      ),
+  },
+  {
     path: 'attendance',
     title: $localize`Attendance · ${BRAND.name}:brand:`,
     loadComponent: () =>

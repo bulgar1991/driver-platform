@@ -43,6 +43,7 @@ internal sealed partial class EnglishTexts
     public override string NotEmployed => "Not employed on this date";
     public override string GiveBothTimes => "Give both the start and the end time, or neither for a whole day.";
     public override string GiveDateOrKm => "Give a date or an odometer reading.";
+    public override string GiveNewDate => "Give the new expiry date.";
     public override string RecordNotFound => "Not found. It may have been deleted already.";
     public override string AttendanceTypeInUse => "This kind is used in the calendar. Change those days first.";
     public override string RangeTooLong(int days) => $"Pick at most {days} days.";

@@ -1,0 +1,357 @@
+.exp {
+  @apply flex flex-col gap-5;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__header-actions {
+    @apply flex flex-wrap items-center gap-3;
+  }
+
+  // ── Cards: counts that double as filters ─────────────────────────────────
+  &__cards {
+    @apply grid grid-cols-2 gap-2 lg:grid-cols-4;
+  }
+
+  &__card {
+    --tone: theme('colors.gold.DEFAULT');
+    @apply relative flex flex-col items-start gap-1 overflow-hidden rounded-sm border border-ink-600 bg-ink-900 px-4 py-3 text-left transition-[border-color,transform,background-color] duration-200;
+
+    // A thin coloured rail on the left, like the rows below.
+    &::before {
+      content: '';
+      @apply absolute inset-y-0 left-0 w-[3px];
+      background: var(--tone);
+    }
+
+    &:not(&--static) {
+      @apply hover:-translate-y-px hover:border-[color:var(--tone)];
+    }
+
+    &--danger {
+      --tone: theme('colors.danger');
+    }
+
+    &--warning {
+      --tone: theme('colors.warning');
+    }
+
+    &--static {
+      --tone: theme('colors.ink.500');
+    }
+
+    &--on {
+      @apply border-[color:var(--tone)];
+      background:
+        linear-gradient(
+          135deg,
+          color-mix(in srgb, var(--tone) 18%, transparent),
+          transparent 70%
+        ),
+        theme('colors.ink.900');
+    }
+  }
+
+  &__card-value {
+    @apply font-display text-2xl leading-none text-ivory tabular-nums;
+  }
+
+  &__card-label {
+    @apply text-[10px] uppercase tracking-widest text-ivory-400;
+  }
+
+  // ── Toolbar ──────────────────────────────────────────────────────────────
+  &__toolbar {
+    @apply flex flex-wrap items-center gap-x-5 gap-y-3 rounded-sm border border-ink-600 bg-ink-900/80 px-4 py-3;
+  }
+
+  &__segment {
+    @apply flex flex-wrap items-center gap-1.5 transition-opacity;
+
+    &--off {
+      @apply opacity-50;
+    }
+  }
+
+  &__label {
+    @apply mr-1 text-[10px] uppercase tracking-widest text-ivory-400;
+  }
+
+  &__chip {
+    @apply rounded-full border border-ink-600 px-3 py-1 text-xs text-ivory-300 transition-colors hover:border-gold/60 hover:text-ivory;
+
+    &--on {
+      @apply border-gold bg-gold/15 text-gold;
+    }
+  }
+
+  &__search {
+    @apply ml-auto w-full sm:w-72;
+  }
+
+  // ── Layout: list and the side panel ─────────────────────────────────────
+  &__layout {
+    @apply grid items-start gap-5 transition-opacity xl:grid-cols-[minmax(0,1fr)_20rem];
+
+    &--loading {
+      @apply opacity-60;
+    }
+  }
+
+  &__list {
+    @apply flex min-w-0 flex-col gap-6;
+  }
+
+  &__group {
+    @apply flex flex-col gap-2;
+    animation: exp-in 0.25s ease-out;
+  }
+
+  &__group-title {
+    @apply flex items-center gap-2 text-xs uppercase tracking-luxe text-ivory-300;
+
+    &::after {
+      content: '';
+      @apply h-px flex-1 bg-ink-700;
+    }
+  }
+
+  &__group--overdue &__group-title {
+    @apply text-danger;
+  }
+
+  &__group-count {
+    @apply rounded-full bg-ink-700 px-2 py-px text-[10px] tracking-normal text-ivory-300;
+  }
+
+  &__items {
+    @apply flex flex-col gap-1.5;
+  }
+
+  // One deadline: date tile, what and whose, how long left, renew.
+  &__item {
+    --tone: theme('colors.ink.500');
+    @apply relative grid items-center gap-x-4 gap-y-2 rounded-sm border border-ink-700 bg-ink-900 py-2.5 pl-4 pr-3 transition-colors hover:border-ink-500;
+    grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+
+    &::before {
+      content: '';
+      @apply absolute inset-y-0 left-0 w-[3px] rounded-l-sm;
+      background: var(--tone);
+    }
+
+    @screen sm {
+      grid-template-columns: 3.25rem minmax(0, 1fr) 10rem auto;
+    }
+
+    &--soon {
+      --tone: theme('colors.warning');
+    }
+
+    &--expired {
+      --tone: theme('colors.danger');
+      @apply border-danger/30;
+      background:
+        linear-gradient(90deg, rgb(217 83 79 / 0.08), transparent 45%),
+        theme('colors.ink.900');
+    }
+
+    &--inactive {
+      @apply opacity-60;
+    }
+  }
+
+  &__date {
+    @apply flex h-12 w-12 flex-col items-center justify-center rounded-sm border border-ink-600 bg-ink-800 leading-none;
+  }
+
+  &__item--expired &__date {
+    @apply border-danger/50;
+  }
+
+  &__item--soon &__date {
+    @apply border-warning/50;
+  }
+
+  &__day {
+    @apply font-display text-lg text-ivory;
+  }
+
+  &__month {
+    @apply mt-1 text-[9px] uppercase tracking-widest text-ivory-400;
+  }
+
+  &__date-icon {
+    @apply h-4 w-4 text-ivory-300;
+  }
+
+  &__body {
+    @apply flex min-w-0 flex-col gap-0.5;
+  }
+
+  &__title {
+    @apply flex flex-wrap items-baseline gap-x-2 text-sm text-ivory;
+  }
+
+  &__ref {
+    @apply truncate text-xs text-ivory-400;
+  }
+
+  &__owner {
+    @apply flex w-fit min-w-0 max-w-full items-center gap-1.5 text-xs text-ivory-300 transition-colors hover:text-gold;
+  }
+
+  &__owner-icon {
+    @apply h-3.5 w-3.5 shrink-0 text-gold/80;
+  }
+
+  &__owner-detail {
+    @apply hidden truncate text-ivory-400 sm:inline;
+
+    &::before {
+      content: '·';
+      @apply mr-1.5;
+    }
+  }
+
+  &__tag {
+    @apply rounded-sm border border-ink-500 px-1.5 text-[9px] uppercase tracking-widest text-ivory-400;
+  }
+
+  &__when {
+    @apply col-span-3 col-start-2 row-start-2 flex flex-col gap-1 sm:col-span-1 sm:col-start-3 sm:row-start-1 sm:items-end;
+  }
+
+  &__countdown {
+    @apply whitespace-nowrap text-sm tabular-nums text-ivory-300;
+
+    &--minor {
+      @apply text-xs;
+    }
+  }
+
+  &__item--expired &__countdown {
+    @apply text-danger;
+  }
+
+  &__item--soon &__countdown {
+    @apply text-warning;
+  }
+
+  &__sub {
+    @apply text-[11px] text-ivory-400;
+  }
+
+  // How much of the alert window has gone: full = due now.
+  &__meter {
+    @apply block h-[3px] w-24 overflow-hidden rounded-full bg-ink-700;
+
+    span {
+      @apply block h-full rounded-full bg-warning;
+    }
+  }
+
+  &__renew {
+    @apply col-start-3 row-start-1 sm:col-start-4;
+  }
+
+  &__renew-text {
+    @apply hidden sm:inline;
+  }
+
+  &__empty {
+    @apply flex flex-col items-center gap-3 rounded-sm border border-dashed border-ink-600 px-6 py-12 text-center text-sm text-ivory-300;
+  }
+
+  &__empty-icon {
+    @apply h-10 w-10 rounded-full border border-success/50 p-2.5 text-success;
+  }
+
+  &__more {
+    @apply flex w-fit items-center gap-2 self-center text-xs uppercase tracking-widest text-gold transition-colors hover:text-gold-200;
+
+    app-icon {
+      @apply transition-transform duration-300;
+    }
+
+    &:hover app-icon {
+      @apply translate-x-1;
+    }
+  }
+
+  // ── Side: dates the dispatch rules need but nobody entered ──────────────
+  &__side {
+    @apply flex flex-col gap-3 rounded-sm border border-ink-600 bg-ink-900/80 p-4 xl:sticky xl:top-4;
+  }
+
+  &__side-title {
+    @apply flex items-center gap-2 text-xs uppercase tracking-luxe text-ivory;
+
+    app-icon {
+      @apply h-4 w-4 text-gold;
+    }
+  }
+
+  &__side-hint {
+    @apply text-xs leading-relaxed text-ivory-400;
+  }
+
+  &__missing {
+    @apply flex flex-col divide-y divide-ink-700;
+
+    li {
+      @apply flex flex-col gap-0.5 py-2.5;
+    }
+  }
+
+  &__problem {
+    @apply pl-5 text-xs text-warning;
+  }
+
+  &__side-ok {
+    @apply flex-row items-center gap-2 text-xs text-success;
+
+    app-icon {
+      @apply h-4 w-4;
+    }
+  }
+
+  // ── Renew dialog ─────────────────────────────────────────────────────────
+  &__dialog-owner {
+    @apply mb-4 flex items-center gap-2 text-sm text-ivory-300;
+
+    app-icon {
+      @apply h-4 w-4 text-gold;
+    }
+  }
+
+  &__steps {
+    @apply mb-4 flex flex-wrap gap-2;
+  }
+
+  &__dialog-fields {
+    @apply grid gap-x-3 sm:grid-cols-2;
+  }
+
+  &__dialog-actions {
+    @apply flex w-full items-center justify-end gap-3;
+  }
+}
+
+@keyframes exp-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exp__group {
+    animation: none;
+  }
+}

@@ -42,6 +42,7 @@ internal sealed partial class GermanTexts
     public override string NotEmployed => "An diesem Datum nicht beschäftigt";
     public override string GiveBothTimes => "Geben Sie Beginn und Ende an, oder keines von beiden für einen ganzen Tag.";
     public override string GiveDateOrKm => "Geben Sie ein Datum oder einen Kilometerstand an.";
+    public override string GiveNewDate => "Geben Sie das neue Ablaufdatum an.";
     public override string RecordNotFound => "Nicht gefunden. Vielleicht wurde es bereits gelöscht.";
     public override string AttendanceTypeInUse => "Diese Art wird im Kalender verwendet. Ändern Sie zuerst diese Tage.";
     public override string RangeTooLong(int days) => $"Wählen Sie höchstens {days} Tage.";

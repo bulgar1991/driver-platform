@@ -82,6 +82,7 @@
                   [routerLink]="
                     a.kind === 'Driver' ? '/admin/drivers' : '/admin/vehicles'
                   "
+                  [queryParams]="{ edit: a.ownerId }"
                   >{{ a.owner }}</a
                 >
                 {{ a.document }}
@@ -102,6 +103,9 @@
             >
           }
         </ul>
+        <a class="dashboard__more" routerLink="/admin/expirations"
+          ><ng-container i18n>All expirations →</ng-container></a
+        >
       </section>
     </div>
   }
