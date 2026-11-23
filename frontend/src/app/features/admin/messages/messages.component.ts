@@ -56,6 +56,7 @@ export const MESSAGE_KIND_LABEL: Record<NotificationKind, string> = {
   ReviewRequest: $localize`Review request`,
   BookingConfirmation: $localize`Booking confirmation`,
   BookingRefund: $localize`Refund / cancellation`,
+  PartnerStatement: $localize`Partner statement`,
 }
 
 /**
@@ -116,6 +117,7 @@ export class MessagesComponent implements OnInit {
     { value: 'Any', label: $localize`Everyone` },
     { value: 'Driver', label: $localize`Drivers` },
     { value: 'Client', label: $localize`Clients` },
+    { value: 'Partner', label: $localize`Partners` },
   ]
   protected readonly channels: {
     value: NotificationChannel | null

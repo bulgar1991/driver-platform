@@ -46,6 +46,15 @@ internal sealed partial class ItalianTexts
     public override string UnknownLanguage => "Scegliere italiano, inglese, tedesco o francese.";
     public override string MessageNotFound => "Messaggio non trovato.";
     public override string MessageCannotBeResent => "Questo messaggio non può essere reinviato.";
+    public override string StatementNotFound => "Estratto conto non trovato.";
+    public override string StatementEmpty => "Nessuna corsa in questo mese: non c'è nulla da emettere.";
+    public override string StatementAlreadyPaid => "L'estratto conto è già pagato: annulla prima il pagamento.";
+    public override string StatementNotIssued => "Emetti prima l'estratto conto.";
+    public override string PartnerHasNoEmail => "Il partner non ha un indirizzo email.";
+    public override string StatementSendFailed(string reason) => "Invio non riuscito: " + reason;
+    public override string StatementSubject(string number, string period) => $"Estratto conto {number} – {period}";
+    public override string StatementBody(string period, int rides, string amount, DateOnly due) =>
+        $"in allegato l'estratto conto di {period}: {rides} corse, netto da pagare {amount}, con scadenza {due:dd.MM.yyyy}.";
     public override string RecordNotFound => "Non trovato. Forse è già stato eliminato.";
     public override string AttendanceTypeInUse => "Questo tipo è usato nel calendario. Modificare prima quei giorni.";
     public override string RangeTooLong(int days) => $"Scegliere al massimo {days} giorni.";
@@ -82,6 +91,15 @@ internal sealed partial class ItalianTexts
         ReportWord.Filters => "Filtri",
         ReportWord.Passengers => "Passeggeri",
         ReportWord.Class => "Classe",
+        ReportWord.StatementTitle => "Estratto conto",
+        ReportWord.Number => "Numero",
+        ReportWord.Issued => "Emesso",
+        ReportWord.DueBy => "Scadenza",
+        ReportWord.Draft => "Bozza – non ancora emesso",
+        ReportWord.BilledTo => "Intestato a",
+        ReportWord.Commission => "Commissione",
+        ReportWord.NetDue => "Netto da pagare",
+        ReportWord.NotCharged => "Le corse annullate sono elencate ma non addebitate.",
         _ => word.ToString(),
     };
 

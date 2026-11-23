@@ -130,6 +130,7 @@ public static class DependencyInjection
 
         services.AddSingleton<IInvoiceRenderer, QuestInvoiceRenderer>();
         services.AddSingleton<IReportRenderer, QuestReportRenderer>();
+        services.AddSingleton<IStatementRenderer, QuestStatementRenderer>();
         services.AddSingleton<IEmailSender, MailKitEmailSender>();
 
         services.AddOptions<WhatsAppOptions>()

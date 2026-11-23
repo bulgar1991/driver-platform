@@ -39,6 +39,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options, TimePro
     public DbSet<AttendanceEntry> AttendanceEntries => Set<AttendanceEntry>();
     public DbSet<VehicleExpiration> VehicleExpirations => Set<VehicleExpiration>();
     public DbSet<VehicleRefuel> VehicleRefuels => Set<VehicleRefuel>();
+    public DbSet<PartnerStatement> PartnerStatements => Set<PartnerStatement>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);

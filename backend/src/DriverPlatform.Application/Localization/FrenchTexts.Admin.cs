@@ -46,6 +46,15 @@ internal sealed partial class FrenchTexts
     public override string UnknownLanguage => "Choisissez italien, anglais, allemand ou français.";
     public override string MessageNotFound => "Message introuvable.";
     public override string MessageCannotBeResent => "Ce message ne peut pas être renvoyé.";
+    public override string StatementNotFound => "Relevé introuvable.";
+    public override string StatementEmpty => "Aucune course ce mois-ci : rien à émettre.";
+    public override string StatementAlreadyPaid => "Le relevé est déjà payé : annulez d'abord le paiement.";
+    public override string StatementNotIssued => "Émettez d'abord le relevé.";
+    public override string PartnerHasNoEmail => "Le partenaire n'a pas d'adresse e-mail.";
+    public override string StatementSendFailed(string reason) => "Échec de l'envoi : " + reason;
+    public override string StatementSubject(string number, string period) => $"Relevé {number} – {period}";
+    public override string StatementBody(string period, int rides, string amount, DateOnly due) =>
+        $"veuillez trouver ci-joint le relevé de {period} : {rides} courses, montant net dû {amount}, à régler avant le {due:dd.MM.yyyy}.";
     public override string RecordNotFound => "Introuvable. Il a peut-être déjà été supprimé.";
     public override string AttendanceTypeInUse => "Ce type est utilisé dans le calendrier. Modifiez d'abord ces jours.";
     public override string RangeTooLong(int days) => $"Choisissez au maximum {days} jours.";
@@ -82,6 +91,15 @@ internal sealed partial class FrenchTexts
         ReportWord.Filters => "Filtres",
         ReportWord.Passengers => "Passagers",
         ReportWord.Class => "Classe",
+        ReportWord.StatementTitle => "Relevé",
+        ReportWord.Number => "Numéro",
+        ReportWord.Issued => "Émis le",
+        ReportWord.DueBy => "Échéance",
+        ReportWord.Draft => "Brouillon – pas encore émis",
+        ReportWord.BilledTo => "Facturé à",
+        ReportWord.Commission => "Commission",
+        ReportWord.NetDue => "Montant net dû",
+        ReportWord.NotCharged => "Les courses annulées sont listées mais non facturées.",
         _ => word.ToString(),
     };
 

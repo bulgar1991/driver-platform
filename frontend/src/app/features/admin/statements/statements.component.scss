@@ -1,0 +1,378 @@
+.stm {
+  @apply flex flex-col gap-5;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  // ── Month picker: ‹ November 2026 › ─────────────────────────────────────
+  &__month {
+    @apply flex items-center gap-2;
+  }
+
+  &__nav {
+    @apply flex h-9 w-9 items-center justify-center rounded-full border border-ink-600 text-ivory-300 transition-colors hover:border-gold hover:text-gold;
+  }
+
+  &__month-label {
+    @apply relative min-w-[11rem] cursor-pointer rounded-sm border border-ink-600 bg-ink-900 px-4 py-2 text-center font-display text-lg text-ivory transition-colors hover:border-gold/60;
+  }
+
+  // The native picker sits on top, invisible, so a click anywhere on the label opens it.
+  &__month-input {
+    @apply absolute inset-0 cursor-pointer opacity-0;
+  }
+
+  &__notice,
+  &__warn {
+    @apply flex items-start gap-2 rounded-sm border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-warning;
+
+    app-icon {
+      @apply mt-0.5 h-4 w-4 shrink-0;
+    }
+  }
+
+  &__error {
+    @apply rounded-sm border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger;
+  }
+
+  // ── Totals ──────────────────────────────────────────────────────────────
+  &__totals {
+    @apply grid grid-cols-2 gap-2 lg:grid-cols-4;
+  }
+
+  &__total {
+    @apply rounded-sm border border-ink-600 bg-ink-900 px-4 py-3;
+
+    dt {
+      @apply text-[10px] uppercase tracking-widest text-ivory-400;
+    }
+
+    dd {
+      @apply mt-1 font-display text-2xl tabular-nums text-ivory;
+    }
+
+    &--gold {
+      @apply border-gold/50 bg-gradient-to-br from-gold/15 to-transparent;
+
+      dd {
+        @apply text-gold;
+      }
+    }
+
+    &--alert {
+      @apply border-danger/60 from-danger/15;
+
+      dd {
+        @apply text-danger;
+      }
+    }
+  }
+
+  &__total-foot {
+    @apply mt-0.5 text-[11px] text-ivory-400;
+  }
+
+  // ── Table ───────────────────────────────────────────────────────────────
+  &__table-wrap {
+    @apply overflow-auto rounded-sm border border-ink-600 bg-ink-900 transition-opacity;
+
+    &--loading {
+      @apply opacity-60;
+    }
+  }
+
+  &__table {
+    @apply w-full min-w-[60rem] border-collapse text-sm;
+
+    th {
+      @apply border-b border-ink-600 bg-ink-900 px-3 py-3 text-left text-[10px] font-normal uppercase tracking-widest text-ivory-400;
+    }
+
+    td {
+      @apply border-b border-ink-700 px-3 py-3 align-middle text-ivory;
+    }
+
+    th.stm__num {
+      @apply text-right;
+    }
+  }
+
+  &__row {
+    @apply cursor-pointer transition-colors hover:bg-ink-800 focus-visible:bg-ink-800 focus-visible:outline-none;
+
+    &--open {
+      @apply bg-gold/5;
+
+      td:first-child {
+        box-shadow: inset 3px 0 0 theme('colors.gold.DEFAULT');
+      }
+    }
+
+    // Billed monthly, but nothing this month.
+    &--quiet td {
+      @apply text-ivory-400;
+    }
+  }
+
+  &__partner {
+    @apply block;
+  }
+
+  &__muted {
+    @apply block text-[11px] text-ivory-400;
+  }
+
+  &__number {
+    @apply mt-1 block font-mono text-[11px] text-ivory-300;
+  }
+
+  &__changed {
+    @apply mt-1 block text-[11px] text-warning;
+  }
+
+  &__num {
+    @apply text-right tabular-nums;
+  }
+
+  &__cancelled {
+    @apply block text-[10px] text-danger/80;
+  }
+
+  &__net {
+    @apply font-display text-base text-gold;
+
+    small {
+      @apply font-sans text-[10px] text-ivory-400;
+    }
+  }
+
+  &__nowrap {
+    @apply whitespace-nowrap text-xs;
+  }
+
+  &__late {
+    @apply text-danger;
+  }
+
+  &__paid {
+    @apply text-success;
+  }
+
+  &__actions {
+    @apply whitespace-nowrap text-right;
+
+    > * + * {
+      @apply ml-1.5;
+    }
+  }
+
+  &__icon {
+    @apply inline-flex h-8 w-8 items-center justify-center rounded-full border border-ink-600 align-middle text-ivory-300 transition-colors hover:border-gold hover:text-gold disabled:opacity-40;
+
+    app-icon {
+      @apply h-4 w-4;
+    }
+  }
+
+  &__empty {
+    @apply px-4 py-10 text-center text-sm text-ivory-400;
+  }
+
+  &__link {
+    @apply ml-2 text-gold underline-offset-4 hover:underline;
+  }
+
+  &__status {
+    @apply inline-block whitespace-nowrap rounded-sm px-2 py-0.5 text-[9px] uppercase tracking-widest;
+
+    &--neutral {
+      @apply bg-ink-700 text-ivory-300;
+    }
+
+    &--warning {
+      @apply bg-warning/15 text-warning;
+    }
+
+    &--info {
+      @apply bg-sky-500/15 text-sky-300;
+    }
+
+    &--success {
+      @apply bg-success/15 text-success;
+    }
+
+    &--danger {
+      @apply bg-danger/15 text-danger;
+    }
+  }
+
+  // ── Drawer ──────────────────────────────────────────────────────────────
+  &__back {
+    @apply mb-4 flex items-center gap-2 text-xs uppercase tracking-widest text-gold transition-colors hover:text-gold-200;
+  }
+
+  &__card {
+    @apply flex flex-col gap-4;
+  }
+
+  &__card-head {
+    @apply flex items-start justify-between gap-4;
+
+    .stm__number {
+      @apply ml-2 inline;
+    }
+  }
+
+  &__card-period {
+    @apply mb-1 font-display text-xl text-ivory;
+  }
+
+  &__card-net {
+    @apply flex flex-col items-end;
+
+    small {
+      @apply text-[10px] uppercase tracking-widest text-ivory-400;
+    }
+
+    strong {
+      @apply font-display text-2xl font-normal tabular-nums text-gold;
+    }
+  }
+
+  &__facts {
+    @apply grid grid-cols-2 gap-2 sm:grid-cols-4;
+
+    div {
+      @apply rounded-sm border border-ink-600 bg-ink-800/60 px-3 py-2;
+    }
+
+    dt {
+      @apply text-[9px] uppercase tracking-widest text-ivory-400;
+    }
+
+    dd {
+      @apply mt-0.5 font-display text-lg tabular-nums text-ivory;
+
+      small {
+        @apply block font-sans text-[10px] text-danger/80;
+      }
+    }
+  }
+
+  // Issued → sent → paid.
+  &__timeline {
+    @apply grid grid-cols-3 gap-2;
+
+    li {
+      @apply relative flex flex-col gap-0.5 border-t-2 border-ink-600 pt-3 text-xs text-ivory-400;
+    }
+
+    small {
+      @apply text-[11px] text-ivory-400;
+    }
+  }
+
+  &__step--done {
+    @apply border-gold text-ivory #{!important};
+
+    .stm__dot {
+      @apply border-gold bg-gold;
+    }
+  }
+
+  &__dot {
+    @apply absolute -top-[7px] left-0 h-3 w-3 rounded-full border-2 border-ink-500 bg-ink-900;
+  }
+
+  &__buttons {
+    @apply flex flex-wrap gap-2;
+  }
+
+  &__panel {
+    @apply flex flex-col gap-3;
+  }
+
+  &__section {
+    @apply flex items-center gap-2 border-b border-ink-700 pb-2 text-xs uppercase tracking-luxe text-ivory;
+  }
+
+  &__count {
+    @apply rounded-full bg-ink-700 px-2 py-px text-[10px] tracking-normal text-ivory-300;
+  }
+
+  &__inline {
+    @apply flex flex-wrap items-center gap-3;
+  }
+
+  &__pay {
+    @apply grid items-center gap-3 sm:grid-cols-[10rem_minmax(0,1fr)_auto];
+  }
+
+  &__grow {
+    @apply min-w-0 flex-1;
+  }
+
+  &__paid-text {
+    @apply flex flex-1 items-center gap-2 text-sm text-success;
+
+    app-icon {
+      @apply h-4 w-4;
+    }
+
+    small {
+      @apply text-ivory-400;
+    }
+  }
+
+  &__line {
+    @apply grid w-full items-center gap-3 rounded-sm border border-ink-700 bg-ink-900 px-3 py-2.5 text-left transition-colors hover:border-gold/60;
+    grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+
+    & + & {
+      @apply mt-1.5;
+    }
+
+    &--cancelled {
+      @apply opacity-60;
+    }
+  }
+
+  &__line-when {
+    @apply flex flex-col text-xs;
+
+    strong {
+      @apply font-normal text-ivory;
+    }
+
+    small {
+      @apply text-ivory-400;
+    }
+  }
+
+  &__line-what {
+    @apply flex min-w-0 flex-col text-xs text-ivory;
+
+    > span,
+    > small {
+      @apply truncate;
+    }
+
+    small {
+      @apply text-[11px] text-ivory-400;
+    }
+  }
+
+  &__line-price {
+    @apply flex flex-col items-end text-sm tabular-nums text-ivory;
+
+    small {
+      @apply text-[10px] text-ivory-400;
+    }
+  }
+}
+
+// PrimeNG sets 20rem on a right drawer; the statement needs room for the rides.
+::ng-deep .p-drawer.stm-drawer {
+  width: min(44rem, 100vw) !important;
+}

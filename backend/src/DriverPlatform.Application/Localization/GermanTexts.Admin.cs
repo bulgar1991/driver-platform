@@ -46,6 +46,15 @@ internal sealed partial class GermanTexts
     public override string UnknownLanguage => "Wählen Sie Italienisch, Englisch, Deutsch oder Französisch.";
     public override string MessageNotFound => "Nachricht nicht gefunden.";
     public override string MessageCannotBeResent => "Diese Nachricht kann nicht erneut gesendet werden.";
+    public override string StatementNotFound => "Abrechnung nicht gefunden.";
+    public override string StatementEmpty => "Keine Fahrten in diesem Monat: nichts auszustellen.";
+    public override string StatementAlreadyPaid => "Die Abrechnung ist bereits bezahlt: zuerst die Zahlung rückgängig machen.";
+    public override string StatementNotIssued => "Stellen Sie die Abrechnung zuerst aus.";
+    public override string PartnerHasNoEmail => "Der Partner hat keine E-Mail-Adresse.";
+    public override string StatementSendFailed(string reason) => "Senden fehlgeschlagen: " + reason;
+    public override string StatementSubject(string number, string period) => $"Abrechnung {number} – {period}";
+    public override string StatementBody(string period, int rides, string amount, DateOnly due) =>
+        $"anbei die Abrechnung für {period}: {rides} Fahrten, zu zahlender Nettobetrag {amount}, fällig am {due:dd.MM.yyyy}.";
     public override string RecordNotFound => "Nicht gefunden. Vielleicht wurde es bereits gelöscht.";
     public override string AttendanceTypeInUse => "Diese Art wird im Kalender verwendet. Ändern Sie zuerst diese Tage.";
     public override string RangeTooLong(int days) => $"Wählen Sie höchstens {days} Tage.";
@@ -82,6 +91,15 @@ internal sealed partial class GermanTexts
         ReportWord.Filters => "Filter",
         ReportWord.Passengers => "Fahrgäste",
         ReportWord.Class => "Klasse",
+        ReportWord.StatementTitle => "Abrechnung",
+        ReportWord.Number => "Nummer",
+        ReportWord.Issued => "Ausgestellt",
+        ReportWord.DueBy => "Fällig am",
+        ReportWord.Draft => "Entwurf – noch nicht ausgestellt",
+        ReportWord.BilledTo => "Rechnungsempfänger",
+        ReportWord.Commission => "Provision",
+        ReportWord.NetDue => "Zu zahlender Nettobetrag",
+        ReportWord.NotCharged => "Stornierte Fahrten sind aufgeführt, werden aber nicht berechnet.",
         _ => word.ToString(),
     };
 

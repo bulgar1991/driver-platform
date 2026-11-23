@@ -47,6 +47,15 @@ internal sealed partial class EnglishTexts
     public override string UnknownLanguage => "Choose Italian, English, German or French.";
     public override string MessageNotFound => "Message not found.";
     public override string MessageCannotBeResent => "This message cannot be sent again.";
+    public override string StatementNotFound => "Statement not found.";
+    public override string StatementEmpty => "No rides this month: there is nothing to issue.";
+    public override string StatementAlreadyPaid => "The statement is already paid: undo the payment first.";
+    public override string StatementNotIssued => "Issue the statement first.";
+    public override string PartnerHasNoEmail => "The partner has no email address.";
+    public override string StatementSendFailed(string reason) => "Could not send: " + reason;
+    public override string StatementSubject(string number, string period) => $"Statement {number} – {period}";
+    public override string StatementBody(string period, int rides, string amount, DateOnly due) =>
+        $"please find attached the statement for {period}: {rides} rides, net amount due {amount}, by {due:dd.MM.yyyy}.";
     public override string RecordNotFound => "Not found. It may have been deleted already.";
     public override string AttendanceTypeInUse => "This kind is used in the calendar. Change those days first.";
     public override string RangeTooLong(int days) => $"Pick at most {days} days.";
@@ -83,6 +92,15 @@ internal sealed partial class EnglishTexts
         ReportWord.Filters => "Filters",
         ReportWord.Passengers => "Passengers",
         ReportWord.Class => "Class",
+        ReportWord.StatementTitle => "Statement",
+        ReportWord.Number => "Number",
+        ReportWord.Issued => "Issued",
+        ReportWord.DueBy => "Due by",
+        ReportWord.Draft => "Draft – not issued yet",
+        ReportWord.BilledTo => "Billed to",
+        ReportWord.Commission => "Commission",
+        ReportWord.NetDue => "Net amount due",
+        ReportWord.NotCharged => "Cancelled rides are listed but not charged.",
         _ => word.ToString(),
     };
 

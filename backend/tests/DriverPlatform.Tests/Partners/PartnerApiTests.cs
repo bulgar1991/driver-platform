@@ -232,6 +232,61 @@ public sealed class PartnerApiTests
     }
 
     [Fact]
+    public async Task A_statement_is_issued_sent_reissued_when_rides_change_and_marked_paid()
+    {
+        var s = await SetupAsync();
+        using var _ = s.Factory;
+        var pickup = TestData.QuietPickup();
+        var url = $"/api/admin/statements/{s.Partner.Id}/{pickup.Year}/{pickup.Month}";
+        var first = await Read<PartnerBooking>(await s.Api.PostAsJsonAsync("/api/partner/v1/bookings",
+            Booking("DAN-1", TestData.Trip() with { PickupAt = pickup }), TestData.Json), HttpStatusCode.Created);
+        var second = await Read<PartnerBooking>(await s.Api.PostAsJsonAsync("/api/partner/v1/bookings",
+            Booking("DAN-2", TestData.Trip() with { PickupAt = pickup.AddHours(3) }), TestData.Json), HttpStatusCode.Created);
+        await s.Api.PostAsJsonAsync($"/api/partner/v1/bookings/{second.Reference}/cancel", new PartnerCancelRequest { Reason = "No show" }, TestData.Json);
+
+        // Not sent before it is issued.
+        Assert.Equal(HttpStatusCode.Conflict, (await s.Admin.PostAsJsonAsync($"{url}/send", new StatementSendRequest(), TestData.Json)).StatusCode);
+        var month = await s.Admin.GetFromJsonAsync<StatementMonth>($"/api/admin/statements?year={pickup.Year}&month={pickup.Month}", TestData.Json);
+        var row = Assert.Single(month!.Items);
+        var commission = Math.Round(first.TotalPrice * 0.05m, 2, MidpointRounding.AwayFromZero);
+        Assert.Equal((StatementStatus.NotIssued, 1, 1), (row.Status, row.Rides, row.Cancelled));
+        Assert.Equal((first.TotalPrice, commission, first.TotalPrice - commission), (row.Revenue, row.Commission, row.Net));
+        Assert.Equal((1, row.Net), (month.Totals.NotIssued, month.Totals.ToIssue));
+        var draft = await s.Admin.GetByteArrayAsync($"{url}/pdf");
+        Assert.Equal("%PDF", System.Text.Encoding.ASCII.GetString(draft, 0, 4));
+
+        var issued = await Read<StatementDetail>(await s.Admin.PostAsync($"{url}/issue", null));
+        Assert.Equal(StatementStatus.Issued, issued.Row.Status);
+        Assert.Matches($"-ST-{pickup.Year}-0001$", issued.Row.Number);
+        Assert.Equal(2, issued.Lines.Count);
+
+        var sent = await Read<StatementDetail>(await s.Admin.PostAsJsonAsync($"{url}/send", new StatementSendRequest(), TestData.Json));
+        Assert.Equal((StatementStatus.Sent, "concierge@hotel.test"), (sent.Row.Status, sent.Row.SentTo));
+        var email = Assert.Single(s.Factory.Emails.Sent, m => m.To == "concierge@hotel.test");
+        Assert.Equal($"{issued.Row.Number}.pdf", Assert.Single(email.Attachments).FileName);
+
+        // A new ride after issuing: the statement is flagged and issued again with the same number.
+        await Read<PartnerBooking>(await s.Api.PostAsJsonAsync("/api/partner/v1/bookings",
+            Booking("DAN-3", TestData.Trip() with { PickupAt = pickup.AddHours(6) }), TestData.Json), HttpStatusCode.Created);
+        var changed = await s.Admin.GetFromJsonAsync<StatementDetail>(url, TestData.Json);
+        Assert.True(changed!.Row.Changed);
+        Assert.Equal(1, changed.Row.Rides); // still the copy the partner got
+        var again = await Read<StatementDetail>(await s.Admin.PostAsync($"{url}/issue", null));
+        Assert.Equal((issued.Row.Number, 2, false, StatementStatus.Issued), (again.Row.Number, again.Row.Rides, again.Row.Changed, again.Row.Status));
+
+        var paid = await Read<StatementDetail>(await s.Admin.PostAsJsonAsync($"{url}/paid", new StatementPaidRequest { Paid = true, Note = "Bank transfer" }, TestData.Json));
+        Assert.Equal((StatementStatus.Paid, "Bank transfer"), (paid.Row.Status, paid.Row.Note));
+        Assert.Equal(HttpStatusCode.Conflict, (await s.Admin.PostAsync($"{url}/issue", null)).StatusCode);
+        var unpaid = await Read<StatementDetail>(await s.Admin.PostAsJsonAsync($"{url}/paid", new StatementPaidRequest { Paid = false }, TestData.Json));
+        Assert.Null(unpaid.Row.PaidAt);
+
+        var log = await s.Admin.GetFromJsonAsync<DriverPlatform.Application.Messages.MessageList>($"/api/admin/messages?audience=Partner&from={DateTime.UtcNow.AddDays(-2):yyyy-MM-dd}&to={DateTime.UtcNow.AddDays(2):yyyy-MM-dd}", TestData.Json);
+        Assert.Single(log!.Items);
+        var dispatcher = await s.Factory.CreateDispatcherClientAsync();
+        Assert.Equal(HttpStatusCode.Forbidden, (await dispatcher.GetAsync($"/api/admin/statements?year={pickup.Year}&month={pickup.Month}")).StatusCode);
+    }
+
+    [Fact]
     public async Task Partner_api_description_is_public()
     {
         using var factory = new ApiFactory();

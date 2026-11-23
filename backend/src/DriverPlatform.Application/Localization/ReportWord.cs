@@ -33,4 +33,14 @@ public enum ReportWord
     Filters,
     Passengers,
     Class,
+    // Partner statement
+    StatementTitle,
+    Number,
+    Issued,
+    DueBy,
+    Draft,
+    BilledTo,
+    Commission,
+    NetDue,
+    NotCharged,
 }

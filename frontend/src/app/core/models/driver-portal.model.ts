@@ -83,6 +83,7 @@ export type NotificationKind =
   | 'ReviewRequest'
   | 'BookingConfirmation'
   | 'BookingRefund'
+  | 'PartnerStatement'
 export type NotificationStatus = 'Sent' | 'Failed' | 'Skipped'
 
 export interface MessageSummary {

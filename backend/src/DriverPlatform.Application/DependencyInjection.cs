@@ -57,6 +57,7 @@ public static class DependencyInjection
         services.AddScoped<IPartnerAuthService, PartnerAuthService>();
         services.AddScoped<IPartnerBookingService, PartnerBookingService>();
         services.AddScoped<IPartnerAdminService, PartnerAdminService>();
+        services.AddScoped<IPartnerStatementService, PartnerStatementService>();
         services.AddScoped<IStaffAdminService, StaffAdminService>();
         services.AddScoped<IAuditQueryService, AuditQueryService>();
         services.AddScoped<IHousekeepingService, HousekeepingService>();

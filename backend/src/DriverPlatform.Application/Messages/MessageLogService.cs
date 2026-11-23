@@ -17,6 +17,7 @@ public enum MessageAudience
     Any,
     Driver,
     Client,
+    Partner,
 }
 
 public sealed record MessageQuery
@@ -83,6 +84,7 @@ public sealed class MessageLogService(
     public const int MaxDays = 366;
 
     private static readonly NotificationKind[] DriverKinds = [NotificationKind.DriverShift, NotificationKind.DriverShiftChanged];
+    private static readonly NotificationKind[] PartnerKinds = [NotificationKind.PartnerStatement];
 
     public static bool CanResend(NotificationKind kind, Guid? bookingId, Guid? assignmentId) => kind switch
     {
@@ -111,7 +113,11 @@ public sealed class MessageLogService(
         }
         else if (query.Audience == MessageAudience.Client)
         {
-            logs = logs.Where(n => !DriverKinds.Contains(n.Kind));
+            logs = logs.Where(n => !DriverKinds.Contains(n.Kind) && !PartnerKinds.Contains(n.Kind));
+        }
+        else if (query.Audience == MessageAudience.Partner)
+        {
+            logs = logs.Where(n => PartnerKinds.Contains(n.Kind));
         }
         if (query.BookingId is { } bookingId)
         {

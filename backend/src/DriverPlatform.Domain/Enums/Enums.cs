@@ -158,6 +158,8 @@ public enum NotificationKind
     BookingConfirmation,
     /// <summary>Client: a refund or cancellation, with the credit note attached.</summary>
     BookingRefund,
+    /// <summary>Partner: the monthly statement, PDF attached.</summary>
+    PartnerStatement,
 }
 
 public enum NotificationStatus

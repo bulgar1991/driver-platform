@@ -8,7 +8,7 @@ namespace DriverPlatform.Api.Controllers.Admin;
 [ApiController]
 [Route("api/admin/partners")]
 [Authorize(Policy = Policies.Admin)]
-public sealed class PartnersController(IPartnerAdminService partners) : ControllerBase
+public sealed class PartnersController(IPartnerAdminService partners, IPartnerStatementService statements) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<PartnerDto>>> List(CancellationToken cancellationToken) =>
@@ -49,11 +49,7 @@ public sealed class PartnersController(IPartnerAdminService partners) : Controll
     [HttpGet("{id:guid}/statement")]
     public async Task<IActionResult> Statement(Guid id, [FromQuery] int year, [FromQuery] int month, CancellationToken cancellationToken)
     {
-        if (month is < 1 or > 12 || year is < 2020 or > 2100)
-        {
-            return ValidationProblem(new ValidationProblemDetails(new Dictionary<string, string[]> { ["month"] = ["Pick a month."] }));
-        }
-        var file = await partners.StatementAsync(id, year, month, cancellationToken);
+        var file = await statements.CsvAsync(id, year, month, cancellationToken);
         return File(file.Content, "text/csv; charset=utf-8", file.FileName);
     }
 }

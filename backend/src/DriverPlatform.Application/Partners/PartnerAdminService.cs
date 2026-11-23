@@ -64,8 +64,6 @@ public interface IPartnerAdminService
     Task RevokeKeyAsync(Guid id, CancellationToken cancellationToken);
     Task<PartnerSecretResponse> WebhookSecretAsync(Guid id, bool rotate, CancellationToken cancellationToken);
     Task<IReadOnlyList<WebhookDeliveryDto>> DeliveriesAsync(Guid id, CancellationToken cancellationToken);
-    /// <summary>Monthly statement (CSV): rides, prices and commission, for invoicing the partner.</summary>
-    Task<InvoiceFile> StatementAsync(Guid id, int year, int month, CancellationToken cancellationToken);
 }
 
 public sealed class PartnerAdminService(IAppDbContext db, IPartnerKeys keys, IAuditLogger audit, TimeProvider clock) : IPartnerAdminService
@@ -150,49 +148,6 @@ public sealed class PartnerAdminService(IAppDbContext db, IPartnerKeys keys, IAu
             r.Id, r.Event, references.GetValueOrDefault(r.BookingId, "?"), r.Attempts, r.CreatedAt, r.DeliveredAt, r.LastError)).ToList();
     }
 
-    public async Task<InvoiceFile> StatementAsync(Guid id, int year, int month, CancellationToken cancellationToken)
-    {
-        var partner = await FindAsync(id, cancellationToken);
-        var first = new DateOnly(year, month, 1);
-        var start = OfficeTime.ToUtc(first.ToDateTime(TimeOnly.MinValue))!.Value;
-        var end = OfficeTime.ToUtc(first.AddMonths(1).ToDateTime(TimeOnly.MinValue))!.Value;
-        var bookings = await db.Bookings.AsNoTracking()
-            .Include(b => b.Client)
-            .Where(b => b.PartnerId == id && b.PickupAt >= start && b.PickupAt < end)
-            .OrderBy(b => b.PickupAt)
-            .ToListAsync(cancellationToken);
-
-        var it = CultureInfo.GetCultureInfo("it-IT");
-        string Money(decimal v) => v.ToString("0.00", it);
-        var csv = new StringBuilder("reference;external_reference;pickup;passenger;from;to;vehicle;status;price;commission;net\n");
-        decimal total = 0, commission = 0;
-        foreach (var b in bookings)
-        {
-            // Cancelled rides are listed for reference but not charged.
-            var charged = b.Status == BookingStatus.Cancelled ? 0 : b.TotalPrice;
-            var fee = Math.Round(charged * partner.CommissionPercent / 100, 2, MidpointRounding.AwayFromZero);
-            total += charged;
-            commission += fee;
-            csv.AppendJoin(';',
-                b.Reference,
-                Csv(b.ExternalReference ?? ""),
-                RideTime.ToLocal(b.PickupAt, b.Pickup).ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture),
-                Csv($"{b.Client.FirstName} {b.Client.LastName}"),
-                Csv(b.PickupMeetingPoint?.Name ?? b.Pickup.Address),
-                Csv(b.DropoffMeetingPoint?.Name ?? b.Dropoff.Address),
-                b.VehicleCategory,
-                b.Status,
-                Money(charged),
-                Money(fee),
-                Money(charged - fee)).Append('\n');
-        }
-        csv.Append(CultureInfo.InvariantCulture, $"TOTAL;;;;;;;;{Money(total)};{Money(commission)};{Money(total - commission)}\n");
-
-        var bytes = Encoding.UTF8.GetPreamble().Concat(Encoding.UTF8.GetBytes(csv.ToString())).ToArray();
-        var slug = new string(partner.Name.ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-').ToArray()).Trim('-');
-        return new InvoiceFile($"statement-{slug}-{year}-{month:00}.csv", bytes);
-    }
-
     private static void Validate(PartnerRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.WebhookUrl))
@@ -234,14 +189,5 @@ public sealed class PartnerAdminService(IAppDbContext db, IPartnerKeys keys, IAu
             p.Id, p.Name, p.Kind, p.ContactEmail, p.ApiKeyPrefix, p.ApiKeyCreatedAt, p.ApiKeyLastUsedAt,
             p.PriceAdjustmentPercent, p.CommissionPercent, p.MonthlyInvoicing, p.NotifyPassengers, p.WebhookUrl, p.IsActive,
             bookings, failing);
-    }
-
-    private static string Csv(string value)
-    {
-        if (value.Length > 0 && "=+-@".Contains(value[0]))
-        {
-            value = "'" + value;
-        }
-        return $"\"{value.Replace("\"", "\"\"")}\"";
     }
 }

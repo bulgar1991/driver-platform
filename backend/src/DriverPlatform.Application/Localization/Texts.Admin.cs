@@ -28,6 +28,14 @@ public abstract partial class Texts
     public abstract string UnknownLanguage { get; }
     public abstract string MessageNotFound { get; }
     public abstract string MessageCannotBeResent { get; }
+    public abstract string StatementNotFound { get; }
+    public abstract string StatementEmpty { get; }
+    public abstract string StatementAlreadyPaid { get; }
+    public abstract string StatementNotIssued { get; }
+    public abstract string PartnerHasNoEmail { get; }
+    public abstract string StatementSendFailed(string reason);
+    public abstract string StatementSubject(string number, string period);
+    public abstract string StatementBody(string period, int rides, string amount, DateOnly due);
     public abstract string RecordNotFound { get; }
     public abstract string AttendanceTypeInUse { get; }
     public abstract string RangeTooLong(int days);

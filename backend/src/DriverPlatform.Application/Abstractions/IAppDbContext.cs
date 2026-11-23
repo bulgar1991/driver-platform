@@ -34,6 +34,7 @@ public interface IAppDbContext
     DbSet<VehicleExpiration> VehicleExpirations { get; }
     DbSet<VehicleRefuel> VehicleRefuels { get; }
     DbSet<BookingComRide> BookingComRides { get; }
+    DbSet<PartnerStatement> PartnerStatements { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -148,6 +148,15 @@ export const ADMIN_ROUTES: Routes = [
       import('./reviews/reviews.component').then(m => m.ReviewsComponent),
   },
   {
+    path: 'statements',
+    canActivate: [roleGuard('Admin')],
+    title: $localize`Partner statements · ${BRAND.name}:brand:`,
+    loadComponent: () =>
+      import('./statements/statements.component').then(
+        m => m.StatementsComponent
+      ),
+  },
+  {
     path: 'partners',
     canActivate: [roleGuard('Admin')],
     title: $localize`Partners · ${BRAND.name}:brand:`,

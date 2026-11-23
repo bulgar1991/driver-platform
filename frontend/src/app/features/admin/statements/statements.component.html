@@ -1,0 +1,517 @@
+<section class="stm">
+  <header class="stm__header">
+    <div>
+      <p class="eyebrow"><ng-container i18n>Partners</ng-container></p>
+      <h1 class="heading heading--lg"
+        ><ng-container i18n>Statements</ng-container></h1
+      >
+    </div>
+    <div class="stm__month">
+      <button
+        type="button"
+        class="stm__nav"
+        (click)="shift(-1)"
+        i18n-aria-label
+        aria-label="Previous month">
+        <app-icon name="arrow-left" />
+      </button>
+      <label class="stm__month-label">
+        <span>{{ monthLabel() }}</span>
+        <input
+          type="month"
+          class="stm__month-input"
+          [value]="month()"
+          (change)="setMonth($any($event.target).value)"
+          i18n-aria-label
+          aria-label="Month" />
+      </label>
+      <button
+        type="button"
+        class="stm__nav"
+        (click)="shift(1)"
+        i18n-aria-label
+        aria-label="Next month">
+        <app-icon name="arrow-right" />
+      </button>
+    </div>
+  </header>
+
+  @if (data(); as d) {
+    @if (!d.monthOver) {
+      <p class="stm__notice">
+        <app-icon name="info" />
+        <ng-container i18n
+          >This month is not over yet: rides can still be added, so the figures
+          can change.</ng-container
+        >
+      </p>
+    }
+
+    <dl class="stm__totals">
+      <div class="stm__total">
+        <dt i18n>To issue</dt>
+        <dd> {{ d.currency }} {{ d.totals.toIssue | number: '1.2-2' }} </dd>
+        <p class="stm__total-foot" i18n>{d.totals.notIssued, plural,
+          =0 {Nothing waiting}
+          =1 {1 partner}
+          other {{{d.totals.notIssued}} partners}
+        }</p>
+      </div>
+      <div
+        class="stm__total stm__total--gold"
+        [class.stm__total--alert]="d.totals.overdue > 0">
+        <dt i18n>Waiting for payment</dt>
+        <dd> {{ d.currency }} {{ d.totals.outstanding | number: '1.2-2' }} </dd>
+        <p class="stm__total-foot">
+          @if (d.totals.overdue > 0) {
+            <ng-container i18n>{d.totals.overdue, plural,
+              =1 {1 overdue}
+              other {{{d.totals.overdue}} overdue}
+            }</ng-container>
+          } @else {
+            <ng-container i18n>None overdue</ng-container>
+          }
+        </p>
+      </div>
+      <div class="stm__total">
+        <dt i18n>Paid</dt>
+        <dd>{{ d.currency }} {{ d.totals.paid | number: '1.2-2' }}</dd>
+        <p class="stm__total-foot" i18n
+          >of {{ d.currency }} {{ d.totals.billed | number: '1.2-2' }} issued</p
+        >
+      </div>
+      <div class="stm__total">
+        <dt i18n>Partner commission</dt>
+        <dd>{{ d.currency }} {{ d.totals.commission | number: '1.2-2' }}</dd>
+        <p class="stm__total-foot" i18n>Already taken off the amounts</p>
+      </div>
+    </dl>
+
+    <div class="stm__table-wrap" [class.stm__table-wrap--loading]="loading()">
+      <table class="stm__table">
+        <thead>
+          <tr>
+            <th i18n>Partner</th>
+            <th i18n>Statement</th>
+            <th class="stm__num" i18n>Rides</th>
+            <th class="stm__num" i18n>Rides total</th>
+            <th class="stm__num" i18n>Commission</th>
+            <th class="stm__num" i18n>Net due</th>
+            <th i18n>Due</th>
+            <th><span class="sr-only" i18n>Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of d.items; track r.partnerId) {
+            <tr
+              class="stm__row"
+              [class.stm__row--open]="openId() === r.partnerId"
+              [class.stm__row--quiet]="!hasRides(r) && r.status === 'NotIssued'"
+              tabindex="0"
+              (click)="open(r.partnerId)"
+              (keydown.enter)="open(r.partnerId)">
+              <td>
+                <span class="stm__partner">{{ r.partnerName }}</span>
+                <small class="stm__muted">
+                  @if (r.partnerKind === 'Booking') {
+                    Booking.com
+                  } @else {
+                    {{ r.contactEmail }}
+                  }
+                </small>
+              </td>
+              <td>
+                <span
+                  class="stm__status stm__status--{{ statusTone[r.status] }}"
+                  >{{ statusLabel[r.status] }}</span
+                >
+                @if (r.number) {
+                  <small class="stm__number">{{ r.number }}</small>
+                }
+                @if (r.changed) {
+                  <small class="stm__changed" i18n>Rides changed since</small>
+                }
+              </td>
+              <td class="stm__num">
+                {{ r.rides }}
+                @if (r.cancelled > 0) {
+                  <small class="stm__cancelled" i18n
+                    >+{{ r.cancelled }} cancelled</small
+                  >
+                }
+              </td>
+              <td class="stm__num">{{ r.revenue | number: '1.2-2' }}</td>
+              <td class="stm__num">
+                {{ r.commission | number: '1.2-2' }}
+                <small class="stm__muted"
+                  >{{ r.commissionPercent | number: '1.0-2' }}%</small
+                >
+              </td>
+              <td class="stm__num stm__net">
+                <small>{{ d.currency }}</small> {{ r.net | number: '1.2-2' }}
+              </td>
+              <td class="stm__nowrap">
+                @if (r.paidAt) {
+                  <span class="stm__paid"
+                    ><ng-container i18n>Paid</ng-container>
+                    {{ r.paidAt | date: 'd MMM' }}</span
+                  >
+                } @else if (r.dueOn) {
+                  <span [class.stm__late]="r.status === 'Overdue'">{{
+                    r.dueOn | date: 'd MMM yyyy'
+                  }}</span>
+                } @else {
+                  <span class="stm__muted">—</span>
+                }
+              </td>
+              <td class="stm__actions" (click)="$event.stopPropagation()">
+                @if (r.status === 'NotIssued') {
+                  @if (hasRides(r)) {
+                    <button
+                      appButton
+                      size="sm"
+                      [disabled]="busy() === r.partnerId"
+                      (click)="issue(r)"
+                      i18n>
+                      Issue
+                    </button>
+                  }
+                } @else if (r.changed) {
+                  <button
+                    appButton
+                    size="sm"
+                    variant="outline"
+                    [disabled]="busy() === r.partnerId"
+                    (click)="issue(r)"
+                    i18n>
+                    Issue again
+                  </button>
+                } @else if (r.status === 'Issued') {
+                  <button
+                    appButton
+                    size="sm"
+                    [disabled]="busy() === r.partnerId || !r.contactEmail"
+                    (click)="send(r)">
+                    <app-icon name="mail" />
+                    <ng-container i18n>Send</ng-container>
+                  </button>
+                } @else if (r.status !== 'Paid') {
+                  <button
+                    appButton
+                    size="sm"
+                    variant="outline"
+                    [disabled]="busy() === r.partnerId"
+                    (click)="quickPaid(r)">
+                    <app-icon name="check" />
+                    <ng-container i18n>Paid</ng-container>
+                  </button>
+                }
+                @if (hasRides(r) || r.number) {
+                  <button
+                    type="button"
+                    class="stm__icon"
+                    [disabled]="busy() === r.partnerId"
+                    (click)="download(r, 'pdf')"
+                    i18n-title
+                    title="Download the PDF">
+                    <app-icon name="download" />
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="stm__empty">
+                <ng-container i18n
+                  >No partner is billed monthly and none had rides this
+                  month.</ng-container
+                >
+                <a routerLink="/admin/partners" class="stm__link" i18n
+                  >Partners</a
+                >
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else if (error()) {
+    <p class="stm__error">{{ error() }}</p>
+  } @else {
+    <p class="stm__empty" i18n>Loading…</p>
+  }
+</section>
+
+<p-drawer
+  position="right"
+  styleClass="stm-drawer"
+  [visible]="openId() !== null"
+  (visibleChange)="$event || close()"
+  [header]="detail()?.row?.partnerName ?? ''">
+  @if (rideId(); as id) {
+    <button type="button" class="stm__back" (click)="rideId.set(null)">
+      <app-icon name="arrow-left" />
+      <ng-container i18n>Back to the statement</ng-container>
+    </button>
+    <app-booking-detail [bookingId]="id" />
+  } @else if (detail(); as d) {
+    @let r = d.row;
+    <div class="stm__card">
+      <div class="stm__card-head">
+        <div>
+          <p class="stm__card-period">{{ monthLabel() }}</p>
+          <span class="stm__status stm__status--{{ statusTone[r.status] }}">{{
+            statusLabel[r.status]
+          }}</span>
+          @if (r.number) {
+            <span class="stm__number">{{ r.number }}</span>
+          }
+        </div>
+        <div class="stm__card-net">
+          <small i18n>Net due</small>
+          <strong>{{ d.currency }} {{ r.net | number: '1.2-2' }}</strong>
+        </div>
+      </div>
+
+      @if (r.changed) {
+        <p class="stm__warn">
+          <app-icon name="info" />
+          <ng-container i18n
+            >The rides changed after this statement was issued (a new ride, a
+            cancellation or a new price). The list below is the copy that was
+            issued; issue it again to update it.</ng-container
+          >
+        </p>
+      }
+
+      <dl class="stm__facts">
+        <div>
+          <dt i18n>Rides</dt>
+          <dd>
+            {{ r.rides }}
+            @if (r.cancelled > 0) {
+              <small i18n>+{{ r.cancelled }} cancelled</small>
+            }
+          </dd>
+        </div>
+        <div>
+          <dt i18n>Rides total</dt>
+          <dd>{{ r.revenue | number: '1.2-2' }}</dd>
+        </div>
+        <div>
+          <dt i18n>Commission {{ r.commissionPercent | number: '1.0-2' }}%</dt>
+          <dd>− {{ r.commission | number: '1.2-2' }}</dd>
+        </div>
+        <div>
+          <dt i18n>Due</dt>
+          <dd>{{ r.dueOn ? (r.dueOn | date: 'd MMM yyyy') : '—' }}</dd>
+        </div>
+      </dl>
+
+      <ol class="stm__timeline">
+        <li [class.stm__step--done]="!!r.issuedAt">
+          <span class="stm__dot"></span>
+          <span i18n>Issued</span>
+          <small>{{
+            r.issuedAt ? (r.issuedAt | date: 'd MMM yyyy, HH:mm') : '—'
+          }}</small>
+        </li>
+        <li [class.stm__step--done]="!!r.sentAt">
+          <span class="stm__dot"></span>
+          <span i18n>Sent</span>
+          <small
+            >{{ r.sentAt ? (r.sentAt | date: 'd MMM yyyy, HH:mm') : '—' }}
+            @if (r.sentTo) {
+              · {{ r.sentTo }}
+            }
+          </small>
+        </li>
+        <li [class.stm__step--done]="!!r.paidAt">
+          <span class="stm__dot"></span>
+          <span i18n>Paid</span>
+          <small>{{ r.paidAt ? (r.paidAt | date: 'd MMM yyyy') : '—' }}</small>
+        </li>
+      </ol>
+
+      <div class="stm__buttons">
+        @if (r.status !== 'Paid' && hasRides(r)) {
+          <button
+            appButton
+            size="sm"
+            [variant]="
+              r.status === 'NotIssued' || r.changed ? 'primary' : 'outline'
+            "
+            [disabled]="busy() === r.partnerId"
+            (click)="issue(r)">
+            @if (r.status === 'NotIssued') {
+              <ng-container i18n>Issue statement</ng-container>
+            } @else {
+              <ng-container i18n>Issue again</ng-container>
+            }
+          </button>
+        }
+        @if (hasRides(r) || r.number) {
+          <button
+            appButton
+            size="sm"
+            variant="outline"
+            [disabled]="busy() === r.partnerId"
+            (click)="download(r, 'pdf')">
+            <app-icon name="download" />
+            @if (r.number) {
+              PDF
+            } @else {
+              <ng-container i18n>Draft PDF</ng-container>
+            }
+          </button>
+          <button
+            appButton
+            size="sm"
+            variant="ghost"
+            [disabled]="busy() === r.partnerId"
+            (click)="download(r, 'csv')">
+            <app-icon name="download" />
+            <ng-container i18n>Excel</ng-container>
+          </button>
+        }
+      </div>
+
+      @if (r.number && r.status !== 'Paid') {
+        <section class="stm__panel">
+          <h3 class="stm__section" i18n>Send by email</h3>
+          <div class="stm__inline">
+            <mat-form-field subscriptSizing="dynamic" class="stm__grow">
+              <mat-label i18n>Email</mat-label>
+              <input
+                matInput
+                type="email"
+                [value]="sendTo()"
+                (input)="sendTo.set($any($event.target).value)" />
+            </mat-form-field>
+            <button
+              appButton
+              size="sm"
+              [variant]="r.sentAt ? 'outline' : 'primary'"
+              [disabled]="busy() === r.partnerId || !sendTo().trim()"
+              (click)="send(r, sendTo())">
+              <app-icon name="mail" />
+              @if (r.sentAt) {
+                <ng-container i18n>Send again</ng-container>
+              } @else {
+                <ng-container i18n>Send</ng-container>
+              }
+            </button>
+          </div>
+        </section>
+      }
+
+      @if (r.number) {
+        <section class="stm__panel">
+          <h3 class="stm__section" i18n>Payment</h3>
+          @if (r.paidAt) {
+            <div class="stm__inline">
+              <p class="stm__paid-text">
+                <app-icon name="check" />
+                <ng-container i18n
+                  >Paid on {{ r.paidAt | date: 'd MMMM yyyy' }}</ng-container
+                >
+                @if (r.note) {
+                  <small>· {{ r.note }}</small>
+                }
+              </p>
+              <button
+                appButton
+                size="sm"
+                variant="ghost"
+                [disabled]="busy() === r.partnerId"
+                (click)="undoPaid(r)"
+                i18n>
+                Undo
+              </button>
+            </div>
+          } @else {
+            <div class="stm__pay">
+              <mat-form-field subscriptSizing="dynamic">
+                <mat-label i18n>Paid on</mat-label>
+                <input
+                  matInput
+                  type="date"
+                  [max]="today"
+                  [value]="paidOn()"
+                  (change)="paidOn.set($any($event.target).value)" />
+              </mat-form-field>
+              <mat-form-field subscriptSizing="dynamic" class="stm__grow">
+                <mat-label i18n>Note</mat-label>
+                <input
+                  matInput
+                  maxlength="500"
+                  [value]="note()"
+                  (input)="note.set($any($event.target).value)"
+                  i18n-placeholder
+                  placeholder="Bank transfer, reference…" />
+              </mat-form-field>
+              <button
+                appButton
+                size="sm"
+                [disabled]="busy() === r.partnerId"
+                (click)="markPaid(r, paidOn(), note())">
+                <app-icon name="check" />
+                <ng-container i18n>Mark as paid</ng-container>
+              </button>
+            </div>
+          }
+        </section>
+      }
+
+      <section class="stm__panel">
+        <h3 class="stm__section">
+          <ng-container i18n>Rides</ng-container>
+          <span class="stm__count">{{ d.lines.length }}</span>
+        </h3>
+        @for (l of d.lines; track l.bookingId) {
+          <button
+            type="button"
+            class="stm__line"
+            [class.stm__line--cancelled]="l.status === 'Cancelled'"
+            (click)="rideId.set(l.bookingId)">
+            <span class="stm__line-when">
+              <strong>{{ l.pickupLocal | date: 'd MMM' }}</strong>
+              <small>{{ l.pickupLocal | date: 'HH:mm' }}</small>
+            </span>
+            <span class="stm__line-what">
+              <span
+                >{{ l.passenger }}
+                <small
+                  >· {{ l.reference
+                  }}{{
+                    l.externalReference ? ' · ' + l.externalReference : ''
+                  }}</small
+                ></span
+              >
+              <small>{{ l.from }} → {{ l.to }}</small>
+            </span>
+            <span class="stm__line-price">
+              @if (l.status === 'Cancelled') {
+                <span
+                  class="stm__status stm__status--{{
+                    bookingStatusTone[l.status]
+                  }}"
+                  >{{ bookingStatusLabel[l.status] }}</span
+                >
+              } @else {
+                {{ l.price | number: '1.2-2' }}
+                <small>− {{ l.commission | number: '1.2-2' }}</small>
+              }
+            </span>
+          </button>
+        } @empty {
+          <p class="stm__empty" i18n>No rides this month.</p>
+        }
+      </section>
+    </div>
+  } @else if (detailError()) {
+    <p class="stm__error">{{ detailError() }}</p>
+  } @else if (detailLoading()) {
+    <p class="stm__empty" i18n>Loading…</p>
+  }
+</p-drawer>

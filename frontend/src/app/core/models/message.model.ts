@@ -4,7 +4,7 @@ import {
   NotificationStatus,
 } from './driver-portal.model'
 
-export type MessageAudience = 'Any' | 'Driver' | 'Client'
+export type MessageAudience = 'Any' | 'Driver' | 'Client' | 'Partner'
 
 export interface MessageQuery {
   /** Office dates the message was sent (yyyy-MM-dd), inclusive. */
