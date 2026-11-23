@@ -11,7 +11,7 @@
 
   @if (loading()) {
     <div class="tariffs__grid" aria-busy="true">
-      @for (i of [1, 2, 3, 4]; track i) {
+      @for (i of [1, 2, 3]; track i) {
         <div class="tariffs__card tariffs__card--skeleton"></div>
       }
     </div>
