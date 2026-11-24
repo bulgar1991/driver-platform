@@ -63,16 +63,23 @@ export class ContentComponent implements OnInit {
   private readonly toast = inject(ToastService)
 
   private readonly vehicleClasses = inject(VehicleClassService)
-  /** The sections, with the tariffs added in Admin → Pricing in "Cars and tariffs". */
+  /**
+   * The sections, with "Cars and tariffs" listing the tariffs offered in Admin → Pricing: a tariff
+   * deleted or hidden there is not on the site, so it has nothing to edit here either.
+   */
   protected readonly sections = computed(() => {
-    const added = this.vehicleClasses
-      .classes()
-      .filter(c => !c.isBuiltIn)
-      .map(c => vehicleGroup(c.category, pickName(c.names, this.language)))
+    const classes = this.vehicleClasses.classes()
+    if (!classes.length) return EDITABLE_SECTIONS
+    const tariffs = classes
+      .filter(c => c.isActive)
+      .map(c =>
+        vehicleGroup(
+          c.category,
+          c.isBuiltIn ? null : pickName(c.names, this.language)
+        )
+      )
     return EDITABLE_SECTIONS.map(s =>
-      s.id === 'vehicles' && added.length
-        ? { ...s, groups: [...s.groups, ...added] }
-        : s
+      s.id === 'vehicles' ? { ...s, groups: [s.groups[0], ...tariffs] } : s
     )
   })
   private readonly language = siteLocale(inject(LOCALE_ID))

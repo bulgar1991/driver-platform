@@ -66,19 +66,20 @@
             ></p
           >
         </div>
-        <mat-form-field class="applications__status" subscriptSizing="dynamic">
-          <mat-label i18n>Status</mat-label>
-          <mat-select
-            class="applications__select"
-            [value]="a.status"
-            (selectionChange)="setStatus(a, $event.value)">
-            @for (s of statuses; track s) {
-              <mat-option [value]="s">{{
-                text.applicationStatus[s]
-              }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+        <div class="applications__status">
+          <mat-form-field subscriptSizing="dynamic">
+            <mat-label i18n>Status</mat-label>
+            <mat-select
+              [value]="a.status"
+              (selectionChange)="setStatus(a, $event.value)">
+              @for (s of statuses; track s) {
+                <mat-option [value]="s">{{
+                  text.applicationStatus[s]
+                }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
       </li>
     } @empty {
       <li class="applications__muted">
