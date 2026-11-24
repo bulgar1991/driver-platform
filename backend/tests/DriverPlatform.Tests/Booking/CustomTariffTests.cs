@@ -6,7 +6,19 @@ using DriverPlatform.Tests.Infrastructure;
 
 namespace DriverPlatform.Tests.Booking;
 
+/// <summary>
+/// Tariff names are kept in one list per process (VehicleClasses: one server per process in
+/// production). Every test server resets that list when it starts, so these tests, which check
+/// names, run alone: never at the same time as any other test.
+/// </summary>
+[CollectionDefinition(Name, DisableParallelization = true)]
+public sealed class TariffNamesCollection
+{
+    public const string Name = "Tariff names";
+}
+
 /// <summary>Admin → Pricing: tariffs are added, deleted (or hidden when used) and shown again.</summary>
+[Collection(TariffNamesCollection.Name)]
 public sealed class CustomTariffTests
 {
     private static CreateVehicleRateRequest Minibus => new()
