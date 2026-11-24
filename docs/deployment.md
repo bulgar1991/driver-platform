@@ -85,11 +85,13 @@ echo '30 4 * * 0 root /usr/local/sbin/docker-cleanup.sh >> /var/log/docker-clean
 ## 7. Updates
 
 ```bash
-git pull && docker compose --env-file .env up -d --build
+nohup sh deploy.sh > /tmp/deploy.log 2>&1 < /dev/null &
+tail -f /tmp/deploy.log           # ends with "DEPLOY EXIT 0"
 ```
 
-Migrations run when the API starts (one instance). A backup is taken first by hand:
-`docker compose exec backup sh /scripts/backup.sh`.
+`deploy.sh` backs up the database (`backups/…-predeploy.dump`), pulls the code, rebuilds, and
+then runs `docker-cleanup.sh`, so each deploy removes the build leftovers it made. It stops
+before touching anything if the backup fails. Migrations run when the API starts (one instance).
 
 ## 7. Monitoring
 

@@ -13,7 +13,7 @@
 		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
 		# Scripts only from this site (plus inline speculation rules: data, not code, see index.html); styles
 		# inline (Angular and PrimeNG inject them); map tiles from OpenStreetMap.
-		Content-Security-Policy "default-src 'self'; script-src 'self' 'inline-speculation-rules' https://www.googletagmanager.com https://*.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://tile.openstreetmap.org https://*.google-analytics.com https://*.googletagmanager.com https://www.google.com https://*.g.doubleclick.net; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.google.com https://*.g.doubleclick.net; frame-src https://www.googletagmanager.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'inline-speculation-rules' https://www.googletagmanager.com https://*.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: https://tile.openstreetmap.org https://*.google-analytics.com https://*.googletagmanager.com https://www.google.com https://*.g.doubleclick.net; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://www.google.com https://*.g.doubleclick.net; frame-src https://www.googletagmanager.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
 		-Server
 	}
 
