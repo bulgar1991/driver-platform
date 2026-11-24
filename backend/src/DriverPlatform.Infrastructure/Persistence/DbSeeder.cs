@@ -72,7 +72,7 @@ public sealed partial class DbSeeder(
     private async Task SeedPricingAsync(CancellationToken cancellationToken)
     {
         // Starting tariffs (business plan §4) — working assumptions, editable in the admin panel.
-        // A tariff added later (Business) is also added to a database that already has the others.
+        // Only on a new database: a tariff deleted in Admin → Pricing stays deleted after a restart.
         VehicleRate[] tariffs =
         [
             new() { Category = VehicleCategory.Sedan, BaseFee = 10m, PricePerKm = 1.60m, MaxPassengers = 3, MaxLuggage = 3, SortOrder = 0 },
@@ -80,12 +80,11 @@ public sealed partial class DbSeeder(
             new() { Category = VehicleCategory.Estate, BaseFee = 12m, PricePerKm = 1.90m, MaxPassengers = 4, MaxLuggage = 5, SortOrder = 2 },
             new() { Category = VehicleCategory.Van, BaseFee = 15m, PricePerKm = 2.20m, MaxPassengers = 8, MaxLuggage = 8, SortOrder = 3 },
         ];
-        var existing = await db.VehicleRates.Select(r => r.Category).ToListAsync(cancellationToken);
-        db.VehicleRates.AddRange(tariffs.Where(t => !existing.Contains(t.Category)));
-        if (existing.Count > 0)
+        if (await db.VehicleRates.AnyAsync(cancellationToken))
         {
             return;
         }
+        db.VehicleRates.AddRange(tariffs);
 
         db.SurchargeRules.AddRange(
             new SurchargeRule

@@ -56,7 +56,7 @@ public sealed class HomePageApiTests
     }
 
     [Fact]
-    public async Task A_database_with_the_first_three_tariffs_gets_business_added_and_keeps_its_own_prices()
+    public async Task A_restart_keeps_the_tariffs_as_the_staff_left_them()
     {
         using var factory = new ApiFactory();
         factory.CreateClient(); // starts the app, which seeds the database
@@ -69,9 +69,10 @@ public sealed class HomePageApiTests
 
         await scope.ServiceProvider.GetRequiredService<DbSeeder>().SeedAsync();
 
+        // A deleted tariff is not brought back, and the prices set in the panel stay.
         var rates = await db.VehicleRates.AsNoTracking().ToListAsync();
-        Assert.Equal(4, rates.Count);
-        Assert.Equal(1.75m, rates.Single(r => r.Category == VehicleCategory.Business).PricePerKm);
+        Assert.Equal(3, rates.Count);
+        Assert.DoesNotContain(rates, r => r.Category == VehicleCategory.Business);
         Assert.Equal(1.99m, rates.Single(r => r.Category == VehicleCategory.Sedan).PricePerKm);
     }
 
