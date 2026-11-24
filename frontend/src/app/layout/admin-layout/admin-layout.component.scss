@@ -21,8 +21,94 @@
     @apply rounded-sm border border-gold/50 px-2 py-0.5 text-[10px] uppercase tracking-widest text-gold;
   }
 
+  // The sidebar scrolls on its own when the menu is longer than the screen.
+  &__sidebar {
+    @apply overflow-y-auto;
+  }
+
   &__nav {
     @apply flex flex-col gap-1 p-3;
+  }
+
+  // ── Edit menu ──────────────────────────────────────────────────────────────
+  &__nav-head {
+    @apply flex items-center justify-between px-6 pb-0 pt-4;
+  }
+
+  &__nav-title {
+    @apply text-[10px] uppercase tracking-widest text-ivory-400;
+  }
+
+  &__edit-open {
+    @apply flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-ivory-400 transition hover:text-gold;
+
+    app-icon {
+      @apply h-3.5 w-3.5;
+    }
+  }
+
+  &__edit {
+    @apply flex flex-col gap-3 p-3;
+  }
+
+  &__edit-hint {
+    @apply px-1 text-xs leading-relaxed text-ivory-400;
+  }
+
+  &__edit-list {
+    @apply flex flex-col gap-1;
+  }
+
+  &__edit-item {
+    @apply flex items-center gap-2 rounded-sm border border-ink-600 bg-ink-800 px-2 py-1.5 text-sm text-ivory-200;
+  }
+
+  &__edit-label {
+    @apply min-w-0 flex-1 truncate;
+  }
+
+  &__grip {
+    @apply flex cursor-grab text-ivory-400 hover:text-gold;
+
+    &:active {
+      @apply cursor-grabbing;
+    }
+
+    app-icon {
+      @apply h-4 w-4;
+    }
+  }
+
+  &__arrow {
+    @apply flex h-6 w-6 items-center justify-center rounded-sm text-ivory-400 transition hover:bg-ink-700 hover:text-gold disabled:pointer-events-none disabled:opacity-25;
+
+    app-icon {
+      @apply h-3.5 w-3.5;
+    }
+
+    &--up app-icon {
+      transform: rotate(90deg);
+    }
+
+    &--down app-icon {
+      transform: rotate(-90deg);
+    }
+  }
+
+  &__edit-actions {
+    @apply flex flex-wrap items-center gap-2 pt-1;
+  }
+
+  &__edit-button {
+    @apply rounded-sm border border-ink-500 px-3 py-1.5 text-xs uppercase tracking-widest text-ivory-200 transition hover:border-ivory-300 disabled:opacity-50;
+
+    &--primary {
+      @apply border-gold bg-gold text-ink hover:bg-gold/90;
+    }
+  }
+
+  &__edit-reset {
+    @apply ml-auto text-[11px] text-ivory-400 underline-offset-4 hover:text-gold hover:underline disabled:opacity-50;
   }
 
   &__link {
@@ -72,4 +158,21 @@
   &__content {
     @apply flex-1 p-4 sm:p-8;
   }
+}
+
+// The item being dragged lives in an overlay outside the sidebar.
+.admin-layout__edit-item.cdk-drag-preview {
+  @apply flex items-center gap-2 rounded-sm border border-gold/60 bg-ink-700 px-2 py-1.5 text-sm text-ivory shadow-lg;
+
+  app-icon {
+    @apply h-4 w-4;
+  }
+}
+
+.admin-layout__edit-item.cdk-drag-placeholder {
+  @apply opacity-30;
+}
+
+.cdk-drop-list-dragging .admin-layout__edit-item:not(.cdk-drag-placeholder) {
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
 }

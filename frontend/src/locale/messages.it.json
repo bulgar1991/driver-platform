@@ -1442,6 +1442,17 @@
     "7907713842077919687": "{$number} torna in attesa di pagamento.",
     "3232158386967982060": "Pagamento annullato.",
     "5603132328680821646": "Segnare {$number} come pagato?",
-    "7264877587679348490": "Pagato oggi. Per un'altra data o una nota, apri l'estratto conto."
+    "7264877587679348490": "Pagato oggi. Per un'altra data o una nota, apri l'estratto conto.",
+    "selectPlaceholderAll": "Tutti",
+    "selectPlaceholderChoose": "Scegli…",
+    "5742511798184678576": "Trascina le pagine, o usa le frecce, per metterle nel tuo ordine. Cambia solo il tuo menu.",
+    "3871955468734898678": "Trascina per spostare",
+    "8502065112576581103": "Sposta su",
+    "2207764482815871800": "Sposta giù",
+    "7513470422780484579": "Ordine originale",
+    "7660415764300621502": "Modifica menu",
+    "1623762891583873042": "Menu riportato all'ordine originale.",
+    "6110184038035681525": "Ordine del menu salvato.",
+    "2102825898069375693": "Menu"
   }
 }

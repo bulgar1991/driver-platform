@@ -182,6 +182,8 @@
         <mat-form-field>
           <mat-label i18n>Category</mat-label>
           <mat-select
+            placeholder="Choose…"
+            i18n-placeholder="@@selectPlaceholderChoose"
             id="vCategory"
             formControlName="category"
             (change)="categoryChanged()">
@@ -310,7 +312,11 @@
           </mat-form-field>
           <mat-form-field>
             <mat-label i18n>Default driver</mat-label>
-            <mat-select id="vDriver" formControlName="defaultDriverId">
+            <mat-select
+              placeholder="All"
+              i18n-placeholder="@@selectPlaceholderAll"
+              id="vDriver"
+              formControlName="defaultDriverId">
               <mat-option [value]="null"
                 ><ng-container i18n>None</ng-container></mat-option
               >

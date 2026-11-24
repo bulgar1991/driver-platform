@@ -346,5 +346,19 @@ public sealed class AuthService(
 
     private CurrentUserResponse ToResponse(StaffUser user) =>
         new(user.Id, user.Email, user.FullName, user.Role, user.MustChangePassword, user.TwoFactorEnabledAt is not null,
-            twoFactorOptions.Value.Required && user.TwoFactorEnabledAt is null);
+            twoFactorOptions.Value.Required && user.TwoFactorEnabledAt is null, user.MenuOrder);
+
+    public async Task SetMenuOrderAsync(Guid userId, MenuOrderRequest request, CancellationToken cancellationToken)
+    {
+        // Only panel paths, each once; pages missing from the list keep their built-in place.
+        var order = request.Order
+            .Select(p => p?.Trim() ?? "")
+            .Where(p => p.Length is > 0 and <= 100 && (p == "/admin" || p.StartsWith("/admin/", StringComparison.Ordinal)))
+            .Distinct(StringComparer.Ordinal)
+            .Take(MenuOrderRequest.MaxItems)
+            .ToList();
+        var user = await ActiveUserAsync(userId, cancellationToken);
+        user.MenuOrder = order;
+        await db.SaveChangesAsync(cancellationToken);
+    }
 }

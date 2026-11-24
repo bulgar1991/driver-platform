@@ -77,7 +77,11 @@
     </mat-form-field>
     <mat-form-field subscriptSizing="dynamic">
       <mat-label i18n>Contract type</mat-label>
-      <mat-select [value]="contract()" (valueChange)="contract.set($event)">
+      <mat-select
+        placeholder="All"
+        i18n-placeholder="@@selectPlaceholderAll"
+        [value]="contract()"
+        (valueChange)="contract.set($event)">
         <mat-option value=""><ng-container i18n>All</ng-container></mat-option>
         @for (c of contractTypes; track c.value) {
           <mat-option [value]="c.value">{{ c.label }}</mat-option>
@@ -87,6 +91,8 @@
     <mat-form-field subscriptSizing="dynamic">
       <mat-label i18n>Function</mat-label>
       <mat-select
+        placeholder="All"
+        i18n-placeholder="@@selectPlaceholderAll"
         [value]="jobFunction()"
         (valueChange)="jobFunction.set($event)">
         <mat-option value=""><ng-container i18n>All</ng-container></mat-option>
@@ -97,7 +103,11 @@
     </mat-form-field>
     <mat-form-field subscriptSizing="dynamic">
       <mat-label i18n>Operative</mat-label>
-      <mat-select [value]="operative()" (valueChange)="operative.set($event)">
+      <mat-select
+        placeholder="Choose…"
+        i18n-placeholder="@@selectPlaceholderChoose"
+        [value]="operative()"
+        (valueChange)="operative.set($event)">
         <mat-option value="yes"
           ><ng-container i18n>Yes</ng-container></mat-option
         >
@@ -109,7 +119,11 @@
     </mat-form-field>
     <mat-form-field subscriptSizing="dynamic">
       <mat-label i18n>Event</mat-label>
-      <mat-select [value]="typeFilter()" (valueChange)="typeFilter.set($event)">
+      <mat-select
+        placeholder="All"
+        i18n-placeholder="@@selectPlaceholderAll"
+        [value]="typeFilter()"
+        (valueChange)="typeFilter.set($event)">
         <mat-option value=""><ng-container i18n>All</ng-container></mat-option>
         @for (t of types(); track t.id) {
           <mat-option [value]="t.id">{{ t.name }}</mat-option>
@@ -299,7 +313,10 @@
         <div class="attendance__form">
           <mat-form-field class="attendance__form-wide">
             <mat-label i18n>Event</mat-label>
-            <mat-select formControlName="typeId">
+            <mat-select
+              placeholder="Choose…"
+              i18n-placeholder="@@selectPlaceholderChoose"
+              formControlName="typeId">
               @for (t of types(); track t.id) {
                 <mat-option [value]="t.id">
                   <span

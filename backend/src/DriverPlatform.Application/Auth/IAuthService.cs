@@ -9,6 +9,8 @@ public interface IAuthService
     /// <summary>Emails a sign-in code (at most one a minute); false when the challenge is no longer valid.</summary>
     Task<bool> SendEmailCodeAsync(TwoFactorEmailRequest request, CancellationToken cancellationToken);
     Task<CurrentUserResponse?> GetUserAsync(Guid id, CancellationToken cancellationToken);
+    /// <summary>Saves the signed-in user's own order of the panel menu.</summary>
+    Task SetMenuOrderAsync(Guid userId, MenuOrderRequest request, CancellationToken cancellationToken);
     /// <summary>Returns a new token: the old ones stop working because the security stamp changes.</summary>
     Task<LoginResponse> ChangePasswordAsync(Guid userId, ChangePasswordRequest request, CancellationToken cancellationToken);
 

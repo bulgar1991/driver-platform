@@ -59,7 +59,11 @@
   <div class="zone-editor__row">
     <mat-form-field>
       <mat-label i18n>Type</mat-label>
-      <mat-select id="zoneType" formControlName="type">
+      <mat-select
+        placeholder="Choose…"
+        i18n-placeholder="@@selectPlaceholderChoose"
+        id="zoneType"
+        formControlName="type">
         @for (type of types; track type.value) {
           <mat-option [value]="type.value">{{ type.label }}</mat-option>
         }
@@ -67,7 +71,11 @@
     </mat-form-field>
     <mat-form-field>
       <mat-label i18n>Shape</mat-label>
-      <mat-select id="zoneShape" formControlName="shape">
+      <mat-select
+        placeholder="Choose…"
+        i18n-placeholder="@@selectPlaceholderChoose"
+        id="zoneShape"
+        formControlName="shape">
         <mat-option value="Circle"
           ><ng-container i18n>Circle</ng-container></mat-option
         >

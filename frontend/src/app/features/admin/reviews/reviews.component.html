@@ -6,22 +6,26 @@
         ><ng-container i18n>Reviews</ng-container></h1
       >
     </div>
-    <mat-form-field class="reviews__filter" subscriptSizing="dynamic">
-      <mat-label i18n>Driver</mat-label>
-      <mat-select
-        class="reviews__select"
-        (selectionChange)="filter($event.value)">
-        <mat-option value=""
-          ><ng-container i18n>All drivers</ng-container></mat-option
-        >
-        @for (d of drivers(); track d.id) {
-          <mat-option [value]="d.id"
-            >{{ d.firstName }} {{ d.lastName
-            }}{{ d.rating ? ' · ★ ' + d.rating : '' }}</mat-option
+    <div class="reviews__filter">
+      <mat-form-field subscriptSizing="dynamic">
+        <mat-label i18n>Driver</mat-label>
+        <mat-select
+          placeholder="All"
+          i18n-placeholder="@@selectPlaceholderAll"
+          [value]="driverId() ?? ''"
+          (selectionChange)="filter($event.value)">
+          <mat-option value=""
+            ><ng-container i18n>All drivers</ng-container></mat-option
           >
-        }
-      </mat-select>
-    </mat-form-field>
+          @for (d of drivers(); track d.id) {
+            <mat-option [value]="d.id"
+              >{{ d.firstName }} {{ d.lastName
+              }}{{ d.rating ? ' · ★ ' + d.rating : '' }}</mat-option
+            >
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
   </header>
 
   @if (error(); as message) {
@@ -71,7 +75,7 @@
         </div>
       </li>
     } @empty {
-      <li class="reviews__muted">
+      <li class="reviews__muted reviews__empty">
         @if (loading()) {
           <ng-container i18n>Loading…</ng-container>
         } @else {

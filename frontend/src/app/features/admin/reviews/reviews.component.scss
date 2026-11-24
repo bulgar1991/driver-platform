@@ -5,16 +5,13 @@
     @apply flex flex-wrap items-end justify-between gap-4;
   }
 
+  // The global rule makes form fields full width; the box sets the width.
   &__filter {
-    @apply flex flex-col gap-1;
+    @apply w-full sm:w-72;
   }
 
   &__label {
     @apply text-[10px] uppercase tracking-widest text-ivory-400;
-  }
-
-  &__select {
-    @apply w-64 py-2;
   }
 
   &__summary {
@@ -55,5 +52,9 @@
 
   &__muted {
     @apply text-xs text-ivory-400;
+  }
+
+  &__empty {
+    @apply px-4 py-6 text-center text-sm;
   }
 }

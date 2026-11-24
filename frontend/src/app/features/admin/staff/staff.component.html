@@ -190,7 +190,10 @@
         </mat-form-field>
         <mat-form-field>
           <mat-label i18n>Role</mat-label>
-          <mat-select formControlName="role">
+          <mat-select
+            placeholder="Choose…"
+            i18n-placeholder="@@selectPlaceholderChoose"
+            formControlName="role">
             <mat-option value="Dispatcher"
               ><ng-container i18n
                 >Dispatcher: bookings, shifts, drivers, vehicles</ng-container

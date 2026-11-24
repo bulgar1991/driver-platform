@@ -28,7 +28,11 @@
   <div class="stats__filters">
     <mat-form-field subscriptSizing="dynamic">
       <mat-label i18n>Driver</mat-label>
-      <mat-select [value]="driverId()" (valueChange)="driverId.set($event)">
+      <mat-select
+        placeholder="All"
+        i18n-placeholder="@@selectPlaceholderAll"
+        [value]="driverId()"
+        (valueChange)="driverId.set($event)">
         <mat-option value=""><ng-container i18n>All</ng-container></mat-option>
         @for (p of people(); track p.id) {
           <mat-option [value]="p.id"
@@ -57,7 +61,11 @@
     </mat-form-field>
     <mat-form-field subscriptSizing="dynamic">
       <mat-label i18n>Contract type</mat-label>
-      <mat-select [value]="contract()" (valueChange)="contract.set($event)">
+      <mat-select
+        placeholder="All"
+        i18n-placeholder="@@selectPlaceholderAll"
+        [value]="contract()"
+        (valueChange)="contract.set($event)">
         <mat-option value=""><ng-container i18n>All</ng-container></mat-option>
         @for (c of contractTypes; track c.value) {
           <mat-option [value]="c.value">{{ c.label }}</mat-option>
@@ -67,6 +75,8 @@
     <mat-form-field subscriptSizing="dynamic">
       <mat-label i18n>Function</mat-label>
       <mat-select
+        placeholder="All"
+        i18n-placeholder="@@selectPlaceholderAll"
         [value]="jobFunction()"
         (valueChange)="jobFunction.set($event)">
         <mat-option value=""><ng-container i18n>All</ng-container></mat-option>
@@ -77,7 +87,11 @@
     </mat-form-field>
     <mat-form-field subscriptSizing="dynamic">
       <mat-label i18n>Event</mat-label>
-      <mat-select [value]="typeId()" (valueChange)="typeId.set($event)">
+      <mat-select
+        placeholder="All"
+        i18n-placeholder="@@selectPlaceholderAll"
+        [value]="typeId()"
+        (valueChange)="typeId.set($event)">
         <mat-option value=""><ng-container i18n>All</ng-container></mat-option>
         @for (t of types(); track t.id) {
           <mat-option [value]="t.id">{{ t.name }}</mat-option>

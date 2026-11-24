@@ -118,6 +118,15 @@ export class AuthService {
       .pipe(map(r => r.recoveryCodes))
   }
 
+  /** Saves the user's own order of the panel menu (page paths); an empty list is the built-in order. */
+  setMenuOrder(order: string[]): Observable<void> {
+    return this.http
+      .put<void>(`${this.apiUrl}/auth/menu`, { order })
+      .pipe(
+        tap(() => this.user.update(u => (u ? { ...u, menuOrder: order } : u)))
+      )
+  }
+
   /** Loads the signed-in user from a stored token; runs once at startup. */
   restoreSession(): Observable<void> {
     const token = this.storage.get()

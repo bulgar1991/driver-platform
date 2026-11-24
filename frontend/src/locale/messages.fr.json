@@ -1442,6 +1442,17 @@
     "7907713842077919687": "{$number} repasse en attente de paiement.",
     "3232158386967982060": "Paiement annulé.",
     "5603132328680821646": "Marquer {$number} comme payé ?",
-    "7264877587679348490": "Payé aujourd'hui. Pour une autre date ou une note, ouvrez le relevé."
+    "7264877587679348490": "Payé aujourd'hui. Pour une autre date ou une note, ouvrez le relevé.",
+    "selectPlaceholderAll": "Tous",
+    "selectPlaceholderChoose": "Choisir…",
+    "5742511798184678576": "Faites glisser les pages, ou utilisez les flèches, pour les mettre dans votre ordre. Seul votre menu change.",
+    "3871955468734898678": "Glisser pour déplacer",
+    "8502065112576581103": "Monter",
+    "2207764482815871800": "Descendre",
+    "7513470422780484579": "Ordre d'origine",
+    "7660415764300621502": "Modifier le menu",
+    "1623762891583873042": "Menu remis dans l'ordre d'origine.",
+    "6110184038035681525": "Ordre du menu enregistré.",
+    "2102825898069375693": "Menu"
   }
 }

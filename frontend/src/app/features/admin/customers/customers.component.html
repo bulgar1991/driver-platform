@@ -68,7 +68,11 @@
     </mat-form-field>
     <mat-form-field class="cust__sort" subscriptSizing="dynamic">
       <mat-label i18n>Order</mat-label>
-      <mat-select [value]="sort()" (valueChange)="setSort($event)">
+      <mat-select
+        placeholder="Choose…"
+        i18n-placeholder="@@selectPlaceholderChoose"
+        [value]="sort()"
+        (valueChange)="setSort($event)">
         @for (s of sorts; track s.value) {
           <mat-option [value]="s.value">{{ s.label }}</mat-option>
         }
@@ -302,7 +306,10 @@
           </mat-form-field>
           <mat-form-field>
             <mat-label i18n>Language of emails</mat-label>
-            <mat-select formControlName="language">
+            <mat-select
+              placeholder="Choose…"
+              i18n-placeholder="@@selectPlaceholderChoose"
+              formControlName="language">
               @for (l of languages; track l.value) {
                 <mat-option [value]="l.value">{{ l.label }}</mat-option>
               }

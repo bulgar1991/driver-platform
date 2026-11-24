@@ -16,19 +16,102 @@
         ><ng-container i18n>Panel</ng-container></span
       >
     </div>
-    <nav class="admin-layout__nav" i18n-aria-label aria-label="Management">
-      @for (item of navigation(); track item.path) {
-        <a
-          class="admin-layout__link"
-          [routerLink]="item.path"
-          routerLinkActive="admin-layout__link--active"
-          [routerLinkActiveOptions]="{ exact: item.path === '/admin' }"
-          (click)="menuOpen.set(false)">
-          <app-icon [name]="item.icon" />
-          {{ item.label }}
-        </a>
-      }
-    </nav>
+    @if (draft(); as list) {
+      <div class="admin-layout__edit">
+        <p class="admin-layout__edit-hint" i18n
+          >Drag the pages, or use the arrows, to put them in your order. Only
+          your menu changes.</p
+        >
+        <ul
+          class="admin-layout__edit-list"
+          cdkDropList
+          cdkDropListLockAxis="y"
+          (cdkDropListDropped)="drop($event)">
+          @for (
+            item of list;
+            track item.path;
+            let i = $index, first = $first, last = $last
+          ) {
+            <li class="admin-layout__edit-item" cdkDrag>
+              <span
+                class="admin-layout__grip"
+                cdkDragHandle
+                i18n-title
+                title="Drag to move"
+                ><app-icon name="menu"
+              /></span>
+              <app-icon [name]="item.icon" />
+              <span class="admin-layout__edit-label">{{ item.label }}</span>
+              <button
+                type="button"
+                class="admin-layout__arrow admin-layout__arrow--up"
+                [disabled]="first"
+                i18n-aria-label
+                aria-label="Move up"
+                (click)="move(i, -1)"
+                ><app-icon name="arrow-left"
+              /></button>
+              <button
+                type="button"
+                class="admin-layout__arrow admin-layout__arrow--down"
+                [disabled]="last"
+                i18n-aria-label
+                aria-label="Move down"
+                (click)="move(i, 1)"
+                ><app-icon name="arrow-left"
+              /></button>
+            </li>
+          }
+        </ul>
+        <div class="admin-layout__edit-actions">
+          <button
+            type="button"
+            class="admin-layout__edit-button admin-layout__edit-button--primary"
+            [disabled]="saving()"
+            (click)="saveMenu()"
+            ><ng-container i18n>Save</ng-container></button
+          >
+          <button
+            type="button"
+            class="admin-layout__edit-button"
+            [disabled]="saving()"
+            (click)="cancelEdit()"
+            ><ng-container i18n>Cancel</ng-container></button
+          >
+          <button
+            type="button"
+            class="admin-layout__edit-reset"
+            [disabled]="saving()"
+            (click)="resetMenu()"
+            ><ng-container i18n>Original order</ng-container></button
+          >
+        </div>
+      </div>
+    } @else {
+      <div class="admin-layout__nav-head">
+        <span class="admin-layout__nav-title" i18n>Menu</span>
+        <button
+          type="button"
+          class="admin-layout__edit-open"
+          (click)="editMenu()">
+          <app-icon name="edit" />
+          <ng-container i18n>Edit menu</ng-container>
+        </button>
+      </div>
+      <nav class="admin-layout__nav" i18n-aria-label aria-label="Management">
+        @for (item of navigation(); track item.path) {
+          <a
+            class="admin-layout__link"
+            [routerLink]="item.path"
+            routerLinkActive="admin-layout__link--active"
+            [routerLinkActiveOptions]="{ exact: item.path === '/admin' }"
+            (click)="menuOpen.set(false)">
+            <app-icon [name]="item.icon" />
+            {{ item.label }}
+          </a>
+        }
+      </nav>
+    }
   </aside>
 
   <div class="admin-layout__body">

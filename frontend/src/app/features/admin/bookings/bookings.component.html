@@ -26,7 +26,10 @@
     </mat-form-field>
     <mat-form-field class="bookings__filter" subscriptSizing="dynamic">
       <mat-label i18n>Status</mat-label>
-      <mat-select formControlName="status">
+      <mat-select
+        placeholder="All"
+        i18n-placeholder="@@selectPlaceholderAll"
+        formControlName="status">
         <mat-option value=""><ng-container i18n>All</ng-container></mat-option>
         @for (s of statuses; track s[0]) {
           <mat-option [value]="s[0]">{{ s[1] }}</mat-option>

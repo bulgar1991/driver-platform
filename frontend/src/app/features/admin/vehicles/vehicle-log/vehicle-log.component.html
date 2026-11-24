@@ -233,7 +233,10 @@
       </mat-form-field>
       <mat-form-field subscriptSizing="dynamic">
         <mat-label i18n>Driver</mat-label>
-        <mat-select formControlName="driverId">
+        <mat-select
+          placeholder="All"
+          i18n-placeholder="@@selectPlaceholderAll"
+          formControlName="driverId">
           <mat-option [value]="null">—</mat-option>
           @for (d of drivers(); track d.id) {
             <mat-option [value]="d.id"

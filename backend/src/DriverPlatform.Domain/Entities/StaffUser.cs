@@ -35,4 +35,7 @@ public class StaffUser : Entity
     public DateTimeOffset? TwoFactorEmailCodeExpiresAt { get; set; }
     /// <summary>When the last email code was sent: at most one a minute.</summary>
     public DateTimeOffset? TwoFactorEmailCodeSentAt { get; set; }
+
+    /// <summary>The panel menu in this user's order (page paths); empty: the built-in order.</summary>
+    public List<string> MenuOrder { get; set; } = [];
 }

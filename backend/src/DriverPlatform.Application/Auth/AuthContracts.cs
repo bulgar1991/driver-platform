@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using DriverPlatform.Domain.Enums;
 
 namespace DriverPlatform.Application.Auth;
@@ -7,7 +8,18 @@ public sealed record LoginRequest(string Email, string Password);
 public sealed record CurrentUserResponse(
     Guid Id, string Email, string FullName, StaffRole Role, bool MustChangePassword = false, bool TwoFactorEnabled = false,
     /// <summary>Two-step sign-in is required and not set up yet: only My account opens.</summary>
-    bool TwoFactorSetupRequired = false);
+    bool TwoFactorSetupRequired = false,
+    /// <summary>The panel menu in the user's order (page paths); empty: the built-in order.</summary>
+    IReadOnlyList<string>? MenuOrder = null);
+
+/// <summary>The panel menu's pages ("/admin/calendar"…) in the order to show them; empty: the built-in order.</summary>
+public sealed record MenuOrderRequest
+{
+    [MaxLength(MenuOrderRequest.MaxItems)]
+    public List<string> Order { get; init; } = [];
+
+    public const int MaxItems = 60;
+}
 
 public sealed record ChangePasswordRequest(string CurrentPassword, string NewPassword);
 

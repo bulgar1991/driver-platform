@@ -192,7 +192,11 @@
         </mat-form-field>
         <mat-form-field>
           <mat-label i18n>Type</mat-label>
-          <mat-select id="pKind" formControlName="kind">
+          <mat-select
+            placeholder="Choose…"
+            i18n-placeholder="@@selectPlaceholderChoose"
+            id="pKind"
+            formControlName="kind">
             <mat-option value="Company"
               ><ng-container i18n
                 >Company (agency, hotel, cruise…)</ng-container

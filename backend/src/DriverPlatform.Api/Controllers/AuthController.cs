@@ -55,6 +55,15 @@ public sealed class AuthController(IAuthService authService) : ControllerBase
         return user is null ? Unauthorized() : Ok(user);
     }
 
+    /// <summary>The signed-in user's own order of the panel menu; an empty list goes back to the built-in order.</summary>
+    [HttpPut("menu")]
+    [Authorize(Policy = Policies.Staff)]
+    public async Task<IActionResult> SetMenuOrder(MenuOrderRequest request, CancellationToken cancellationToken)
+    {
+        await authService.SetMenuOrderAsync(UserId, request, cancellationToken);
+        return NoContent();
+    }
+
     [HttpGet("two-factor")]
     [Authorize(Policy = Policies.Staff)]
     public async Task<ActionResult<TwoFactorStatus>> TwoFactorStatus(CancellationToken cancellationToken) =>

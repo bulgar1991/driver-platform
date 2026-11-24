@@ -32,7 +32,11 @@
   <div class="surcharge-form__row">
     <mat-form-field>
       <mat-label i18n>Applies on</mat-label>
-      <mat-select id="surchargeKind" formControlName="kind">
+      <mat-select
+        placeholder="Choose…"
+        i18n-placeholder="@@selectPlaceholderChoose"
+        id="surchargeKind"
+        formControlName="kind">
         @for (kind of kinds; track kind.value) {
           <mat-option [value]="kind.value">{{ kind.label }}</mat-option>
         }

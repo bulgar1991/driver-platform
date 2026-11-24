@@ -247,7 +247,11 @@
           </mat-form-field>
           <mat-form-field>
             <mat-label i18n>Contract type</mat-label>
-            <mat-select id="dContract" formControlName="contractType">
+            <mat-select
+              placeholder="Choose…"
+              i18n-placeholder="@@selectPlaceholderChoose"
+              id="dContract"
+              formControlName="contractType">
               @for (c of contractTypes; track c.value) {
                 <mat-option [value]="c.value">{{ c.label }}</mat-option>
               }
@@ -314,7 +318,11 @@
           </mat-form-field>
           <mat-form-field>
             <mat-label i18n>Send shifts by</mat-label>
-            <mat-select id="dNotify" formControlName="notifyBy">
+            <mat-select
+              placeholder="Choose…"
+              i18n-placeholder="@@selectPlaceholderChoose"
+              id="dNotify"
+              formControlName="notifyBy">
               @for (n of notifyOptions; track n.value) {
                 <mat-option [value]="n.value">{{ n.label }}</mat-option>
               }
@@ -335,6 +343,8 @@
           <div class="fleet__document" [formGroupName]="i">
             <mat-form-field subscriptSizing="dynamic">
               <mat-select
+                placeholder="Choose…"
+                i18n-placeholder="@@selectPlaceholderChoose"
                 formControlName="type"
                 [attr.aria-label]="tx.documentType(i + 1)">
                 @for (t of documentTypes; track t.value) {

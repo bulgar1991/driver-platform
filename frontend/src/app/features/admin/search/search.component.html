@@ -82,7 +82,10 @@
     <div class="search__filters">
       <mat-form-field subscriptSizing="dynamic">
         <mat-label i18n>Source</mat-label>
-        <mat-select formControlName="source">
+        <mat-select
+          placeholder="All"
+          i18n-placeholder="@@selectPlaceholderAll"
+          formControlName="source">
           <mat-option [value]="null"
             ><ng-container i18n>All</ng-container></mat-option
           >
@@ -93,7 +96,10 @@
       </mat-form-field>
       <mat-form-field subscriptSizing="dynamic">
         <mat-label i18n>Partner</mat-label>
-        <mat-select formControlName="partnerId">
+        <mat-select
+          placeholder="All"
+          i18n-placeholder="@@selectPlaceholderAll"
+          formControlName="partnerId">
           <mat-option [value]="null"
             ><ng-container i18n>All</ng-container></mat-option
           >
@@ -104,7 +110,10 @@
       </mat-form-field>
       <mat-form-field subscriptSizing="dynamic">
         <mat-label i18n>Driver</mat-label>
-        <mat-select formControlName="driverId">
+        <mat-select
+          placeholder="All"
+          i18n-placeholder="@@selectPlaceholderAll"
+          formControlName="driverId">
           <mat-option [value]="null"
             ><ng-container i18n>All</ng-container></mat-option
           >
@@ -115,7 +124,10 @@
       </mat-form-field>
       <mat-form-field subscriptSizing="dynamic">
         <mat-label i18n>Vehicle</mat-label>
-        <mat-select formControlName="vehicleId">
+        <mat-select
+          placeholder="All"
+          i18n-placeholder="@@selectPlaceholderAll"
+          formControlName="vehicleId">
           <mat-option [value]="null"
             ><ng-container i18n>All</ng-container></mat-option
           >
@@ -126,7 +138,10 @@
       </mat-form-field>
       <mat-form-field subscriptSizing="dynamic">
         <mat-label i18n>Class</mat-label>
-        <mat-select formControlName="category">
+        <mat-select
+          placeholder="All"
+          i18n-placeholder="@@selectPlaceholderAll"
+          formControlName="category">
           <mat-option [value]="null"
             ><ng-container i18n>All</ng-container></mat-option
           >
@@ -139,7 +154,10 @@
       </mat-form-field>
       <mat-form-field subscriptSizing="dynamic">
         <mat-label i18n>Payment</mat-label>
-        <mat-select formControlName="payment">
+        <mat-select
+          placeholder="Choose…"
+          i18n-placeholder="@@selectPlaceholderChoose"
+          formControlName="payment">
           @for (p of payments; track p.value) {
             <mat-option [value]="p.value">{{ p.label }}</mat-option>
           }

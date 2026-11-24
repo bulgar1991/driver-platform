@@ -15,6 +15,8 @@ export interface CurrentUser {
   twoFactorEnabled?: boolean
   /** Two-step sign-in is required and not set up yet: only My account opens. */
   twoFactorSetupRequired?: boolean
+  /** The panel menu in this user's order (page paths); empty: the built-in order. */
+  menuOrder?: string[] | null
 }
 
 export interface ChangePasswordRequest {

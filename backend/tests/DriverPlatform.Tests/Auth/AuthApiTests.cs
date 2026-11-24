@@ -64,4 +64,28 @@ public sealed class AuthApiTests : IClassFixture<ApiFactory>
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
+
+    [Fact]
+    public async Task Each_user_keeps_their_own_menu_order()
+    {
+        var client = await _factory.CreateDispatcherClientAsync();
+
+        var saved = await client.PutAsJsonAsync("/api/auth/menu",
+            new MenuOrderRequest { Order = ["/admin/calendar", "/admin", "https://evil.example", "/admin/calendar", ""] });
+        Assert.Equal(HttpStatusCode.NoContent, saved.StatusCode);
+
+        // Only panel pages, each once, in the order given.
+        var me = await client.GetFromJsonAsync<CurrentUserResponse>("/api/auth/me", Json);
+        Assert.Equal(["/admin/calendar", "/admin"], me!.MenuOrder);
+
+        // The admin's menu is untouched.
+        var admin = await _factory.CreateAdminClientAsync();
+        Assert.Empty((await admin.GetFromJsonAsync<CurrentUserResponse>("/api/auth/me", Json))!.MenuOrder!);
+
+        // An empty list goes back to the built-in order.
+        await client.PutAsJsonAsync("/api/auth/menu", new MenuOrderRequest());
+        Assert.Empty((await client.GetFromJsonAsync<CurrentUserResponse>("/api/auth/me", Json))!.MenuOrder!);
+        Assert.Equal(HttpStatusCode.Unauthorized,
+            (await _factory.CreateClient().PutAsJsonAsync("/api/auth/menu", new MenuOrderRequest())).StatusCode);
+    }
 }

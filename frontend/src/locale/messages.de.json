@@ -1442,6 +1442,17 @@
     "7907713842077919687": "{$number} wartet wieder auf Zahlung.",
     "3232158386967982060": "Zahlung rückgängig gemacht.",
     "5603132328680821646": "{$number} als bezahlt markieren?",
-    "7264877587679348490": "Heute bezahlt. Für ein anderes Datum oder eine Notiz die Abrechnung öffnen."
+    "7264877587679348490": "Heute bezahlt. Für ein anderes Datum oder eine Notiz die Abrechnung öffnen.",
+    "selectPlaceholderAll": "Alle",
+    "selectPlaceholderChoose": "Auswählen…",
+    "5742511798184678576": "Ziehen Sie die Seiten oder nutzen Sie die Pfeile, um sie zu ordnen. Nur Ihr Menü ändert sich.",
+    "3871955468734898678": "Zum Verschieben ziehen",
+    "8502065112576581103": "Nach oben",
+    "2207764482815871800": "Nach unten",
+    "7513470422780484579": "Ursprüngliche Reihenfolge",
+    "7660415764300621502": "Menü bearbeiten",
+    "1623762891583873042": "Menü auf die ursprüngliche Reihenfolge zurückgesetzt.",
+    "6110184038035681525": "Menüreihenfolge gespeichert.",
+    "2102825898069375693": "Menü"
   }
 }

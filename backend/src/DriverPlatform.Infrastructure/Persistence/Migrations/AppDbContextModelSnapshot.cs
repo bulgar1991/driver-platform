@@ -1961,6 +1961,11 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("locked_until");
 
+                    b.PrimitiveCollection<List<string>>("MenuOrder")
+                        .IsRequired()
+                        .HasColumnType("text[]")
+                        .HasColumnName("menu_order");
+
                     b.Property<bool>("MustChangePassword")
                         .HasColumnType("boolean")
                         .HasColumnName("must_change_password");
@@ -2577,30 +2582,6 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("fk_bookings_bookings_return_of_booking_id");
 
-                    b.OwnsMany("DriverPlatform.Domain.ValueObjects.ChildSeatRequest", "ChildSeats", b1 =>
-                        {
-                            b1.Property<Guid>("BookingId");
-
-                            b1.Property<int>("__synthesizedOrdinal")
-                                .ValueGeneratedOnAdd();
-
-                            b1.Property<int>("Count");
-
-                            b1.Property<int>("Group");
-
-                            b1.HasKey("BookingId", "__synthesizedOrdinal");
-
-                            b1.ToTable("bookings", (string)null);
-
-                            b1
-                                .ToJson("child_seats")
-                                .HasColumnType("jsonb");
-
-                            b1.WithOwner()
-                                .HasForeignKey("BookingId")
-                                .HasConstraintName("fk_bookings_bookings_booking_id");
-                        });
-
                     b.OwnsOne("DriverPlatform.Domain.ValueObjects.GeoPoint", "Dropoff", b1 =>
                         {
                             b1.Property<Guid>("BookingId")
@@ -2623,7 +2604,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("BookingId");
 
-                            b1.ToTable("bookings", (string)null);
+                            b1.ToTable("bookings");
 
                             b1.WithOwner()
                                 .HasForeignKey("BookingId")
@@ -2654,7 +2635,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("BookingId");
 
-                            b1.ToTable("bookings", (string)null);
+                            b1.ToTable("bookings");
 
                             b1
                                 .ToJson("dropoff_meeting_point")
@@ -2680,7 +2661,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                                     b2.HasKey("MeetingPointBookingId")
                                         .HasName("pk_bookings");
 
-                                    b2.ToTable("bookings", (string)null);
+                                    b2.ToTable("bookings");
 
                                     b2.WithOwner()
                                         .HasForeignKey("MeetingPointBookingId")
@@ -2703,7 +2684,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                                     b2.HasKey("MeetingPointBookingId")
                                         .HasName("pk_bookings");
 
-                                    b2.ToTable("bookings", (string)null);
+                                    b2.ToTable("bookings");
 
                                     b2.WithOwner()
                                         .HasForeignKey("MeetingPointBookingId")
@@ -2737,7 +2718,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("BookingId");
 
-                            b1.ToTable("bookings", (string)null);
+                            b1.ToTable("bookings");
 
                             b1.WithOwner()
                                 .HasForeignKey("BookingId")
@@ -2769,7 +2750,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                             b1.HasKey("BookingId")
                                 .HasName("pk_bookings");
 
-                            b1.ToTable("bookings", (string)null);
+                            b1.ToTable("bookings");
 
                             b1
                                 .ToJson("pickup_meeting_point")
@@ -2795,7 +2776,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                                     b2.HasKey("MeetingPointBookingId")
                                         .HasName("pk_bookings");
 
-                                    b2.ToTable("bookings", (string)null);
+                                    b2.ToTable("bookings");
 
                                     b2.WithOwner()
                                         .HasForeignKey("MeetingPointBookingId")
@@ -2818,7 +2799,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                                     b2.HasKey("MeetingPointBookingId")
                                         .HasName("pk_bookings");
 
-                                    b2.ToTable("bookings", (string)null);
+                                    b2.ToTable("bookings");
 
                                     b2.WithOwner()
                                         .HasForeignKey("MeetingPointBookingId")
@@ -2828,6 +2809,30 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                             b1.Navigation("ClientInstructionsTranslations");
 
                             b1.Navigation("NameTranslations");
+                        });
+
+                    b.OwnsMany("DriverPlatform.Domain.ValueObjects.ChildSeatRequest", "ChildSeats", b1 =>
+                        {
+                            b1.Property<Guid>("BookingId");
+
+                            b1.Property<int>("__synthesizedOrdinal")
+                                .ValueGeneratedOnAdd();
+
+                            b1.Property<int>("Count");
+
+                            b1.Property<int>("Group");
+
+                            b1.HasKey("BookingId", "__synthesizedOrdinal");
+
+                            b1.ToTable("bookings");
+
+                            b1
+                                .ToJson("child_seats")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("BookingId")
+                                .HasConstraintName("fk_bookings_bookings_booking_id");
                         });
 
                     b.OwnsMany("DriverPlatform.Domain.ValueObjects.PriceLine", "PriceLines", b1 =>
@@ -2852,7 +2857,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("BookingId", "__synthesizedOrdinal");
 
-                            b1.ToTable("bookings", (string)null);
+                            b1.ToTable("bookings");
 
                             b1
                                 .ToJson("price_lines")
@@ -2969,7 +2974,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("InvoiceId");
 
-                            b1.ToTable("invoices", (string)null);
+                            b1.ToTable("invoices");
 
                             b1
                                 .ToJson("buyer")
@@ -2978,6 +2983,43 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("InvoiceId")
                                 .HasConstraintName("fk_invoices_invoices_id");
+                        });
+
+                    b.OwnsOne("DriverPlatform.Domain.ValueObjects.InvoiceParty", "Seller", b1 =>
+                        {
+                            b1.Property<Guid>("InvoiceId");
+
+                            b1.Property<string>("Address")
+                                .HasMaxLength(500);
+
+                            b1.Property<string>("Email")
+                                .HasMaxLength(500);
+
+                            b1.Property<string>("Name")
+                                .IsRequired()
+                                .HasMaxLength(500);
+
+                            b1.Property<string>("Phone")
+                                .HasMaxLength(500);
+
+                            b1.Property<string>("TaxCode")
+                                .HasMaxLength(500);
+
+                            b1.Property<string>("VatNumber")
+                                .HasMaxLength(500);
+
+                            b1.HasKey("InvoiceId")
+                                .HasName("pk_invoices");
+
+                            b1.ToTable("invoices");
+
+                            b1
+                                .ToJson("seller")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("InvoiceId")
+                                .HasConstraintName("fk_invoices_invoices_invoice_id");
                         });
 
                     b.OwnsMany("DriverPlatform.Domain.ValueObjects.InvoiceLine", "Lines", b1 =>
@@ -3007,47 +3049,10 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("InvoiceId", "__synthesizedOrdinal");
 
-                            b1.ToTable("invoices", (string)null);
+                            b1.ToTable("invoices");
 
                             b1
                                 .ToJson("lines")
-                                .HasColumnType("jsonb");
-
-                            b1.WithOwner()
-                                .HasForeignKey("InvoiceId")
-                                .HasConstraintName("fk_invoices_invoices_invoice_id");
-                        });
-
-                    b.OwnsOne("DriverPlatform.Domain.ValueObjects.InvoiceParty", "Seller", b1 =>
-                        {
-                            b1.Property<Guid>("InvoiceId");
-
-                            b1.Property<string>("Address")
-                                .HasMaxLength(500);
-
-                            b1.Property<string>("Email")
-                                .HasMaxLength(500);
-
-                            b1.Property<string>("Name")
-                                .IsRequired()
-                                .HasMaxLength(500);
-
-                            b1.Property<string>("Phone")
-                                .HasMaxLength(500);
-
-                            b1.Property<string>("TaxCode")
-                                .HasMaxLength(500);
-
-                            b1.Property<string>("VatNumber")
-                                .HasMaxLength(500);
-
-                            b1.HasKey("InvoiceId")
-                                .HasName("pk_invoices");
-
-                            b1.ToTable("invoices", (string)null);
-
-                            b1
-                                .ToJson("seller")
                                 .HasColumnType("jsonb");
 
                             b1.WithOwner()
@@ -3128,7 +3133,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("PartnerStatementId", "__synthesizedOrdinal");
 
-                            b1.ToTable("partner_statements", (string)null);
+                            b1.ToTable("partner_statements");
 
                             b1
                                 .ToJson("lines")
@@ -3222,7 +3227,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("SurchargeRuleId");
 
-                            b1.ToTable("surcharge_rules", (string)null);
+                            b1.ToTable("surcharge_rules");
 
                             b1
                                 .ToJson("name_translations")
@@ -3312,7 +3317,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("ZoneId", "__synthesizedOrdinal");
 
-                            b1.ToTable("zones", (string)null);
+                            b1.ToTable("zones");
 
                             b1
                                 .ToJson("meeting_points")
@@ -3340,7 +3345,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                                     b2.HasKey("MeetingPointZoneId", "MeetingPoint__synthesizedOrdinal")
                                         .HasName("pk_zones");
 
-                                    b2.ToTable("zones", (string)null);
+                                    b2.ToTable("zones");
 
                                     b2.WithOwner()
                                         .HasForeignKey("MeetingPointZoneId", "MeetingPoint__synthesizedOrdinal")
@@ -3365,7 +3370,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                                     b2.HasKey("MeetingPointZoneId", "MeetingPoint__synthesizedOrdinal")
                                         .HasName("pk_zones");
 
-                                    b2.ToTable("zones", (string)null);
+                                    b2.ToTable("zones");
 
                                     b2.WithOwner()
                                         .HasForeignKey("MeetingPointZoneId", "MeetingPoint__synthesizedOrdinal")
@@ -3392,7 +3397,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("ZoneId");
 
-                            b1.ToTable("zones", (string)null);
+                            b1.ToTable("zones");
 
                             b1
                                 .ToJson("name_translations")
@@ -3416,7 +3421,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("ZoneId", "__synthesizedOrdinal");
 
-                            b1.ToTable("zones", (string)null);
+                            b1.ToTable("zones");
 
                             b1
                                 .ToJson("polygon")
@@ -3449,7 +3454,7 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("ZoneId", "__synthesizedOrdinal");
 
-                            b1.ToTable("zones", (string)null);
+                            b1.ToTable("zones");
 
                             b1
                                 .ToJson("rates")
