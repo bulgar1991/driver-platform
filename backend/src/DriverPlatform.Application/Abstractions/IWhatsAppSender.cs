@@ -8,6 +8,9 @@ namespace DriverPlatform.Application.Abstractions;
 /// </summary>
 public interface IWhatsAppSender
 {
+    /// <summary>False until the WhatsApp Business account is connected: messages are only written to a log.</summary>
+    bool IsConnected => true;
+
     /// <param name="phone">E.164, e.g. "+393331234567".</param>
     /// <returns>The provider's message id.</returns>
     Task<string?> SendTemplateAsync(

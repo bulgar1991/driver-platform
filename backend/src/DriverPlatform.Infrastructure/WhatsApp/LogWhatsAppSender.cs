@@ -15,6 +15,8 @@ public sealed class LogWhatsAppSender(
 {
     private static readonly SemaphoreSlim FileGate = new(1, 1);
 
+    public bool IsConnected => false;
+
     public async Task<string?> SendTemplateAsync(
         string phone, NotificationKind template, string language, IReadOnlyList<string> parameters, CancellationToken cancellationToken)
     {
@@ -31,12 +33,17 @@ public sealed class LogWhatsAppSender(
         });
         logger.LogInformation("WhatsApp (not sent, log provider) {Line}", line);
 
-        var folder = Path.GetFullPath(o.LogDirectory, environment.ContentRootPath);
-        Directory.CreateDirectory(folder);
+        // The file is a convenience for development; a read-only folder (the server's container) is no error.
         await FileGate.WaitAsync(cancellationToken);
         try
         {
+            var folder = Path.GetFullPath(o.LogDirectory, environment.ContentRootPath);
+            Directory.CreateDirectory(folder);
             await File.AppendAllTextAsync(Path.Combine(folder, $"{DateTime.UtcNow:yyyy-MM-dd}.jsonl"), line + "\n", cancellationToken);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            logger.LogDebug(ex, "WhatsApp log file not written");
         }
         finally
         {

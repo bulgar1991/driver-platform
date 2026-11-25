@@ -217,6 +217,12 @@ public sealed class NotificationService(
             {
                 log.ProviderMessageId = await send();
                 log.Status = NotificationStatus.Sent;
+                if (channel == NotificationChannel.WhatsApp && !whatsApp.IsConnected)
+                {
+                    // Nothing reached the phone: not a failure, but not "sent" either.
+                    log.Status = NotificationStatus.Skipped;
+                    log.Error = "WhatsApp is not connected yet: the message was not sent.";
+                }
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
