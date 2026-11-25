@@ -61,6 +61,18 @@
     @apply block h-72 w-full overflow-hidden rounded-sm border border-ink-600 bg-ink-950 sm:h-96;
   }
 
+  &__route-info {
+    @apply mt-2 flex flex-wrap items-center gap-2 text-sm text-ivory-300;
+
+    app-icon {
+      @apply h-4 w-4 text-gold;
+    }
+
+    strong {
+      @apply font-normal text-ivory;
+    }
+  }
+
   &__error {
     @apply text-xs text-danger;
   }

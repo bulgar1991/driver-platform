@@ -7,7 +7,11 @@ import {
   OnInit,
   signal,
 } from '@angular/core'
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
+import {
+  takeUntilDestroyed,
+  toObservable,
+  toSignal,
+} from '@angular/core/rxjs-interop'
 import {
   FormArray,
   FormBuilder,
@@ -67,6 +71,7 @@ import {
   MapPickerDialogComponent,
 } from './map-picker/map-picker-dialog.component'
 import { MapComponent } from '@/shared/components/map/map.component'
+import { DurationPipe } from '@/shared/pipes/duration.pipe'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { AddressInputComponent } from '@/features/booking/components/address-input/address-input.component'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
@@ -107,6 +112,7 @@ const METHODS: PaymentMethod[] = [
     ButtonComponent,
     IconComponent,
     MapComponent,
+    DurationPipe,
     MoneyPipe,
   ],
   templateUrl: './new-booking.component.html',
@@ -194,8 +200,29 @@ export class NewBookingComponent implements OnInit {
       })
     return markers
   })
+  /** The road, fetched as soon as start and end are set (before a date, time or price). */
+  protected readonly road = toSignal(
+    toObservable(
+      computed(() => {
+        const { pickup, dropoff } = this.values()
+        return pickup && dropoff
+          ? `${pickup.latitude},${pickup.longitude},${dropoff.latitude},${dropoff.longitude}`
+          : null
+      })
+    ).pipe(
+      distinctUntilChanged(),
+      switchMap(key => {
+        if (!key) return of(null)
+        const [a, b, c, d] = key.split(',').map(Number)
+        return this.api
+          .route({ latitude: a, longitude: b }, { latitude: c, longitude: d })
+          .pipe(catchError(() => of(null)))
+      })
+    ),
+    { initialValue: null }
+  )
   protected readonly routePath = computed<LatLng[]>(
-    () => this.quote()?.outbound.path ?? []
+    () => this.quote()?.outbound.path ?? this.road()?.path ?? []
   )
   protected readonly routeFit = computed<LatLng[]>(() => [
     ...this.routeMarkers().map(m => m.position),

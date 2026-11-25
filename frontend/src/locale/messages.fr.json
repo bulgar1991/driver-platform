@@ -1537,6 +1537,9 @@
     "5813867925497374051": "Carte",
     "4467601959304141248": "Choisir l’arrivée sur la carte",
     "3288591731366024881": "Départ sur la carte",
-    "785584820492600033": "Arrivée sur la carte"
+    "785584820492600033": "Arrivée sur la carte",
+    "6633026527337782895": "environ {$INTERPOLATION}",
+    "4205350179364955816": "(estimation à vol d’oiseau)",
+    "6879828526943875440": "Recherche de l’itinéraire…"
   }
 }

@@ -1537,6 +1537,9 @@
     "5813867925497374051": "Mappa",
     "4467601959304141248": "Scegli l’arrivo sulla mappa",
     "3288591731366024881": "Partenza sulla mappa",
-    "785584820492600033": "Arrivo sulla mappa"
+    "785584820492600033": "Arrivo sulla mappa",
+    "6633026527337782895": "circa {$INTERPOLATION}",
+    "4205350179364955816": "(stima in linea d’aria)",
+    "6879828526943875440": "Ricerca del percorso…"
   }
 }

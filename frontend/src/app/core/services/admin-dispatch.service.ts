@@ -6,6 +6,7 @@ import {
   Availability,
   BookingDetail,
   BookingListItem,
+  LatLng,
   BookingQuery,
   BookingStatus,
   Dashboard,
@@ -20,6 +21,14 @@ import {
 } from '../models'
 import { API_BASE_URL } from '../tokens/api-base-url.token'
 
+/** The road between two points, for the map. */
+export interface RoadRoute {
+  distanceKm: number
+  durationMinutes: number
+  path: LatLng[]
+  isEstimate: boolean
+}
+
 /** Dispatcher panel: bookings, shifts and the dashboard. */
 @Injectable({ providedIn: 'root' })
 export class AdminDispatchService {
@@ -27,6 +36,19 @@ export class AdminDispatchService {
   private readonly url = `${inject(API_BASE_URL)}/admin`
 
   /** Tariff prices for a ride the office is entering (no minimum notice). */
+  /** Road distance, time and shape between two points (no date or price needed). */
+  route(
+    from: { latitude: number; longitude: number },
+    to: { latitude: number; longitude: number }
+  ): Observable<RoadRoute> {
+    const params = new HttpParams()
+      .set('fromLat', from.latitude)
+      .set('fromLng', from.longitude)
+      .set('toLat', to.latitude)
+      .set('toLng', to.longitude)
+    return this.http.get<RoadRoute>(`${this.url}/bookings/route`, { params })
+  }
+
   quote(trip: QuoteRequest): Observable<Quote> {
     return this.http.post<Quote>(`${this.url}/bookings/quote`, trip)
   }

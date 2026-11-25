@@ -283,6 +283,22 @@
               <div class="new-booking__map"></div>
             }
           </div>
+          @if (road(); as r) {
+            <p class="new-booking__route-info">
+              <app-icon name="route" />
+              <strong>{{ r.distanceKm }} km</strong> ·
+              <ng-container i18n
+                >about {{ r.durationMinutes | duration }}</ng-container
+              >
+              @if (r.isEstimate) {
+                <span class="new-booking__muted" i18n
+                  >(straight-line estimate)</span
+                >
+              }
+            </p>
+          } @else if (routeMarkers().length === 2) {
+            <p class="new-booking__muted" i18n>Finding the route…</p>
+          }
         }
         <div class="new-booking__grid">
           <mat-form-field>

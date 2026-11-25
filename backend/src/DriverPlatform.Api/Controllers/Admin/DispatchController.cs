@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations;
+using DriverPlatform.Application.Abstractions;
+using DriverPlatform.Application.Geo;
 using DriverPlatform.Application.Auth;
 using DriverPlatform.Application.Bookings;
 using DriverPlatform.Application.Quotes;
@@ -35,6 +38,17 @@ public sealed class DispatchController(
         Ok(await bookings.ListAsync(query, cancellationToken));
 
     /// <summary>The tariff price for a ride the office is entering (no minimum notice).</summary>
+    /// <summary>The road between two points (distance, time, shape for the map): shown before a date and time are set.</summary>
+    [HttpGet("bookings/route")]
+    public async Task<ActionResult<RouteResult>> BookingRoute(
+        [FromQuery, Range(-90, 90)] double fromLat,
+        [FromQuery, Range(-180, 180)] double fromLng,
+        [FromQuery, Range(-90, 90)] double toLat,
+        [FromQuery, Range(-180, 180)] double toLng,
+        [FromServices] IRoutingService routing,
+        CancellationToken cancellationToken) =>
+        Ok(await routing.GetRouteAsync(new Coordinate(fromLat, fromLng), new Coordinate(toLat, toLng), cancellationToken));
+
     [HttpPost("bookings/quote")]
     public async Task<ActionResult<QuoteResponse>> QuoteBooking(QuoteRequest request, CancellationToken cancellationToken) =>
         Ok(await officeBookings.QuoteAsync(request, cancellationToken));

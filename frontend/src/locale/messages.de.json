@@ -1537,6 +1537,9 @@
     "5813867925497374051": "Karte",
     "4467601959304141248": "Ziel auf der Karte wählen",
     "3288591731366024881": "Start auf der Karte",
-    "785584820492600033": "Ziel auf der Karte"
+    "785584820492600033": "Ziel auf der Karte",
+    "6633026527337782895": "ca. {$INTERPOLATION}",
+    "4205350179364955816": "(Luftlinie, geschätzt)",
+    "6879828526943875440": "Route wird gesucht…"
   }
 }
