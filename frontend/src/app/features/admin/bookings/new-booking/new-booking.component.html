@@ -268,6 +268,22 @@
             }
           </div>
         </div>
+        @if (routeMarkers().length) {
+          <div class="new-booking__route-map">
+            @defer (on idle) {
+              <app-map
+                class="new-booking__map"
+                [cooperative]="true"
+                [zoomButtons]="true"
+                [singlePointZoom]="14"
+                [markers]="routeMarkers()"
+                [path]="routePath()"
+                [fitPoints]="routeFit()" />
+            } @placeholder {
+              <div class="new-booking__map"></div>
+            }
+          </div>
+        }
         <div class="new-booking__grid">
           <mat-form-field>
             <mat-label i18n>Date</mat-label>

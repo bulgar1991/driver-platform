@@ -42,6 +42,8 @@ import {
 import {
   CustomerListItem,
   GeoPoint,
+  LatLng,
+  MapMarker,
   OfficeBookingRequest,
   OfficeBookingResult,
   Partner,
@@ -64,6 +66,7 @@ import {
   MapPickerData,
   MapPickerDialogComponent,
 } from './map-picker/map-picker-dialog.component'
+import { MapComponent } from '@/shared/components/map/map.component'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { AddressInputComponent } from '@/features/booking/components/address-input/address-input.component'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
@@ -103,6 +106,7 @@ const METHODS: PaymentMethod[] = [
     AddressInputComponent,
     ButtonComponent,
     IconComponent,
+    MapComponent,
     MoneyPipe,
   ],
   templateUrl: './new-booking.component.html',
@@ -174,6 +178,29 @@ export class NewBookingComponent implements OnInit {
   protected readonly partners = signal<Partner[]>([])
 
   protected readonly quote = signal<Quote | null>(null)
+  /** The route on the map: start and end as soon as they are chosen, the road once priced. */
+  protected readonly routeMarkers = computed<MapMarker[]>(() => {
+    const v = this.values()
+    const markers: MapMarker[] = []
+    if (v.pickup)
+      markers.push({
+        position: [v.pickup.latitude, v.pickup.longitude],
+        kind: 'pickup',
+      })
+    if (v.dropoff)
+      markers.push({
+        position: [v.dropoff.latitude, v.dropoff.longitude],
+        kind: 'dropoff',
+      })
+    return markers
+  })
+  protected readonly routePath = computed<LatLng[]>(
+    () => this.quote()?.outbound.path ?? []
+  )
+  protected readonly routeFit = computed<LatLng[]>(() => [
+    ...this.routeMarkers().map(m => m.position),
+    ...this.routePath(),
+  ])
   protected readonly quoting = signal(false)
   protected readonly quoteError = signal<string | null>(null)
   protected readonly saving = signal(false)
