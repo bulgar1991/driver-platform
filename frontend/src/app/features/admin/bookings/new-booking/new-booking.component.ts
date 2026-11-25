@@ -59,6 +59,11 @@ import { problemMessage } from '@/core/utils/problem'
 import { PAYMENT_METHOD_LABEL } from '@/core/utils/status-labels'
 import { ButtonComponent } from '@/shared/components/button/button.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
+import { DialogService } from '@/shared/components/dialog/dialog.service'
+import {
+  MapPickerData,
+  MapPickerDialogComponent,
+} from './map-picker/map-picker-dialog.component'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { AddressInputComponent } from '@/features/booking/components/address-input/address-input.component'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
@@ -110,6 +115,7 @@ export class NewBookingComponent implements OnInit {
   private readonly customersApi = inject(AdminCustomersService)
   private readonly partnersApi = inject(AdminPartnersService)
   private readonly toast = inject(ToastService)
+  private readonly dialog = inject(DialogService)
   private readonly destroyRef = inject(DestroyRef)
   protected readonly isAdmin = inject(AuthService).hasRole('Admin')
 
@@ -265,6 +271,33 @@ export class NewBookingComponent implements OnInit {
             quote.vehicles.find(v => v.available) ?? quote.vehicles[0]
           chosen.setValue(first?.category ?? '')
         }
+      })
+  }
+
+  /** Route start or end chosen on a map: the street address of the point clicked. */
+  protected pickOnMap(field: 'pickup' | 'dropoff'): void {
+    const control = this.form.controls[field]
+    this.dialog
+      .open<MapPickerDialogComponent, MapPickerData, GeoPoint | undefined>(
+        MapPickerDialogComponent,
+        {
+          width: '56rem',
+          data: {
+            title:
+              field === 'pickup'
+                ? $localize`Route start on the map`
+                : $localize`Route end on the map`,
+            kind: field,
+            value: control.value,
+          },
+        }
+      )
+      .afterClosed()
+      .subscribe(point => {
+        if (!point) return
+        control.setValue(point)
+        control.markAsTouched()
+        control.markAsDirty()
       })
   }
 

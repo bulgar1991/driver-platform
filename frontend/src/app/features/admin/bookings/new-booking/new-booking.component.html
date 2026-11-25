@@ -206,9 +206,23 @@
         >
         <div class="new-booking__grid new-booking__grid--2">
           <div class="new-booking__field">
-            <label class="new-booking__label" for="nb-pickup"
-              ><ng-container i18n>Route start</ng-container> *</label
-            >
+            <div class="new-booking__label-row">
+              <label class="new-booking__label" for="nb-pickup"
+                ><ng-container i18n>Route start</ng-container> *</label
+              >
+              <button
+                type="button"
+                class="new-booking__map-button"
+                (click)="pickOnMap('pickup')"
+                i18n-aria-label
+                aria-label="Choose the start on the map"
+                i18n-title
+                title="Choose the start on the map">
+                <app-icon name="pin" />&ngsp;<ng-container i18n
+                  >Map</ng-container
+                >
+              </button>
+            </div>
             <app-address-input
               inputId="nb-pickup"
               formControlName="pickup"
@@ -222,9 +236,23 @@
             }
           </div>
           <div class="new-booking__field">
-            <label class="new-booking__label" for="nb-dropoff"
-              ><ng-container i18n>Route end</ng-container> *</label
-            >
+            <div class="new-booking__label-row">
+              <label class="new-booking__label" for="nb-dropoff"
+                ><ng-container i18n>Route end</ng-container> *</label
+              >
+              <button
+                type="button"
+                class="new-booking__map-button"
+                (click)="pickOnMap('dropoff')"
+                i18n-aria-label
+                aria-label="Choose the end on the map"
+                i18n-title
+                title="Choose the end on the map">
+                <app-icon name="pin" />&ngsp;<ng-container i18n
+                  >Map</ng-container
+                >
+              </button>
+            </div>
             <app-address-input
               inputId="nb-dropoff"
               formControlName="dropoff"

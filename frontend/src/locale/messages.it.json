@@ -1530,6 +1530,13 @@
     "2512671105923905132": "Pago l'autista in contanti il giorno della corsa, invece che online.",
     "2957447353899842388": "Prenota · paga all'autista {$TOTAL}",
     "4751575753515780452": "Incassa {$INTERPOLATION} dal cliente",
-    "216526110858499862": "Da pagare"
+    "216526110858499862": "Da pagare",
+    "8515321775323037927": "Fai clic sulla mappa dove inizia o finisce la corsa.",
+    "1340146138637534635": "Usa questo indirizzo",
+    "1231435663484172857": "Scegli la partenza sulla mappa",
+    "5813867925497374051": "Mappa",
+    "4467601959304141248": "Scegli l’arrivo sulla mappa",
+    "3288591731366024881": "Partenza sulla mappa",
+    "785584820492600033": "Arrivo sulla mappa"
   }
 }

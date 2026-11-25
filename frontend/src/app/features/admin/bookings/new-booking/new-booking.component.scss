@@ -45,6 +45,18 @@
     @apply text-xs uppercase tracking-widest text-ivory-400;
   }
 
+  &__label-row {
+    @apply flex items-center justify-between gap-3;
+  }
+
+  &__map-button {
+    @apply flex items-center gap-1.5 rounded-sm border border-ink-600 px-2 py-1 text-xs text-ivory-300 transition-colors hover:border-gold/60 hover:text-gold;
+
+    app-icon {
+      @apply h-4 w-4;
+    }
+  }
+
   &__error {
     @apply text-xs text-danger;
   }

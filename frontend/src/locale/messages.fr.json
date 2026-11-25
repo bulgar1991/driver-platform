@@ -1530,6 +1530,13 @@
     "2512671105923905132": "Je paie le chauffeur en espèces le jour du trajet, au lieu d'en ligne.",
     "2957447353899842388": "Réserver · payer au chauffeur {$TOTAL}",
     "4751575753515780452": "Encaisser {$INTERPOLATION} auprès du client",
-    "216526110858499862": "À payer"
+    "216526110858499862": "À payer",
+    "8515321775323037927": "Cliquez sur la carte là où la course commence ou se termine.",
+    "1340146138637534635": "Utiliser cette adresse",
+    "1231435663484172857": "Choisir le départ sur la carte",
+    "5813867925497374051": "Carte",
+    "4467601959304141248": "Choisir l’arrivée sur la carte",
+    "3288591731366024881": "Départ sur la carte",
+    "785584820492600033": "Arrivée sur la carte"
   }
 }

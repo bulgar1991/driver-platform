@@ -1530,6 +1530,13 @@
     "2512671105923905132": "Ich zahle den Fahrer am Fahrtag bar, statt online.",
     "2957447353899842388": "Buchen · beim Fahrer zahlen {$TOTAL}",
     "4751575753515780452": "{$INTERPOLATION} beim Kunden kassieren",
-    "216526110858499862": "Zu zahlen"
+    "216526110858499862": "Zu zahlen",
+    "8515321775323037927": "Klicken Sie auf der Karte, wo die Fahrt beginnt oder endet.",
+    "1340146138637534635": "Diese Adresse verwenden",
+    "1231435663484172857": "Start auf der Karte wählen",
+    "5813867925497374051": "Karte",
+    "4467601959304141248": "Ziel auf der Karte wählen",
+    "3288591731366024881": "Start auf der Karte",
+    "785584820492600033": "Ziel auf der Karte"
   }
 }
