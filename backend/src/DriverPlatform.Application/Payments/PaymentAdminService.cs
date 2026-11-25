@@ -19,6 +19,8 @@ public interface IPaymentAdminService
 {
     Task<IReadOnlyList<PaymentListItem>> ListAsync(PaymentStatus? status, int take, CancellationToken cancellationToken);
     Task<PaymentListItem> RefundAsync(Guid paymentId, RefundRequest request, CancellationToken cancellationToken);
+    /// <summary>A payment made outside Stripe has arrived (cash from the driver, a transfer…): issues the invoice and emails it.</summary>
+    Task<PaymentListItem> MarkReceivedAsync(Guid paymentId, CancellationToken cancellationToken);
     Task<InvoiceFile> GetInvoicePdfAsync(Guid invoiceId, CancellationToken cancellationToken);
     Task ResendInvoiceAsync(Guid invoiceId, CancellationToken cancellationToken);
     /// <summary>CSV of invoices and credit notes issued in [from, to] (Italian dates), for the accountant.</summary>
@@ -103,6 +105,35 @@ public sealed class PaymentAdminService(
         var creditNote = await invoices.IssueCreditNoteAsync(refund, cancellationToken);
         await emails.SendCreditNoteAsync(payment.Booking, creditNote, request.CancelBooking, cancellationToken);
 
+        return (await ListAsync(null, 500, cancellationToken)).First(p => p.Id == payment.Id);
+    }
+
+    public async Task<PaymentListItem> MarkReceivedAsync(Guid paymentId, CancellationToken cancellationToken)
+    {
+        var payment = await db.Payments.Include(p => p.Booking).ThenInclude(b => b.Client)
+            .FirstOrDefaultAsync(p => p.Id == paymentId, cancellationToken)
+            ?? throw new NotFoundException(Texts.Current.PaymentNotFound);
+        if (payment.Status != PaymentStatus.Pending || payment.Method is not { } method || !method.IsManual())
+        {
+            throw new ConflictException(Texts.Current.PaymentNotToCollect);
+        }
+
+        payment.Status = PaymentStatus.Succeeded;
+        payment.PaidAt = clock.GetUtcNow();
+        var legs = await db.LoadLegsAsync(payment.Booking, cancellationToken);
+        foreach (var leg in legs)
+        {
+            leg.CollectOnBoard = false;
+        }
+        audit.Log("payment.received", nameof(Payment), payment.Id.ToString(),
+            new { payment.Booking.Reference, payment.Amount, method });
+        await db.SaveChangesAsync(cancellationToken);
+
+        var invoice = await invoices.IssueInvoiceAsync(payment, cancellationToken);
+        if (payment.Booking.Status != BookingStatus.Cancelled)
+        {
+            await emails.SendConfirmationAsync(payment.Booking, legs, invoice, cancellationToken);
+        }
         return (await ListAsync(null, 500, cancellationToken)).First(p => p.Id == payment.Id);
     }
 

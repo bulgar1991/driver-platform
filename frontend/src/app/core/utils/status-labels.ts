@@ -1,4 +1,4 @@
-import { AssignmentStatus, BookingStatus } from '../models'
+import { AssignmentStatus, BookingStatus, PaymentMethod } from '../models'
 
 export const BOOKING_STATUS_LABEL: Record<BookingStatus, string> = {
   AwaitingPayment: $localize`Awaiting payment`,
@@ -7,6 +7,18 @@ export const BOOKING_STATUS_LABEL: Record<BookingStatus, string> = {
   PickedUp: $localize`Picked up`,
   Completed: $localize`Completed`,
   Cancelled: $localize`Cancelled`,
+}
+
+export const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
+  Card: $localize`Card (online)`,
+  PayPal: $localize`PayPal (online)`,
+  CashOnBoard: $localize`Cash to the driver`,
+  CardOnBoard: $localize`Card to the driver`,
+  CashAtOffice: $localize`Cash at the office`,
+  BankTransfer: $localize`Bank transfer`,
+  PaidByPartner: $localize`Collected by the partner`,
+  FollowingInvoice: $localize`On a later invoice`,
+  Other: $localize`Other`,
 }
 
 export const SHIFT_STATUS_LABEL: Record<AssignmentStatus, string> = {

@@ -17,6 +17,9 @@ public interface IBookingEmails
     Task SendConfirmationAsync(Booking outbound, IReadOnlyList<Booking> legs, Invoice invoice, CancellationToken cancellationToken);
 
     Task SendCreditNoteAsync(Booking outbound, Invoice creditNote, bool cancelled, CancellationToken cancellationToken);
+
+    /// <summary>Booking confirmed without payment yet (paid to the driver, at the office, by transfer…): no invoice attached.</summary>
+    Task SendBookedAsync(Booking outbound, IReadOnlyList<Booking> legs, PaymentMethod method, CancellationToken cancellationToken);
 }
 
 /// <summary>Client emails, in the language the client booked in.</summary>
@@ -36,7 +39,42 @@ public sealed class BookingEmails(
         var text = new StringBuilder();
         Paragraph(html, text, t.Dear(outbound.Client.FirstName));
         Paragraph(html, text, t.PaymentConfirmed(t.Money(invoice.TotalAmount, invoice.Currency)));
+        Legs(html, text, t, legs);
+        Paragraph(html, text, t.DriverDetailsFollow);
+        Link(html, text, t.ManageBooking, links.ManageUrl(outbound));
+        Paragraph(html, text, t.InvoiceAttached(invoice.Number));
+        Signature(html, text, t);
 
+        await SendAsync(NotificationKind.BookingConfirmation, outbound, invoice, t.ConfirmedSubject(outbound.Reference), html, text, cancellationToken);
+    }
+
+    public async Task SendBookedAsync(
+        Booking outbound, IReadOnlyList<Booking> legs, PaymentMethod method, CancellationToken cancellationToken)
+    {
+        var t = Texts.For(outbound.Client.Language);
+        var html = new StringBuilder();
+        var text = new StringBuilder();
+        Paragraph(html, text, t.Dear(outbound.Client.FirstName));
+        Paragraph(html, text, t.BookingIsConfirmed);
+        Legs(html, text, t, legs);
+        var amount = t.Money(legs.Sum(l => l.TotalPrice), outbound.Currency);
+        if (method == PaymentMethod.CashOnBoard)
+        {
+            Paragraph(html, text, t.PayDriverCash(amount));
+        }
+        else if (method == PaymentMethod.CardOnBoard)
+        {
+            Paragraph(html, text, t.PayDriverCard(amount));
+        }
+        Paragraph(html, text, t.DriverDetailsFollow);
+        Link(html, text, t.ManageBooking, links.ManageUrl(outbound));
+        Signature(html, text, t);
+
+        await SendAsync(NotificationKind.BookingConfirmation, outbound, null, t.ConfirmedSubject(outbound.Reference), html, text, cancellationToken);
+    }
+
+    private static void Legs(StringBuilder html, StringBuilder text, Texts t, IReadOnlyList<Booking> legs)
+    {
         foreach (var leg in legs)
         {
             var summary = leg.ToLegSummary();
@@ -58,13 +96,6 @@ public sealed class BookingEmails(
                 Paragraph(html, text, t.MeetingPoint(instructions));
             }
         }
-
-        Paragraph(html, text, t.DriverDetailsFollow);
-        Link(html, text, t.ManageBooking, links.ManageUrl(outbound));
-        Paragraph(html, text, t.InvoiceAttached(invoice.Number));
-        Signature(html, text, t);
-
-        await SendAsync(NotificationKind.BookingConfirmation, outbound, invoice, t.ConfirmedSubject(outbound.Reference), html, text, cancellationToken);
     }
 
     public async Task SendCreditNoteAsync(Booking outbound, Invoice creditNote, bool cancelled, CancellationToken cancellationToken)
@@ -89,7 +120,7 @@ public sealed class BookingEmails(
     }
 
     private async Task SendAsync(
-        NotificationKind kind, Booking outbound, Invoice document, string subject, StringBuilder html, StringBuilder text,
+        NotificationKind kind, Booking outbound, Invoice? document, string subject, StringBuilder html, StringBuilder text,
         CancellationToken cancellationToken)
     {
         // Every attempt goes in the sent-messages log, the skipped ones too (no email address).
@@ -110,8 +141,8 @@ public sealed class BookingEmails(
             return;
         }
 
-        var label = document.Type == InvoiceType.Invoice ? "Invoice" : "CreditNote";
-        var attachments = document.Pdf is null
+        var label = document?.Type == InvoiceType.Invoice ? "Invoice" : "CreditNote";
+        var attachments = document?.Pdf is null
             ? []
             : new[] { new EmailAttachment($"{label}-{document.Number}.pdf", "application/pdf", document.Pdf) };
         var message = new EmailMessage(
@@ -126,14 +157,17 @@ public sealed class BookingEmails(
         {
             await sender.SendAsync(message, cancellationToken);
             log.Status = NotificationStatus.Sent;
-            document.Status = InvoiceStatus.Sent;
-            document.EmailSentAt = clock.GetUtcNow();
+            if (document is not null)
+            {
+                document.Status = InvoiceStatus.Sent;
+                document.EmailSentAt = clock.GetUtcNow();
+            }
             await db.SaveChangesAsync(cancellationToken);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             // The invoice stays "Issued"; it can be resent from the panel.
-            logger.LogError(ex, "Could not email {Number} for {Reference}", document.Number, outbound.Reference);
+            logger.LogError(ex, "Could not email {Number} for {Reference}", document?.Number, outbound.Reference);
             log.Status = NotificationStatus.Failed;
             log.Error = ex.Message.Length > 480 ? ex.Message[..480] : ex.Message;
             await db.SaveChangesAsync(cancellationToken);

@@ -8,6 +8,7 @@ using DriverPlatform.Domain.Enums;
 using DriverPlatform.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using DriverPlatform.Application.Localization;
 
 namespace DriverPlatform.Application.Bookings;
@@ -18,6 +19,7 @@ public sealed class BookingService(
     IQuoteService quotes,
     IPaymentService payments,
     IBookingLinks links,
+    IOptions<PaymentsOptions> paymentOptions,
     TimeProvider clock,
     ILogger<BookingService> logger) : IBookingService
 {
@@ -39,6 +41,10 @@ public sealed class BookingService(
         if (request.ExpectedTotal is { } expected && expected != vehicle.Total)
         {
             throw new ConflictException(Texts.Current.PriceChanged, quote);
+        }
+        if (request.PayCashOnBoard && !paymentOptions.Value.CashOnBoard)
+        {
+            throw new RequestValidationException("payCashOnBoard", Texts.Current.CashNotOffered);
         }
 
         var client = await FindOrCreateClientAsync(request.Contact, request.MarketingConsent, cancellationToken);
@@ -67,14 +73,21 @@ public sealed class BookingService(
         await db.SaveChangesAsync(cancellationToken);
 
         string? paymentUrl = null;
-        try
+        if (request.PayCashOnBoard)
         {
-            paymentUrl = await payments.StartCheckoutAsync(outbound, cancellationToken);
+            await payments.RecordManualAsync(outbound, PaymentMethod.CashOnBoard, cancellationToken);
         }
-        catch (Exception ex) when (ex is not OperationCanceledException)
+        else
         {
-            // The booking is kept; the client pays later from the booking link.
-            logger.LogError(ex, "Could not open the payment page for {Reference}", outbound.Reference);
+            try
+            {
+                paymentUrl = await payments.StartCheckoutAsync(outbound, cancellationToken);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                // The booking is kept; the client pays later from the booking link.
+                logger.LogError(ex, "Could not open the payment page for {Reference}", outbound.Reference);
+            }
         }
 
         return new CreateBookingResponse(

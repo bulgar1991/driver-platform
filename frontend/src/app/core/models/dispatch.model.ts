@@ -2,8 +2,8 @@ import { BookingSource, BookingStatus, ChildSeatRequest } from './booking.model'
 import { AssignmentStatus } from './driver.model'
 import { MessageSummary } from './driver-portal.model'
 import { GeoPoint, MeetingPoint } from './geo.model'
-import { PaymentStatus } from './payment.model'
-import { PriceLine } from './quote.model'
+import { PaymentMethod, PaymentStatus } from './payment.model'
+import { PriceLine, QuoteRequest } from './quote.model'
 import { VehicleCategory } from './vehicle.model'
 
 export interface PagedResult<T> {
@@ -100,6 +100,10 @@ export interface BookingDetail {
   createdAt: string
   partnerName: string | null
   externalReference: string | null
+  paymentId: string | null
+  paymentMethod: PaymentMethod | null
+  /** The driver collects the price at the ride. */
+  collectOnBoard: boolean
 }
 
 export interface ShiftRequest {
@@ -176,4 +180,38 @@ export interface Dashboard {
   shiftsToConfirm: number
   nextUnassigned: BookingListItem[]
   documentAlerts: DocumentAlert[]
+}
+
+/** Admin → Bookings → New booking: a ride taken by phone, WhatsApp or email. */
+export interface OfficeBookingRequest {
+  /** An existing customer; otherwise `customer` is found by phone or created. */
+  clientId: string | null
+  customer: {
+    firstName: string
+    lastName: string
+    phone: string
+    email: string | null
+    language: string
+  } | null
+  trip: QuoteRequest
+  vehicleCategory: VehicleCategory
+  partnerId: string | null
+  externalReference: string | null
+  passengerName: string | null
+  flightNumber: string | null
+  /** VAT included; null keeps the tariff price. */
+  price: number | null
+  additionalCosts: { description: string; amount: number }[]
+  paymentMethod: PaymentMethod
+  driverNotes: string | null
+  internalNotes: string | null
+}
+
+export interface OfficeBookingResult {
+  id: string
+  reference: string
+  status: BookingStatus
+  total: number
+  /** Stripe's payment page to send the client, when paid online. */
+  paymentUrl: string | null
 }

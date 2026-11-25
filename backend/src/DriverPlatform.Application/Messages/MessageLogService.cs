@@ -221,8 +221,23 @@ public sealed class MessageLogService(
                     ?? throw new NotFoundException(Texts.Current.BookingNotFound);
                 var type = log.Kind == NotificationKind.BookingConfirmation ? InvoiceType.Invoice : InvoiceType.CreditNote;
                 var invoice = await db.Invoices.Where(i => i.BookingId == outbound.Id && i.Type == type)
-                    .OrderByDescending(i => i.CreatedAt).FirstOrDefaultAsync(cancellationToken)
-                    ?? throw new RequestValidationException("id", Texts.Current.MessageCannotBeResent);
+                    .OrderByDescending(i => i.CreatedAt).FirstOrDefaultAsync(cancellationToken);
+                if (invoice is null && type == InvoiceType.Invoice)
+                {
+                    // Not paid yet (cash to the driver, bank transfer…): the confirmation goes without an invoice.
+                    var manual = await db.Payments.Where(p => p.BookingId == outbound.Id && p.Method != null)
+                        .OrderByDescending(p => p.CreatedAt).Select(p => p.Method).FirstOrDefaultAsync(cancellationToken);
+                    if (manual is not { } method || !method.IsManual())
+                    {
+                        throw new RequestValidationException("id", Texts.Current.MessageCannotBeResent);
+                    }
+                    await bookingEmails.SendBookedAsync(outbound, await db.LoadLegsAsync(outbound, cancellationToken), method, cancellationToken);
+                    break;
+                }
+                if (invoice is null)
+                {
+                    throw new RequestValidationException("id", Texts.Current.MessageCannotBeResent);
+                }
                 if (type == InvoiceType.Invoice)
                 {
                     await bookingEmails.SendConfirmationAsync(outbound, await db.LoadLegsAsync(outbound, cancellationToken), invoice, cancellationToken);

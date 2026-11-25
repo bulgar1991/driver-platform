@@ -32,6 +32,9 @@ export interface DriverBookingView {
   durationMinutes: number
   canPickUp: boolean
   canComplete: boolean
+  /** To collect from the client at the ride (cash or card on board). */
+  collectAmount: number | null
+  currency: string | null
 }
 
 export interface DriverShiftView {

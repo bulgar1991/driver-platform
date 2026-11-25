@@ -87,7 +87,11 @@ public sealed record BookingDetail(
     string? CancellationReason,
     DateTimeOffset CreatedAt,
     string? PartnerName,
-    string? ExternalReference);
+    string? ExternalReference,
+    /// <summary>The latest payment: how and whether it was paid.</summary>
+    Guid? PaymentId = null,
+    PaymentMethod? PaymentMethod = null,
+    bool CollectOnBoard = false);
 
 /// <param name="NotesForDriver">Kept on the client, so they follow every booking of theirs.</param>
 /// <param name="Rides">All of the client's bookings, this one included.</param>

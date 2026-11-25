@@ -10,6 +10,14 @@ export const ADMIN_ROUTES: Routes = [
     title: $localize`Dashboard · ${BRAND.name}:brand:`,
   },
   {
+    path: 'bookings/new',
+    title: $localize`New booking · ${BRAND.name}:brand:`,
+    loadComponent: () =>
+      import('./bookings/new-booking/new-booking.component').then(
+        m => m.NewBookingComponent
+      ),
+  },
+  {
     path: 'bookings',
     title: $localize`Bookings · ${BRAND.name}:brand:`,
     loadComponent: () =>

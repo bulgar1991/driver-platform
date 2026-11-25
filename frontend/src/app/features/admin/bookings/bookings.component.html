@@ -6,13 +6,25 @@
         ><ng-container i18n>Bookings</ng-container></h1
       >
     </div>
-    @if (selectedBookings().length) {
-      <button appButton size="sm" type="button" (click)="planShift()">
-        <app-icon name="route" />&ngsp;<ng-container i18n
-          >Plan shift with {{ selectedBookings().length }}</ng-container
+    <div class="bookings__actions">
+      @if (selectedBookings().length) {
+        <button
+          appButton
+          size="sm"
+          variant="outline"
+          type="button"
+          (click)="planShift()">
+          <app-icon name="route" />&ngsp;<ng-container i18n
+            >Plan shift with {{ selectedBookings().length }}</ng-container
+          >
+        </button>
+      }
+      <a appButton size="sm" routerLink="/admin/bookings/new">
+        <app-icon name="plus" />&ngsp;<ng-container i18n
+          >New booking</ng-container
         >
-      </button>
-    }
+      </a>
+    </div>
   </header>
 
   <form class="bookings__filters" [formGroup]="filters">

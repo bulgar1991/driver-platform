@@ -37,6 +37,16 @@ internal sealed partial class FrenchTexts : Texts
     public override string TimeDoesNotExist => "Cette heure n'existe pas (passage à l'heure d'été). Choisissez une autre heure.";
     public override string BookAhead(int hours) => $"Réservez au moins {hours} heures à l'avance.";
     public override string OneYearAhead => "Les réservations sont ouvertes jusqu'à un an à l'avance.";
+    public override string RideTooFarBack(int days) => $"Les trajets peuvent être saisis jusqu'à {days} jours après.";
+    public override string BookingIsConfirmed => "Votre réservation est confirmée.";
+    public override string PayDriverCash(string amount) => $"Le jour du trajet, veuillez payer {amount} en espèces au chauffeur.";
+    public override string PayDriverCard(string amount) => $"Le jour du trajet, veuillez payer {amount} par carte au chauffeur.";
+    public override string CollectFromClient(string amount) => $"Encaisser {amount} auprès du client.";
+    public override string PaymentNotToCollect => "Ce paiement n'est pas à encaisser.";
+    public override string CashNotOffered => "Le paiement au chauffeur n'est pas proposé.";
+    public override string CustomerNotFound => "Client introuvable.";
+    public override string CustomerRequired => "Choisissez un client ou saisissez-en un.";
+    public override string PriceBelowZero => "Le total ne peut pas être négatif.";
     public override string FlightTimeNearPickup => "Le décollage et l'atterrissage doivent être à moins de deux jours de l'heure de prise en charge.";
     public override string NoMeetingPointYet(string zone) => $"{zone} n'a pas encore de point de rendez-vous. Veuillez nous contacter.";
     public override string NotAMeetingPoint(string requested, string zone) => $"« {requested} » n'est pas un point de rendez-vous de {zone}.";

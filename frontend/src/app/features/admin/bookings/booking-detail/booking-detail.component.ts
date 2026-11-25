@@ -14,7 +14,17 @@ import { RouterLink } from '@angular/router'
 import { MatFormField, MatLabel } from '@angular/material/form-field'
 import { MatInput } from '@angular/material/input'
 import { finalize, Observable } from 'rxjs'
-import { BookingDetail, BookingStatus } from '@/core/models'
+import {
+  BookingDetail,
+  BookingStatus,
+  isManualPayment,
+  PaymentStatus,
+} from '@/core/models'
+import { AdminPaymentsService } from '@/core/services/admin-payments.service'
+import { DialogService } from '@/shared/components/dialog/dialog.service'
+import { ToastService } from '@/core/services/toast.service'
+import { PAYMENT_METHOD_LABEL } from '@/core/utils/status-labels'
+import { MoneyPipe as Money } from '@/shared/pipes/money.pipe'
 import { AdminDispatchService } from '@/core/services/admin-dispatch.service'
 import { AuthService } from '@/core/services/auth.service'
 import { ticketTime } from '@/core/utils/local-time'
@@ -65,6 +75,28 @@ export class BookingDetailComponent {
 
   private readonly api = inject(AdminDispatchService)
   protected readonly isAdmin = inject(AuthService).hasRole('Admin')
+  private readonly payments = inject(AdminPaymentsService)
+  private readonly dialog = inject(DialogService)
+  private readonly toast = inject(ToastService)
+  protected readonly methodLabel = PAYMENT_METHOD_LABEL
+  protected readonly paymentLabel: Record<PaymentStatus, string> = {
+    Pending: $localize`to collect`,
+    Succeeded: $localize`paid`,
+    Failed: $localize`not completed`,
+    Refunded: $localize`refunded`,
+    PartiallyRefunded: $localize`partly refunded`,
+  }
+
+  /** A payment outside Stripe still waiting: the admin marks it received. */
+  protected readonly canMarkReceived = computed(() => {
+    const b = this.booking()
+    return (
+      this.isAdmin &&
+      !!b?.paymentId &&
+      b.paymentStatus === 'Pending' &&
+      isManualPayment(b.paymentMethod)
+    )
+  })
   protected readonly booking = signal<BookingDetail | null>(null)
   protected readonly busy = signal(false)
   protected readonly error = signal<string | null>(null)
@@ -141,6 +173,30 @@ export class BookingDetailComponent {
 
   protected saveNotes(): void {
     this.run(this.api.setBookingNotes(this.bookingId(), this.notes))
+  }
+
+  protected markReceived(b: BookingDetail): void {
+    const amount = new Money().transform(b.totalPrice, b.currency)
+    this.dialog
+      .confirm({
+        title: $localize`Payment received?`,
+        message: $localize`${amount}:amount: for ${b.reference}:reference:. The invoice is issued and emailed to the client.`,
+        confirm: $localize`Mark as received`,
+      })
+      .subscribe(ok => {
+        if (!ok) return
+        this.busy.set(true)
+        this.payments
+          .received(b.paymentId!)
+          .pipe(finalize(() => this.busy.set(false)))
+          .subscribe({
+            next: () => {
+              this.toast.success($localize`Payment received; invoice issued.`)
+              this.run(this.api.booking(b.id))
+            },
+            error: err => this.error.set(problemMessage(err)),
+          })
+      })
   }
 
   private run(call: Observable<BookingDetail>): void {

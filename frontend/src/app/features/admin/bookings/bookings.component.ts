@@ -12,7 +12,7 @@ import {
 } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms'
-import { Router } from '@angular/router'
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { MatFormField, MatLabel } from '@angular/material/form-field'
 import { MatInput } from '@angular/material/input'
 import { MatOption, MatSelect } from '@angular/material/select'
@@ -46,6 +46,7 @@ const PAGE_SIZE = 50
     MatCheckbox,
     DatePipe,
     ReactiveFormsModule,
+    RouterLink,
     Drawer,
     BookingDetailComponent,
     ButtonComponent,
@@ -101,6 +102,11 @@ export class BookingsComponent {
   })
 
   constructor() {
+    // A booking to show at once (after "New booking").
+    const open = inject(ActivatedRoute).snapshot.queryParamMap.get('open')
+    if (open) {
+      this.openId.set(open)
+    }
     effect(() => {
       const unassigned = this.unassigned()
       const status = this.status()

@@ -107,4 +107,6 @@ export interface BookingOptions {
   returnDiscountPercent: number
   minLeadTimeHours: number
   currency: string
+  /** The client may pay the driver in cash instead of online. */
+  cashOnBoard: boolean
 }

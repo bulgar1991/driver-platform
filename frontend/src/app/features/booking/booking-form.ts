@@ -63,6 +63,8 @@ export type ContactForm = FormGroup<{
   phone: FormControl<string>
   gdprConsent: FormControl<boolean>
   marketingConsent: FormControl<boolean>
+  /** Pay the driver in cash on the day; offered only when the site allows it. */
+  payCashOnBoard: FormControl<boolean>
 }>
 
 export interface BookingForms {
@@ -203,6 +205,7 @@ export function createBookingForms(
       ]),
       gdprConsent: nn.control(false, Validators.requiredTrue),
       marketingConsent: nn.control(false),
+      payCashOnBoard: nn.control(false),
     }),
   }
 }
@@ -302,6 +305,7 @@ export function toBookingRequest(
     notes: details.notes.trim() || null,
     gdprConsent: contact.gdprConsent,
     marketingConsent: contact.marketingConsent,
+    payCashOnBoard: contact.payCashOnBoard,
   }
 }
 

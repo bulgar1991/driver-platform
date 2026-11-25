@@ -1,4 +1,6 @@
 using DriverPlatform.Application.Auth;
+using DriverPlatform.Application.Bookings;
+using DriverPlatform.Application.Quotes;
 using DriverPlatform.Application.Dispatch;
 using DriverPlatform.Application.DriverPortal;
 using DriverPlatform.Domain.Enums;
@@ -18,6 +20,7 @@ public sealed class DispatchController(
     IDriverAdminService drivers,
     IVehicleAdminService vehicles,
     IDashboardService dashboard,
+    IOfficeBookingService officeBookings,
     IReviewService reviews,
     IDriverApplicationService applications) : ControllerBase
 {
@@ -30,6 +33,16 @@ public sealed class DispatchController(
     [HttpGet("bookings")]
     public async Task<ActionResult<PagedResult<BookingListItem>>> Bookings([FromQuery] BookingQuery query, CancellationToken cancellationToken) =>
         Ok(await bookings.ListAsync(query, cancellationToken));
+
+    /// <summary>The tariff price for a ride the office is entering (no minimum notice).</summary>
+    [HttpPost("bookings/quote")]
+    public async Task<ActionResult<QuoteResponse>> QuoteBooking(QuoteRequest request, CancellationToken cancellationToken) =>
+        Ok(await officeBookings.QuoteAsync(request, cancellationToken));
+
+    /// <summary>A booking taken by phone, WhatsApp or email.</summary>
+    [HttpPost("bookings")]
+    public async Task<ActionResult<OfficeBookingResult>> CreateBooking(OfficeBookingRequest request, CancellationToken cancellationToken) =>
+        StatusCode(StatusCodes.Status201Created, await officeBookings.CreateAsync(request, cancellationToken));
 
     [HttpGet("bookings/{id:guid}")]
     public async Task<ActionResult<BookingDetail>> Booking(Guid id, CancellationToken cancellationToken) =>

@@ -56,6 +56,7 @@ public static class DependencyInjection
         services.AddSingleton<TwoFactorKeys>();
         services.AddScoped<IPartnerAuthService, PartnerAuthService>();
         services.AddScoped<IPartnerBookingService, PartnerBookingService>();
+        services.AddScoped<IOfficeBookingService, OfficeBookingService>();
         services.AddScoped<IPartnerAdminService, PartnerAdminService>();
         services.AddScoped<IPartnerStatementService, PartnerStatementService>();
         services.AddScoped<IStaffAdminService, StaffAdminService>();

@@ -12,7 +12,13 @@ import {
 } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { finalize } from 'rxjs'
-import { BookingStatus, MyBooking, PaymentStatus } from '@/core/models'
+import {
+  BookingStatus,
+  isManualPayment,
+  MyBooking,
+  PaymentStatus,
+} from '@/core/models'
+import { PAYMENT_METHOD_LABEL } from '@/core/utils/status-labels'
 import { MyBookingService } from '@/core/services/my-booking.service'
 import { problemMessage } from '@/core/utils/problem'
 import { ButtonComponent } from '@/shared/components/button/button.component'
@@ -79,6 +85,8 @@ export class MyBookingComponent {
 
   protected readonly statusLabel = STATUS_LABEL
   protected readonly paymentLabel = PAYMENT_LABEL
+  protected readonly methodLabel = PAYMENT_METHOD_LABEL
+  protected readonly isManual = isManualPayment
   protected readonly t = {
     opening: $localize`Opening…`,
     pay: (amount: string) => $localize`Pay ${amount}:amount:`,

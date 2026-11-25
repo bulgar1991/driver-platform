@@ -21,6 +21,11 @@ public sealed class PaymentsAdminController(IPaymentAdminService payments) : Con
     public async Task<ActionResult<PaymentListItem>> Refund(Guid id, RefundRequest request, CancellationToken cancellationToken) =>
         Ok(await payments.RefundAsync(id, request, cancellationToken));
 
+    /// <summary>Cash from the driver, a transfer…: marks it paid, issues the invoice and emails it.</summary>
+    [HttpPost("payments/{id:guid}/received")]
+    public async Task<ActionResult<PaymentListItem>> Received(Guid id, CancellationToken cancellationToken) =>
+        Ok(await payments.MarkReceivedAsync(id, cancellationToken));
+
     [HttpGet("invoices/{id:guid}/pdf")]
     public async Task<IActionResult> InvoicePdf(Guid id, CancellationToken cancellationToken)
     {

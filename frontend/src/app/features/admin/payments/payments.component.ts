@@ -15,9 +15,16 @@ import {
   DialogOpenDirective,
 } from '@/shared/components/dialog'
 import { finalize } from 'rxjs'
-import { InvoiceSummary, PaymentListItem, PaymentStatus } from '@/core/models'
+import {
+  InvoiceSummary,
+  isManualPayment,
+  PaymentListItem,
+  PaymentStatus,
+} from '@/core/models'
 import { AdminPaymentsService } from '@/core/services/admin-payments.service'
 import { ToastService } from '@/core/services/toast.service'
+import { PAYMENT_METHOD_LABEL } from '@/core/utils/status-labels'
+import { DialogService } from '@/shared/components/dialog/dialog.service'
 import { saveBlob } from '@/core/utils/download'
 import { todayInOffice } from '@/core/utils/local-time'
 import { problemMessage } from '@/core/utils/problem'
@@ -29,7 +36,7 @@ import { ADMIN_TEXT } from '@/features/admin/admin-texts'
 const STATUSES: { value: PaymentStatus | null; label: string }[] = [
   { value: null, label: $localize`All` },
   { value: 'Succeeded', label: $localize`Paid` },
-  { value: 'Pending', label: $localize`Pending` },
+  { value: 'Pending', label: $localize`Pending / to collect` },
   { value: 'Failed', label: $localize`Not completed` },
   { value: 'PartiallyRefunded', label: $localize`Partly refunded` },
   { value: 'Refunded', label: $localize`Refunded` },
@@ -74,6 +81,8 @@ export class PaymentsComponent implements OnInit {
   private readonly toast = inject(ToastService)
   private readonly api = inject(AdminPaymentsService)
   private readonly fb = inject(FormBuilder).nonNullable
+  private readonly dialog = inject(DialogService)
+  protected readonly methodLabel = PAYMENT_METHOD_LABEL
 
   protected readonly statuses = STATUSES
   protected readonly statusLabel = STATUS_LABEL
@@ -107,8 +116,35 @@ export class PaymentsComponent implements OnInit {
     this.load()
   }
 
+  /** Cash, transfer…: waiting for the office to mark it received. */
+  protected canMarkReceived(p: PaymentListItem): boolean {
+    return p.status === 'Pending' && isManualPayment(p.method)
+  }
+
+  protected markReceived(p: PaymentListItem): void {
+    this.dialog
+      .confirm({
+        title: $localize`Payment received?`,
+        message: $localize`${this.money.transform(p.amount, p.currency)}:amount: for ${p.bookingReference}:reference:. The invoice is issued and emailed to the client.`,
+        confirm: $localize`Mark as received`,
+      })
+      .subscribe(ok => {
+        if (!ok) return
+        this.api.received(p.id).subscribe({
+          next: updated => {
+            this.payments.update(list =>
+              list.map(x => (x.id === updated.id ? updated : x))
+            )
+            this.notify($localize`Payment received; invoice issued.`)
+          },
+          error: err => this.notify(problemMessage(err), true),
+        })
+      })
+  }
+
   protected canRefund(p: PaymentListItem): boolean {
     return (
+      !isManualPayment(p.method) &&
       (p.status === 'Succeeded' || p.status === 'PartiallyRefunded') &&
       p.refundedAmount < p.amount
     )

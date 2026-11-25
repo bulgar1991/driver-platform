@@ -37,6 +37,16 @@ internal sealed partial class EnglishTexts : Texts
     public override string TimeDoesNotExist => "This time does not exist locally (clocks go forward). Pick another time.";
     public override string BookAhead(int hours) => $"Book at least {hours} hours ahead.";
     public override string OneYearAhead => "Bookings open up to one year ahead.";
+    public override string RideTooFarBack(int days) => $"Rides can be entered up to {days} days after they took place.";
+    public override string BookingIsConfirmed => "Your booking is confirmed.";
+    public override string PayDriverCash(string amount) => $"Please pay {amount} in cash to the driver on the day.";
+    public override string PayDriverCard(string amount) => $"Please pay {amount} by card to the driver on the day.";
+    public override string CollectFromClient(string amount) => $"Collect {amount} from the client.";
+    public override string PaymentNotToCollect => "This payment is not waiting to be collected.";
+    public override string CashNotOffered => "Payment to the driver is not offered.";
+    public override string CustomerNotFound => "Customer not found.";
+    public override string CustomerRequired => "Choose a customer or enter one.";
+    public override string PriceBelowZero => "The total cannot be below zero.";
     public override string FlightTimeNearPickup => "Takeoff and landing must be within two days of the pickup time.";
     public override string NoMeetingPointYet(string zone) => $"{zone} has no meeting point configured yet. Please contact us.";
     public override string NotAMeetingPoint(string requested, string zone) => $"\"{requested}\" is not a meeting point of {zone}.";

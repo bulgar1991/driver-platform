@@ -37,6 +37,16 @@ internal sealed partial class ItalianTexts : Texts
     public override string TimeDoesNotExist => "Quest'ora non esiste (passaggio all'ora legale). Scelga un altro orario.";
     public override string BookAhead(int hours) => $"Prenoti con almeno {hours} ore di anticipo.";
     public override string OneYearAhead => "Si può prenotare fino a un anno prima.";
+    public override string RideTooFarBack(int days) => $"Le corse si possono inserire fino a {days} giorni dopo.";
+    public override string BookingIsConfirmed => "La Sua prenotazione è confermata.";
+    public override string PayDriverCash(string amount) => $"Il giorno della corsa paghi {amount} in contanti all'autista.";
+    public override string PayDriverCard(string amount) => $"Il giorno della corsa paghi {amount} con carta all'autista.";
+    public override string CollectFromClient(string amount) => $"Incassare {amount} dal cliente.";
+    public override string PaymentNotToCollect => "Questo pagamento non è da incassare.";
+    public override string CashNotOffered => "Il pagamento all'autista non è disponibile.";
+    public override string CustomerNotFound => "Cliente non trovato.";
+    public override string CustomerRequired => "Scelga un cliente o ne inserisca uno.";
+    public override string PriceBelowZero => "Il totale non può essere negativo.";
     public override string FlightTimeNearPickup => "Decollo e atterraggio devono essere entro due giorni dall'orario di partenza.";
     public override string NoMeetingPointYet(string zone) => $"{zone} non ha ancora un punto d'incontro. La preghiamo di contattarci.";
     public override string NotAMeetingPoint(string requested, string zone) => $"\"{requested}\" non è un punto d'incontro di {zone}.";

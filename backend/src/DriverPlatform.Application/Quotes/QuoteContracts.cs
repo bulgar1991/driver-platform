@@ -122,4 +122,6 @@ public sealed record BookingOptionsResponse(
     decimal ReturnDiscountPercent,
     int MinLeadTimeHours,
     string Currency,
-    IReadOnlyList<PublicSurcharge> Surcharges);
+    IReadOnlyList<PublicSurcharge> Surcharges,
+    /// <summary>The client may pay the driver in cash instead of online.</summary>
+    bool CashOnBoard = false);

@@ -40,7 +40,10 @@ public sealed record DriverBookingView(
     decimal DistanceKm,
     int DurationMinutes,
     bool CanPickUp,
-    bool CanComplete);
+    bool CanComplete,
+    /// <summary>The amount to collect from the client at the ride (cash or card on board); null when nothing is due.</summary>
+    decimal? CollectAmount = null,
+    string? Currency = null);
 
 public sealed record DriverShiftView(
     Guid Id,
@@ -212,6 +215,7 @@ public sealed class DriverPortalService(
                     b.Client.NotesForDriver,
                     b.DistanceKm, b.DurationMinutes,
                     a.Status == AssignmentStatus.Confirmed && b.Status == BookingStatus.Assigned && now >= b.PickupAt - PickupWindow,
-                    a.Status == AssignmentStatus.Confirmed && b.Status == BookingStatus.PickedUp)).ToList()))
+                    a.Status == AssignmentStatus.Confirmed && b.Status == BookingStatus.PickedUp,
+                    b.CollectOnBoard ? b.TotalPrice : null, b.Currency)).ToList()))
         .ToList());
 }

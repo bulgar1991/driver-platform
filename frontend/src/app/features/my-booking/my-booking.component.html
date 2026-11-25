@@ -139,11 +139,17 @@
         <div class="my-booking__fact">
           <dt i18n>Payment</dt>
           <dd>
-            {{ paymentLabel[p.status] }}
+            @if (p.status === 'Pending' && isManual(p.method)) {
+              <ng-container i18n="payment still due">To pay</ng-container>
+            } @else {
+              {{ paymentLabel[p.status] }}
+            }
             @if (p.method === 'PayPal') {
               · PayPal
-            } @else if (p.method) {
+            } @else if (p.method === 'Card') {
               · <ng-container i18n="payment method">card</ng-container>
+            } @else if (p.method) {
+              · {{ methodLabel[p.method] }}
             }
             @if (p.refundedAmount > 0) {
               ·

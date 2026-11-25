@@ -17,6 +17,12 @@ public interface IPaymentService
     /// <summary>Opens a payment page for the booking (and its return leg) and returns its URL.</summary>
     Task<string> StartCheckoutAsync(Booking outbound, CancellationToken cancellationToken);
 
+    /// <summary>
+    /// A booking paid outside Stripe (cash or card to the driver, at the office, by transfer…): it is confirmed now,
+    /// the payment waits until the office marks it received. Sends the client the confirmation, without an invoice.
+    /// </summary>
+    Task<Payment> RecordManualAsync(Booking outbound, PaymentMethod method, CancellationToken cancellationToken);
+
     /// <summary>Stripe webhook: verifies the signature, then handles the event.</summary>
     Task HandleWebhookAsync(string payload, string signature, CancellationToken cancellationToken);
 
@@ -81,6 +87,44 @@ public sealed class PaymentService(
         db.Payments.Add(payment);
         await db.SaveChangesAsync(cancellationToken);
         return session.Url;
+    }
+
+    public const string ManualProvider = "Manual";
+
+    public async Task<Payment> RecordManualAsync(Booking outbound, PaymentMethod method, CancellationToken cancellationToken)
+    {
+        if (!method.IsManual())
+        {
+            throw new RequestValidationException("paymentMethod", Texts.Current.CashNotOffered);
+        }
+        var client = outbound.Client ??= await db.Clients.FirstAsync(c => c.Id == outbound.ClientId, cancellationToken);
+        var legs = await db.LoadLegsAsync(outbound, cancellationToken);
+        var payment = new Payment
+        {
+            BookingId = outbound.Id,
+            Status = PaymentStatus.Pending,
+            Provider = ManualProvider,
+            Method = method,
+            Amount = legs.Sum(b => b.TotalPrice),
+            Currency = outbound.Currency,
+        };
+        foreach (var leg in legs)
+        {
+            leg.CollectOnBoard = method.IsOnBoard();
+            if (leg.Status == BookingStatus.AwaitingPayment)
+            {
+                leg.Status = BookingStatus.New;
+            }
+        }
+        db.Payments.Add(payment);
+        audit.Log("payment.manual", nameof(Payment), payment.Id.ToString(), new { outbound.Reference, payment.Amount, method });
+        await db.SaveChangesAsync(cancellationToken);
+
+        if (method is not (PaymentMethod.PaidByPartner or PaymentMethod.FollowingInvoice))
+        {
+            await emails.SendBookedAsync(outbound, legs, method, cancellationToken);
+        }
+        return payment;
     }
 
     public async Task HandleWebhookAsync(string payload, string signature, CancellationToken cancellationToken)

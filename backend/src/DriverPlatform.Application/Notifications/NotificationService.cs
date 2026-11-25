@@ -67,7 +67,7 @@ public sealed class NotificationService(
         if (byEmail)
         {
             var lines = shift.Bookings.Where(b => b.Status != BookingStatus.Cancelled).OrderBy(b => b.PickupAt)
-                .Select(b => b.Describe(t)).ToList();
+                .Select(b => b.CollectOnBoard ? $"{b.Describe(t)} – {t.CollectFromClient(t.Money(b.TotalPrice, b.Currency))}" : b.Describe(t)).ToList();
             await SendEmailAsync(kind, driver.Email!, $"{driver.FirstName} {driver.LastName}", headline,
                 [t.Hello(driver.FirstName), headline, .. lines], (t.OpenMyShifts, url),
                 log => { log.DriverId = driver.Id; log.AssignmentId = shift.Id; }, cancellationToken);

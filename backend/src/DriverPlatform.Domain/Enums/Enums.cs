@@ -12,6 +12,8 @@ public enum BookingSource
     Website,
     Booking,
     Partner,
+    /// <summary>Entered by the office (phone, WhatsApp, email).</summary>
+    Office,
 }
 
 public enum BookingStatus
@@ -28,8 +30,20 @@ public enum BookingStatus
 
 public enum PaymentMethod
 {
+    /// <summary>Online, through Stripe.</summary>
     Card,
     PayPal,
+    /// <summary>Paid to the driver at the ride.</summary>
+    CashOnBoard,
+    CardOnBoard,
+    /// <summary>Paid at the office.</summary>
+    CashAtOffice,
+    BankTransfer,
+    /// <summary>The partner collected it from the client.</summary>
+    PaidByPartner,
+    /// <summary>On a later invoice (monthly statement and the like).</summary>
+    FollowingInvoice,
+    Other,
 }
 
 public enum PaymentStatus

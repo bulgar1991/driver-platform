@@ -24,6 +24,14 @@ export class AdminPaymentsService {
     )
   }
 
+  /** Cash from the driver, a transfer…: marks it paid, issues and emails the invoice. */
+  received(id: string): Observable<PaymentListItem> {
+    return this.http.post<PaymentListItem>(
+      `${this.url}/payments/${id}/received`,
+      null
+    )
+  }
+
   /** Downloads go through HttpClient so the bearer token is sent. */
   invoicePdf(id: string): Observable<Blob> {
     return this.http.get(`${this.url}/invoices/${id}/pdf`, {

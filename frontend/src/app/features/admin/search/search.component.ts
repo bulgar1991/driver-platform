@@ -139,6 +139,7 @@ export class SearchComponent implements OnInit {
     { value: 'Website', label: $localize`Website` },
     { value: 'Partner', label: $localize`Partner API / panel` },
     { value: 'Booking', label: $localize`Booking.com` },
+    { value: 'Office', label: $localize`Office (phone, email)` },
   ]
   protected readonly payments: { value: PaymentFilter; label: string }[] = [
     { value: 'Any', label: $localize`Any` },

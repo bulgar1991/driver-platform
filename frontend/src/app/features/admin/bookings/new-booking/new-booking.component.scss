@@ -1,0 +1,127 @@
+.new-booking {
+  @apply mx-auto flex w-full max-w-5xl flex-col gap-5;
+
+  &__header {
+    @apply flex flex-wrap items-end justify-between gap-4;
+  }
+
+  &__form {
+    @apply flex flex-col gap-5;
+  }
+
+  &__card {
+    @apply flex flex-col gap-4 rounded-sm border border-ink-600 bg-ink-900 p-4 sm:p-6;
+
+    &--route {
+      @apply border-l-2 border-l-gold;
+    }
+  }
+
+  &__title {
+    @apply text-xs uppercase tracking-widest text-gold;
+  }
+
+  &__subtitle {
+    @apply text-sm text-ivory;
+  }
+
+  &__grid {
+    @apply grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2 lg:grid-cols-3;
+
+    &--2 {
+      @apply lg:grid-cols-2;
+    }
+  }
+
+  &__span-2 {
+    @apply sm:col-span-2;
+  }
+
+  &__field {
+    @apply flex flex-col gap-1.5 pb-4;
+  }
+
+  &__label {
+    @apply text-xs uppercase tracking-widest text-ivory-400;
+  }
+
+  &__error {
+    @apply text-xs text-danger;
+  }
+
+  &__check {
+    @apply self-center pb-4;
+  }
+
+  &__muted {
+    @apply text-sm text-ivory-400;
+  }
+
+  &__inline {
+    @apply ml-1 text-gold underline underline-offset-2;
+  }
+
+  &__picked {
+    @apply flex flex-wrap items-center gap-3 rounded-sm border border-ink-600 bg-ink-800 px-3 py-2 text-sm text-ivory;
+  }
+
+  &__costs {
+    @apply flex flex-col gap-2 border-t border-ink-700 pt-4;
+  }
+
+  &__costs-head {
+    @apply flex items-center justify-between gap-3;
+  }
+
+  &__cost {
+    @apply flex items-start gap-3;
+  }
+
+  &__cost-text {
+    @apply min-w-0 flex-1;
+  }
+
+  &__cost-amount {
+    @apply w-32 shrink-0 sm:w-40;
+  }
+
+  &__total {
+    @apply flex items-baseline justify-end gap-3 border-t border-ink-700 pt-4 text-ivory;
+
+    span {
+      @apply text-xs uppercase tracking-widest text-ivory-400;
+    }
+
+    strong {
+      @apply text-2xl font-normal text-gold;
+    }
+  }
+
+  &__actions {
+    @apply flex flex-wrap justify-end gap-3;
+  }
+
+  &__done {
+    @apply flex gap-4 rounded-sm border border-gold/40 bg-ink-900 p-6;
+  }
+
+  &__done-icon {
+    @apply h-8 w-8 shrink-0 text-gold;
+  }
+
+  &__done-body {
+    @apply flex min-w-0 flex-1 flex-col gap-3;
+  }
+
+  &__link {
+    @apply flex flex-wrap items-center gap-3;
+
+    code {
+      @apply min-w-0 flex-1 break-all rounded-sm bg-ink-800 px-3 py-2 text-xs text-ivory;
+    }
+  }
+
+  &__done-actions {
+    @apply flex flex-wrap gap-3;
+  }
+}

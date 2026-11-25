@@ -53,6 +53,10 @@
     @apply block text-xs text-ivory-400;
   }
 
+  &__collect {
+    @apply flex items-center gap-2 rounded-sm border border-warning/50 bg-warning/10 px-3 py-2 text-sm font-medium text-warning;
+  }
+
   &__note {
     @apply my-1 border-l-2 border-gold pl-3 text-xs leading-relaxed text-ivory-200;
 

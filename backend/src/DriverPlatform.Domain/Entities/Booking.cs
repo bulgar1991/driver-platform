@@ -73,6 +73,9 @@ public class Booking : Entity
     public DateTimeOffset? CancelledAt { get; set; }
     public string? CancellationReason { get; set; }
 
+    /// <summary>The driver collects the price at the ride (cash or card on board), until the office marks it received.</summary>
+    public bool CollectOnBoard { get; set; }
+
     public ICollection<Payment> Payments { get; set; } = [];
     public ICollection<Invoice> Invoices { get; set; } = [];
 }

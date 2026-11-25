@@ -40,6 +40,16 @@ internal sealed partial class GermanTexts : Texts
     public override string TimeDoesNotExist => "Diese Uhrzeit gibt es nicht (Zeitumstellung). Bitte wählen Sie eine andere.";
     public override string BookAhead(int hours) => $"Bitte buchen Sie mindestens {hours} Stunden im Voraus.";
     public override string OneYearAhead => "Buchungen sind bis zu einem Jahr im Voraus möglich.";
+    public override string RideTooFarBack(int days) => $"Fahrten können bis zu {days} Tage danach erfasst werden.";
+    public override string BookingIsConfirmed => "Ihre Buchung ist bestätigt.";
+    public override string PayDriverCash(string amount) => $"Bitte zahlen Sie am Fahrtag {amount} in bar beim Fahrer.";
+    public override string PayDriverCard(string amount) => $"Bitte zahlen Sie am Fahrtag {amount} mit Karte beim Fahrer.";
+    public override string CollectFromClient(string amount) => $"{amount} beim Kunden kassieren.";
+    public override string PaymentNotToCollect => "Diese Zahlung ist nicht offen.";
+    public override string CashNotOffered => "Zahlung beim Fahrer ist nicht möglich.";
+    public override string CustomerNotFound => "Kunde nicht gefunden.";
+    public override string CustomerRequired => "Wählen Sie einen Kunden oder geben Sie einen ein.";
+    public override string PriceBelowZero => "Der Gesamtbetrag darf nicht negativ sein.";
     public override string FlightTimeNearPickup => "Abflug und Landung müssen höchstens zwei Tage von der Abholzeit entfernt sein.";
     public override string NoMeetingPointYet(string zone) => $"Für {zone} ist noch kein Treffpunkt eingerichtet. Bitte kontaktieren Sie uns.";
     public override string NotAMeetingPoint(string requested, string zone) => $"„{requested}“ ist kein Treffpunkt von {zone}.";

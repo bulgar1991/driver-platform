@@ -10,6 +10,8 @@ public sealed class PaymentsOptions
     public string FrontendBaseUrl { get; set; } = "http://localhost:4200";
     /// <summary>Stripe's minimum is 30 minutes.</summary>
     public int CheckoutExpiryMinutes { get; set; } = 30;
+    /// <summary>Website clients may choose to pay the driver in cash instead of online. Off unless switched on.</summary>
+    public bool CashOnBoard { get; set; }
 }
 
 /// <summary>The seller printed on invoices. To fill in with the company's registration data.</summary>

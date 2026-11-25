@@ -313,6 +313,10 @@ namespace DriverPlatform.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(2000)")
                         .HasColumnName("client_notes");
 
+                    b.Property<bool>("CollectOnBoard")
+                        .HasColumnType("boolean")
+                        .HasColumnName("collect_on_board");
+
                     b.Property<DateTimeOffset?>("CompletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("completed_at");

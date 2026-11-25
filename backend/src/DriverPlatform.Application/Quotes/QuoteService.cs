@@ -7,10 +7,11 @@ using DriverPlatform.Domain.Entities;
 using DriverPlatform.Domain.Enums;
 using DriverPlatform.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace DriverPlatform.Application.Quotes;
 
-public sealed class QuoteService(IAppDbContext db, IRoutingService routing, TimeProvider clock) : IQuoteService
+public sealed class QuoteService(IAppDbContext db, IRoutingService routing, IOptions<PaymentsOptions> payments, TimeProvider clock) : IQuoteService
 {
     /// <summary>Pickups closer than this to the drop-off are refused.</summary>
     private const double MinTripMeters = 300;
@@ -41,10 +42,20 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
             settings.ReturnDiscountPercent,
             settings.MinLeadTimeHours,
             PricingDefaults.Currency,
-            surcharges);
+            surcharges,
+            payments.Value.CashOnBoard);
     }
 
-    public async Task<QuoteResponse> QuoteAsync(QuoteRequest request, CancellationToken cancellationToken)
+    public Task<QuoteResponse> QuoteAsync(QuoteRequest request, CancellationToken cancellationToken) =>
+        QuoteAsync(request, staff: false, cancellationToken);
+
+    public Task<QuoteResponse> QuoteForStaffAsync(QuoteRequest request, CancellationToken cancellationToken) =>
+        QuoteAsync(request, staff: true, cancellationToken);
+
+    /// <summary>How far back the office can enter a ride that already happened.</summary>
+    public const int StaffDaysBack = 31;
+
+    private async Task<QuoteResponse> QuoteAsync(QuoteRequest request, bool staff, CancellationToken cancellationToken)
     {
         var settings = await db.LoadSettingsAsync(cancellationToken);
         var zones = await db.Zones.AsNoTracking().Where(z => z.IsActive).ToListAsync(cancellationToken);
@@ -60,12 +71,12 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
         var outboundPlan = PlanLeg(
             request.Pickup, request.Dropoff, request.PickupAt,
             request.PickupMeetingPoint, request.DropoffMeetingPoint,
-            zones, settings, errors, texts, "");
+            zones, settings, errors, texts, "", staff);
         // The return leg runs the other way: the outbound drop-off meeting point becomes the pickup one.
         var returnPlan = request.Return is null ? null : PlanLeg(
             request.Dropoff, request.Pickup, request.Return.PickupAt,
             request.DropoffMeetingPoint, request.PickupMeetingPoint,
-            zones, settings, errors, texts, "return.");
+            zones, settings, errors, texts, "return.", staff);
         errors.ThrowIfAny();
 
         var outbound = await RouteLegAsync(outboundPlan!, surcharges, texts, cancellationToken);
@@ -143,7 +154,8 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
         PricingSettings settings,
         ValidationErrors errors,
         Texts texts,
-        string prefix)
+        string prefix,
+        bool staff)
     {
         var from = new Coordinate(pickup.Latitude, pickup.Longitude);
         var to = new Coordinate(dropoff.Latitude, dropoff.Longitude);
@@ -178,9 +190,9 @@ public sealed class QuoteService(IAppDbContext db, IRoutingService routing, Time
             errors.Add(prefix + "pickupAt", texts.TimeDoesNotExist);
             valid = false;
         }
-        else if (utc < now.AddHours(settings.MinLeadTimeHours))
+        else if (staff ? utc < now.AddDays(-StaffDaysBack) : utc < now.AddHours(settings.MinLeadTimeHours))
         {
-            errors.Add(prefix + "pickupAt", texts.BookAhead(settings.MinLeadTimeHours));
+            errors.Add(prefix + "pickupAt", staff ? texts.RideTooFarBack(StaffDaysBack) : texts.BookAhead(settings.MinLeadTimeHours));
             valid = false;
         }
         else if (utc > now.AddDays(PricingDefaults.MaxDaysAhead))

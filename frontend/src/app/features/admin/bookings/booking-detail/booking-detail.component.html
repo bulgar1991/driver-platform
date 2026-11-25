@@ -171,12 +171,36 @@
       >
       <p>
         {{ b.totalPrice | money: b.currency }}
-        <span class="booking-detail__muted"
-          ><ng-container i18n
-            >Payment: {{ b.paymentStatus ?? 'none' }}</ng-container
-          ></span
-        >
+        <span class="booking-detail__muted">
+          @if (b.paymentMethod) {
+            · {{ methodLabel[b.paymentMethod] }}
+          }
+          @if (b.paymentStatus) {
+            · {{ paymentLabel[b.paymentStatus] }}
+          } @else {
+            · <ng-container i18n>no payment</ng-container>
+          }
+        </span>
       </p>
+      @if (b.collectOnBoard) {
+        <p class="booking-detail__collect">
+          <ng-container i18n
+            >The driver collects {{ b.totalPrice | money: b.currency }} at the
+            ride.</ng-container
+          >
+        </p>
+      }
+      @if (canMarkReceived()) {
+        <button
+          appButton
+          size="sm"
+          variant="outline"
+          type="button"
+          [disabled]="busy()"
+          (click)="markReceived(b)"
+          ><ng-container i18n>Mark as received</ng-container></button
+        >
+      }
       @if (b.status === 'Cancelled') {
         <p class="booking-detail__muted">
           <ng-container i18n

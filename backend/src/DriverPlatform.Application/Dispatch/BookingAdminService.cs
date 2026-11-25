@@ -174,7 +174,7 @@ public sealed class BookingAdminService(IAppDbContext db, IReviewService reviews
         var payment = await db.Payments.AsNoTracking()
             .Where(p => p.BookingId == paymentOwner)
             .OrderByDescending(p => p.CreatedAt)
-            .Select(p => (PaymentStatus?)p.Status)
+            .Select(p => new { p.Id, p.Status, p.Method })
             .FirstOrDefaultAsync(cancellationToken);
         var linked = b.ReturnOfBookingId is { } outboundId
             ? await db.Bookings.Where(x => x.Id == outboundId).Select(x => x.Reference).FirstOrDefaultAsync(cancellationToken)
@@ -188,7 +188,7 @@ public sealed class BookingAdminService(IAppDbContext db, IReviewService reviews
             b.FlightNumber, b.FlightDepartsAt, b.FlightLandsAt, b.NameSign, b.NameSignText, b.ClientNotes, b.InternalNotes, b.VehicleCategory,
             b.DistanceKm, b.DurationMinutes, b.TotalPrice, b.Currency, b.PriceLines,
             new BookingClient(item.ClientName, b.Client.Email, b.Client.Phone, b.Client.Language, b.Client.NotesForDriver, rides),
-            payment, b.AssignmentId, item.DriverName, item.VehiclePlate, linked, b.CancellationReason, b.CreatedAt,
-            b.Partner?.Name, b.ExternalReference);
+            payment?.Status, b.AssignmentId, item.DriverName, item.VehiclePlate, linked, b.CancellationReason, b.CreatedAt,
+            b.Partner?.Name, b.ExternalReference, payment?.Id, payment?.Method, b.CollectOnBoard);
     }
 }

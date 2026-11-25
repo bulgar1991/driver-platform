@@ -16,6 +16,7 @@ import { ButtonComponent } from '@/shared/components/button/button.component'
 import { IconComponent } from '@/shared/components/icon/icon.component'
 import { MapComponent } from '@/shared/components/map/map.component'
 import { StatusBadgeComponent } from '@/shared/components/status-badge/status-badge.component'
+import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { DurationPipe } from '@/shared/pipes/duration.pipe'
 import { TranslatedPipe } from '@/shared/pipes/translated.pipe'
 
@@ -38,6 +39,7 @@ export type RideAction = 'pickedUp' | 'completed'
     MapComponent,
     StatusBadgeComponent,
     DurationPipe,
+    MoneyPipe,
   ],
   templateUrl: './driver-ride.component.html',
   styleUrl: './driver-ride.component.scss',

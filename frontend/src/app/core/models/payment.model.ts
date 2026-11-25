@@ -1,7 +1,21 @@
 import { BookingLegSummary, BookingStatus } from './booking.model'
 import { VehicleCategory } from './vehicle.model'
 
-export type PaymentMethod = 'Card' | 'PayPal'
+export type PaymentMethod =
+  | 'Card'
+  | 'PayPal'
+  | 'CashOnBoard'
+  | 'CardOnBoard'
+  | 'CashAtOffice'
+  | 'BankTransfer'
+  | 'PaidByPartner'
+  | 'FollowingInvoice'
+  | 'Other'
+
+/** Paid outside Stripe: the office marks it received. */
+export function isManualPayment(method: PaymentMethod | null): boolean {
+  return method !== null && method !== 'Card' && method !== 'PayPal'
+}
 
 export type PaymentStatus =
   'Pending' | 'Succeeded' | 'Failed' | 'Refunded' | 'PartiallyRefunded'

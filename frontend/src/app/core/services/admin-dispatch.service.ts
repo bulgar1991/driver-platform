@@ -9,6 +9,10 @@ import {
   BookingQuery,
   BookingStatus,
   Dashboard,
+  OfficeBookingRequest,
+  OfficeBookingResult,
+  QuoteRequest,
+  Quote,
   PagedResult,
   Shift,
   ShiftRequest,
@@ -21,6 +25,17 @@ import { API_BASE_URL } from '../tokens/api-base-url.token'
 export class AdminDispatchService {
   private readonly http = inject(HttpClient)
   private readonly url = `${inject(API_BASE_URL)}/admin`
+
+  /** Tariff prices for a ride the office is entering (no minimum notice). */
+  quote(trip: QuoteRequest): Observable<Quote> {
+    return this.http.post<Quote>(`${this.url}/bookings/quote`, trip)
+  }
+
+  createBooking(
+    request: OfficeBookingRequest
+  ): Observable<OfficeBookingResult> {
+    return this.http.post<OfficeBookingResult>(`${this.url}/bookings`, request)
+  }
 
   dashboard(): Observable<Dashboard> {
     return this.http.get<Dashboard>(`${this.url}/dashboard`)

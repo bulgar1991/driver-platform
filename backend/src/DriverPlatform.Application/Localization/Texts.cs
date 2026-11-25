@@ -98,6 +98,16 @@ public abstract partial class Texts
     public abstract string TimeDoesNotExist { get; }
     public abstract string BookAhead(int hours);
     public abstract string OneYearAhead { get; }
+    public abstract string RideTooFarBack(int days);
+    public abstract string BookingIsConfirmed { get; }
+    public abstract string PayDriverCash(string amount);
+    public abstract string PayDriverCard(string amount);
+    public abstract string CollectFromClient(string amount);
+    public abstract string PaymentNotToCollect { get; }
+    public abstract string CashNotOffered { get; }
+    public abstract string CustomerNotFound { get; }
+    public abstract string CustomerRequired { get; }
+    public abstract string PriceBelowZero { get; }
     public abstract string FlightTimeNearPickup { get; }
     public abstract string NoMeetingPointYet(string zone);
     public abstract string NotAMeetingPoint(string requested, string zone);

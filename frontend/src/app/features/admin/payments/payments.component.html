@@ -110,9 +110,7 @@
                 {{ statusLabel[p.status] }}
               </span>
               @if (p.method) {
-                <span class="payments__muted"
-                  >{{ p.method }} · {{ p.provider }}</span
-                >
+                <span class="payments__muted">{{ methodLabel[p.method] }}</span>
               }
             </td>
             <td class="payments__nowrap">
@@ -147,6 +145,16 @@
               </div>
             </td>
             <td>
+              @if (canMarkReceived(p)) {
+                <button
+                  appButton
+                  size="sm"
+                  variant="outline"
+                  type="button"
+                  (click)="markReceived(p)"
+                  ><ng-container i18n>Mark as received</ng-container></button
+                >
+              }
               @if (canRefund(p)) {
                 <button
                   appButton

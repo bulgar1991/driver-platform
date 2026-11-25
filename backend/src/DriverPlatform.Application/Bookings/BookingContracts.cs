@@ -42,6 +42,8 @@ public sealed record CreateBookingRequest
     /// <summary>Must be true: consent to processing personal data for the ride (GDPR).</summary>
     public bool GdprConsent { get; init; }
     public bool MarketingConsent { get; init; }
+    /// <summary>Pay the driver in cash on the day instead of online; only when the site offers it.</summary>
+    public bool PayCashOnBoard { get; init; }
 }
 
 public sealed record BookingLegSummary(

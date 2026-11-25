@@ -2,7 +2,7 @@ import { GeoPoint, MeetingPoint } from './geo.model'
 import { LegPrice, QuoteRequest } from './quote.model'
 import { VehicleCategory } from './vehicle.model'
 
-export type BookingSource = 'Website' | 'Booking' | 'Partner'
+export type BookingSource = 'Website' | 'Booking' | 'Partner' | 'Office'
 
 export type BookingStatus =
   | 'AwaitingPayment'
@@ -64,6 +64,8 @@ export interface CreateBookingRequest {
   notes?: string | null
   gdprConsent: boolean
   marketingConsent: boolean
+  /** Pay the driver in cash on the day; only when the site offers it. */
+  payCashOnBoard?: boolean
 }
 
 export interface BookingLegSummary {

@@ -61,4 +61,8 @@
   &__buttons {
     @apply flex flex-wrap justify-end gap-2;
   }
+
+  &__collect {
+    @apply rounded-sm border border-warning/40 bg-warning/10 px-3 py-2 text-sm text-ivory;
+  }
 }

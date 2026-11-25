@@ -10,6 +10,15 @@
       [status]="ride().status"
       [text]="statusText[ride().status]" />
   </header>
+  @if (ride().collectAmount; as amount) {
+    <p class="driver-ride__collect">
+      <app-icon class="driver-ride__icon" name="wallet" />
+      <ng-container i18n
+        >Collect {{ amount | money: ride().currency ?? undefined }} from the
+        client</ng-container
+      >
+    </p>
+  }
 
   <div class="driver-ride__stops">
     <div class="driver-ride__stop">
