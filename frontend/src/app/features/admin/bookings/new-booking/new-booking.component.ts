@@ -46,6 +46,7 @@ import {
 import {
   CustomerListItem,
   GeoPoint,
+  OfficeCustomerInput,
   LatLng,
   MapMarker,
   OfficeBookingRequest,
@@ -72,6 +73,10 @@ import {
 } from './map-picker/map-picker-dialog.component'
 import { MapComponent } from '@/shared/components/map/map.component'
 import { DurationPipe } from '@/shared/pipes/duration.pipe'
+import {
+  CustomerRecordData,
+  CustomerRecordDialogComponent,
+} from './customer-record/customer-record-dialog.component'
 import { MoneyPipe } from '@/shared/pipes/money.pipe'
 import { AddressInputComponent } from '@/features/booking/components/address-input/address-input.component'
 import { ADMIN_TEXT } from '@/features/admin/admin-texts'
@@ -141,20 +146,9 @@ export class NewBookingComponent implements OnInit {
     PaidByPartner: $localize`The partner collects it; no email to the client.`,
     FollowingInvoice: $localize`Billed later; no email to the client.`,
   }
-  protected readonly languages = [
-    { code: 'it', label: 'Italiano' },
-    { code: 'en', label: 'English' },
-    { code: 'de', label: 'Deutsch' },
-    { code: 'fr', label: 'Français' },
-  ]
 
   protected readonly form = this.fb.group({
     customerSearch: [''],
-    firstName: ['', [Validators.required, Validators.maxLength(100)]],
-    lastName: ['', [Validators.required, Validators.maxLength(100)]],
-    phone: ['', [Validators.required, Validators.maxLength(32)]],
-    email: ['', [Validators.email, Validators.maxLength(254)]],
-    language: ['it'],
     pickup: this.fb.control<GeoPoint | null>(null, Validators.required),
     dropoff: this.fb.control<GeoPoint | null>(null, Validators.required),
     date: [todayInOffice(), Validators.required],
@@ -181,6 +175,8 @@ export class NewBookingComponent implements OnInit {
   /** An existing customer picked from the search; their details are not typed again. */
   protected readonly customer = signal<CustomerListItem | null>(null)
   protected readonly customerResults = signal<CustomerListItem[]>([])
+  /** A customer not found in the search, registered in the "Customer record" popup. */
+  protected readonly newCustomer = signal<OfficeCustomerInput | null>(null)
   protected readonly partners = signal<Partner[]>([])
 
   protected readonly quote = signal<Quote | null>(null)
@@ -360,28 +356,38 @@ export class NewBookingComponent implements OnInit {
   }
 
   protected pickCustomer(event: MatAutocompleteSelectedEvent): void {
-    const c = event.option.value as CustomerListItem
-    this.customer.set(c)
-    const [first, ...rest] = c.name.split(' ')
-    this.form.patchValue({
-      firstName: first ?? '',
-      lastName: rest.join(' ') || '-',
-      phone: c.phone,
-      email: c.email ?? '',
-      language: c.language,
-    })
+    this.customer.set(event.option.value as CustomerListItem)
+    this.newCustomer.set(null)
   }
 
   protected clearCustomer(): void {
     this.customer.set(null)
-    this.form.patchValue({
-      customerSearch: '',
-      firstName: '',
-      lastName: '',
-      phone: '',
-      email: '',
-      language: 'it',
+    this.newCustomer.set(null)
+    this.form.patchValue({ customerSearch: '' })
+  }
+
+  protected editNewCustomer(): void {
+    this.openCustomerRecord().subscribe(record => {
+      if (record) this.newCustomer.set(record)
     })
+  }
+
+  /** The "Customer record" popup: a customer not found is registered with the booking. */
+  private openCustomerRecord() {
+    const search = this.form.controls.customerSearch.value
+    return this.dialog
+      .open<
+        CustomerRecordDialogComponent,
+        CustomerRecordData,
+        OfficeCustomerInput | undefined
+      >(CustomerRecordDialogComponent, {
+        width: '56rem',
+        data: {
+          search: typeof search === 'string' ? search : '',
+          value: this.newCustomer(),
+        },
+      })
+      .afterClosed()
   }
 
   protected vehicleName(category: string, name: string | null): string {
@@ -407,19 +413,23 @@ export class NewBookingComponent implements OnInit {
       this.error.set($localize`Fill in the fields marked in red.`)
       return
     }
+    if (!this.customer() && !this.newCustomer()) {
+      this.openCustomerRecord().subscribe(record => {
+        if (!record) return
+        this.newCustomer.set(record)
+        this.send()
+      })
+      return
+    }
+    this.send()
+  }
+
+  private send(): void {
     const v = this.form.getRawValue()
     const trip = this.tripRequest()!
     const request: OfficeBookingRequest = {
       clientId: this.customer()?.id ?? null,
-      customer: this.customer()
-        ? null
-        : {
-            firstName: v.firstName.trim(),
-            lastName: v.lastName.trim(),
-            phone: v.phone.trim(),
-            email: v.email.trim() || null,
-            language: v.language,
-          },
+      customer: this.customer() ? null : this.newCustomer(),
       trip,
       vehicleCategory: v.vehicleCategory,
       partnerId: v.partnerId || null,
@@ -468,6 +478,7 @@ export class NewBookingComponent implements OnInit {
   protected another(): void {
     this.created.set(null)
     this.customer.set(null)
+    this.newCustomer.set(null)
     this.quote.set(null)
     this.costs.clear()
     this.form.reset()

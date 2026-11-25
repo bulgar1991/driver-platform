@@ -86,6 +86,37 @@
               ><ng-container i18n>Change</ng-container></button
             >
           </div>
+        } @else if (newCustomer(); as n) {
+          <div class="new-booking__picked">
+            <app-icon name="users" />
+            <span
+              ><strong
+                >{{ n.company ? n.company + ' · ' : '' }}{{ n.firstName }}
+                {{ n.lastName }}</strong
+              >
+              · {{ n.phone }}
+              @if (n.email) {
+                · {{ n.email }}
+              }
+              · <ng-container i18n>new customer</ng-container></span
+            >
+            <button
+              appButton
+              size="sm"
+              variant="ghost"
+              type="button"
+              (click)="editNewCustomer()"
+              ><ng-container i18n>Edit</ng-container></button
+            >
+            <button
+              appButton
+              size="sm"
+              variant="ghost"
+              type="button"
+              (click)="clearCustomer()"
+              ><ng-container i18n>Change</ng-container></button
+            >
+          </div>
         } @else {
           <div class="new-booking__grid">
             <mat-form-field class="new-booking__span-2">
@@ -96,7 +127,9 @@
                 [matAutocomplete]="customers"
                 i18n-placeholder
                 placeholder="Name, phone or email" />
-              <mat-hint i18n>Or fill in a new customer below.</mat-hint>
+              <mat-hint i18n
+                >Not in the list? You register them when you save.</mat-hint
+              >
             </mat-form-field>
             <mat-autocomplete
               #customers="matAutocomplete"
@@ -111,47 +144,6 @@
                 </mat-option>
               }
             </mat-autocomplete>
-            <mat-form-field>
-              <mat-label i18n>First name</mat-label>
-              <input matInput formControlName="firstName" required />
-              <mat-error>{{ text.required }}</mat-error>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label i18n>Last name</mat-label>
-              <input matInput formControlName="lastName" required />
-              <mat-error>{{ text.required }}</mat-error>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label i18n>Phone</mat-label>
-              <input
-                matInput
-                type="tel"
-                formControlName="phone"
-                placeholder="+41 79 123 45 67"
-                required />
-              <mat-error>{{ text.required }}</mat-error>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label i18n>Email</mat-label>
-              <input
-                matInput
-                type="email"
-                formControlName="email"
-                i18n-placeholder
-                placeholder="For the confirmation" />
-              <mat-error>{{ text.validEmail }}</mat-error>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label i18n>Language</mat-label>
-              <mat-select
-                formControlName="language"
-                placeholder="Choose…"
-                i18n-placeholder="@@selectPlaceholderChoose">
-                @for (l of languages; track l.code) {
-                  <mat-option [value]="l.code">{{ l.label }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
           </div>
         }
         <div class="new-booking__grid">

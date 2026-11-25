@@ -182,17 +182,32 @@ export interface Dashboard {
   documentAlerts: DocumentAlert[]
 }
 
+/** A new customer registered with an office booking (the "Customer record" popup). */
+export interface OfficeCustomerInput {
+  firstName: string
+  lastName: string
+  phone: string
+  email: string | null
+  language: string
+  company: string | null
+  taxCode: string | null
+  vatNumber: string | null
+  recipientCode: string | null
+  pecEmail: string | null
+  billingEmail: string | null
+  address: string | null
+  postalCode: string | null
+  city: string | null
+  province: string | null
+  country: string | null
+  notes: string | null
+}
+
 /** Admin → Bookings → New booking: a ride taken by phone, WhatsApp or email. */
 export interface OfficeBookingRequest {
   /** An existing customer; otherwise `customer` is found by phone or created. */
   clientId: string | null
-  customer: {
-    firstName: string
-    lastName: string
-    phone: string
-    email: string | null
-    language: string
-  } | null
+  customer: OfficeCustomerInput | null
   trip: QuoteRequest
   vehicleCategory: VehicleCategory
   partnerId: string | null

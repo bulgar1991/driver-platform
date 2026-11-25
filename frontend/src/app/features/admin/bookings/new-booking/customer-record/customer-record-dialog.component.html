@@ -1,0 +1,120 @@
+<form [formGroup]="form" (ngSubmit)="save()" novalidate>
+  <app-dialog i18n-title title="Customer record">
+    <p class="customer-record__intro" i18n
+      >Not found among the customers: register them to save the booking.</p
+    >
+
+    <div class="customer-record__grid">
+      <mat-form-field class="customer-record__wide">
+        <mat-label i18n>Company</mat-label>
+        <input matInput formControlName="company" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>First name</mat-label>
+        <input matInput formControlName="firstName" required />
+        <mat-error>{{ required }}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>Last name</mat-label>
+        <input matInput formControlName="lastName" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>Mobile phone</mat-label>
+        <input
+          matInput
+          type="tel"
+          formControlName="phone"
+          placeholder="+41 79 123 45 67"
+          required />
+        <mat-error>{{ required }}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>Email for the rides</mat-label>
+        <input matInput type="email" formControlName="email" />
+        <mat-hint i18n>Gets the confirmation.</mat-hint>
+        <mat-error>{{ validEmail }}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>Language</mat-label>
+        <mat-select formControlName="language">
+          @for (l of languages; track l.code) {
+            <mat-option [value]="l.code">{{ l.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <h3 class="customer-record__title" i18n>Billing</h3>
+    <div class="customer-record__grid">
+      <mat-form-field>
+        <mat-label i18n>Tax code / social id</mat-label>
+        <input matInput formControlName="taxCode" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>VAT number</mat-label>
+        <input matInput formControlName="vatNumber" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>Recipient code (SDI)</mat-label>
+        <input
+          matInput
+          formControlName="recipientCode"
+          maxlength="7"
+          placeholder="0000000" />
+        <mat-error i18n>6 or 7 letters and digits.</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>Email for invoices</mat-label>
+        <input matInput type="email" formControlName="billingEmail" />
+        <mat-error>{{ validEmail }}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>PEC email</mat-label>
+        <input matInput type="email" formControlName="pecEmail" />
+        <mat-error>{{ validEmail }}</mat-error>
+      </mat-form-field>
+      <mat-form-field class="customer-record__wide">
+        <mat-label i18n>Address</mat-label>
+        <input
+          matInput
+          formControlName="address"
+          i18n-placeholder
+          placeholder="Street and number" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>Postcode</mat-label>
+        <input matInput formControlName="postalCode" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>City</mat-label>
+        <input matInput formControlName="city" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>Province / state</mat-label>
+        <input matInput formControlName="province" />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label i18n>Country</mat-label>
+        <input
+          matInput
+          formControlName="country"
+          maxlength="2"
+          placeholder="CH" />
+        <mat-error i18n>Two letters, e.g. CH or IT.</mat-error>
+      </mat-form-field>
+      <mat-form-field class="customer-record__full">
+        <mat-label i18n>Notes / web</mat-label>
+        <textarea matInput rows="2" formControlName="notes"></textarea>
+      </mat-form-field>
+    </div>
+
+    <div dialog-actions>
+      <button appButton variant="ghost" type="button" (click)="ref.close()"
+        ><ng-container i18n>Cancel</ng-container></button
+      >
+      <button appButton type="submit"
+        ><ng-container i18n>OK, save the booking</ng-container></button
+      >
+    </div>
+  </app-dialog>
+</form>

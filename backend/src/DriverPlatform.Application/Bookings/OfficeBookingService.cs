@@ -21,11 +21,50 @@ public sealed record AdditionalCostInput
     public decimal Amount { get; init; }
 }
 
+/// <summary>A new customer registered with the booking (the "Customer record" popup).</summary>
+public sealed record OfficeCustomerInput
+{
+    [Required, MaxLength(100)]
+    public required string FirstName { get; init; }
+    [MaxLength(100)]
+    public string LastName { get; init; } = "";
+    [Required, Phone, MaxLength(32)]
+    public required string Phone { get; init; }
+    [EmailAddress, MaxLength(254)]
+    public string? Email { get; init; }
+    [RegularExpression("^[a-z]{2}$")]
+    public string Language { get; init; } = "en";
+    [MaxLength(150)]
+    public string? Company { get; init; }
+    [MaxLength(32)]
+    public string? TaxCode { get; init; }
+    [MaxLength(32)]
+    public string? VatNumber { get; init; }
+    [RegularExpression("^[A-Za-z0-9]{6,7}$")]
+    public string? RecipientCode { get; init; }
+    [EmailAddress, MaxLength(254)]
+    public string? PecEmail { get; init; }
+    [EmailAddress, MaxLength(254)]
+    public string? BillingEmail { get; init; }
+    [MaxLength(200)]
+    public string? Address { get; init; }
+    [MaxLength(16)]
+    public string? PostalCode { get; init; }
+    [MaxLength(100)]
+    public string? City { get; init; }
+    [MaxLength(50)]
+    public string? Province { get; init; }
+    [RegularExpression("^[A-Za-z]{2}$")]
+    public string? Country { get; init; }
+    [MaxLength(1000)]
+    public string? Notes { get; init; }
+}
+
 public sealed record OfficeBookingRequest
 {
     /// <summary>An existing customer; otherwise <see cref="Customer"/> is found by phone (and email) or created.</summary>
     public Guid? ClientId { get; init; }
-    public PassengerInput? Customer { get; init; }
+    public OfficeCustomerInput? Customer { get; init; }
     /// <summary>One way: a return is entered as its own booking. Route start and end are required.</summary>
     [Required]
     public required QuoteRequest Trip { get; init; }
@@ -183,6 +222,20 @@ public sealed class OfficeBookingService(
             };
             db.Clients.Add(client);
         }
+        // Billing details typed in the customer record fill what the customer does not have yet.
+        var n = BookingFactory.Normalize;
+        client.Company ??= n(customer.Company);
+        client.TaxCode ??= n(customer.TaxCode)?.ToUpperInvariant();
+        client.VatNumber ??= n(customer.VatNumber)?.ToUpperInvariant();
+        client.RecipientCode ??= n(customer.RecipientCode)?.ToUpperInvariant();
+        client.PecEmail ??= n(customer.PecEmail)?.ToLowerInvariant();
+        client.BillingEmail ??= n(customer.BillingEmail)?.ToLowerInvariant();
+        client.Address ??= n(customer.Address);
+        client.PostalCode ??= n(customer.PostalCode);
+        client.City ??= n(customer.City);
+        client.Province ??= n(customer.Province);
+        client.Country ??= n(customer.Country)?.ToUpperInvariant();
+        client.OfficeNotes ??= n(customer.Notes);
         return client;
     }
 }

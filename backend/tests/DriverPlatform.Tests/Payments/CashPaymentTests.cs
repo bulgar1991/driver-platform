@@ -17,7 +17,7 @@ public sealed class CashPaymentTests
 {
     private static OfficeBookingRequest OfficeBooking(PaymentMethod method, decimal? price = null) => new()
     {
-        Customer = new PassengerInput { FirstName = "Luca", LastName = "Bianchi", Phone = "+39 333 1234567", Email = "luca@example.com", Language = "it" },
+        Customer = new OfficeCustomerInput { FirstName = "Luca", LastName = "Bianchi", Phone = "+39 333 1234567", Email = "luca@example.com", Language = "it" },
         // Today, a couple of hours from now: the office has no minimum notice.
         Trip = TestData.Trip() with { PickupAt = DateTime.UtcNow.AddHours(2), NameSign = true },
         VehicleCategory = VehicleCategory.Sedan,
@@ -62,6 +62,35 @@ public sealed class CashPaymentTests
         using var scope = factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         Assert.Empty(await db.Invoices.ToListAsync());
+    }
+
+    [Fact]
+    public async Task A_new_customer_is_registered_with_billing_details()
+    {
+        using var factory = new ApiFactory();
+        var admin = await factory.CreateAdminClientAsync();
+        var request = OfficeBooking(PaymentMethod.FollowingInvoice) with
+        {
+            Customer = new OfficeCustomerInput
+            {
+                FirstName = "Serghei", LastName = "Rossi", Phone = "+39 333 7654321", Language = "it",
+                Company = "Rossi Viaggi Srl", VatNumber = "it01234567890", RecipientCode = "abc1234",
+                BillingEmail = "Fatture@Rossi.example", Address = "Via Roma 1", PostalCode = "20121",
+                City = "Milano", Province = "MI", Country = "it",
+            },
+        };
+
+        var response = await admin.PostAsJsonAsync("/api/admin/bookings", request, TestData.Json);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+        using var scope = factory.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var client = await db.Clients.SingleAsync(c => c.FirstName == "Serghei");
+        Assert.Equal("Rossi Viaggi Srl", client.Company);
+        Assert.Equal("IT01234567890", client.VatNumber);
+        Assert.Equal("ABC1234", client.RecipientCode);
+        Assert.Equal("fatture@rossi.example", client.BillingEmail);
+        Assert.Equal(("Via Roma 1", "20121", "Milano", "MI", "IT"), (client.Address, client.PostalCode, client.City, client.Province, client.Country));
     }
 
     [Fact]
