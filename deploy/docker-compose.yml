@@ -50,6 +50,8 @@ services:
       Payments__FrontendBaseUrl: https://${SITE_DOMAIN}
       Payments__Stripe__SecretKey: ${STRIPE_SECRET_KEY}
       Payments__Stripe__WebhookSecret: ${STRIPE_WEBHOOK_SECRET}
+      # Website clients may choose to pay the driver in cash.
+      Payments__CashOnBoard: ${PAYMENTS_CASH_ON_BOARD:-false}
       Email__Host: ${SMTP_HOST}
       Email__Port: ${SMTP_PORT}
       Email__Username: ${SMTP_USERNAME}
