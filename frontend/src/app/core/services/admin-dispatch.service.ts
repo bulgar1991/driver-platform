@@ -49,6 +49,13 @@ export class AdminDispatchService {
     return this.http.get<RoadRoute>(`${this.url}/bookings/route`, { params })
   }
 
+  /** The shift as a WhatsApp text and the driver's number (digits), for a wa.me link. */
+  shiftWhatsApp(id: string): Observable<{ phone: string; text: string }> {
+    return this.http.get<{ phone: string; text: string }>(
+      `${this.url}/shifts/${id}/whatsapp`
+    )
+  }
+
   quote(trip: QuoteRequest): Observable<Quote> {
     return this.http.post<Quote>(`${this.url}/bookings/quote`, trip)
   }

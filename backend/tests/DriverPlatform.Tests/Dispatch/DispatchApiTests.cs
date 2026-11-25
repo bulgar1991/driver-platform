@@ -166,6 +166,24 @@ public sealed class DispatchApiTests
     }
 
     [Fact]
+    public async Task The_shift_comes_as_a_whatsapp_text_for_the_drivers_number()
+    {
+        using var factory = new ApiFactory();
+        var fleet = await FleetAsync(factory);
+        var booking = await factory.CreateClient().BookAndPayAsync();
+        var id = (await FindBooking(fleet.Staff, booking.Reference)).Id;
+        var shift = await Read<ShiftResult>(await CreateShift(fleet.Staff, fleet.Driver.Id, fleet.Sedan.Id, id), HttpStatusCode.Created);
+
+        var message = (await fleet.Staff.GetFromJsonAsync<DriverPlatform.Application.Notifications.ShiftWhatsAppMessage>(
+            $"/api/admin/shifts/{shift.Shift.Id}/whatsapp", TestData.Json))!;
+
+        Assert.Equal("393400000001", message.Phone);
+        Assert.Contains(booking.Reference, message.Text);
+        Assert.Contains("GA123BC", message.Text);
+        Assert.Contains("http", message.Text); // the driver's personal link
+    }
+
+    [Fact]
     public async Task Completing_every_booking_completes_the_shift()
     {
         using var factory = new ApiFactory();

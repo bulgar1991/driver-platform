@@ -18,6 +18,7 @@ public interface IShiftService
     Task<ShiftResult> CreateAsync(ShiftRequest request, CancellationToken cancellationToken);
     Task<ShiftResult> UpdateAsync(Guid id, ShiftRequest request, CancellationToken cancellationToken);
     Task<ShiftDto> ChangeStatusAsync(Guid id, ShiftStatusRequest request, CancellationToken cancellationToken);
+    Task<ShiftWhatsAppMessage> WhatsAppMessageAsync(Guid id, CancellationToken cancellationToken);
     Task<AvailabilityResponse> AvailabilityAsync(IReadOnlyList<Guid> bookingIds, Guid? shiftId, CancellationToken cancellationToken);
 }
 
@@ -407,6 +408,9 @@ public sealed class ShiftService(
         .Include(a => a.Vehicle)
         .Include(a => a.Bookings).ThenInclude(b => b.Client)
         .Include(a => a.Bookings).ThenInclude(b => b.Partner);
+
+    public async Task<ShiftWhatsAppMessage> WhatsAppMessageAsync(Guid id, CancellationToken cancellationToken) =>
+        notifications.ShiftWhatsAppText(await FindAsync(id, cancellationToken));
 
     private async Task<Assignment> FindAsync(Guid id, CancellationToken cancellationToken) =>
         await Query().FirstOrDefaultAsync(a => a.Id == id, cancellationToken)

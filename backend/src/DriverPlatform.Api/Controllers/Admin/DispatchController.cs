@@ -1,3 +1,4 @@
+using DriverPlatform.Application.Notifications;
 using System.ComponentModel.DataAnnotations;
 using DriverPlatform.Application.Abstractions;
 using DriverPlatform.Application.Geo;
@@ -98,6 +99,11 @@ public sealed class DispatchController(
     [HttpGet("shifts/{id:guid}")]
     public async Task<ActionResult<ShiftDto>> Shift(Guid id, CancellationToken cancellationToken) =>
         Ok(await shifts.GetAsync(id, cancellationToken));
+
+    /// <summary>The shift as a WhatsApp text for the office to send from its own WhatsApp (wa.me link).</summary>
+    [HttpGet("shifts/{id:guid}/whatsapp")]
+    public async Task<ActionResult<ShiftWhatsAppMessage>> ShiftWhatsApp(Guid id, CancellationToken cancellationToken) =>
+        Ok(await shifts.WhatsAppMessageAsync(id, cancellationToken));
 
     [HttpPost("shifts")]
     public async Task<ActionResult<ShiftResult>> CreateShift(ShiftRequest request, CancellationToken cancellationToken) =>

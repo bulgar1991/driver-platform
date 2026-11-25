@@ -13,10 +13,15 @@ using Microsoft.Extensions.Options;
 
 namespace DriverPlatform.Application.Notifications;
 
+/// <param name="Phone">The driver's number, digits only (for wa.me).</param>
+public sealed record ShiftWhatsAppMessage(string Phone, string Text);
+
 public interface INotificationService
 {
     /// <summary>WhatsApp and email to the driver with the personal link. Needs Driver, Vehicle and Bookings loaded.</summary>
     Task SendShiftToDriverAsync(Assignment shift, NotificationKind kind, CancellationToken cancellationToken);
+    /// <summary>The shift as a plain WhatsApp text (sent by the office from its own WhatsApp). Needs Driver, Vehicle and Bookings loaded.</summary>
+    ShiftWhatsAppMessage ShiftWhatsAppText(Assignment shift);
 
     /// <summary>Tells each client of the shift who drives them, once per driver and car.</summary>
     Task SendDriverDetailsAsync(Assignment shift, CancellationToken cancellationToken);
@@ -38,6 +43,32 @@ public sealed class NotificationService(
     TimeProvider clock,
     ILogger<NotificationService> logger) : INotificationService
 {
+    public ShiftWhatsAppMessage ShiftWhatsAppText(Assignment shift)
+    {
+        var driver = shift.Driver;
+        var t = DriverTexts(driver);
+        var when = t.ShortDateTime(LocalTime.ToLocal(shift.StartsAt, RideTime.ZoneOf(shift.Bookings)));
+        var live = shift.Bookings.Where(b => b.Status != BookingStatus.Cancelled).ToList();
+        var lines = new List<string>
+        {
+            t.Hello(driver.FirstName),
+            "",
+            t.NewShift(when, live.Count, shift.Vehicle.PlateNumber),
+            "",
+        };
+        lines.AddRange(RideLines(live, t).Select(l => "• " + l));
+        if (!string.IsNullOrWhiteSpace(shift.DispatcherNotes))
+        {
+            lines.AddRange(["", shift.DispatcherNotes.Trim()]);
+        }
+        lines.AddRange(["", $"{t.OpenMyShifts}: {driverLinks.Url(driver)}"]);
+        return new ShiftWhatsAppMessage(new string(driver.Phone.Where(char.IsDigit).ToArray()), string.Join("\n", lines));
+    }
+
+    private static List<string> RideLines(IEnumerable<Booking> bookings, Texts t) =>
+        bookings.Where(b => b.Status != BookingStatus.Cancelled).OrderBy(b => b.PickupAt)
+            .Select(b => b.CollectOnBoard ? $"{b.Describe(t)} – {t.CollectFromClient(t.Money(b.TotalPrice, b.Currency))}" : b.Describe(t)).ToList();
+
     public async Task SendShiftToDriverAsync(Assignment shift, NotificationKind kind, CancellationToken cancellationToken)
     {
         var driver = shift.Driver;
@@ -66,8 +97,7 @@ public sealed class NotificationService(
 
         if (byEmail)
         {
-            var lines = shift.Bookings.Where(b => b.Status != BookingStatus.Cancelled).OrderBy(b => b.PickupAt)
-                .Select(b => b.CollectOnBoard ? $"{b.Describe(t)} – {t.CollectFromClient(t.Money(b.TotalPrice, b.Currency))}" : b.Describe(t)).ToList();
+            var lines = RideLines(shift.Bookings, t);
             await SendEmailAsync(kind, driver.Email!, $"{driver.FirstName} {driver.LastName}", headline,
                 [t.Hello(driver.FirstName), headline, .. lines], (t.OpenMyShifts, url),
                 log => { log.DriverId = driver.Id; log.AssignmentId = shift.Id; }, cancellationToken);

@@ -121,6 +121,16 @@
             size="sm"
             variant="outline"
             type="button"
+            (click)="whatsApp()"
+            i18n-title
+            title="Opens WhatsApp with the shift written out for the driver"
+            ><ng-container i18n>WhatsApp</ng-container></button
+          >
+          <button
+            appButton
+            size="sm"
+            variant="outline"
+            type="button"
             [disabled]="busy()"
             (click)="change('Confirmed')"
             ><ng-container i18n>Confirmed by phone</ng-container></button
