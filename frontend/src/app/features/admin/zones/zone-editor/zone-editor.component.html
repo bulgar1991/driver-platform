@@ -24,8 +24,9 @@
   <div class="zone-editor__map-wrap">
     <app-map
       class="zone-editor__map"
+      [cooperative]="true"
       [clickable]="true"
-      [locked]="true"
+      [zoomButtons]="true"
       [zones]="mapZones()"
       [markers]="markers()"
       [fitPoints]="fitPoints()"
@@ -107,7 +108,8 @@
           step="50"
           i18n-aria-label
           aria-label="Make the circle smaller or bigger"
-          formControlName="radiusMeters" />
+          [value]="form.controls.radiusMeters.value ?? 50"
+          (input)="setRadius($event)" />
       </mat-form-field>
       <p class="zone-editor__coords">
         <ng-container i18n>Centre:</ng-container>&ngsp;

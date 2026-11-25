@@ -78,7 +78,7 @@ $pad: 6px;
 
   // Main area
   &__main {
-    @apply flex min-w-0 flex-col gap-4 pb-20;
+    @apply flex min-w-0 flex-col gap-4;
   }
 
   &__header {
@@ -157,7 +157,7 @@ $pad: 6px;
 
   // Timeline
   &__scroll {
-    @apply relative max-h-[68vh] overflow-auto rounded-sm border border-ink-600 bg-ink-950;
+    @apply relative h-[calc(100dvh-11rem)] min-h-[28rem] overflow-auto rounded-sm border border-ink-600 bg-ink-950;
     overscroll-behavior: contain;
     transition: opacity 0.2s;
 

@@ -253,6 +253,13 @@ export class ZoneEditorComponent {
       : $localize`Click on the map to add a corner; use “Undo” to remove the last one.`
   })
 
+  /** The slider sets the same value as the number field (and the circle follows while sliding). */
+  protected setRadius(event: Event): void {
+    const control = this.form.controls.radiusMeters
+    control.setValue(Number((event.target as HTMLInputElement).value))
+    control.markAsDirty()
+  }
+
   constructor() {
     effect(() => {
       const zone = this.zone()
